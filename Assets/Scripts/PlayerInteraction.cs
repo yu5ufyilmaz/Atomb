@@ -15,7 +15,7 @@ public class PlayerInteraction : MonoBehaviour
     
     [Header("UI References")]
     [SerializeField] private GameObject interactionUI; // UI Canvas'ı
-    [SerializeField] private TMPro.TextMeshProUGUI interactionText; // "E tuşuna bas" yazısı
+    [SerializeField] private TMPro.TextMeshProUGUI interactionText; // Etkileşim yazısı
     
     private IInteractable currentInteractable;
     private Camera playerCamera;
@@ -82,7 +82,8 @@ public class PlayerInteraction : MonoBehaviour
 
     private void HandleInteractionInput()
     {
-        if (currentInteractable != null && Input.GetKeyDown(KeyCode.E))
+        // Sol tık (Mouse0) ile etkileşim
+        if (currentInteractable != null && Input.GetMouseButtonDown(0))
         {
             currentInteractable.Interact();
         }
