@@ -14,18 +14,18 @@ public class PlayerInteraction : MonoBehaviour
     [SerializeField] private Transform raycastOrigin; // Kamera transform'u (Inspector'dan ata)
     
     [Header("UI References")]
-    [SerializeField] private GameObject interactionUI; // UI Canvas'ı
-    [SerializeField] private TMPro.TextMeshProUGUI interactionText; // Etkileşim yazısı
+    [SerializeField] private GameObject interactionUI; // UI Canvas'Ä±
+    [SerializeField] private TMPro.TextMeshProUGUI interactionText; // EtkileÅŸim yazÄ±sÄ±
     
     private IInteractable currentInteractable;
     private Camera playerCamera;
 
     private void Start()
     {
-        // Ana kamerayı bul
+        // Ana kamerayÄ± bul
         playerCamera = Camera.main;
         
-        // Eğer raycastOrigin atanmadıysa, kamerayı kullan
+        // EÄŸer raycastOrigin atanmadÄ±ysa, kamerayÄ± kullan
         if (raycastOrigin == null && playerCamera != null)
         {
             raycastOrigin = playerCamera.transform;
@@ -82,7 +82,7 @@ public class PlayerInteraction : MonoBehaviour
 
     private void HandleInteractionInput()
     {
-        // Sol tık (Mouse0) ile etkileşim
+        // Sol tÄ±k (Mouse0) ile etkileÅŸim
         if (currentInteractable != null && Input.GetMouseButtonDown(0))
         {
             currentInteractable.Interact();
