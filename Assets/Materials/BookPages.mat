@@ -212,8 +212,8 @@ Material:
     - _PPDPrimitiveLength: 1
     - _PPDPrimitiveWidth: 1
     - _PageCount: 8
-    - _PageIndexL: 4
-    - _PageIndexR: 5
+    - _PageIndexL: 0
+    - _PageIndexR: 1
     - _PerPixelSorting: 0
     - _RayTracing: 0
     - _ReceivesSSR: 1
