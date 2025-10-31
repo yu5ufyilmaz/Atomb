@@ -210,13 +210,10 @@ public class InteractableBook : MonoBehaviour, IInteractable
 
     private void CheckForPasswordClick()
     {
-        // DEBUG 1: Tıklama algılandı mı? (Update içinden çağrıldı)
         Debug.Log("CheckForPasswordClick() çağrıldı (Sol Tık Algılandı).");
 
-        // Önce şifrenin şu an açık olan sayfalarda olup olmadığını kontrol et
         if (pageIndexL != passwordPage && pageIndexR != passwordPage)
         {
-            // Bu bir hata değil, sadece tıklama şifre sayfasında değil.
             Debug.Log("-> Tıklama algılandı, ancak açık olan sayfalar ({pageIndexL}-{pageIndexR}) şifre sayfası ({passwordPage}) değil. İşlem durduruldu.");
             return; 
         }
@@ -228,13 +225,10 @@ public class InteractableBook : MonoBehaviour, IInteractable
         
         if (Physics.Raycast(ray, out RaycastHit hit))
         {
-            // DEBUG 2: Işın bir şeye çarptı. Neye?
             Debug.Log($"IŞIN ÇARPTI: Obje = {hit.collider.gameObject.name}, Layer = {LayerMask.LayerToName(hit.collider.gameObject.layer)}");
 
-            // Işın bu kitabın collider'ına mı çarptı?
             if (hit.collider == bookCollider)
             {
-                // DEBUG 3: Evet, kitaba çarptı.
                 Debug.Log("-> BAŞARILI: Işın kitabın kendi collider'ına ('{bookCollider.name}') çarptı. UV koordinatları alınıyor...");
                 
                 Vector2 uv = hit.textureCoord;
@@ -665,45 +659,33 @@ public class InteractableBook : MonoBehaviour, IInteractable
     {
         if (!isPasswordBook || passwordHotspotUV == null)
             return;
-
-        // Gizmo'nun rengini ayarla
-        Gizmos.color = new Color(1.0f, 0f, 0f, 0.7f); // Kırmızı
         
-        // Gizmo'yu, kitabın local koordinat sisteminde çizmek için transform matrisini ayarla
+        Gizmos.color = new Color(1.0f, 0f, 0f, 0.7f); 
+        
         Gizmos.matrix = transform.localToWorldMatrix;
-
-        // --- Sayfa Konumunu Hesapla ---
-        // Password Page (2) çiftse (0, 2, 4...) SOL SAYFA, tekse (1, 3, 5...) SAĞ SAYFADIR.
+        
         bool isRightPage = (passwordPage % 2) != 0;
         
-        // DÜZELTİLMİŞ KOD: isRightPage true ise pozitif X, false ise negatif X kullan.
         float pageCenterX = isRightPage ? (-singlePageSize.x / 2.0f) : (singlePageSize.x / 2.0f);
         Vector3 pageCenterLocalPos = new Vector3(pageCenterX, 0, 0);
 
         
-        // (passwordHotspotUV.x, passwordHotspotUV.y) GİRİLEN 'sol-alt' köşedir.
-        // Gizmo'nun merkezi, bu sol-alt köşeye genişlik/yüksekliğin yarısı eklenerek bulunur.
         float hotspotCenter_UV_X = passwordHotspotUV.x + (passwordHotspotUV.width / 2.0f);
         float hotspotCenter_UV_Y = passwordHotspotUV.y + (passwordHotspotUV.height / 2.0f);
-
-        // Şimdi bu UV merkezini [-0.5, +0.5] aralığına çekiyoruz (Sayfanın 0.5, 0.5 olan merkezine göre)
+        
         float hotspotOffsetX_UV = hotspotCenter_UV_X - 0.5f;
         float hotspotOffsetY_UV = hotspotCenter_UV_Y - 0.5f;
-
-        // UV offset'ini local space (Unity birimi) offset'ine dönüştür
+        
         float hotspotOffsetX_Local = hotspotOffsetX_UV * singlePageSize.x;
         float hotspotOffsetZ_Local = hotspotOffsetY_UV * singlePageSize.y;
-
-        // Hotspot'un local space'deki nihai merkezi
+        
         Vector3 hotspotCenter = pageCenterLocalPos + new Vector3(hotspotOffsetX_Local, gizmoYOffset, hotspotOffsetZ_Local);
 
-
-        // --- Hotspot Boyutunu Hesapla ---
+        
         float hotspotWidth_Local = passwordHotspotUV.width * singlePageSize.x;
         float hotspotHeight_Local = passwordHotspotUV.height * singlePageSize.y;
         Vector3 hotspotSize = new Vector3(hotspotWidth_Local, 0.001f, hotspotHeight_Local);
-
-        // --- Gizmo'yu Çiz ---
+        
         Gizmos.DrawWireCube(hotspotCenter, hotspotSize);
     }
 }
