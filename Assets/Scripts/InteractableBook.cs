@@ -14,6 +14,9 @@ public class PasswordLocation
     
     [Tooltip("Bu şifre için kullanılacak özel sayfa dokusu (Texture2D).")]
     public Texture2D specialPageTexture;
+    
+    [Tooltip("Bu konumda bulunacak şifrenin PasswordManager'daki ID'si (Örn: INFINITY_=_123).")]
+    public string passwordID = "DEFAULT_PASSWORD"; // YENİ: Her konuma özel şifre ID'si
 }
 
 public class InteractableBook : MonoBehaviour, IInteractable
@@ -69,7 +72,8 @@ public class InteractableBook : MonoBehaviour, IInteractable
     [Tooltip("Bu kitap için olası tüm şifre konumları (sayfa, hotspot, doku).")]
     [SerializeField] private List<PasswordLocation> potentialPasswordLocations;
     
-    [SerializeField] private string passwordID = "INFINITY_=_123"; 
+    // Önceden tanımlanan şifre ID'si artık her konum için ayrı tutuluyor.
+    // Sadece ses efektini burada tutmaya devam ediyoruz.
     [SerializeField] private AudioClip passwordFoundSound; 
     
     // Çalışma zamanında kullanılan aktif şifre konumu (Rastgele seçilir)
@@ -77,9 +81,9 @@ public class InteractableBook : MonoBehaviour, IInteractable
     private Rect activePasswordHotspotUV;
     private Texture2D activePasswordPageTexture; 
     private Texture originalBookPagesTexture;
-    
+    private string activePasswordID; // YENİ: Aktif şifre ID'si
+
     // Shader Property ID'leri
-    // _PagesTex, BookPages.shadergraph dosyasındaki doku ismine karşılık gelir
     private static readonly int PagesTexID = Shader.PropertyToID("_PagesTex"); 
 
     [Header("Gizmo Settings")]
@@ -193,6 +197,7 @@ public class InteractableBook : MonoBehaviour, IInteractable
             activePasswordPage = -1;
             activePasswordHotspotUV = new Rect(0,0,0,0);
             activePasswordPageTexture = null; 
+            activePasswordID = null; // Hata durumunda null ataması
             return;
         }
 
@@ -204,13 +209,19 @@ public class InteractableBook : MonoBehaviour, IInteractable
         activePasswordPage = selectedLocation.pageNumber;
         activePasswordHotspotUV = selectedLocation.hotspotUV;
         activePasswordPageTexture = selectedLocation.specialPageTexture;
+        activePasswordID = selectedLocation.passwordID; // YENİ: Aktif şifre ID'sini ata
         
+        if (string.IsNullOrEmpty(activePasswordID))
+        {
+            Debug.LogError($"InteractableBook ({gameObject.name}): Seçilen şifre konumu (Sayfa {activePasswordPage}) için 'passwordID' boş!");
+        }
+
         if (activePasswordPageTexture == null)
         {
             Debug.LogWarning($"InteractableBook ({gameObject.name}): Seçilen şifre konumu (Sayfa {activePasswordPage}) için 'specialPageTexture' atanmamış!");
         }
         
-        Debug.Log($"Kitap ({gameObject.name}) için aktif şifre konumu rastgele seçildi: Sayfa {activePasswordPage}, Hotspot: {activePasswordHotspotUV}");
+        Debug.Log($"Kitap ({gameObject.name}) için aktif şifre konumu rastgele seçildi: Sayfa {activePasswordPage}, Hotspot: {activePasswordHotspotUV}, ID: {activePasswordID}");
     }
 
     private void InitializePages()
@@ -258,6 +269,12 @@ public class InteractableBook : MonoBehaviour, IInteractable
     private void CheckForPasswordClick()
     {
         Debug.Log("CheckForPasswordClick() çağrıldı (Sol Tık Algılandı).");
+        
+        if (activePasswordID == null)
+        {
+            Debug.Log("-> Şifre ID'si atanmamış. Tıklama kontrolü atlandı.");
+            return;
+        }
 
         // activePasswordPage kontrolü
         if (pageIndexL != activePasswordPage && pageIndexR != activePasswordPage)
@@ -453,16 +470,18 @@ public class InteractableBook : MonoBehaviour, IInteractable
     
     private void TriggerPasswordFind()
     {
-        if (hasPasswordBeenFound || !isPasswordBook)
+        // aktif şifre ID'sinin boş olup olmadığını kontrol et
+        if (hasPasswordBeenFound || !isPasswordBook || string.IsNullOrEmpty(activePasswordID))
             return;
 
         hasPasswordBeenFound = true;
         
-        PasswordManager.Instance.AddFoundPassword(passwordID);
+        // Seçilen aktif şifre ID'sini kullan
+        PasswordManager.Instance.AddFoundPassword(activePasswordID);
         
         PlaySound(passwordFoundSound);
         
-        NotebookUI.Instance.ShowPasswordNotification(passwordID);
+        NotebookUI.Instance.ShowPasswordNotification(activePasswordID);
         
         StartCoroutine(CloseBook());
     }
@@ -515,7 +534,6 @@ public class InteractableBook : MonoBehaviour, IInteractable
         
         if (pageFlipObject != null) pageFlipObject.SetActive(true);
         
-        // ... (pageTurnMaterial hazırlık kodları aynı kalır)
         
         float t = 0f;
         float flipSpeed = 1f / pageFlipDuration;
@@ -607,8 +625,6 @@ public class InteractableBook : MonoBehaviour, IInteractable
                 bookPagesMaterial.SetTexture(PagesTexID, originalBookPagesTexture);
             }
         }
-        
-        // Debug.Log($"Book Pages Updated - Left: {pageIndexL}, Right: {pageIndexR}");
     }
 
     private void UpdatePageUI()
@@ -662,9 +678,7 @@ public class InteractableBook : MonoBehaviour, IInteractable
         bool isRightPage = (page % 2) != 0;
         
         // Hotspot'un bulunacağı sayfanın lokal merkez pozisyonunu hesapla
-        // NOT: singlePageSize.x/2 pozisyonu, sayfanın ortasındaki cilt çizgisine göredir.
-        // Yönün doğru olması için (Uv.x < 0.5 ise sol sayfa) -singlePageSize.x/2 sol, +singlePageSize.x/2 sağ olmalıdır.
-        float pageCenterX = isRightPage ? (singlePageSize.x / 2.0f) : (-singlePageSize.x / 2.0f);
+        float pageCenterX = isRightPage ? (-singlePageSize.x / 2.0f) : (singlePageSize.x / 2.0f);
         Vector3 pageCenterLocalPos = new Vector3(pageCenterX, 0, 0);
 
         // Hotspot'un UV koordinatlarından lokal 3D ofsetini hesapla (UV: 0-1 aralığında)

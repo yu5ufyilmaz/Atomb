@@ -24,7 +24,7 @@ RenderSettings:
   m_AmbientEquatorColor: {r: 0.114, g: 0.125, b: 0.133, a: 1}
   m_AmbientGroundColor: {r: 0.047, g: 0.043, b: 0.035, a: 1}
   m_AmbientIntensity: 1
-  m_AmbientMode: 4
+  m_AmbientMode: 0
   m_SubtractiveShadowColor: {r: 0.42, g: 0.478, b: 0.627, a: 1}
   m_SkyboxMaterial: {fileID: 0}
   m_HaloStrength: 0.5
@@ -3432,15 +3432,17 @@ MonoBehaviour:
   viewRotationOffset: {x: 90, y: 180, z: 0}
   moveDuration: 0.5
   isPasswordBook: 1
-  passwordPage: 2
-  passwordID: INFINITY_=_123
+  potentialPasswordLocations:
+  - pageNumber: 3
+    hotspotUV:
+      serializedVersion: 2
+      x: 0.4
+      y: 0.4
+      width: 0
+      height: 0
+    specialPageTexture: {fileID: 0}
+    passwordID: DEFAULT_PASSWORD
   passwordFoundSound: {fileID: 0}
-  passwordHotspotUV:
-    serializedVersion: 2
-    x: 0.4
-    y: 0.4
-    width: 0.48
-    height: 0.15
   singlePageSize: {x: 0.9, y: 1.25}
   gizmoYOffset: 0.18
   bookCollider: {fileID: 4299901466369724870}
