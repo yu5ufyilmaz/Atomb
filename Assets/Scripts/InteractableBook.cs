@@ -53,6 +53,17 @@ public class InteractableBook : MonoBehaviour, IInteractable
     [SerializeField] private int passwordPage = 2; 
     [SerializeField] private string passwordID = "INFINITY_=_123"; 
     [SerializeField] private AudioClip passwordFoundSound; 
+    
+    
+    [Space(10)]
+    [Header("Hotspot Helper (Sadece Editörde)")]
+    [Tooltip("Buradaki slider'ları değiştirerek yandaki Scene penceresinde Gizmo'yu canlı olarak ayarlayın.")]
+    [SerializeField] [Range(0, 1)] private float hotspot_X = 0.5f;
+    [SerializeField] [Range(0, 1)] private float hotspot_Y = 0.5f;
+    [SerializeField] [Range(0, 1)] private float hotspot_Width = 0.2f;
+    [SerializeField] [Range(0, 1)] private float hotspot_Height = 0.2f;
+
+    [Tooltip("Ayarlamayı bitirdikten sonra buradaki Rect değerlerini kopyalayıp ScriptableObject'e yapıştırın.")]
     [SerializeField] private Rect passwordHotspotUV = new Rect(0.5f, 0.5f, 0.2f, 0.2f);
     
     [Header("Gizmo Settings")]
@@ -65,7 +76,7 @@ public class InteractableBook : MonoBehaviour, IInteractable
     private bool hasPasswordBeenFound = false; 
     [SerializeField] private Collider bookCollider; 
     private Camera mainCamera;
-    private BoxCollider interactionCollider;
+    [SerializeField]private BoxCollider interactionCollider;
     
     private Vector3 originalLocalPosition;
     private Quaternion originalLocalRotation;
@@ -88,9 +99,9 @@ public class InteractableBook : MonoBehaviour, IInteractable
     private void Start()
     {
         interactionCollider  = GetComponent<BoxCollider>();
-        if (interactionCollider = null)
+        if (interactionCollider == null) 
         {
-           Debug.LogWarning("Interaction Collider not found"); 
+            Debug.LogWarning($"InteractableBook ({gameObject.name}): 'Interaction Collider' (BoxCollider) Inspector'dan atanmamış veya obje üzerinde bulunamadı!", this); 
         }
         
         if (bookAnimator == null)
@@ -602,6 +613,55 @@ public class InteractableBook : MonoBehaviour, IInteractable
         }
     }
     
+    // PasswordManager tarafından çağrılacak
+    public void AssignPassword(PasswordData data)
+    {
+        isPasswordBook = true;
+        passwordID = data.passwordID;
+        passwordPage = data.passwordPage;
+        passwordHotspotUV = data.passwordHotspotUV; // Hotspot'u atadık!
+        hasPasswordBeenFound = false;
+
+        // Texture'ları atama
+        // Not: Bu, materyalin bir "instance"ını (kopyasını) oluşturur.
+        // Eğer materyali paylaşıyorsanız bu gereklidir.
+        // Zaten Start() içinde materyali alıyorsanız, direkt set edebilirsiniz.
+
+        // BookPages shader'ına texture'ı ata
+        if (bookPagesMaterial != null)
+        {
+            // Shader'daki property adı "_PagesTex" 
+            bookPagesMaterial.SetTexture("_PagesTex", data.pageTexture); 
+        }
+
+        // PageTurn shader'ına texture'ı ata
+        if (pageTurnMaterial != null)
+        {
+            // Shader'daki property adı "_PagesTex" 
+            pageTurnMaterial.SetTexture("_PagesTex", data.pageTexture);
+        }
+
+        Debug.Log($"{gameObject.name} kitabına {passwordID} şifresi atandı.");
+    }
+
+// PasswordManager tarafından çağrılacak
+    public void ClearPassword()
+    {
+        isPasswordBook = false;
+        passwordID = "";
+        hasPasswordBeenFound = false;
+
+       
+        // if (bookPagesMaterial != null && defaultPageTexture != null)
+        // {
+        //     bookPagesMaterial.SetTexture("_PagesTex", defaultPageTexture);
+        // }
+        // if (pageTurnMaterial != null && defaultPageTexture != null)
+        // {
+        //     pageTurnMaterial.SetTexture("_PagesTex", defaultPageTexture);
+        // }
+    }
+    
     private void UpdateBookPagesMaterial()
     {
         if (bookPagesMaterial == null)
@@ -649,6 +709,11 @@ public class InteractableBook : MonoBehaviour, IInteractable
     // Inspector'da değişiklik yapıldığında
     private void OnValidate()
     {
+        if (passwordHotspotUV.x != hotspot_X) passwordHotspotUV.x = hotspot_X;
+        if (passwordHotspotUV.y != hotspot_Y) passwordHotspotUV.y = hotspot_Y;
+        if (passwordHotspotUV.width != hotspot_Width) passwordHotspotUV.width = hotspot_Width;
+        if (passwordHotspotUV.height != hotspot_Height) passwordHotspotUV.height = hotspot_Height;
+        
         if (bookPagesMaterial != null && Application.isPlaying)
         {
             UpdateBookPagesMaterial();
