@@ -613,7 +613,7 @@ public class InteractableBook : MonoBehaviour, IInteractable
         }
     }
     
-    // PasswordManager tarafından çağrılacak
+  // PasswordManager tarafından çağrılacak
     public void AssignPassword(PasswordData data)
     {
         isPasswordBook = true;
@@ -621,30 +621,26 @@ public class InteractableBook : MonoBehaviour, IInteractable
         passwordPage = data.passwordPage;
         passwordHotspotUV = data.passwordHotspotUV; // Hotspot'u atadık!
         hasPasswordBeenFound = false;
-
-        // Texture'ları atama
-        // Not: Bu, materyalin bir "instance"ını (kopyasını) oluşturur.
-        // Eğer materyali paylaşıyorsanız bu gereklidir.
-        // Zaten Start() içinde materyali alıyorsanız, direkt set edebilirsiniz.
-
-        // BookPages shader'ına texture'ı ata
+        
+        this.totalPages = data.totalPages; 
+       
         if (bookPagesMaterial != null)
         {
-            // Shader'daki property adı "_PagesTex" 
-            bookPagesMaterial.SetTexture("_PagesTex", data.pageTexture); 
+            bookPagesMaterial.SetTexture("_PagesTex", data.pageTexture);
+            
+            bookPagesMaterial.SetFloat("_PageCount", this.totalPages);
         }
-
-        // PageTurn shader'ına texture'ı ata
+        
         if (pageTurnMaterial != null)
         {
-            // Shader'daki property adı "_PagesTex" 
             pageTurnMaterial.SetTexture("_PagesTex", data.pageTexture);
+            
+            pageTurnMaterial.SetFloat("_PageCount", this.totalPages);
         }
 
-        Debug.Log($"{gameObject.name} kitabına {passwordID} şifresi atandı.");
+        Debug.Log($"{gameObject.name} kitabına {passwordID} şifresi atandı. YENİ Toplam Sayfa: {this.totalPages}");
     }
-
-// PasswordManager tarafından çağrılacak
+    
     public void ClearPassword()
     {
         isPasswordBook = false;

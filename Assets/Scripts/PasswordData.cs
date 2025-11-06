@@ -3,6 +3,8 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "PasswordData", menuName = "Atomb/Password Data", order = 0)]
 public class PasswordData : ScriptableObject
 {
+    public int totalPages;
+    
     [Tooltip("Not defterine eklenecek ve Turing makinesinde kontrol edilecek ID. Örn: INFINITY_=_123")]
     public string passwordID;
 
