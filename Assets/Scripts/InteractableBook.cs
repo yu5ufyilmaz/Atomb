@@ -221,7 +221,7 @@ public class InteractableBook : MonoBehaviour, IInteractable
         Debug.Log("-> Açık sayfa, şifre sayfası. Işın gönderiliyor...");
         Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
         
-        Debug.DrawRay(ray.origin, ray.direction * 10f, Color.deepPink, 5.0f);
+        Debug.DrawRay(ray.origin, ray.direction * 10f, Color.yellow, 5.0f);
         
         if (Physics.Raycast(ray, out RaycastHit hit))
         {
