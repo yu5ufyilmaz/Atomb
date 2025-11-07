@@ -96,6 +96,72 @@ public class InteractableBook : MonoBehaviour, IInteractable
     private static readonly int AnimIDJump = Animator.StringToHash("Jump");
     private static readonly int AnimIDFreeFall = Animator.StringToHash("FreeFall");
 
+    // DÜZENLEME: Kod Start() yerine Awake()'e taşındı
+    private void Awake()
+    {
+        // --- Book Pages Material Kopyalama Başlangıcı ---
+        Material basePagesMaterial = null;
+        if (bookPagesMaterial != null) // 1. Önce Inspector'a bak
+        {
+            basePagesMaterial = bookPagesMaterial;
+        }
+        else if (bookSkinnedMeshRenderer != null) // 2. Yoksa Renderer'dan al
+        {
+            Material[] materials = bookSkinnedMeshRenderer.sharedMaterials; // .sharedMaterials kopyalamaz
+            if (bookMaterialIndex < materials.Length)
+            {
+                basePagesMaterial = materials[bookMaterialIndex];
+            }
+        }
+        
+        if (basePagesMaterial != null)
+        {
+            // 3. Her durumda base materyalin kopyasını oluştur
+            Material materialInstance = new Material(basePagesMaterial);
+            bookPagesMaterial = materialInstance; // Kopyayı script değişkenine ata
+
+            // 4. Kopyayı renderer'a geri ata (ki görünsün)
+            if (bookSkinnedMeshRenderer != null)
+            {
+                Material[] materials = bookSkinnedMeshRenderer.materials; // .materials kopyalar ama diziyi almamız lazım
+                if (bookMaterialIndex < materials.Length)
+                {
+                    materials[bookMaterialIndex] = materialInstance;
+                    bookSkinnedMeshRenderer.materials = materials;
+                }
+            }
+        }
+        else
+        {
+            Debug.LogError($"{gameObject.name}: Kitap sayfası materyali (bookPagesMaterial) bulunamadı!", this);
+        }
+        // --- Book Pages Material Kopyalama Sonu ---
+
+        // --- Page Turn Material Kopyalama Başlangıcı ---
+        Material baseTurnMaterial = null;
+        if (pageTurnMaterial != null) // 1. Önce Inspector'a bak
+        {
+            baseTurnMaterial = pageTurnMaterial;
+        }
+        else if (pageFlipRenderer != null) // 2. Yoksa Renderer'dan al
+        {
+            baseTurnMaterial = pageFlipRenderer.sharedMaterial; // .sharedMaterial kopyalamaz
+        }
+
+        if (baseTurnMaterial != null)
+        {
+            // 3. Her durumda kopyasını oluştur ve ata
+            pageTurnMaterial = new Material(baseTurnMaterial);
+            
+            // 4. Kopyayı renderer'a geri ata
+            if (pageFlipRenderer != null)
+            {
+                pageFlipRenderer.material = pageTurnMaterial; // .material (küçük m) ataması kopyayı atar
+            }
+        }
+        // --- Page Turn Material Kopyalama Sonu ---
+    }
+
     private void Start()
     {
         interactionCollider  = GetComponent<BoxCollider>();
@@ -152,14 +218,8 @@ public class InteractableBook : MonoBehaviour, IInteractable
             bookUI.SetActive(false);
         }
         
-        if (bookSkinnedMeshRenderer != null && bookPagesMaterial == null)
-        {
-            Material[] materials = bookSkinnedMeshRenderer.materials;
-            if (bookMaterialIndex < materials.Length)
-            {
-                bookPagesMaterial = materials[bookMaterialIndex];
-            }
-        }
+        // DÜZENLEME: Materyal kopyalama kodları buradan Awake() fonksiyonuna taşındı.
+
         if (playerAnimator == null && playerController != null)
         {
             playerAnimator = playerController.GetComponent<Animator>();
@@ -168,11 +228,6 @@ public class InteractableBook : MonoBehaviour, IInteractable
         if (pageFlipObject != null)
         {
             pageFlipObject.SetActive(false);
-        }
-        
-        if (pageFlipRenderer != null && pageTurnMaterial == null)
-        {
-            pageTurnMaterial = pageFlipRenderer.material;
         }
         
         InitializePages();

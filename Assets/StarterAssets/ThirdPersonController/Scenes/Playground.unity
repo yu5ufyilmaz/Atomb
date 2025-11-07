@@ -1870,8 +1870,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PasswordManager
   allPossiblePasswordData:
-  - {fileID: 11400000, guid: 024a4b81b87274da2873856a19d3baf5, type: 2}
-  - {fileID: 11400000, guid: 5e316dc3fa58a47eca3f21d26a7030aa, type: 2}
+  - {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
+  - {fileID: 11400000, guid: 725e301b34f00429ca9064b7d0eaa616, type: 2}
   allPasswordBooksInLevel:
   - {fileID: 1806095637}
   - {fileID: 938416270}
@@ -4165,16 +4165,16 @@ MonoBehaviour:
   passwordPage: 2
   passwordID: INFINITY_=_123
   passwordFoundSound: {fileID: 0}
-  hotspot_X: 0.396
-  hotspot_Y: 0.508
-  hotspot_Width: 0.477
-  hotspot_Height: 0.162
+  hotspot_X: 0.4
+  hotspot_Y: 0.5
+  hotspot_Width: 0.5
+  hotspot_Height: 0.15
   passwordHotspotUV:
     serializedVersion: 2
-    x: 0.396
-    y: 0.508
-    width: 0.477
-    height: 0.162
+    x: 0.4
+    y: 0.5
+    width: 0.5
+    height: 0.15
   singlePageSize: {x: 0.9, y: 1.25}
   gizmoYOffset: 0.18
   bookCollider: {fileID: 4299901466369724870}

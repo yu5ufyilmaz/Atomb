@@ -105,7 +105,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _PagesTex:
-        m_Texture: {fileID: 2800000, guid: cae18eed01338184099a3ae06e450ba6, type: 3}
+        m_Texture: {fileID: 2800000, guid: 7bdf0b00ba874480e90b3d2987e6dd9b, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _SpecularColorMap:
@@ -225,7 +225,7 @@ Material:
     - _PPDPrimitiveWidth: 1
     - _PageCount: 8
     - _PageFlip: 1
-    - _PageIndex: 3
+    - _PageIndex: 5
     - _PageIndexBack: 2
     - _PageIndexFront: 1
     - _PerPixelSorting: 0
