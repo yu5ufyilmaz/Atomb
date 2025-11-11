@@ -43,7 +43,7 @@ public class NotebookUI : MonoBehaviour
     
     private void UpdatePasswordList()
     {
-        List<string> passwords = PasswordManager.Instance.GetFoundPasswords();
+        List<string> passwords = PasswordManager.Instance.GetDiscoveredClues();
         StringBuilder sb = new StringBuilder();
 
         foreach (string pw in passwords)

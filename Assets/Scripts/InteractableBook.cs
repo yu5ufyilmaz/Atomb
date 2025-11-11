@@ -95,19 +95,17 @@ public class InteractableBook : MonoBehaviour, IInteractable
     private static readonly int AnimIDSpeed = Animator.StringToHash("Speed");
     private static readonly int AnimIDJump = Animator.StringToHash("Jump");
     private static readonly int AnimIDFreeFall = Animator.StringToHash("FreeFall");
-
-    // DÜZENLEME: Kod Start() yerine Awake()'e taşındı
+    
     private void Awake()
     {
-        // --- Book Pages Material Kopyalama Başlangıcı ---
         Material basePagesMaterial = null;
-        if (bookPagesMaterial != null) // 1. Önce Inspector'a bak
+        if (bookPagesMaterial != null) 
         {
             basePagesMaterial = bookPagesMaterial;
         }
-        else if (bookSkinnedMeshRenderer != null) // 2. Yoksa Renderer'dan al
+        else if (bookSkinnedMeshRenderer != null) 
         {
-            Material[] materials = bookSkinnedMeshRenderer.sharedMaterials; // .sharedMaterials kopyalamaz
+            Material[] materials = bookSkinnedMeshRenderer.sharedMaterials;
             if (bookMaterialIndex < materials.Length)
             {
                 basePagesMaterial = materials[bookMaterialIndex];
@@ -116,14 +114,12 @@ public class InteractableBook : MonoBehaviour, IInteractable
         
         if (basePagesMaterial != null)
         {
-            // 3. Her durumda base materyalin kopyasını oluştur
             Material materialInstance = new Material(basePagesMaterial);
-            bookPagesMaterial = materialInstance; // Kopyayı script değişkenine ata
-
-            // 4. Kopyayı renderer'a geri ata (ki görünsün)
+            bookPagesMaterial = materialInstance; 
+            
             if (bookSkinnedMeshRenderer != null)
             {
-                Material[] materials = bookSkinnedMeshRenderer.materials; // .materials kopyalar ama diziyi almamız lazım
+                Material[] materials = bookSkinnedMeshRenderer.materials; 
                 if (bookMaterialIndex < materials.Length)
                 {
                     materials[bookMaterialIndex] = materialInstance;
@@ -135,31 +131,25 @@ public class InteractableBook : MonoBehaviour, IInteractable
         {
             Debug.LogError($"{gameObject.name}: Kitap sayfası materyali (bookPagesMaterial) bulunamadı!", this);
         }
-        // --- Book Pages Material Kopyalama Sonu ---
-
-        // --- Page Turn Material Kopyalama Başlangıcı ---
         Material baseTurnMaterial = null;
-        if (pageTurnMaterial != null) // 1. Önce Inspector'a bak
+        if (pageTurnMaterial != null) 
         {
             baseTurnMaterial = pageTurnMaterial;
         }
-        else if (pageFlipRenderer != null) // 2. Yoksa Renderer'dan al
+        else if (pageFlipRenderer != null) 
         {
             baseTurnMaterial = pageFlipRenderer.sharedMaterial; // .sharedMaterial kopyalamaz
         }
 
         if (baseTurnMaterial != null)
         {
-            // 3. Her durumda kopyasını oluştur ve ata
             pageTurnMaterial = new Material(baseTurnMaterial);
             
-            // 4. Kopyayı renderer'a geri ata
             if (pageFlipRenderer != null)
             {
-                pageFlipRenderer.material = pageTurnMaterial; // .material (küçük m) ataması kopyayı atar
+                pageFlipRenderer.material = pageTurnMaterial; 
             }
         }
-        // --- Page Turn Material Kopyalama Sonu ---
     }
 
     private void Start()
@@ -524,7 +514,7 @@ public class InteractableBook : MonoBehaviour, IInteractable
 
         hasPasswordBeenFound = true;
         
-        PasswordManager.Instance.AddFoundPassword(passwordID);
+        PasswordManager.Instance.DiscoverClue(passwordID);
         
         PlaySound(passwordFoundSound);
         
@@ -660,7 +650,6 @@ public class InteractableBook : MonoBehaviour, IInteractable
             pageIndexR -= 2;
         }
         
-        // Loop kontrolü (opsiyonel)
         if (allowLoop)
         {
             pageIndexL = (pageIndexL + totalPages) % totalPages;
@@ -668,7 +657,6 @@ public class InteractableBook : MonoBehaviour, IInteractable
         }
     }
     
-  // PasswordManager tarafından çağrılacak
     public void AssignPassword(PasswordData data)
     {
         isPasswordBook = true;
@@ -701,16 +689,7 @@ public class InteractableBook : MonoBehaviour, IInteractable
         isPasswordBook = false;
         passwordID = "";
         hasPasswordBeenFound = false;
-
-       
-        // if (bookPagesMaterial != null && defaultPageTexture != null)
-        // {
-        //     bookPagesMaterial.SetTexture("_PagesTex", defaultPageTexture);
-        // }
-        // if (pageTurnMaterial != null && defaultPageTexture != null)
-        // {
-        //     pageTurnMaterial.SetTexture("_PagesTex", defaultPageTexture);
-        // }
+        
     }
     
     private void UpdateBookPagesMaterial()
