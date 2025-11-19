@@ -1,15 +1,13 @@
 using UnityEngine;
 using System.Collections;
+using CharacterController = StarterAssets.CharacterController;
 
 // PlayerInteraction.cs'teki IInteractable arayüzünü kullanır
 public class InteractableOscilloscope : MonoBehaviour, IInteractable
 {
-    [Header("Player Control (Turing Machine'den Kopyala)")]
-    [Tooltip("Oyuncunun ana CharacterController'ı")]
+    [Header("Player Control")]
     [SerializeField] private UnityEngine.CharacterController playerController;
-    [Tooltip("Oyuncunun fare/kamera kontrol script'i (örn: StarterAssetsInputs)")]
     [SerializeField] private MonoBehaviour playerLookScript;
-    [Tooltip("Kameranın kilitleneceği pozisyon (Boş bir obje)")]
     [SerializeField] private Transform cameraViewTarget;
     [SerializeField] private float cameraMoveDuration = 0.5f;
     private Transform cinemachineCameraTarget;
@@ -18,49 +16,42 @@ public class InteractableOscilloscope : MonoBehaviour, IInteractable
     private Quaternion originalCameraLocalRot;
     private bool isInteracting = false;
     
-    [Header("Waveform Visuals (Target Values)")]
-    [SerializeField] private float correctAmplitude = 1.5f;
-    [SerializeField] private float correctFrequency = 1.0f;
-    [Space]
-    [SerializeField] private float incorrectAmplitude = 2.5f;
-    [SerializeField] private float incorrectFrequency = 3.0f;
-    [SerializeField] private float visualLerpSpeed = 5f;
-
-    [Header("Oscilloscope Settings")]
-    [Tooltip("Döngü halindeki 'bozuk' sesi çalan AudioSource")]
+    [Header("Audio Settings")]
+    [Tooltip("Döngü halinde çalacak TEK ses dosyası (AudioSource'a atayın)")]
     [SerializeField] private AudioSource audioSource;
-    [Tooltip("Doğru ayar bulunduğunda çalacak bildirim sesi")]
-    [SerializeField] private AudioClip successSound;
-
-    [Space]
-    [Tooltip("Olması gereken (doğru) pitch/hız (Örn: 90 BPM için 1.0)")]
-    [SerializeField] private float basePitch = 1.0f;
-    [Tooltip("Başlangıçtaki 'bozuk' pitch/hız (Örn: 120 BPM için 1.33)")]
-    [SerializeField] private float incorrectPitch = 1.33f;
-
+    
     [Header("Knob Visuals")]
-    [Tooltip("Döndürülecek VOLTS/DIV düğmesinin Transform'u")]
-    [SerializeField] private Transform voltsKnob;
-    [Tooltip("Döndürülecek TIME/DIV düğmesinin Transform'u")]
-    [SerializeField] private Transform timeKnob;
-    [Tooltip("Her 'tık' kaç derece dönsün? (360 / adım sayısı)")]
-    [SerializeField] private float rotationPerStep = 36f; // Örn: 10 adım için
+    [SerializeField] private Transform voltsKnob; // Genlik / Ses Şiddeti
+    [SerializeField] private Transform timeKnob;  // Frekans / Ses Hızı (Pitch)
+    [SerializeField] private float rotationPerStep = 36f; 
 
-    [Header("Puzzle Logic")]
+    [Header("Puzzle Logic & ranges")]
     [SerializeField] [Range(0, 10)] private int maxVoltsSetting = 10;
     [SerializeField] [Range(0, 10)] private int maxTimeSetting = 10;
     
     [Space]
-    [Tooltip("Bulmacanın çözümü için gereken Volts ayarı (0-10)")]
-    [SerializeField] private int correctVoltsSetting = 3;
-    [Tooltip("Bulmacanın çözümü için gereken Time ayarı (0-10)")]
+    [Tooltip("Doğru Volts (Yükseklik) ayarı")]
+    [SerializeField] private int correctVoltsSetting = 5;
+    [Tooltip("Doğru Time (Hız/Pitch) ayarı")]
     [SerializeField] private int correctTimeSetting = 5;
+
+    [Header("Simulation Ranges")]
+    // Pitch: 1.0 normaldir. 0.5 yavaş, 2.0 hızlıdır.
+    [SerializeField] private float minPitch = 0.5f; 
+    [SerializeField] private float maxPitch = 2.0f;
     
+    // Volume: Doğru ayarda 1.0, yanlışlarda daha kısık olabilir.
+    [SerializeField] private float minVolume = 0.2f;
+    [SerializeField] private float maxVolume = 1.0f;
+
+    [Header("Waveform Settings")]
     [SerializeField] private WaveformGenerator waveformScript;
+    [SerializeField] private float visualLerpSpeed = 5f;
 
     // Mevcut durum
-    private int currentVoltsSetting = 0;
-    private int currentTimeSetting = 0;
+    private int currentVoltsSetting = 0; // Başlangıç değeri (0 yaparsak ses kısık/bozuk başlar)
+    private int currentTimeSetting = 0;  // Başlangıç değeri (0 yaparsak çok yavaş başlar)
+    
     private bool isSolved = false;
     
     // Çarkların başlangıç rotasyonları
@@ -69,32 +60,41 @@ public class InteractableOscilloscope : MonoBehaviour, IInteractable
 
     void Start()
     {
-        // Player scriptlerini bul (Turing makinesindeki gibi)
+        // Player scriptlerini bul
         if (playerController == null)
             playerController = FindObjectOfType<UnityEngine.CharacterController>();
+        // StarterAssetsInputs tipini kontrol edin, projenizde farklı olabilir
         if (playerLookScript == null && playerController != null)
-            playerLookScript = playerController.GetComponent<StarterAssets.StarterAssetsInputs>();
-
-        // Cinemachine hedefini bul (Turing makinesindeki gibi)
+            playerLookScript = playerController.GetComponent("StarterAssetsInputs") as MonoBehaviour;
+        
         if (playerController != null)
         {
-            var starterAssetsController = playerController.GetComponent<StarterAssets.CharacterController>();
-            if (starterAssetsController != null && starterAssetsController.CinemachineCameraTarget != null)
-            {
-                cinemachineCameraTarget = starterAssetsController.CinemachineCameraTarget.transform;
-            }
+            var starterAssetsController = playerController.GetComponent("ThirdPersonController") as MonoBehaviour; 
+            if (starterAssetsController == null) starterAssetsController = playerController.GetComponent<CharacterController>();
+            
+            Transform camTarget = playerController.transform.Find("PlayerCameraRoot");
+            if (camTarget != null) cinemachineCameraTarget = camTarget;
         }
         
         if (voltsKnob != null) voltsKnobInitialRot = voltsKnob.localRotation;
         if (timeKnob != null) timeKnobInitialRot = timeKnob.localRotation;
         
-        if (audioSource != null) audioSource.Stop();
+        if (audioSource != null) 
+        {
+            audioSource.Stop();
+            audioSource.loop = true;
+        }
+
+        currentVoltsSetting = 2; // Örn: Çok alçak genlik
+        currentTimeSetting = 2;  // Örn: Çok yavaş (kalın ses)
+        
+        UpdateKnobVisuals();
     }
 
     public string GetInteractionPrompt()
     {
-        if (isSolved) return "Sistem Ayarlandı";
-        return isInteracting ? "" : "[Sol Tık] Osiloskopu Kullan";
+        if (isSolved) return "Sinyal Stabil";
+        return isInteracting ? "" : "[Sol Tık] Sinyali Düzelt";
     }
 
     public void Interact()
@@ -112,7 +112,7 @@ public class InteractableOscilloscope : MonoBehaviour, IInteractable
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
         
-        // Kamera Animasyonu (Turing Machine'den)
+        // Kamera Animasyonu
         if (cinemachineCameraTarget != null && cameraViewTarget != null)
         {
             originalCameraParent = cinemachineCameraTarget.parent;
@@ -134,60 +134,150 @@ public class InteractableOscilloscope : MonoBehaviour, IInteractable
             }
         }
         
-        // "Bozuk" sesi başlat
+        // Sesi başlat (Mevcut ayarlara göre bozuk başlayacak)
         if (audioSource != null)
         {
-            audioSource.pitch = incorrectPitch;
-            audioSource.loop = true;
+            UpdateAudioAndWaveform(); // İlk değerleri ata
             audioSource.Play();
         }
         
         UpdateKnobVisuals();
     }
     
-    private void UpdateWaveformVisuals()
+    private void Update()
     {
-        if (waveformScript == null) return;
+        if (!isInteracting) return;
 
-        // Hedef değerleri belirle
-        float targetAmplitude;
-        float targetFrequency;
-
-        if (isSolved)
+        // Çıkış (ESC)
+        if (Input.GetKeyDown(KeyCode.Escape))
         {
-            targetAmplitude = correctAmplitude;
-            targetFrequency = correctFrequency;
-        }
-        else
-        {
-            targetAmplitude = incorrectAmplitude;
-            targetFrequency = incorrectFrequency;
+            StartCoroutine(ExitMachineView());
+            return;
         }
         
-        waveformScript.amplitude = Mathf.Lerp(
-            waveformScript.amplitude, 
-            targetAmplitude, 
-            Time.deltaTime * visualLerpSpeed
-        );
+        if (isSolved) 
+        {
+            // Çözüldüyse bile dalga formunu güncel tut (animasyon için)
+            if(waveformScript) waveformScript.frequency = 1.0f; // Sabit normal
+            return;
+        }
         
-        waveformScript.frequency = Mathf.Lerp(
-            waveformScript.frequency, 
-            targetFrequency, 
-            Time.deltaTime * visualLerpSpeed
-        );
+        bool settingChanged = false;
+        
+        // Volts Ayarı (W/S) -> Amplitude & Volume
+        if (Input.GetKeyDown(KeyCode.W))
+        {
+            currentVoltsSetting = Mathf.Min(currentVoltsSetting + 1, maxVoltsSetting);
+            settingChanged = true;
+        }
+        else if (Input.GetKeyDown(KeyCode.S))
+        {
+            currentVoltsSetting = Mathf.Max(currentVoltsSetting - 1, 0);
+            settingChanged = true;
+        }
+        
+        // Time Ayarı (A/D) -> Pitch & Frequency
+        if (Input.GetKeyDown(KeyCode.D))
+        {
+            currentTimeSetting = Mathf.Min(currentTimeSetting + 1, maxTimeSetting);
+            settingChanged = true;
+        }
+        else if (Input.GetKeyDown(KeyCode.A))
+        {
+            currentTimeSetting = Mathf.Max(currentTimeSetting - 1, 0);
+            settingChanged = true;
+        }
+
+        if (settingChanged)
+        {
+            UpdateKnobVisuals();
+            UpdateAudioAndWaveform(); // Sesi ve dalgayı anlık güncelle
+            CheckForSolution();
+        }
+        
+        // Dalga formunu her frame'de yumuşak geçişle güncelle (Görsel Smoothness)
+        // Ancak gerçek değerleri settingChanged içinde hesapladık.
+    }
+
+    // Bu fonksiyon hem sesi hem de dalga formunun hedef değerlerini ayarlar
+    private void UpdateAudioAndWaveform()
+    {
+        // --- 1. Time Knob -> Pitch (Hız) Hesabı ---
+        // Knob 0 iken minPitch, Knob Max iken maxPitch olsun.
+        float tRatio = (float)currentTimeSetting / maxTimeSetting;
+        float targetPitch = Mathf.Lerp(minPitch, maxPitch, tRatio);
+        
+        // Eğer "Doğru" ayardaysak Pitch tam 1.0 olsun (Floating point hatasını önlemek için)
+        if (currentTimeSetting == correctTimeSetting) targetPitch = 1.0f;
+
+        if (audioSource != null)
+        {
+            audioSource.pitch = targetPitch;
+        }
+
+        // --- 2. Volts Knob -> Volume (Şiddet) Hesabı ---
+        float vRatio = (float)currentVoltsSetting / maxVoltsSetting;
+        float targetVolume = Mathf.Lerp(minVolume, maxVolume, vRatio);
+        
+        if (currentVoltsSetting == correctVoltsSetting) targetVolume = 1.0f; // İdeal ses seviyesi
+        
+        if (audioSource != null)
+        {
+            audioSource.volume = targetVolume;
+        }
+
+        // --- 3. Waveform Visuals ---
+        if (waveformScript != null)
+        {
+            // Pitch arttıkça frekans artar (dalgalar sıklaşır)
+            waveformScript.frequency = targetPitch; 
+            
+            // Volume arttıkça genlik artar (dalgalar yükselir)
+            // Görsel olarak 0.5 ile 2.0 arasında scale edelim
+            waveformScript.amplitude = Mathf.Lerp(0.5f, 2.5f, vRatio);
+        }
+    }
+
+    private void UpdateKnobVisuals()
+    {
+        if (voltsKnob != null)
+        {
+            float angleV = currentVoltsSetting * rotationPerStep;
+            voltsKnob.localRotation = voltsKnobInitialRot * Quaternion.Euler(0, angleV, 0); 
+        }
+        
+        if (timeKnob != null)
+        {
+            float angleT = currentTimeSetting * rotationPerStep;
+            timeKnob.localRotation = timeKnobInitialRot * Quaternion.Euler(0, angleT, 0); 
+        }
+    }
+    
+    private void CheckForSolution()
+    {
+        if (isSolved) return;
+
+        if (currentVoltsSetting == correctVoltsSetting && currentTimeSetting == correctTimeSetting)
+        {
+            Debug.Log("Osiloskop Ayarı DOĞRU!");
+            isSolved = true;
+            
+            // Çözülünce otomatik çıkış yapabilir veya bekleyebiliriz
+            StartCoroutine(AutoExit(2.0f));
+        }
     }
 
     private IEnumerator ExitMachineView()
     {
         isInteracting = false;
         
-        // "Bozuk" sesi durdur (eğer çözülmediyse)
-        if (audioSource != null && !isSolved)
+        // Çözülmediyse sesi kapat, çözüldüyse çalmaya devam edebilir (veya kapatabilir)
+        if (audioSource != null) // && !isSolved (eğer çıkınca susmasını isterseniz bunu açın)
         {
             audioSource.Stop();
         }
         
-        // Kamera Geri Dönüş Animasyonu (Turing Machine'den)
+        // Kamera Geri Dönüş
         if (cinemachineCameraTarget != null && originalCameraParent != null)
         {
             float t = 0f;
@@ -211,106 +301,11 @@ public class InteractableOscilloscope : MonoBehaviour, IInteractable
             cinemachineCameraTarget.localRotation = originalCameraLocalRot;
         }
 
-        // Kontrolleri geri ver
         if (playerController) playerController.enabled = true;
         if (playerLookScript) playerLookScript.enabled = true;
 
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
-    }
-
-    private void Update()
-    {
-        if (!isInteracting) return;
-
-        // 1. Çıkış (ESC)
-        if (Input.GetKeyDown(KeyCode.Escape))
-        {
-            StartCoroutine(ExitMachineView());
-            return;
-        }
-        
-        if (isSolved) return;
-        
-        bool settingChanged = false;
-        
-        // Volts Ayarı (W/S)
-        if (Input.GetKeyDown(KeyCode.W))
-        {
-            currentVoltsSetting = (currentVoltsSetting + 1) % maxVoltsSetting;
-            settingChanged = true;
-        }
-        else if (Input.GetKeyDown(KeyCode.S))
-        {
-            currentVoltsSetting = (currentVoltsSetting - 1 + maxVoltsSetting) % maxVoltsSetting;
-            settingChanged = true;
-        }
-        
-        // Time Ayarı (A/D)
-        if (Input.GetKeyDown(KeyCode.D))
-        {
-            currentTimeSetting = (currentTimeSetting + 1) % maxTimeSetting;
-            settingChanged = true;
-        }
-        else if (Input.GetKeyDown(KeyCode.A))
-        {
-            currentTimeSetting = (currentTimeSetting - 1 + maxTimeSetting) % maxTimeSetting;
-            settingChanged = true;
-        }
-
-        if (settingChanged)
-        {
-            UpdateKnobVisuals();
-            CheckForSolution();
-        }
-        UpdateWaveformVisuals();
-    }
-    
-    private void UpdateKnobVisuals()
-    {
-        if (voltsKnob != null)
-        {
-            float angleV = currentVoltsSetting * rotationPerStep;
-            voltsKnob.localRotation = voltsKnobInitialRot * Quaternion.Euler(0, angleV, 0); 
-        }
-        
-        if (timeKnob != null)
-        {
-            float angleT = currentTimeSetting * rotationPerStep;
-            timeKnob.localRotation = timeKnobInitialRot * Quaternion.Euler(0, angleT, 0); 
-        }
-    }
-    
-    private void CheckForSolution()
-    {
-        if (isSolved) return; // Zaten çözülmüş
-
-        if (currentVoltsSetting == correctVoltsSetting && currentTimeSetting == correctTimeSetting)
-        {
-            Debug.Log("Osiloskop Ayarı DOĞRU!");
-            isSolved = true;
-            
-            if (audioSource != null)
-            {
-                audioSource.pitch = basePitch;
-                audioSource.loop = false;
-                    
-                if (successSound != null)
-                {
-                    audioSource.volume *= 0.3f; 
-                    AudioSource.PlayClipAtPoint(successSound, transform.position, 1.0f);
-                }
-            }
-            
-            StartCoroutine(AutoExit(1.5f));
-        }
-        else
-        {
-            if (audioSource != null)
-            {
-                audioSource.pitch = incorrectPitch;
-            }
-        }
     }
     
     private IEnumerator AutoExit(float delay)

@@ -7,8 +7,7 @@ public class BreakerBox : MonoBehaviour, IInteractable
 {
     public static BreakerBox Instance;
 
-    [Header("Breaker Ayarları")]
-    [Tooltip("PDF'teki 'CHECK INTERVAL' (saniye)")]
+    [Header("Breaker Ayarları")] 
     [SerializeField] private float checkInterval = 180f;
     
     [Tooltip("Sisteme kayıtlı TÜM ışıklar yandığında oluşacak temel risk (örn: 0.8 = %80)")]
