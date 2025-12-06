@@ -29,7 +29,13 @@ public class LeesEnemyAI : MonoBehaviour
     public float maxReactionTime = 3.0f; // 3 Saniye kuralı
     public float survivalWaitTime = 15f; 
     public float movementTolerance = 0.1f; 
+    [Header("Spawn Sıklığı Ayarları")]
+    [Tooltip("Lees gittikten sonra kaç saniye boyunca gelmesi YASAKLANACAK?")]
+    public float spawnCooldownAfterDespawn = 20f; // Örnek: 20 saniye nefes alma payı
+    private float currentCooldownTimer = 0f; // Geri sayım sayacı
 
+// --- DEBUG DATA KISMINA BUNU EKLE (Editör görsün diye) ---
+    [HideInInspector] public float debugCooldownTimer;
     // DEBUG DATA (Editör İçin)
     [HideInInspector] public float debugReactionTimer;
     [HideInInspector] public float debugSurvivalTimer;
@@ -61,29 +67,41 @@ public class LeesEnemyAI : MonoBehaviour
         InvokeRepeating(nameof(CheckSpawnLogic), 5f, spawnCheckInterval);
     }
 
-    private void Update()
+   // --- 2. UPDATE FONKSİYONUNU GÜNCELLE ---
+private void Update()
+{
+    // EĞER COOLDOWN VARSA SAYACI DÜŞÜR
+    if (currentCooldownTimer > 0)
     {
-        // 1. GİZLİ DURUM
-        if (currentState == LeesState.Hidden && currentRoom != null && currentRoom.isDangerous)
-        {
-            timeSpentInCurrentRoom += Time.deltaTime;
-        }
-
-        // 2. AKTİF DURUM
-        if (currentState == LeesState.Active)
-        {
-            HandleActiveLogic();
-        }
-
-        // DEBUG VERİ GÜNCELLEME
-        debugReactionTimer = currentReactionTimer;
-        debugSurvivalTimer = currentSurvivalTimer;
-        debugIgnoranceTimer = currentIgnoranceTimer;
-        debugIsVisible = CheckIfVisible();
-        debugHasBeenSpotted = hasBeenSpotted;
-        debugPlayerSpeed = Vector3.Distance(playerTransform.position, lastPlayerPos) / Time.deltaTime;
+        currentCooldownTimer -= Time.deltaTime;
+        
+        // Debug verisini güncelle
+        debugCooldownTimer = currentCooldownTimer; 
+        
+        // Cooldown bitene kadar aşağıdaki kodları çalıştırma (Şans biriktirme dursun)
+        return; 
     }
 
+    // 1. GİZLİ DURUM (Artık sadece cooldown yoksa çalışır)
+    if (currentState == LeesState.Hidden && currentRoom != null && currentRoom.isDangerous)
+    {
+        timeSpentInCurrentRoom += Time.deltaTime;
+    }
+
+    // 2. AKTİF DURUM (Burası aynı)
+    if (currentState == LeesState.Active)
+    {
+        HandleActiveLogic();
+    }
+    
+    // ... Debug veri eşitlemeleri (Aynı kalacak) ...
+    debugReactionTimer = currentReactionTimer;
+    debugSurvivalTimer = currentSurvivalTimer;
+    debugIgnoranceTimer = currentIgnoranceTimer;
+    debugIsVisible = CheckIfVisible();
+    debugHasBeenSpotted = hasBeenSpotted;
+    debugPlayerSpeed = Vector3.Distance(playerTransform.position, lastPlayerPos) / Time.deltaTime;
+}
     private void HandleActiveLogic()
     {
         // Hız hesabı
@@ -155,18 +173,32 @@ public class LeesEnemyAI : MonoBehaviour
         }
     }
 
+    // --- GÜNCELLENMİŞ SPAWN FONKSİYONU ---
     public void SpawnLeesInRoom()
     {
         if (currentRoom == null || currentRoom.spawnPoints.Count == 0) return;
-        
-        // DOĞDUĞU ODAYI KAYDET (Kaçış kontrolü için)
-        spawnRoom = currentRoom; 
 
-        Transform point = currentRoom.spawnPoints[Random.Range(0, currentRoom.spawnPoints.Count)];
-        
-        transform.position = point.position;
-        transform.LookAt(new Vector3(playerTransform.position.x, transform.position.y, playerTransform.position.z));
+        // 1. Güvenli (Arkada kalan) bir nokta bul
+        Transform bestPoint = GetSafeSpawnPoint();
 
+        // Eğer uygun nokta bulunamadıysa (Oyuncu her yere hakimse) spawn işlemini iptal et
+        if (bestPoint == null)
+        {
+            Debug.Log("Lees: Uygun spawn noktası bulunamadı (Oyuncu hepsini görüyor). Pas geçiliyor.");
+            return;
+        }
+
+        // 2. Doğduğu odayı kaydet
+        spawnRoom = currentRoom;
+
+        // 3. Pozisyonu ve Rotasyonu ayarla
+        transform.position = bestPoint.position;
+        
+        // Lees her zaman oyuncuya dönük olsun
+        Vector3 targetPostition = new Vector3(playerTransform.position.x, transform.position.y, playerTransform.position.z);
+        transform.LookAt(targetPostition);
+
+        // 4. Saldırıyı Başlat
         GlobalEnemyManager.Instance.RegisterAttackStart();
         currentState = LeesState.Active;
         
@@ -179,6 +211,53 @@ public class LeesEnemyAI : MonoBehaviour
         lastPlayerPos = playerTransform.position;
 
         ShowModel(true);
+        Debug.Log($"Lees Spawned at: {bestPoint.name} (Player'ın arkasında)");
+    }
+
+    // --- YENİ FİLTRELEME SİSTEMİ ---
+    private Transform GetSafeSpawnPoint()
+    {
+        List<Transform> validPoints = new List<Transform>();
+
+        foreach (Transform point in currentRoom.spawnPoints)
+        {
+            if(point == null) continue;
+
+            // Kural 1: Nokta Oyuncunun Arkasında mı? (Dot Product)
+            // Oyuncudan noktaya giden vektör
+            Vector3 directionToPoint = (point.position - playerTransform.position).normalized;
+            // Oyuncunun baktığı yön ile noktanın yönünü kıyasla
+            float dotProduct = Vector3.Dot(playerTransform.forward, directionToPoint);
+
+            // dotProduct < -0.2f demek, tam arkasında veya çapraz arkasında demektir.
+            // (0 olsaydı tam yan taraf olurdu, -0.2 biraz daha geriyi garanti eder)
+            if (dotProduct < -0.2f)
+            {
+                // Kural 2: (Ekstra Garanti) Kamera o noktayı gerçekten görmüyor mu?
+                // Bazen arkadadır ama geniş açılı (FOV) kamera yüzünden kenardan görünür.
+                if (!IsPointOnScreen(point.position))
+                {
+                    validPoints.Add(point);
+                }
+            }
+        }
+
+        // Eğer geçerli noktalar varsa, arasından rastgele birini seç
+        if (validPoints.Count > 0)
+        {
+            return validPoints[Random.Range(0, validPoints.Count)];
+        }
+
+        // HİÇBİR NOKTA UYGUN DEĞİLSE?
+        // (Örn: Oyuncu odanın köşesinde ve tüm odayı görüyor)
+        return null; // Spawn olma, bir sonraki turu bekle.
+    }
+
+    private bool IsPointOnScreen(Vector3 targetPos)
+    {
+        Vector3 viewPos = playerCamera.WorldToViewportPoint(targetPos);
+        // 0-1 arası değerler ekranın içidir.
+        return (viewPos.x > 0 && viewPos.x < 1 && viewPos.y > 0 && viewPos.y < 1 && viewPos.z > 0);
     }
 
     // --- STANDART FONKSİYONLAR ---
@@ -199,23 +278,29 @@ public class LeesEnemyAI : MonoBehaviour
     public void ExitRoom(LeesRoom room) { if (currentRoom == room) { currentRoom = null; timeSpentInCurrentRoom = 0f; } }
 
     private void CheckSpawnLogic()
-    {
-         if (currentState == LeesState.Active || currentRoom == null || !currentRoom.isDangerous) return;
-         if (!GlobalEnemyManager.Instance.CanAttack()) return;
+{
+     // Cooldown varsa veya aktifse spawn deneme bile
+     if (currentCooldownTimer > 0 || currentState == LeesState.Active || currentRoom == null || !currentRoom.isDangerous) return;
+     if (!GlobalEnemyManager.Instance.CanAttack()) return;
 
-         float chance = baseSpawnChance + (timeSpentInCurrentRoom * chanceIncreasePerSecond);
-         chance = Mathf.Clamp(chance, 0f, 90f);
+     float chance = baseSpawnChance + (timeSpentInCurrentRoom * chanceIncreasePerSecond);
+     chance = Mathf.Clamp(chance, 0f, 90f);
 
-         if (Random.Range(0f, 100f) < chance) SpawnLeesInRoom();
-    }
+     if (Random.Range(0f, 100f) < chance) SpawnLeesInRoom();
+}
 
     public void DespawnLees()
-    {
-        if (GlobalEnemyManager.Instance != null && currentState == LeesState.Active)
-            GlobalEnemyManager.Instance.RegisterAttackEnd();
-        currentState = LeesState.Hidden;
-        ShowModel(false);
-    }
+{
+    if (GlobalEnemyManager.Instance != null && currentState == LeesState.Active)
+        GlobalEnemyManager.Instance.RegisterAttackEnd();
+
+    currentState = LeesState.Hidden;
+    ShowModel(false);
+
+    // KRİTİK NOKTA: Gittiği an Cooldown'ı başlat!
+    currentCooldownTimer = spawnCooldownAfterDespawn;
+    Debug.Log($"Lees gitti. {spawnCooldownAfterDespawn} saniye boyunca gelmeyecek (Cooldown).");
+}
 
     public void TriggerDeath(string reason)
     {

@@ -21,6 +21,24 @@ public class LeesEnemyEditor : Editor
         EditorGUILayout.Space(5);
 
         // --- CANLI TAKİP PANELİ ---
+        // --- COOLDOWN DURUMU (YENİ EKLENECEK KISIM) ---
+// Eğer oyun çalışıyorsa, Lees gizliyse VE Cooldown sayacı 0'dan büyükse göster
+if (Application.isPlaying && ai.currentState == LeesEnemyAI.LeesState.Hidden && ai.debugCooldownTimer > 0)
+{
+    EditorGUILayout.LabelField("--- DİNLENME MODU (COOLDOWN) ---", EditorStyles.boldLabel);
+    
+    float cooldownRatio = ai.debugCooldownTimer / ai.spawnCooldownAfterDespawn;
+    string label = $"Geri Dönüş Sayacı: {ai.debugCooldownTimer:F1}sn";
+
+    // Mavi Bar
+    GUI.color = Color.cyan;
+    EditorGUI.ProgressBar(EditorGUILayout.GetControlRect(false, 25), cooldownRatio, label);
+    GUI.color = Color.white;
+
+    EditorGUILayout.HelpBox("Lees şu an bekleme süresinde. Şans artmaz, spawn olmaz.", MessageType.Info);
+    EditorGUILayout.Space(10);
+    EditorGUILayout.LabelField("", GUI.skin.horizontalSlider); // Çizgi çek
+}
         if (Application.isPlaying && ai.currentState == LeesEnemyAI.LeesState.Active)
         {
             EditorGUILayout.LabelField("--- CANLI SENARYO TAKİBİ ---", EditorStyles.boldLabel);
