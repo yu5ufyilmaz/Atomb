@@ -9,29 +9,42 @@ public class LeesEnemyAI : MonoBehaviour
     public enum LeesState { Hidden, Active }
     public LeesState currentState = LeesState.Hidden;
 
-    [Header("Görüş Ayarları (ÖNEMLİ)")]
-    public LayerMask obstacleMask; // Duvarlar (Player ve Enemy OLMASIN)
-    public Transform eyesPosition; // Gözlerin olduğu nokta (Boşsa kafa hizası)
+    [Header("Görüş Ayarları")]
+    public LayerMask obstacleMask; 
+    public Transform eyesPosition; 
 
     [Header("Oda ve Şans Sistemi")]
-    [SerializeField] private LeesRoom currentRoom;
-    [SerializeField] private float timeSpentInCurrentRoom; // Odada geçen süre
+    [SerializeField] private LeesRoom currentRoom; // Oyuncunun ŞU AN olduğu oda
+    private LeesRoom spawnRoom; // Lees'in DOĞDUĞU oda (Referans)
+    
+    [SerializeField] private float timeSpentInCurrentRoom; 
     public float baseSpawnChance = 10f;
     public float chanceIncreasePerSecond = 2f;
     public float spawnCheckInterval = 5f;
 
-    [Header("Senaryo Ayarları")]
-    public float maxIgnoranceTime = 30f; // A: Fark etmeme süresi
-    public float maxRunDistance = 15f;   // B: Kaçma mesafesi
-    public float maxStareTime = 3.0f;    // C: Bakma limiti
-    public float survivalWaitTime = 15f; // D: Arkada bekleme süresi
+    [Header("Senaryo A (Fark Edilmeme)")]
+    public float maxIgnoranceTime = 30f;
+
+    [Header("Senaryo C & D (Tepki ve Kurtuluş)")]
+    public float maxReactionTime = 3.0f; // 3 Saniye kuralı
+    public float survivalWaitTime = 15f; 
+    public float movementTolerance = 0.1f; 
+
+    // DEBUG DATA (Editör İçin)
+    [HideInInspector] public float debugReactionTimer;
+    [HideInInspector] public float debugSurvivalTimer;
+    [HideInInspector] public float debugIgnoranceTimer;
+    [HideInInspector] public float debugPlayerSpeed;
+    [HideInInspector] public bool debugIsVisible;
+    [HideInInspector] public bool debugHasBeenSpotted;
 
     // Sayaçlar
     private float currentIgnoranceTimer;
-    private float currentStareTimer;
-    private float currentSurvivalTimer;
+    private float currentReactionTimer; 
+    private float currentSurvivalTimer; 
     
     private bool hasBeenSpotted = false;
+    private Vector3 lastPlayerPos; 
 
     [Header("Referanslar")]
     public Transform playerTransform;
@@ -50,123 +63,141 @@ public class LeesEnemyAI : MonoBehaviour
 
     private void Update()
     {
-        // 1. GİZLİ DURUM (Süre biriktirme)
+        // 1. GİZLİ DURUM
         if (currentState == LeesState.Hidden && currentRoom != null && currentRoom.isDangerous)
         {
             timeSpentInCurrentRoom += Time.deltaTime;
         }
 
-        // 2. AKTİF DURUM (Saldırı/Bekleme)
+        // 2. AKTİF DURUM
         if (currentState == LeesState.Active)
         {
             HandleActiveLogic();
         }
+
+        // DEBUG VERİ GÜNCELLEME
+        debugReactionTimer = currentReactionTimer;
+        debugSurvivalTimer = currentSurvivalTimer;
+        debugIgnoranceTimer = currentIgnoranceTimer;
+        debugIsVisible = CheckIfVisible();
+        debugHasBeenSpotted = hasBeenSpotted;
+        debugPlayerSpeed = Vector3.Distance(playerTransform.position, lastPlayerPos) / Time.deltaTime;
     }
 
-    // --- SENARYOLARIN YÖNETİLDİĞİ YER ---
     private void HandleActiveLogic()
     {
-        // --- SENARYO B: FLIGHT (Kaçış Kontrolü) ---
-        float distance = Vector3.Distance(transform.position, playerTransform.position);
-        if (distance > maxRunDistance)
+        // Hız hesabı
+        float playerSpeed = Vector3.Distance(playerTransform.position, lastPlayerPos) / Time.deltaTime;
+        lastPlayerPos = playerTransform.position;
+
+        // --- SENARYO B: FLIGHT (ODADAN KAÇIŞ) ---
+        // YENİ MANTIK: Oyuncu şu anki odası, Lees'in doğduğu oda değilse (veya koridora çıktıysa) ÖLÜR.
+        if (currentRoom != spawnRoom)
         {
-            TriggerDeath("Scenario B: Kaçmaya çalıştı (Mesafe Aşıldı)");
+            TriggerDeath("Scenario B: Odadan dışarı kaçıldı! (Flight)");
             return;
         }
 
         // Görüş Kontrolü
         bool isVisible = CheckIfVisible();
 
-        // --- SENARYO A: IGNORANCE (Henüz Fark Edilmedi) ---
+        // --- SENARYO A: IGNORANCE ---
         if (!hasBeenSpotted)
         {
             if (isVisible)
             {
                 hasBeenSpotted = true;
-                Debug.Log("<color=red>LEES: GÖZ GÖZE GELDİK! (Scenario C/D Başlıyor)</color>");
+                currentReactionTimer = 0f;
+                Debug.Log("<color=red>LEES: GÖZ GÖZE GELDİK!</color>");
             }
             else
             {
                 currentIgnoranceTimer += Time.deltaTime;
                 if (currentIgnoranceTimer >= maxIgnoranceTime)
-                {
-                    TriggerDeath("Scenario A: Arkanda olduğunu fark etmedin (Süre Doldu)");
-                }
+                    TriggerDeath("Scenario A: Süre doldu (Ignorance)");
             }
         }
-        // --- GÖRÜLDÜKTEN SONRAKİ DURUM ---
+        // --- SENARYO C & D ---
         else 
         {
-            // --- SENARYO C: STARING (Bakışma - Ölüm) ---
-            if (isVisible)
+            if (isVisible) 
             {
-                currentStareTimer += Time.deltaTime;
-                currentSurvivalTimer = 0f; // Bakış atarsa kurtulma sayacı sıfırlanır!
+                // HALA BAKIYOR (Scenario C)
+                currentReactionTimer += Time.deltaTime;
+                currentSurvivalTimer = 0f; 
 
-                if (currentStareTimer >= maxStareTime)
+                if (currentReactionTimer >= maxReactionTime)
                 {
-                    TriggerDeath("Scenario C: Çok uzun süre baktın (Staring)");
+                    TriggerDeath($"Scenario C: Çok uzun süre baktın! ({maxReactionTime}s)");
                 }
             }
-            // --- SENARYO D: SURVIVAL (Arkanı Dönme - Kurtuluş) ---
-            else
+            else 
             {
-                currentSurvivalTimer += Time.deltaTime;
-                currentStareTimer = Mathf.Max(0, currentStareTimer - Time.deltaTime);
-
-                if (currentSurvivalTimer >= survivalWaitTime)
+                // ARKASINI DÖNDÜ (Scenario D)
+                
+                // Hareket Kontrolü
+                if (playerSpeed > movementTolerance)
                 {
-                    Debug.Log("<color=green>BAŞARI: Doğru tepki verildi. Lees gidiyor.</color>");
-                    DespawnLees();
+                    TriggerDeath("Scenario D Hatası: Arkasını döndün ama hareket ettin!");
+                }
+                else
+                {
+                    currentSurvivalTimer += Time.deltaTime;
+                    currentReactionTimer = Mathf.Max(0, currentReactionTimer - Time.deltaTime);
+
+                    if (currentSurvivalTimer >= survivalWaitTime)
+                    {
+                        Debug.Log("<color=green>BAŞARI: Lees gidiyor.</color>");
+                        DespawnLees();
+                    }
                 }
             }
         }
     }
 
-    // --- GÖRÜŞ VE DUVAR KONTROLÜ ---
+    public void SpawnLeesInRoom()
+    {
+        if (currentRoom == null || currentRoom.spawnPoints.Count == 0) return;
+        
+        // DOĞDUĞU ODAYI KAYDET (Kaçış kontrolü için)
+        spawnRoom = currentRoom; 
+
+        Transform point = currentRoom.spawnPoints[Random.Range(0, currentRoom.spawnPoints.Count)];
+        
+        transform.position = point.position;
+        transform.LookAt(new Vector3(playerTransform.position.x, transform.position.y, playerTransform.position.z));
+
+        GlobalEnemyManager.Instance.RegisterAttackStart();
+        currentState = LeesState.Active;
+        
+        // Değişkenleri Sıfırla
+        timeSpentInCurrentRoom = 0; 
+        currentIgnoranceTimer = 0; 
+        currentReactionTimer = 0; 
+        currentSurvivalTimer = 0; 
+        hasBeenSpotted = false;
+        lastPlayerPos = playerTransform.position;
+
+        ShowModel(true);
+    }
+
+    // --- STANDART FONKSİYONLAR ---
     private bool CheckIfVisible()
     {
-        // 1. Kamera Açısı Kontrolü
         Vector3 viewPos = playerCamera.WorldToViewportPoint(transform.position);
-        bool onScreen = (viewPos.x >= 0 && viewPos.x <= 1 && viewPos.y >= 0 && viewPos.y <= 1 && viewPos.z > 0);
+        if (!(viewPos.x >= 0 && viewPos.x <= 1 && viewPos.y >= 0 && viewPos.y <= 1 && viewPos.z > 0)) return false;
 
-        if (!onScreen) return false;
-
-        // 2. Raycast (Duvar Kontrolü)
         Vector3 origin = eyesPosition != null ? eyesPosition.position : transform.position + Vector3.up * 1.6f;
         Vector3 direction = playerCamera.transform.position - origin;
-        float distanceToPlayer = direction.magnitude;
-
         RaycastHit hit;
         
-        // ObstacleMask katmanına çarparsa 'Duvar var' demektir
-        if (Physics.Raycast(origin, direction, out hit, distanceToPlayer + 0.5f, obstacleMask))
-        {
-            Debug.DrawRay(origin, direction.normalized * hit.distance, Color.red); // Duvara çarptı (Görmüyor)
-            return false;
-        }
-
-        Debug.DrawRay(origin, direction, Color.green); // Önü açık (Görüyor)
+        if (Physics.Raycast(origin, direction, out hit, direction.magnitude + 0.5f, obstacleMask)) return false;
         return true; 
     }
 
-    // --- ODA SİSTEMİ BAĞLANTILARI ---
-    public void EnterRoom(LeesRoom room)
-    {
-        currentRoom = room;
-        timeSpentInCurrentRoom = 0f;
-    }
+    public void EnterRoom(LeesRoom room) { currentRoom = room; timeSpentInCurrentRoom = 0f; }
+    public void ExitRoom(LeesRoom room) { if (currentRoom == room) { currentRoom = null; timeSpentInCurrentRoom = 0f; } }
 
-    public void ExitRoom(LeesRoom room)
-    {
-        if (currentRoom == room)
-        {
-            currentRoom = null;
-            timeSpentInCurrentRoom = 0f;
-        }
-    }
-
-    // --- SPAWN MANTIĞI ---
     private void CheckSpawnLogic()
     {
          if (currentState == LeesState.Active || currentRoom == null || !currentRoom.isDangerous) return;
@@ -178,25 +209,7 @@ public class LeesEnemyAI : MonoBehaviour
          if (Random.Range(0f, 100f) < chance) SpawnLeesInRoom();
     }
 
-    private void SpawnLeesInRoom()
-    {
-        if (currentRoom.spawnPoints.Count == 0) return;
-        Transform point = currentRoom.spawnPoints[Random.Range(0, currentRoom.spawnPoints.Count)];
-        
-        transform.position = point.position;
-        // Oyuncuya bakacak şekilde ayarla
-        transform.LookAt(new Vector3(playerTransform.position.x, transform.position.y, playerTransform.position.z));
-
-        GlobalEnemyManager.Instance.RegisterAttackStart();
-        currentState = LeesState.Active;
-        
-        // Değişkenleri Sıfırla
-        timeSpentInCurrentRoom = 0; currentIgnoranceTimer = 0; currentStareTimer = 0; currentSurvivalTimer = 0; hasBeenSpotted = false;
-        
-        ShowModel(true);
-    }
-
-    private void DespawnLees()
+    public void DespawnLees()
     {
         if (GlobalEnemyManager.Instance != null && currentState == LeesState.Active)
             GlobalEnemyManager.Instance.RegisterAttackEnd();
@@ -204,10 +217,10 @@ public class LeesEnemyAI : MonoBehaviour
         ShowModel(false);
     }
 
-    private void TriggerDeath(string reason)
+    public void TriggerDeath(string reason)
     {
         Debug.LogError($"ÖLÜM: {reason}");
-        DespawnLees(); // Test için resetliyoruz
+        DespawnLees(); 
     }
 
     private void ShowModel(bool show)
