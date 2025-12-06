@@ -9,135 +9,92 @@ public class LeesEnemyEditor : Editor
     {
         LeesEnemyAI ai = (LeesEnemyAI)target;
 
-        // --- STİLLER ---
-        GUIStyle titleStyle = new GUIStyle(EditorStyles.boldLabel) 
-            { fontSize = 16, alignment = TextAnchor.MiddleCenter, normal = { textColor = Color.white } };
+        GUIStyle titleStyle = new GUIStyle(EditorStyles.boldLabel) { fontSize = 16, alignment = TextAnchor.MiddleCenter, normal = { textColor = new Color(0.9f, 0.8f, 1f) } };
+        GUIStyle sectionStyle = new GUIStyle(EditorStyles.helpBox);
 
-        // --- BAŞLIK ---
+        // BAŞLIK
         EditorGUILayout.Space(10);
-        Rect rect = EditorGUILayout.GetControlRect(false, 30);
-        EditorGUI.DrawRect(rect, new Color(0.15f, 0.15f, 0.15f));
-        EditorGUI.LabelField(rect, "LEES AI KONTROL PANELİ", titleStyle);
+        Rect rect = EditorGUILayout.GetControlRect(false, 35);
+        EditorGUI.DrawRect(rect, new Color(0.1f, 0.1f, 0.15f));
+        EditorGUI.LabelField(rect, "LEES AI AYARLARI", titleStyle);
         EditorGUILayout.Space(5);
 
-        // --- CANLI TAKİP PANELİ ---
-        // --- COOLDOWN DURUMU (YENİ EKLENECEK KISIM) ---
-// Eğer oyun çalışıyorsa, Lees gizliyse VE Cooldown sayacı 0'dan büyükse göster
-if (Application.isPlaying && ai.currentState == LeesEnemyAI.LeesState.Hidden && ai.debugCooldownTimer > 0)
-{
-    EditorGUILayout.LabelField("--- DİNLENME MODU (COOLDOWN) ---", EditorStyles.boldLabel);
-    
-    float cooldownRatio = ai.debugCooldownTimer / ai.spawnCooldownAfterDespawn;
-    string label = $"Geri Dönüş Sayacı: {ai.debugCooldownTimer:F1}sn";
-
-    // Mavi Bar
-    GUI.color = Color.cyan;
-    EditorGUI.ProgressBar(EditorGUILayout.GetControlRect(false, 25), cooldownRatio, label);
-    GUI.color = Color.white;
-
-    EditorGUILayout.HelpBox("Lees şu an bekleme süresinde. Şans artmaz, spawn olmaz.", MessageType.Info);
-    EditorGUILayout.Space(10);
-    EditorGUILayout.LabelField("", GUI.skin.horizontalSlider); // Çizgi çek
-}
+        // CANLI TAKİP
         if (Application.isPlaying && ai.currentState == LeesEnemyAI.LeesState.Active)
         {
-            EditorGUILayout.LabelField("--- CANLI SENARYO TAKİBİ ---", EditorStyles.boldLabel);
-
-            // 1. GÖRÜŞ DURUMU
-            EditorGUILayout.BeginHorizontal("box");
-            if (ai.debugIsVisible)
-            {
-                GUI.backgroundColor = Color.red;
-                GUILayout.Button("GÖRÜYOR (EYE CONTACT)", GUILayout.Height(25));
-            }
-            else
-            {
-                GUI.backgroundColor = Color.green;
-                GUILayout.Button("GÖRMÜYOR (HIDDEN)", GUILayout.Height(25));
-            }
+            EditorGUILayout.BeginVertical(sectionStyle);
+            EditorGUILayout.LabelField("🔴 CANLI DURUM RAPORU", EditorStyles.boldLabel);
+            
+            // Görüş Durumu
+            EditorGUILayout.BeginHorizontal();
+            GUI.backgroundColor = ai.debugIsVisible ? new Color(1f, 0.3f, 0.3f) : new Color(0.4f, 0.8f, 0.4f);
+            GUILayout.Box(ai.debugIsVisible ? "👁️ GÖRÜYOR (EYE CONTACT)" : "🙈 GÖRMÜYOR (HIDDEN)", GUILayout.Height(25), GUILayout.ExpandWidth(true));
             GUI.backgroundColor = Color.white;
             EditorGUILayout.EndHorizontal();
 
             EditorGUILayout.Space(5);
 
-            // 2. BARLAR
-            // A) SESSİZ BEKLEYİŞ (Ignorance)
+            // Barlar (Standart Stil)
             if (!ai.debugHasBeenSpotted)
             {
-                float ignoranceRatio = ai.debugIgnoranceTimer / ai.maxIgnoranceTime;
-                string label = $"Fark Edilmedi: {ai.maxIgnoranceTime - ai.debugIgnoranceTimer:F1}sn kaldı";
-                
-                GUI.color = new Color(0.8f, 0.2f, 1f); // Mor
-                EditorGUI.ProgressBar(EditorGUILayout.GetControlRect(false, 25), ignoranceRatio, label);
-                GUI.color = Color.white;
+                DrawStandardBar(ai.debugIgnoranceTimer / ai.maxIgnoranceTime, "Fark Edilmedi", new Color(0.8f, 0.2f, 1f));
             }
-            // B) FARK EDİLDİ (Reaction & Survival)
             else
             {
-                // Reaction (C)
-                float reactionRatio = ai.debugReactionTimer / ai.maxReactionTime;
-                GUI.color = Color.Lerp(Color.yellow, Color.red, reactionRatio);
-                EditorGUI.ProgressBar(EditorGUILayout.GetControlRect(false, 20), reactionRatio, $"Tepki Süresi: {ai.debugReactionTimer:F2}s / {ai.maxReactionTime}s");
-                GUI.color = Color.white;
-
-                if (ai.debugIsVisible) 
-                    EditorGUILayout.HelpBox("Oyuncu hala bakıyor! Süre dolarsa ÖLÜR.", MessageType.Warning);
-
-                EditorGUILayout.Space(2);
-
-                // Survival (D)
+                DrawStandardBar(ai.debugReactionTimer / ai.maxReactionTime, "Tepki Süresi (C)", Color.Lerp(Color.yellow, Color.red, ai.debugReactionTimer / ai.maxReactionTime));
+                
                 if (!ai.debugIsVisible)
-                {
-                    float survivalRatio = ai.debugSurvivalTimer / ai.survivalWaitTime;
-                    GUI.color = Color.green;
-                    EditorGUI.ProgressBar(EditorGUILayout.GetControlRect(false, 20), survivalRatio, $"Kurtuluş: %{survivalRatio * 100:F0}");
-                    GUI.color = Color.white;
-                }
+                    DrawStandardBar(ai.debugSurvivalTimer / ai.survivalWaitTime, "Kurtuluş (D)", Color.green);
             }
-
-            // 3. HIZ UYARISI
-            float speed = ai.debugPlayerSpeed;
-            if (ai.debugHasBeenSpotted && !ai.debugIsVisible && speed > ai.movementTolerance)
+            
+            // Hız Uyarısı
+            if (ai.debugHasBeenSpotted && !ai.debugIsVisible && ai.debugPlayerSpeed > ai.movementTolerance)
             {
-                GUI.backgroundColor = Color.red;
-                EditorGUILayout.HelpBox($"KRİTİK HATA: Hareket Ediliyor! ({speed:F2}) -> ÖLÜM SEBEBİ", MessageType.Error);
+                EditorGUILayout.Space(5);
+                GUI.backgroundColor = new Color(1f, 0.3f, 0.3f);
+                EditorGUILayout.HelpBox($"⚠️ HAREKET EDİLİYOR! ({ai.debugPlayerSpeed:F2}) -> ÖLÜM", MessageType.Error);
+                GUI.backgroundColor = Color.white;
             }
-            GUI.backgroundColor = Color.white;
+            EditorGUILayout.EndVertical();
         }
         else if (Application.isPlaying)
         {
-             EditorGUILayout.HelpBox("Lees şu an sahnede değil (Hidden State).", MessageType.Info);
-        }
-
-        EditorGUILayout.Space(10);
-        
-        // --- TEST BUTONLARI ---
-        EditorGUILayout.LabelField("TEST EDİTÖRÜ", EditorStyles.boldLabel);
-        
-        EditorGUILayout.BeginHorizontal();
-        if (GUILayout.Button("SPAWN (Çağır)", GUILayout.Height(30))) ai.SpawnLeesInRoom();
-        if (GUILayout.Button("DESPAWN (Gönder)", GUILayout.Height(30))) ai.DespawnLees();
-        EditorGUILayout.EndHorizontal();
-
-        EditorGUILayout.Space(5);
-
-        // --- GERİ GELEN JUMPSCARE BUTONU ---
-        GUI.backgroundColor = new Color(1f, 0.4f, 0.4f); // Kırmızı
-        if (GUILayout.Button("☠ TEST JUMPSCARE (ÖLDÜR) ☠", GUILayout.Height(30)))
-        {
-            if(Application.isPlaying) 
+            // Cooldown Barı
+            if (ai.debugCooldownTimer > 0)
             {
-                ai.TriggerDeath("DEBUG: Editör Butonuyla Öldürüldü");
+                DrawStandardBar(ai.debugCooldownTimer / ai.spawnCooldownAfterDespawn, $"Cooldown: {ai.debugCooldownTimer:F1}s", Color.cyan);
+                EditorGUILayout.Space(5);
             }
             else
             {
-                Debug.LogWarning("Bu buton sadece oyun çalışırken (Play Mode) çalışır.");
+                EditorGUILayout.HelpBox("💤 Lees Gizleniyor (Hidden State).", MessageType.Info);
             }
         }
-        GUI.backgroundColor = Color.white;
 
-        EditorGUILayout.Space(5);
+        EditorGUILayout.Space(10);
+
+        // TEST BUTONLARI
+        EditorGUILayout.LabelField("🛠️ Test Kontrolleri", EditorStyles.boldLabel);
+        EditorGUILayout.BeginHorizontal();
+        if (GUILayout.Button("Spawn", GUILayout.Height(25))) ai.SpawnLeesInRoom();
+        if (GUILayout.Button("Despawn", GUILayout.Height(25))) ai.DespawnLees();
+        GUI.backgroundColor = new Color(1f, 0.3f, 0.3f);
+        if (GUILayout.Button("KILL", GUILayout.Height(25))) if(Application.isPlaying) ai.TriggerDeath("Editör Butonu");
+        GUI.backgroundColor = Color.white;
+        EditorGUILayout.EndHorizontal();
+
+        EditorGUILayout.Space(10);
         DrawDefaultInspector();
+
+        // CANLI YENİLEME
+        if (Application.isPlaying) Repaint();
+    }
+
+    void DrawStandardBar(float value, string label, Color color)
+    {
+        GUI.color = color;
+        EditorGUI.ProgressBar(EditorGUILayout.GetControlRect(false, 20), Mathf.Clamp01(value), label);
+        GUI.color = Color.white;
     }
 }
 #endif

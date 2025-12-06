@@ -8,7 +8,7 @@ public class InteractableDoor : MonoBehaviour, IInteractable
     [SerializeField] private float animationDuration = 1.0f; // Animasyon süresi
     
     [Header("Door State")]
-    [SerializeField] private bool isOpen = false;
+    public bool isOpen = false;
     [SerializeField] private bool isLocked = false;
     private bool isAnimating = false; // Animasyon oynarken etkileşimi engelle
     
@@ -17,7 +17,8 @@ public class InteractableDoor : MonoBehaviour, IInteractable
     [SerializeField] private AudioClip doorCloseSound;
     [SerializeField] private AudioClip lockedSound;
     [SerializeField] private AudioSource audioSource;
-    
+
+public AudioSource DoorAudioSource => audioSource;    
     [Header("Character Controller")]
     [SerializeField] private UnityEngine.CharacterController playerController; // Oyuncunun CharacterController'ı
     
