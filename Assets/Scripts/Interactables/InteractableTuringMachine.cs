@@ -1,293 +1,338 @@
-using UnityEngine;
 using System.Collections;
-using System.Collections.Generic;
-using System.Text; // Şifre string'ini oluşturmak için
+using System.Text;
+using Cinemachine;
+using UnityEngine;
 
 public class InteractableTuringMachine : MonoBehaviour, IInteractable
 {
     [Header("Player Control")]
-    [Tooltip("Oyuncunun ana CharacterController'ı")]
-    [SerializeField] private UnityEngine.CharacterController playerController;
-    [Tooltip("Oyuncunun fare/kamera kontrol script'i (örn: StarterAssetsInputs)")]
-    [SerializeField] private MonoBehaviour playerLookScript;
-    [Tooltip("Oturma animasyonu için oyuncunun Animator'ü")]
-    [SerializeField] private Animator playerAnimator;
+    [SerializeField]
+    private UnityEngine.CharacterController playerController;
+
+    [SerializeField]
+    private MonoBehaviour playerLookScript;
+
+    [SerializeField]
+    private Animator playerAnimator;
+
+    [Header("Head Cam & Animation")]
+    [SerializeField]
+    private string interactAnimTrigger = "SitDown";
+
+    [SerializeField]
+    private float animationDuration = 1.5f;
+
+    [SerializeField]
+    private Transform cameraViewTarget;
+
+    [SerializeField]
+    private Vector3 headOffset = new Vector3(0, 0.1f, 0.15f);
+
+    private Transform mainCamera;
+    private CinemachineBrain cinemachineBrain;
+    private Transform headBone;
+    private Transform cinemachineTarget; // Oyunun asıl kamera hedefi
+
+    // --- Makine Bileşenleri ---
+    [Header("Makine Bileşenleri")]
+    [SerializeField]
+    private Transform[] wordWheelModels;
+
+    [SerializeField]
+    private Transform symbolWheelModel;
+
+    [SerializeField]
+    private Transform[] numberWheelModels;
+
+    [Header("Highlights")]
+    [SerializeField]
+    private GameObject[] wordWheelHighlights;
+
+    [SerializeField]
+    private GameObject symbolWheelHighlight;
+
+    [SerializeField]
+    private GameObject[] numberWheelHighlights;
+
+    [Header("Data")]
+    [SerializeField]
+    private string wordChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ-";
+
+    [SerializeField]
+    private string[] symbolChars = { ">=", "+", "-", "/", "√", "%", "<=", "=", "<", ">", ".", "," };
+
+    [SerializeField]
+    private string numberChars = "0123456789";
+
+    [SerializeField]
+    private Vector3 rotationAxis = Vector3.up;
+
+    [SerializeField]
+    private float rotationSpeed = 10f;
+
+    [Header("Göstergeler & Ses")]
+    [SerializeField]
+    private Renderer[] indicatorRenderers;
+
+    [SerializeField]
+    private Material redMaterial;
+
+    [SerializeField]
+    private Material greenMaterial;
+
+    [SerializeField]
+    private AudioSource audioSource;
+
+    [SerializeField]
+    private AudioClip wheelClickSound;
+
+    [SerializeField]
+    private AudioClip successSound;
+
+    [SerializeField]
+    private AudioClip failSound;
+
+    [SerializeField]
+    private AudioClip accessSound;
+
+    [SerializeField]
+    private AudioClip exitSound;
+
     private bool isInteracting = false;
+    private int currentGroup = 0;
+    private int currentWordIndex = 0;
+    private int currentNumberIndex = 0;
 
-    // --- YENİ ---
-    [Header("Camera Control")]
-    [Tooltip("Kameranın etkileşim sırasında kilitleneceği pozisyon ve rotasyonu belirleyen boş bir Transform objesi")]
-    [SerializeField] private Transform cameraViewTarget;
-    [Tooltip("Kameranın makineye/oyuncuya geçiş süresi (saniye)")]
-    [SerializeField] private float cameraMoveDuration = 0.5f;
-    private Transform cinemachineCameraTarget; // Genellikle "PlayerFollowCamera"
-    private Transform originalCameraParent;
-    private Vector3 originalCameraLocalPos;
-    private Quaternion originalCameraLocalRot;
-    // --- YENİ BİTİŞ ---
-
-    [Header("Makine Bileşenleri (Transforms)")]
-    [Tooltip("8 adet Kelime Çarkı'nın Transform'u (Sırayla)")]
-    [SerializeField] private Transform[] wordWheelModels; // 8 adet
-    [Tooltip("1 adet Sembol Çarkı'nın Transform'u")]
-    [SerializeField] private Transform symbolWheelModel; // 1 adet
-    [Tooltip("3 adet Sayı Çarkı'nın Transform'u (Sırayla)")]
-    [SerializeField] private Transform[] numberWheelModels; // 3 adet
-
-    [Header("Makine Bileşenleri (Highlights)")]
-    [Tooltip("Kelime çarkları seçiliyken gösterilecek 8 highlight objesi")]
-    [SerializeField] private GameObject[] wordWheelHighlights; // 8 adet
-    [Tooltip("Sembol çarkı seçiliyken gösterilecek highlight objesi")]
-    [SerializeField] private GameObject symbolWheelHighlight; // 1 adet
-    [Tooltip("Sayı çarkları seçiliyken gösterilecek 3 highlight objesi")]
-    [SerializeField] private GameObject[] numberWheelHighlights; // 3 adet
-
-    [Header("Çark Verileri (Modelinize göre ayarlayın)")]
-    [Tooltip("Kelime çarkındaki karakterler (Modelinizdeki sırayla)")]
-    [SerializeField] private string wordChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ-"; // 27 karakter
-    [Tooltip("Sembol çarkındaki karakterler (Modelinizdeki sırayla)")]
-    [SerializeField] private string[] symbolChars = { ">=", "+", "-", "/", "√", "%", "<=", "=", "<", ">", ".", "," };
-    [Tooltip("Sayı çarkındaki karakterler (Modelinizdeki sırayla)")]
-    [SerializeField] private string numberChars = "0123456789"; // 10 karakter
-    
-    [SerializeField] private Vector3 rotationAxis = Vector3.up; // Çarkların dönme ekseni
-    [SerializeField] private float rotationSpeed = 10f; // Slerp hızı
-
-    [Header("Göstergeler (5 adet)")]
-    [Tooltip("Şifreler doğrulandıkça yeşile dönecek 5 adet obje")]
-    [SerializeField] private Renderer[] indicatorRenderers; // İstediğiniz gibi 5 adet
-    [SerializeField] private Material redMaterial;
-    [SerializeField] private Material greenMaterial;
-
-    [Header("Audio")]
-    [SerializeField] private AudioSource audioSource;
-    [SerializeField] private AudioClip wheelClickSound;
-    [SerializeField] private AudioClip successSound;
-    [SerializeField] private AudioClip failSound;
-    [SerializeField] private AudioClip accessSound; // Makineye oturma
-    [SerializeField] private AudioClip exitSound;   // Makineden kalkma
-
-    // Aktif Durum
-    private int currentGroup = 0; // 0=Word, 1=Symbol, 2=Number
-    private int currentWordIndex = 0; // 0-7
-    private int currentNumberIndex = 0; // 0-2
-
-    // Çarkların mevcut pozisyonlarını (index olarak) sakla
-    private int[] wordWheelIndices = new int[8];
+    private int[] wordWheelIndices;
     private int symbolWheelIndex = 0;
-    private int[] numberWheelIndices = new int[3];
+    private int[] numberWheelIndices;
 
-    // Animasyon için hedef rotasyonlar
     private Quaternion[] wordWheelTargets;
     private Quaternion symbolWheelTarget;
     private Quaternion[] numberWheelTargets;
-    
     private Quaternion[] wordWheelInitialRots;
     private Quaternion symbolWheelInitialRot;
     private Quaternion[] numberWheelInitialRots;
 
     private void Start()
     {
-        // Player scriptlerini bul (eğer atanmamışsa)
         if (playerController == null)
             playerController = FindObjectOfType<UnityEngine.CharacterController>();
-        if (playerLookScript == null && playerController != null)
-            playerLookScript = playerController.GetComponent<StarterAssets.StarterAssetsInputs>();
-        if (playerAnimator == null && playerController != null)
-            playerAnimator = playerController.GetComponent<Animator>();
 
-        // --- YENİ ---
-        // Cinemachine hedefini (PlayerFollowCamera) bul
         if (playerController != null)
         {
-            var starterAssetsController = playerController.GetComponent<StarterAssets.CharacterController>();
-            if (starterAssetsController != null && starterAssetsController.CinemachineCameraTarget != null)
-            {
-                cinemachineCameraTarget = starterAssetsController.CinemachineCameraTarget.transform;
-            }
-        }
-        if (cinemachineCameraTarget == null)
-        {
-            Debug.LogError("CinemachineCameraTarget (PlayerFollowCamera) bulunamadı! Lütfen Player'daki CharacterController script'inden atandığını kontrol edin.");
-        }
-        if (cameraViewTarget == null)
-        {
-            Debug.LogError("Camera View Target atanmamış! Lütfen makineye bakacak boş bir obje atayın.");
-        }
-        // --- YENİ BİTİŞ ---
+            playerLookScript =
+                playerController.GetComponent("StarterAssetsInputs") as MonoBehaviour;
+            playerAnimator = playerController.GetComponent<Animator>();
+            if (playerAnimator)
+                headBone = playerAnimator.GetBoneTransform(HumanBodyBones.Head);
+            if (headBone == null)
+                headBone = playerController.transform;
 
+            // Cinemachine Target'ı bul (PlayerCameraRoot)
+            Transform camRoot = playerController.transform.Find("PlayerCameraRoot");
+            if (camRoot != null)
+                cinemachineTarget = camRoot;
+            else
+                cinemachineTarget = headBone; // Bulamazsa kafayı kullan
+        }
+
+        if (Camera.main != null)
+        {
+            mainCamera = Camera.main.transform;
+            cinemachineBrain = mainCamera.GetComponent<CinemachineBrain>();
+        }
+
+        InitializeWheels();
+    }
+
+    private void InitializeWheels()
+    {
+        wordWheelIndices = new int[wordWheelModels.Length];
+        numberWheelIndices = new int[numberWheelModels.Length];
         wordWheelTargets = new Quaternion[wordWheelModels.Length];
         numberWheelTargets = new Quaternion[numberWheelModels.Length];
         wordWheelInitialRots = new Quaternion[wordWheelModels.Length];
         numberWheelInitialRots = new Quaternion[numberWheelModels.Length];
+
         for (int i = 0; i < wordWheelModels.Length; i++)
         {
-            if (wordWheelModels[i] != null)
+            if (wordWheelModels[i])
             {
-                wordWheelInitialRots[i] = wordWheelModels[i].localRotation; // Başlangıcı kaydet
-                wordWheelTargets[i] = wordWheelModels[i].localRotation;     // Hedefi başlangıç yap
+                wordWheelInitialRots[i] = wordWheelModels[i].localRotation;
+                wordWheelTargets[i] = wordWheelModels[i].localRotation;
             }
         }
         for (int i = 0; i < numberWheelModels.Length; i++)
         {
-            if (numberWheelModels[i] != null)
+            if (numberWheelModels[i])
             {
-                numberWheelInitialRots[i] = numberWheelModels[i].localRotation; // Başlangıcı kaydet
-                numberWheelTargets[i] = numberWheelModels[i].localRotation;     // Hedefi başlangıç yap
+                numberWheelInitialRots[i] = numberWheelModels[i].localRotation;
+                numberWheelTargets[i] = numberWheelModels[i].localRotation;
             }
         }
-
-        if (symbolWheelModel != null)
+        if (symbolWheelModel)
         {
-            symbolWheelInitialRot = symbolWheelModel.localRotation; // Başlangıcı kaydet
-            symbolWheelTarget = symbolWheelModel.localRotation;     // Hedefi başlangıç yap
+            symbolWheelInitialRot = symbolWheelModel.localRotation;
+            symbolWheelTarget = symbolWheelModel.localRotation;
         }
 
-        // Başlangıçta tüm çarkları sıfırla (Data)
-        for (int i = 0; i < wordWheelIndices.Length; i++) wordWheelIndices[i] = 0;
-        for (int i = 0; i < numberWheelIndices.Length; i++) numberWheelIndices[i] = 0;
-        symbolWheelIndex = 0;
-        
-        // Başlangıçta highlight'ları gizle
         ClearAllHighlights();
-
-        // Başlangıçta göstergeleri ayarla (Tümünü kırmızı yap)
         UpdateIndicators(0);
     }
 
     public void Interact()
     {
-        if (isInteracting) return;
+        if (isInteracting)
+            return;
         StartCoroutine(EnterMachineView());
     }
 
-    public string GetInteractionPrompt()
-    {
-        return isInteracting ? "" : "[Sol Tık] Makineyi Kullan";
-    }
+    public string GetInteractionPrompt() => isInteracting ? "" : "[Sol Tık] Turing Makinesi";
 
-    // --- GÜNCELLENDİ (Kamera Animasyonu Eklendi) ---
     private IEnumerator EnterMachineView()
     {
         isInteracting = true;
-        if (playerController) playerController.enabled = false;
-        if (playerLookScript) playerLookScript.enabled = false;
-        if (playerAnimator) 
-        {
-            // playerAnimator.SetTrigger("SitDownTrigger"); 
-        }
-            
-        Cursor.lockState = CursorLockMode.None;
-        Cursor.visible = true;
-        
+
+        if (playerController)
+            playerController.enabled = false;
+        if (playerLookScript)
+            playerLookScript.enabled = false;
+        if (playerAnimator)
+            playerAnimator.SetTrigger(interactAnimTrigger);
+
         PlaySound(accessSound);
 
-        // --- YENİ Kamera Animasyonu ---
-        if (cinemachineCameraTarget != null && cameraViewTarget != null)
-        {
-            // Kameranın mevcut parent'ını ve local pozisyonunu kaydet
-            originalCameraParent = cinemachineCameraTarget.parent;
-            originalCameraLocalPos = cinemachineCameraTarget.localPosition;
-            originalCameraLocalRot = cinemachineCameraTarget.localRotation;
-            
-            // Kamerayı oyuncudan ayır
-            cinemachineCameraTarget.SetParent(null, true); 
+        if (cinemachineBrain)
+            cinemachineBrain.enabled = false;
 
+        // 1. KAFAYA YAPIŞ (Animasyonla in)
+        if (headBone != null)
+        {
+            mainCamera.SetParent(headBone);
             float t = 0f;
-            Vector3 startPos = cinemachineCameraTarget.position;
-            Quaternion startRot = cinemachineCameraTarget.rotation;
-            
-            while (t < 1f)
+            Vector3 startPos = mainCamera.localPosition;
+            Quaternion startRot = mainCamera.localRotation;
+            while (t < 0.5f)
             {
-                t += Time.deltaTime / cameraMoveDuration;
-                float smoothT = Mathf.SmoothStep(0.0f, 1.0f, t);
-                cinemachineCameraTarget.position = Vector3.Lerp(startPos, cameraViewTarget.position, smoothT);
-                cinemachineCameraTarget.rotation = Quaternion.Slerp(startRot, cameraViewTarget.rotation, smoothT);
+                t += Time.deltaTime;
+                float s = t / 0.5f;
+                mainCamera.localPosition = Vector3.Lerp(startPos, headOffset, s);
+                mainCamera.localRotation = Quaternion.Slerp(startRot, Quaternion.identity, s);
                 yield return null;
             }
         }
-        // --- YENİ BİTİŞ ---
+
+        yield return new WaitForSeconds(animationDuration - 0.5f);
+
+        // 2. EKRANA GEÇ (Sabitle)
+        if (cameraViewTarget != null)
+        {
+            mainCamera.SetParent(null);
+            Vector3 startDockPos = mainCamera.position;
+            Quaternion startDockRot = mainCamera.rotation;
+            float dockTime = 0.8f;
+            float t = 0f;
+
+            while (t < dockTime)
+            {
+                t += Time.deltaTime;
+                float s = Mathf.SmoothStep(0f, 1f, t / dockTime);
+                mainCamera.position = Vector3.Lerp(startDockPos, cameraViewTarget.position, s);
+                mainCamera.rotation = Quaternion.Slerp(startDockRot, cameraViewTarget.rotation, s);
+                yield return null;
+            }
+            mainCamera.position = cameraViewTarget.position;
+            mainCamera.rotation = cameraViewTarget.rotation;
+        }
+
+        TogglePlayerModel(false);
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
 
         if (PasswordManager.Instance != null)
-        {
             UpdateIndicators(PasswordManager.Instance.GetValidatedPasswordCount());
-        }
-        
+
         UpdateActiveWheelHighlight();
     }
 
-    // --- GÜNCELLENDİ (Kamera Animasyonu Eklendi) ---
     private IEnumerator ExitMachineView()
     {
         isInteracting = false;
-        
         PlaySound(exitSound);
         ClearAllHighlights();
-        
-        // --- YENİ Kamera Geri Dönüş Animasyonu ---
-        if (cinemachineCameraTarget != null && originalCameraParent != null)
-        {
-            float t = 0f;
-            Vector3 startPos = cinemachineCameraTarget.position;
-            Quaternion startRot = cinemachineCameraTarget.rotation;
-            
-            // Geri dönülecek DÜNYA (world space) pozisyonunu hesapla
-            Vector3 targetWorldPos = originalCameraParent.TransformPoint(originalCameraLocalPos);
-            Quaternion targetWorldRot = originalCameraParent.rotation * originalCameraLocalRot;
 
-            while (t < 1f)
+        // 1. Karakteri Görünür Yap
+        TogglePlayerModel(true);
+
+        // 2. EKRANDAN KAFAYA GERİ DÖN (Undock)
+        // Kamerayı geçici olarak tekrar kafaya/kamera köküne alıyoruz
+        if (cinemachineTarget != null)
+        {
+            // Parent yapmadan direkt pozisyona Lerp et (Daha temiz)
+            mainCamera.SetParent(null);
+
+            Vector3 startPos = mainCamera.position;
+            Quaternion startRot = mainCamera.rotation;
+
+            float undockTime = 0.6f;
+            float t = 0f;
+            while (t < undockTime)
             {
-                t += Time.deltaTime / cameraMoveDuration;
-                float smoothT = Mathf.SmoothStep(0.0f, 1.0f, t);
-                cinemachineCameraTarget.position = Vector3.Lerp(startPos, targetWorldPos, smoothT);
-                cinemachineCameraTarget.rotation = Quaternion.Slerp(startRot, targetWorldRot, smoothT);
+                t += Time.deltaTime;
+                float s = Mathf.SmoothStep(0f, 1f, t / undockTime);
+
+                // Hedef: Cinemachine'in baktığı yer (PlayerCameraRoot)
+                mainCamera.position = Vector3.Lerp(startPos, cinemachineTarget.position, s);
+                mainCamera.rotation = Quaternion.Slerp(startRot, cinemachineTarget.rotation, s);
+
                 yield return null;
             }
-            
-            // Kamerayı tekrar oyuncuya bağla
-            cinemachineCameraTarget.SetParent(originalCameraParent, true);
-            cinemachineCameraTarget.localPosition = originalCameraLocalPos;
-            cinemachineCameraTarget.localRotation = originalCameraLocalRot;
         }
-        // --- YENİ BİTİŞ ---
 
-        // Kontrolleri geri ver
-        if (playerController) playerController.enabled = true;
-        if (playerLookScript) playerLookScript.enabled = true;
-        if (playerAnimator)
+        // 3. KARAKTER ROTASYONUNU DÜZELT (Snap Önleyici)
+        // Karakterin gövdesini kameranın baktığı yöne çevir
+        if (playerController != null)
         {
-            // playerAnimator.SetTrigger("StandUpTrigger");
+            Vector3 camForward = mainCamera.forward;
+            camForward.y = 0; // Yere paralel
+            if (camForward != Vector3.zero)
+                playerController.transform.rotation = Quaternion.LookRotation(camForward);
         }
+
+        // 4. KONTROLÜ VER
+        if (cinemachineBrain)
+            cinemachineBrain.enabled = true;
+        if (playerController)
+            playerController.enabled = true;
+        if (playerLookScript)
+            playerLookScript.enabled = true;
 
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
     }
 
-
     private void Update()
     {
-        if (!isInteracting) return;
-
-        // 1. Çıkış (ESC)
-        if (Input.GetKeyDown(KeyCode.Escape))
+        if (!isInteracting)
+            return;
+        if (Input.GetKeyDown(KeyCode.F))
         {
             StartCoroutine(ExitMachineView());
             return;
         }
 
-        // 2. Grup Geçişi (Dikey: W/S)
         if (Input.GetKeyDown(KeyCode.W))
         {
-            currentGroup = (currentGroup - 1 + 3) % 3; // (0->2, 1->0, 2->1)
+            currentGroup = (currentGroup - 1 + 3) % 3;
             UpdateActiveWheelHighlight();
         }
         else if (Input.GetKeyDown(KeyCode.S))
         {
-            currentGroup = (currentGroup + 1) % 3; // (0->1, 1->2, 2->0)
+            currentGroup = (currentGroup + 1) % 3;
             UpdateActiveWheelHighlight();
         }
 
-        // 3. Bireysel Çark Geçişi (Yatay: Q/E)
         if (Input.GetKeyDown(KeyCode.Q))
         {
             HandleIndexChange(-1);
@@ -298,205 +343,176 @@ public class InteractableTuringMachine : MonoBehaviour, IInteractable
             HandleIndexChange(1);
             UpdateActiveWheelHighlight();
         }
-            
-        // 4. Çarkları Çevirme (A/D veya Mouse Scroll)
+
         float rotationInput = 0f;
-        if (Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.RightArrow)) rotationInput = 1f;
-        if (Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.LeftArrow)) rotationInput = -1f;
-        
+        if (Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.RightArrow))
+            rotationInput = 1f;
+        if (Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.LeftArrow))
+            rotationInput = -1f;
         float scroll = Input.mouseScrollDelta.y;
-        if (scroll > 0.1f) rotationInput = 1f;
-        if (scroll < -0.1f) rotationInput = -1f;
+        if (scroll > 0.1f)
+            rotationInput = 1f;
+        if (scroll < -0.1f)
+            rotationInput = -1f;
 
         if (rotationInput != 0)
-        {
             RotateActiveWheel((int)rotationInput);
-        }
-
-        // 5. Şifreyi Gönderme (Enter)
         if (Input.GetKeyDown(KeyCode.Return))
-        {
             CheckPassword();
-        }
 
-        // 6. Animasyon (Slerp)
         AnimateWheels();
     }
-    
-    // Çarkların rotasyonunu yumuşak (Slerp) bir şekilde günceller
+
+    private void TogglePlayerModel(bool show)
+    {
+        if (!playerController)
+            return;
+        Renderer[] renderers = playerController.GetComponentsInChildren<Renderer>();
+        foreach (var r in renderers)
+            r.enabled = show;
+    }
+
     private void AnimateWheels()
     {
-        float step = Time.deltaTime * rotationSpeed;
+        float s = Time.deltaTime * rotationSpeed;
         for (int i = 0; i < wordWheelModels.Length; i++)
-        {
-            if (wordWheelModels[i] != null)
-                wordWheelModels[i].localRotation = Quaternion.Slerp(wordWheelModels[i].localRotation, wordWheelTargets[i], step);
-        }
+            if (wordWheelModels[i])
+                wordWheelModels[i].localRotation = Quaternion.Slerp(
+                    wordWheelModels[i].localRotation,
+                    wordWheelTargets[i],
+                    s
+                );
         for (int i = 0; i < numberWheelModels.Length; i++)
-        {
-            if (numberWheelModels[i] != null)
-                numberWheelModels[i].localRotation = Quaternion.Slerp(numberWheelModels[i].localRotation, numberWheelTargets[i], step);
-        }
-        if (symbolWheelModel != null)
-            symbolWheelModel.localRotation = Quaternion.Slerp(symbolWheelModel.localRotation, symbolWheelTarget, step);
+            if (numberWheelModels[i])
+                numberWheelModels[i].localRotation = Quaternion.Slerp(
+                    numberWheelModels[i].localRotation,
+                    numberWheelTargets[i],
+                    s
+                );
+        if (symbolWheelModel)
+            symbolWheelModel.localRotation = Quaternion.Slerp(
+                symbolWheelModel.localRotation,
+                symbolWheelTarget,
+                s
+            );
     }
 
-    // Aktif olan yatay çark index'ini değiştirir (Q/E)
-    private void HandleIndexChange(int direction)
+    private void HandleIndexChange(int d)
     {
         switch (currentGroup)
         {
-            case 0: // Word
-                currentWordIndex = (currentWordIndex + direction + wordWheelModels.Length) % wordWheelModels.Length;
+            case 0:
+                currentWordIndex =
+                    (currentWordIndex + d + wordWheelModels.Length) % wordWheelModels.Length;
                 break;
-            case 1: // Symbol (Tek çark, Q/E çalışmaz)
-                break;
-            case 2: // Number
-                currentNumberIndex = (currentNumberIndex + direction + numberWheelModels.Length) % numberWheelModels.Length;
+            case 2:
+                currentNumberIndex =
+                    (currentNumberIndex + d + numberWheelModels.Length) % numberWheelModels.Length;
                 break;
         }
     }
 
-    // Aktif olan çarkı çevirir (Data ve Hedef Rotasyon)
-    private void RotateActiveWheel(int direction)
+    private void RotateActiveWheel(int d)
     {
         PlaySound(wheelClickSound);
-        
         switch (currentGroup)
         {
-            case 0: // Word
-                int charCountW = wordChars.Length;
-                wordWheelIndices[currentWordIndex] = (wordWheelIndices[currentWordIndex] + direction + charCountW) % charCountW;
-                float angleW = (360f / charCountW) * wordWheelIndices[currentWordIndex];
-                // Başlangıç rotasyonu ile Y ekseni rotasyonunu birleştir
-                wordWheelTargets[currentWordIndex] = wordWheelInitialRots[currentWordIndex] * Quaternion.AngleAxis(angleW, rotationAxis);
+            case 0:
+                int cW = wordChars.Length;
+                wordWheelIndices[currentWordIndex] =
+                    (wordWheelIndices[currentWordIndex] + d + cW) % cW;
+                wordWheelTargets[currentWordIndex] =
+                    wordWheelInitialRots[currentWordIndex]
+                    * Quaternion.AngleAxis(
+                        (360f / cW) * wordWheelIndices[currentWordIndex],
+                        rotationAxis
+                    );
                 break;
-                
-            case 1: // Symbol
-                int charCountS = symbolChars.Length; 
-                symbolWheelIndex = (symbolWheelIndex + direction + charCountS) % charCountS;
-                float angleS = (360f / charCountS) * symbolWheelIndex;
-                // Başlangıç rotasyonu ile Y ekseni rotasyonunu birleştir
-                symbolWheelTarget = symbolWheelInitialRot * Quaternion.AngleAxis(angleS, rotationAxis);
+            case 1:
+                int cS = symbolChars.Length;
+                symbolWheelIndex = (symbolWheelIndex + d + cS) % cS;
+                symbolWheelTarget =
+                    symbolWheelInitialRot
+                    * Quaternion.AngleAxis((360f / cS) * symbolWheelIndex, rotationAxis);
                 break;
-                
-            case 2: // Number
-                int charCountN = numberChars.Length;
-                numberWheelIndices[currentNumberIndex] = (numberWheelIndices[currentNumberIndex] + direction + charCountN) % charCountN;
-                float angleN = (360f / charCountN) * numberWheelIndices[currentNumberIndex];
-                // Başlangıç rotasyonu ile Y ekseni rotasyonunu birleştir
-                numberWheelTargets[currentNumberIndex] = numberWheelInitialRots[currentNumberIndex] * Quaternion.AngleAxis(angleN, rotationAxis);
+            case 2:
+                int cN = numberChars.Length;
+                numberWheelIndices[currentNumberIndex] =
+                    (numberWheelIndices[currentNumberIndex] + d + cN) % cN;
+                numberWheelTargets[currentNumberIndex] =
+                    numberWheelInitialRots[currentNumberIndex]
+                    * Quaternion.AngleAxis(
+                        (360f / cN) * numberWheelIndices[currentNumberIndex],
+                        rotationAxis
+                    );
                 break;
         }
     }
 
-    // Mevcut çark ayarlarını birleştirip şifreyi kontrol eder
     private void CheckPassword()
     {
-        if (PasswordManager.Instance == null)
-        {
-            Debug.LogError("PasswordManager.Instance bulunamadı!");
+        if (!PasswordManager.Instance)
             return;
-        }
-
-        // 1. Mevcut çarklardan şifre ID'sini oluştur
-        StringBuilder sbWord = new StringBuilder();
+        StringBuilder sb = new StringBuilder();
         for (int i = 0; i < wordWheelIndices.Length; i++)
+            sb.Append(wordChars[wordWheelIndices[i]]);
+        string pw =
+            $"{sb.ToString().TrimEnd('-')}_{symbolChars[symbolWheelIndex]}_{numberChars[numberWheelIndices[0]]}{numberChars[numberWheelIndices[1]]}{numberChars[numberWheelIndices[2]]}";
+        if (PasswordManager.Instance.ValidatePassword(pw))
         {
-            sbWord.Append(wordChars[wordWheelIndices[i]]);
-        }
-        string word = sbWord.ToString().TrimEnd('-');
-        
-        string symbol = symbolChars[symbolWheelIndex]; 
-        
-        string number = $"{numberChars[numberWheelIndices[0]]}{numberChars[numberWheelIndices[1]]}{numberChars[numberWheelIndices[2]]}";
-
-        string finalPasswordID = $"{word}_{symbol}_{number}";
-        
-        Debug.Log($"Şifre denemesi: {finalPasswordID}");
-
-        // 2. PasswordManager ile DOĞRULA
-        bool success = PasswordManager.Instance.ValidatePassword(finalPasswordID);
-
-        // 3. Sonucu değerlendir
-        if (success)
-        {
-            // BAŞARILI! Yeni bir şifre doğrulandı.
-            Debug.Log("Şifre DOĞRU!");
             PlaySound(successSound);
-            // Göstergeleri yeni toplam sayıyla güncelle
-            UpdateIndicators(PasswordManager.Instance.GetValidatedPasswordCount()); 
+            UpdateIndicators(PasswordManager.Instance.GetValidatedPasswordCount());
         }
         else
-        {
-            // BAŞARISIZ! (Ya yanlış ya da zaten doğrulanmış)
-            Debug.Log("Şifre YANLIŞ veya zaten doğrulanmış.");
             PlaySound(failSound);
-        }
     }
 
-    // Başarılı şifre sayısına göre göstergeleri (Kırmızı/Yeşil) günceller
-    private void UpdateIndicators(int successCount)
+    private void UpdateIndicators(int c)
     {
-        if (indicatorRenderers == null || redMaterial == null || greenMaterial == null) return;
-
+        if (indicatorRenderers == null)
+            return;
         for (int i = 0; i < indicatorRenderers.Length; i++)
-        {
-            if (indicatorRenderers[i] == null) continue;
-            
-            if (i < successCount)
-            {
-                indicatorRenderers[i].material = greenMaterial; // Bulundu
-            }
-            else
-            {
-                indicatorRenderers[i].material = redMaterial; // Henüz bulunmadı
-            }
-        }
+            if (indicatorRenderers[i])
+                indicatorRenderers[i].material = (i < c) ? greenMaterial : redMaterial;
     }
-    
-    // Aktif olan çark grubunu ve index'ini görsel olarak vurgular
+
     private void UpdateActiveWheelHighlight()
     {
         ClearAllHighlights();
-
         switch (currentGroup)
         {
-            case 0: // Word
-                if (wordWheelHighlights != null && currentWordIndex < wordWheelHighlights.Length)
-                    if (wordWheelHighlights[currentWordIndex] != null) 
-                        wordWheelHighlights[currentWordIndex].SetActive(true);
+            case 0:
+                if (wordWheelHighlights[currentWordIndex])
+                    wordWheelHighlights[currentWordIndex].SetActive(true);
                 break;
-            case 1: // Symbol
-                if (symbolWheelHighlight != null) 
+            case 1:
+                if (symbolWheelHighlight)
                     symbolWheelHighlight.SetActive(true);
                 break;
-            case 2: // Number
-                if (numberWheelHighlights != null && currentNumberIndex < numberWheelHighlights.Length)
-                    if (numberWheelHighlights[currentNumberIndex] != null) 
-                        numberWheelHighlights[currentNumberIndex].SetActive(true);
+            case 2:
+                if (numberWheelHighlights[currentNumberIndex])
+                    numberWheelHighlights[currentNumberIndex].SetActive(true);
                 break;
         }
     }
 
-    // Tüm highlight objelerini kapatır
     private void ClearAllHighlights()
     {
         if (wordWheelHighlights != null)
-            foreach (var h in wordWheelHighlights) if (h != null) h.SetActive(false);
-            
-        if (symbolWheelHighlight != null) 
+            foreach (var h in wordWheelHighlights)
+                if (h)
+                    h.SetActive(false);
+        if (symbolWheelHighlight)
             symbolWheelHighlight.SetActive(false);
-            
         if (numberWheelHighlights != null)
-            foreach (var h in numberWheelHighlights) if (h != null) h.SetActive(false);
+            foreach (var h in numberWheelHighlights)
+                if (h)
+                    h.SetActive(false);
     }
-    
-    private void PlaySound(AudioClip clip)
+
+    private void PlaySound(AudioClip c)
     {
-        if (audioSource != null && clip != null)
-        {
-            audioSource.PlayOneShot(clip);
-        }
+        if (audioSource && c)
+            audioSource.PlayOneShot(c);
     }
 }

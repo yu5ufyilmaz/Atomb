@@ -1,319 +1,342 @@
-using UnityEngine;
 using System.Collections;
-using CharacterController = StarterAssets.CharacterController;
+using Cinemachine;
+using UnityEngine;
 
-// PlayerInteraction.cs'teki IInteractable arayüzünü kullanır
 public class InteractableOscilloscope : MonoBehaviour, IInteractable
 {
     [Header("Player Control")]
-    [SerializeField] private UnityEngine.CharacterController playerController;
-    [SerializeField] private MonoBehaviour playerLookScript;
-    [SerializeField] private Transform cameraViewTarget;
-    [SerializeField] private float cameraMoveDuration = 0.5f;
-    private Transform cinemachineCameraTarget;
-    private Transform originalCameraParent;
-    private Vector3 originalCameraLocalPos;
-    private Quaternion originalCameraLocalRot;
-    private bool isInteracting = false;
-    
-    [Header("Audio Settings")]
-    [Tooltip("Döngü halinde çalacak TEK ses dosyası (AudioSource'a atayın)")]
-    [SerializeField] private AudioSource audioSource;
-    
-    [Header("Knob Visuals")]
-    [SerializeField] private Transform voltsKnob; // Genlik / Ses Şiddeti
-    [SerializeField] private Transform timeKnob;  // Frekans / Ses Hızı (Pitch)
-    [SerializeField] private float rotationPerStep = 36f; 
+    [SerializeField]
+    private UnityEngine.CharacterController playerController;
 
-    [Header("Puzzle Logic & ranges")]
-    [SerializeField] [Range(0, 10)] private int maxVoltsSetting = 10;
-    [SerializeField] [Range(0, 10)] private int maxTimeSetting = 10;
-    
-    [Space]
-    [Tooltip("Doğru Volts (Yükseklik) ayarı")]
-    [SerializeField] private int correctVoltsSetting = 5;
-    [Tooltip("Doğru Time (Hız/Pitch) ayarı")]
-    [SerializeField] private int correctTimeSetting = 5;
+    [SerializeField]
+    private MonoBehaviour playerLookScript;
 
-    [Header("Simulation Ranges")]
-    // Pitch: 1.0 normaldir. 0.5 yavaş, 2.0 hızlıdır.
-    [SerializeField] private float minPitch = 0.5f; 
-    [SerializeField] private float maxPitch = 2.0f;
-    
-    // Volume: Doğru ayarda 1.0, yanlışlarda daha kısık olabilir.
-    [SerializeField] private float minVolume = 0.2f;
-    [SerializeField] private float maxVolume = 1.0f;
+    [Header("Head Cam & View Target")]
+    [SerializeField]
+    private string interactAnimTrigger = "InspectScope";
 
-    [Header("Waveform Settings")]
-    [SerializeField] private WaveformGenerator waveformScript;
-    [SerializeField] private float visualLerpSpeed = 5f;
+    [SerializeField]
+    private float animationDuration = 1.0f;
 
-    // Mevcut durum
-    private int currentVoltsSetting = 0; // Başlangıç değeri (0 yaparsak ses kısık/bozuk başlar)
-    private int currentTimeSetting = 0;  // Başlangıç değeri (0 yaparsak çok yavaş başlar)
-    
+    [SerializeField]
+    private Transform cameraViewTarget;
+
+    [SerializeField]
+    private Vector3 headOffset = new Vector3(0, 0.1f, 0.15f);
+
+    private Transform mainCamera;
+    private CinemachineBrain cinemachineBrain;
+    private Transform headBone;
+    private Transform cinemachineTarget;
+    private Animator playerAnimator;
+
+    [Header("Audio & Settings")]
+    [SerializeField]
+    private AudioSource audioSource;
+
+    [SerializeField]
+    private Transform voltsKnob;
+
+    [SerializeField]
+    private Transform timeKnob;
+
+    [SerializeField]
+    private float rotationPerStep = 36f;
+
+    [Header("Puzzle Logic")]
+    [SerializeField]
+    private int maxVoltsSetting = 10;
+
+    [SerializeField]
+    private int maxTimeSetting = 10;
+
+    [SerializeField]
+    private int correctVoltsSetting = 5;
+
+    [SerializeField]
+    private int correctTimeSetting = 5;
+
+    [SerializeField]
+    private WaveformGenerator waveformScript;
+
+    [SerializeField]
+    private float minPitch = 0.5f;
+
+    [SerializeField]
+    private float maxPitch = 2.0f;
+
+    [SerializeField]
+    private float minVolume = 0.2f;
+
+    [SerializeField]
+    private float maxVolume = 1.0f;
+
+    private int currentVoltsSetting = 0;
+    private int currentTimeSetting = 0;
     private bool isSolved = false;
-    
-    // Çarkların başlangıç rotasyonları
+    private bool isInteracting = false;
+
     private Quaternion voltsKnobInitialRot;
     private Quaternion timeKnobInitialRot;
 
     void Start()
     {
-        // Player scriptlerini bul
         if (playerController == null)
             playerController = FindObjectOfType<UnityEngine.CharacterController>();
-        // StarterAssetsInputs tipini kontrol edin, projenizde farklı olabilir
-        if (playerLookScript == null && playerController != null)
-            playerLookScript = playerController.GetComponent("StarterAssetsInputs") as MonoBehaviour;
-        
         if (playerController != null)
         {
-            var starterAssetsController = playerController.GetComponent("ThirdPersonController") as MonoBehaviour; 
-            if (starterAssetsController == null) starterAssetsController = playerController.GetComponent<CharacterController>();
-            
-            Transform camTarget = playerController.transform.Find("PlayerCameraRoot");
-            if (camTarget != null) cinemachineCameraTarget = camTarget;
+            playerLookScript =
+                playerController.GetComponent("StarterAssetsInputs") as MonoBehaviour;
+            playerAnimator = playerController.GetComponent<Animator>();
+            if (playerAnimator)
+                headBone = playerAnimator.GetBoneTransform(HumanBodyBones.Head);
+            if (headBone == null)
+                headBone = playerController.transform;
+
+            Transform camRoot = playerController.transform.Find("PlayerCameraRoot");
+            cinemachineTarget = (camRoot != null) ? camRoot : headBone;
         }
-        
-        if (voltsKnob != null) voltsKnobInitialRot = voltsKnob.localRotation;
-        if (timeKnob != null) timeKnobInitialRot = timeKnob.localRotation;
-        
-        if (audioSource != null) 
+
+        if (Camera.main != null)
+        {
+            mainCamera = Camera.main.transform;
+            cinemachineBrain = mainCamera.GetComponent<CinemachineBrain>();
+        }
+
+        if (voltsKnob)
+            voltsKnobInitialRot = voltsKnob.localRotation;
+        if (timeKnob)
+            timeKnobInitialRot = timeKnob.localRotation;
+        if (audioSource)
         {
             audioSource.Stop();
             audioSource.loop = true;
         }
 
-        currentVoltsSetting = 2; // Örn: Çok alçak genlik
-        currentTimeSetting = 2;  // Örn: Çok yavaş (kalın ses)
-        
+        currentVoltsSetting = 2;
+        currentTimeSetting = 2;
         UpdateKnobVisuals();
-    }
-
-    public string GetInteractionPrompt()
-    {
-        if (isSolved) return "Sinyal Stabil";
-        return isInteracting ? "" : "[Sol Tık] Sinyali Düzelt";
     }
 
     public void Interact()
     {
-        if (isInteracting || isSolved) return;
+        if (isInteracting || isSolved)
+            return;
         StartCoroutine(EnterMachineView());
     }
+
+    public string GetInteractionPrompt() =>
+        isSolved ? "Sinyal Stabil" : (isInteracting ? "" : "[Sol Tık] Sinyali Düzelt");
 
     private IEnumerator EnterMachineView()
     {
         isInteracting = true;
-        if (playerController) playerController.enabled = false;
-        if (playerLookScript) playerLookScript.enabled = false;
+        if (playerController)
+            playerController.enabled = false;
+        if (playerLookScript)
+            playerLookScript.enabled = false;
+        if (playerAnimator)
+            playerAnimator.SetTrigger(interactAnimTrigger);
 
-        Cursor.lockState = CursorLockMode.None;
-        Cursor.visible = true;
-        
-        // Kamera Animasyonu
-        if (cinemachineCameraTarget != null && cameraViewTarget != null)
+        if (cinemachineBrain)
+            cinemachineBrain.enabled = false;
+
+        if (headBone != null)
         {
-            originalCameraParent = cinemachineCameraTarget.parent;
-            originalCameraLocalPos = cinemachineCameraTarget.localPosition;
-            originalCameraLocalRot = cinemachineCameraTarget.localRotation;
-            cinemachineCameraTarget.SetParent(null, true); 
-
+            mainCamera.SetParent(headBone);
             float t = 0f;
-            Vector3 startPos = cinemachineCameraTarget.position;
-            Quaternion startRot = cinemachineCameraTarget.rotation;
-            
-            while (t < 1f)
+            Vector3 startPos = mainCamera.localPosition;
+            Quaternion startRot = mainCamera.localRotation;
+            while (t < 0.5f)
             {
-                t += Time.deltaTime / cameraMoveDuration;
-                float smoothT = Mathf.SmoothStep(0.0f, 1.0f, t);
-                cinemachineCameraTarget.position = Vector3.Lerp(startPos, cameraViewTarget.position, smoothT);
-                cinemachineCameraTarget.rotation = Quaternion.Slerp(startRot, cameraViewTarget.rotation, smoothT);
+                t += Time.deltaTime;
+                float s = t / 0.5f;
+                mainCamera.localPosition = Vector3.Lerp(startPos, headOffset, s);
+                mainCamera.localRotation = Quaternion.Slerp(startRot, Quaternion.identity, s);
                 yield return null;
             }
         }
-        
-        // Sesi başlat (Mevcut ayarlara göre bozuk başlayacak)
-        if (audioSource != null)
+
+        yield return new WaitForSeconds(animationDuration - 0.5f);
+
+        if (cameraViewTarget != null)
         {
-            UpdateAudioAndWaveform(); // İlk değerleri ata
+            mainCamera.SetParent(null);
+            Vector3 startDockPos = mainCamera.position;
+            Quaternion startDockRot = mainCamera.rotation;
+            float dockTime = 0.8f;
+            float t = 0f;
+            while (t < dockTime)
+            {
+                t += Time.deltaTime;
+                float s = Mathf.SmoothStep(0f, 1f, t / dockTime);
+                mainCamera.position = Vector3.Lerp(startDockPos, cameraViewTarget.position, s);
+                mainCamera.rotation = Quaternion.Slerp(startDockRot, cameraViewTarget.rotation, s);
+                yield return null;
+            }
+            mainCamera.position = cameraViewTarget.position;
+            mainCamera.rotation = cameraViewTarget.rotation;
+        }
+
+        TogglePlayerModel(false);
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
+
+        if (audioSource)
+        {
+            UpdateAudioAndWaveform();
             audioSource.Play();
         }
-        
         UpdateKnobVisuals();
     }
-    
+
+    private IEnumerator ExitMachineView()
+    {
+        isInteracting = false;
+        if (audioSource)
+            audioSource.Stop();
+
+        TogglePlayerModel(true);
+
+        // --- SMOOTH UNDOCK ---
+        if (cinemachineTarget != null)
+        {
+            mainCamera.SetParent(null);
+            Vector3 startPos = mainCamera.position;
+            Quaternion startRot = mainCamera.rotation;
+            float undockTime = 0.5f;
+            float t = 0f;
+            while (t < undockTime)
+            {
+                t += Time.deltaTime;
+                float s = Mathf.SmoothStep(0f, 1f, t / undockTime);
+                mainCamera.position = Vector3.Lerp(startPos, cinemachineTarget.position, s);
+                mainCamera.rotation = Quaternion.Slerp(startRot, cinemachineTarget.rotation, s);
+                yield return null;
+            }
+        }
+
+        // SNAP FIX
+        if (playerController != null)
+        {
+            Vector3 camForward = mainCamera.forward;
+            camForward.y = 0;
+            if (camForward != Vector3.zero)
+                playerController.transform.rotation = Quaternion.LookRotation(camForward);
+        }
+
+        if (cinemachineBrain)
+            cinemachineBrain.enabled = true;
+        if (playerController)
+            playerController.enabled = true;
+        if (playerLookScript)
+            playerLookScript.enabled = true;
+
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
+    }
+
     private void Update()
     {
-        if (!isInteracting) return;
-
-        // Çıkış (ESC)
-        if (Input.GetKeyDown(KeyCode.Escape))
+        if (!isInteracting)
+            return;
+        if (Input.GetKeyDown(KeyCode.F))
         {
             StartCoroutine(ExitMachineView());
             return;
         }
-        
-        if (isSolved) 
+        if (isSolved)
         {
-            // Çözüldüyse bile dalga formunu güncel tut (animasyon için)
-            if(waveformScript) waveformScript.frequency = 1.0f; // Sabit normal
+            if (waveformScript)
+                waveformScript.frequency = 1.0f;
             return;
         }
-        
-        bool settingChanged = false;
-        
-        // Volts Ayarı (W/S) -> Amplitude & Volume
+
+        bool changed = false;
         if (Input.GetKeyDown(KeyCode.W))
         {
             currentVoltsSetting = Mathf.Min(currentVoltsSetting + 1, maxVoltsSetting);
-            settingChanged = true;
+            changed = true;
         }
         else if (Input.GetKeyDown(KeyCode.S))
         {
             currentVoltsSetting = Mathf.Max(currentVoltsSetting - 1, 0);
-            settingChanged = true;
+            changed = true;
         }
-        
-        // Time Ayarı (A/D) -> Pitch & Frequency
         if (Input.GetKeyDown(KeyCode.D))
         {
             currentTimeSetting = Mathf.Min(currentTimeSetting + 1, maxTimeSetting);
-            settingChanged = true;
+            changed = true;
         }
         else if (Input.GetKeyDown(KeyCode.A))
         {
             currentTimeSetting = Mathf.Max(currentTimeSetting - 1, 0);
-            settingChanged = true;
+            changed = true;
         }
 
-        if (settingChanged)
+        if (changed)
         {
             UpdateKnobVisuals();
-            UpdateAudioAndWaveform(); // Sesi ve dalgayı anlık güncelle
+            UpdateAudioAndWaveform();
             CheckForSolution();
         }
-        
-        // Dalga formunu her frame'de yumuşak geçişle güncelle (Görsel Smoothness)
-        // Ancak gerçek değerleri settingChanged içinde hesapladık.
     }
 
-    // Bu fonksiyon hem sesi hem de dalga formunun hedef değerlerini ayarlar
+    private void TogglePlayerModel(bool show)
+    {
+        if (!playerController)
+            return;
+        Renderer[] renderers = playerController.GetComponentsInChildren<Renderer>();
+        foreach (var r in renderers)
+            r.enabled = show;
+    }
+
     private void UpdateAudioAndWaveform()
     {
-        // --- 1. Time Knob -> Pitch (Hız) Hesabı ---
-        // Knob 0 iken minPitch, Knob Max iken maxPitch olsun.
         float tRatio = (float)currentTimeSetting / maxTimeSetting;
-        float targetPitch = Mathf.Lerp(minPitch, maxPitch, tRatio);
-        
-        // Eğer "Doğru" ayardaysak Pitch tam 1.0 olsun (Floating point hatasını önlemek için)
-        if (currentTimeSetting == correctTimeSetting) targetPitch = 1.0f;
-
-        if (audioSource != null)
-        {
+        float targetPitch =
+            (currentTimeSetting == correctTimeSetting)
+                ? 1.0f
+                : Mathf.Lerp(minPitch, maxPitch, tRatio);
+        if (audioSource)
             audioSource.pitch = targetPitch;
-        }
-
-        // --- 2. Volts Knob -> Volume (Şiddet) Hesabı ---
         float vRatio = (float)currentVoltsSetting / maxVoltsSetting;
-        float targetVolume = Mathf.Lerp(minVolume, maxVolume, vRatio);
-        
-        if (currentVoltsSetting == correctVoltsSetting) targetVolume = 1.0f; // İdeal ses seviyesi
-        
-        if (audioSource != null)
-        {
+        float targetVolume =
+            (currentVoltsSetting == correctVoltsSetting)
+                ? 1.0f
+                : Mathf.Lerp(minVolume, maxVolume, vRatio);
+        if (audioSource)
             audioSource.volume = targetVolume;
-        }
-
-        // --- 3. Waveform Visuals ---
-        if (waveformScript != null)
+        if (waveformScript)
         {
-            // Pitch arttıkça frekans artar (dalgalar sıklaşır)
-            waveformScript.frequency = targetPitch; 
-            
-            // Volume arttıkça genlik artar (dalgalar yükselir)
-            // Görsel olarak 0.5 ile 2.0 arasında scale edelim
+            waveformScript.frequency = targetPitch;
             waveformScript.amplitude = Mathf.Lerp(0.5f, 2.5f, vRatio);
         }
     }
 
     private void UpdateKnobVisuals()
     {
-        if (voltsKnob != null)
-        {
-            float angleV = currentVoltsSetting * rotationPerStep;
-            voltsKnob.localRotation = voltsKnobInitialRot * Quaternion.Euler(0, angleV, 0); 
-        }
-        
-        if (timeKnob != null)
-        {
-            float angleT = currentTimeSetting * rotationPerStep;
-            timeKnob.localRotation = timeKnobInitialRot * Quaternion.Euler(0, angleT, 0); 
-        }
+        if (voltsKnob)
+            voltsKnob.localRotation =
+                voltsKnobInitialRot * Quaternion.Euler(0, currentVoltsSetting * rotationPerStep, 0);
+        if (timeKnob)
+            timeKnob.localRotation =
+                timeKnobInitialRot * Quaternion.Euler(0, currentTimeSetting * rotationPerStep, 0);
     }
-    
+
     private void CheckForSolution()
     {
-        if (isSolved) return;
-
         if (currentVoltsSetting == correctVoltsSetting && currentTimeSetting == correctTimeSetting)
         {
-            Debug.Log("Osiloskop Ayarı DOĞRU!");
             isSolved = true;
-            
-            // Çözülünce otomatik çıkış yapabilir veya bekleyebiliriz
             StartCoroutine(AutoExit(2.0f));
         }
     }
 
-    private IEnumerator ExitMachineView()
-    {
-        isInteracting = false;
-        
-        // Çözülmediyse sesi kapat, çözüldüyse çalmaya devam edebilir (veya kapatabilir)
-        if (audioSource != null) // && !isSolved (eğer çıkınca susmasını isterseniz bunu açın)
-        {
-            audioSource.Stop();
-        }
-        
-        // Kamera Geri Dönüş
-        if (cinemachineCameraTarget != null && originalCameraParent != null)
-        {
-            float t = 0f;
-            Vector3 startPos = cinemachineCameraTarget.position;
-            Quaternion startRot = cinemachineCameraTarget.rotation;
-            
-            Vector3 targetWorldPos = originalCameraParent.TransformPoint(originalCameraLocalPos);
-            Quaternion targetWorldRot = originalCameraParent.rotation * originalCameraLocalRot;
-
-            while (t < 1f)
-            {
-                t += Time.deltaTime / cameraMoveDuration;
-                float smoothT = Mathf.SmoothStep(0.0f, 1.0f, t);
-                cinemachineCameraTarget.position = Vector3.Lerp(startPos, targetWorldPos, smoothT);
-                cinemachineCameraTarget.rotation = Quaternion.Slerp(startRot, targetWorldRot, smoothT);
-                yield return null;
-            }
-            
-            cinemachineCameraTarget.SetParent(originalCameraParent, true);
-            cinemachineCameraTarget.localPosition = originalCameraLocalPos;
-            cinemachineCameraTarget.localRotation = originalCameraLocalRot;
-        }
-
-        if (playerController) playerController.enabled = true;
-        if (playerLookScript) playerLookScript.enabled = true;
-
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
-    }
-    
     private IEnumerator AutoExit(float delay)
     {
         yield return new WaitForSeconds(delay);
-        if (isInteracting) 
-        {
+        if (isInteracting)
             StartCoroutine(ExitMachineView());
-        }
     }
 }

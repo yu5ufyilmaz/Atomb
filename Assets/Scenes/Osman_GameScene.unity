@@ -1268,6 +1268,10 @@ MonoBehaviour:
   ionBeamObj: {fileID: 784719295}
   screenText: {fileID: 888693869}
   overheatSmoke: {fileID: 0}
+  interactAnimTrigger: InspectMachine
+  animationDuration: 1
+  cameraViewTarget: {fileID: 1714064006}
+  headOffset: {x: 0, y: 0.1, z: 0.15}
   safeZoneAngle: 0
   safeZoneTolerance: 12
   ringTargetAngle: 90
@@ -1284,8 +1288,6 @@ MonoBehaviour:
   successSound: {fileID: 0}
   overheatSound: {fileID: 0}
   beamHumSound: {fileID: 0}
-  cameraViewTarget: {fileID: 1714064006}
-  cameraMoveDuration: 0.5
 --- !u!65 &210862873
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -2669,7 +2671,7 @@ Transform:
   m_GameObject: {fileID: 416628282}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.5, z: 0}
+  m_LocalPosition: {x: 0, y: 1.25, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2870,6 +2872,7 @@ Transform:
   m_Children:
   - {fileID: 416628283}
   - {fileID: 433063787}
+  - {fileID: 1570059562}
   m_Father: {fileID: 1162715092}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &454887305
@@ -2887,12 +2890,15 @@ MonoBehaviour:
   hideCameraPosition: {fileID: 416628283}
   peekCameraPosition: {fileID: 416628283}
   exitPosition: {fileID: 433063787}
+  insidePosition: {fileID: 1570059562}
+  alignDuration: 0.5
+  cameraDockDuration: 0.6
+  enterAnimDuration: 4.6
   propAnimator: {fileID: 0}
   propOpenTrigger: Open
   propCloseTrigger: Close
   propPeekBool: IsPeeking
-  playerEnterAnimTrigger: HideEnter
-  enterAnimDuration: 4.1
+  playerAnimTrigger: HideEnter
   headOffset: {x: 0, y: 0.1, z: 0.15}
   audioSource: {fileID: 454887307}
   hideSound: {fileID: 8300000, guid: ff697d3070687ce4583faa0561a145a2, type: 3}
@@ -4255,7 +4261,7 @@ GameObject:
   - component: {fileID: 601288415}
   - component: {fileID: 601288414}
   - component: {fileID: 601288413}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Cube
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4274,7 +4280,8 @@ Transform:
   m_LocalPosition: {x: 7.27, y: 1.15, z: -11.6}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 2100256641}
   m_Father: {fileID: 24122837}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &601288413
@@ -4291,8 +4298,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerController: {fileID: 2023056408}
   playerLookScript: {fileID: 2023056403}
-  cameraViewTarget: {fileID: 0}
-  cameraMoveDuration: 0.5
+  interactAnimTrigger: InspectScope
+  animationDuration: 1
+  cameraViewTarget: {fileID: 2100256641}
+  headOffset: {x: 0, y: 0.1, z: 0.15}
   audioSource: {fileID: 0}
   voltsKnob: {fileID: 0}
   timeKnob: {fileID: 0}
@@ -4301,12 +4310,11 @@ MonoBehaviour:
   maxTimeSetting: 10
   correctVoltsSetting: 3
   correctTimeSetting: 5
+  waveformScript: {fileID: 0}
   minPitch: 0.5
   maxPitch: 2
   minVolume: 0.2
   maxVolume: 1
-  waveformScript: {fileID: 0}
-  visualLerpSpeed: 5
 --- !u!65 &601288414
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -7104,13 +7112,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 944185728}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0.7071068, z: -0, w: 0.7071068}
-  m_LocalPosition: {x: 7.32, y: 1.08, z: -11}
+  m_LocalRotation: {x: -0, y: -0.9998777, z: -0, w: -0.015642447}
+  m_LocalPosition: {x: 7.865, y: 1.08, z: -10.983}
   m_LocalScale: {x: 0.20000002, y: 0.2, z: 0.20000002}
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 24122837}
-  m_LocalEulerAnglesHint: {x: 0, y: -90, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: -181.793, z: 0}
 --- !u!1 &961026591
 GameObject:
   m_ObjectHideFlags: 0
@@ -10129,9 +10137,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   valveHandleModel: {fileID: 577287221}
+  interactAnimTrigger: TurnValve
+  animationDuration: 1
   cameraViewTarget: {fileID: 1221487283}
-  cameraMoveDuration: 0.8
-  rotationSpeedMultiplier: 5
+  headOffset: {x: 0, y: 0.1, z: 0.15}
+  resistanceMultiplier: 0.15
+  maxRotationPerFrame: 2
+  onlyClockwise: 1
 --- !u!65 &1406705566
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -11634,6 +11646,37 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!1 &1570059561
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1570059562}
+  m_Layer: 6
+  m_Name: Pos_Enter
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1570059562
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1570059561}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: -1, z: 0, w: 0}
+  m_LocalPosition: {x: 0, y: -0.5, z: -0.332}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 454887304}
+  m_LocalEulerAnglesHint: {x: 0, y: -180, z: 0}
 --- !u!21 &1584053722
 Material:
   serializedVersion: 8
@@ -14830,13 +14873,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1953663599}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
   m_LocalPosition: {x: -10.63, y: 4.52, z: 1.39}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2120274076800254777}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
 --- !u!1 &1974323831
 GameObject:
   m_ObjectHideFlags: 0
@@ -15452,6 +15495,37 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1302058743}
   m_LocalEulerAnglesHint: {x: 0, y: -27.299, z: 0}
+--- !u!1 &2100256640
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2100256641}
+  m_Layer: 6
+  m_Name: Camera_View
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2100256641
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2100256640}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 1.26}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 601288412}
+  m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
 --- !u!1 &2113341034
 GameObject:
   m_ObjectHideFlags: 0
@@ -17572,8 +17646,10 @@ MonoBehaviour:
   playerController: {fileID: 2023056408}
   playerLookScript: {fileID: 2023056403}
   playerAnimator: {fileID: 2023056414}
+  interactAnimTrigger: SitDown
+  animationDuration: 1.5
   cameraViewTarget: {fileID: 1953663600}
-  cameraMoveDuration: 0.5
+  headOffset: {x: 0, y: 0.1, z: 0.15}
   wordWheelModels:
   - {fileID: 453943887554711764}
   - {fileID: 4494134333440413162}

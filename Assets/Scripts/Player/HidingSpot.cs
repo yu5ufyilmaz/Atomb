@@ -5,7 +5,7 @@ using UnityEngine;
 public class HidingSpot : MonoBehaviour, IInteractable
 {
     [Header("Pozisyon Ayarları")]
-    [Tooltip("Saklanınca kameranın duracağı dip nokta")]
+    [Tooltip("Saklanınca kameranın duracağı dip nokta (Dolabın içi)")]
     [SerializeField]
     private Transform hideCameraPosition;
 
@@ -13,11 +13,25 @@ public class HidingSpot : MonoBehaviour, IInteractable
     [SerializeField]
     private Transform peekCameraPosition;
 
-    [Tooltip("Saklanmaktan çıkınca oyuncunun duracağı yer")]
+    [Tooltip("Kapı önü noktası. MAVİ OKU (Z) Mutlaka Odaya Bakmalı!")]
     [SerializeField]
     private Transform exitPosition;
 
-    [Header("Animasyon Ayarları")]
+    [Tooltip("Dolap içi zemin noktası.")]
+    [SerializeField]
+    private Transform insidePosition;
+
+    [Header("Zamanlama")]
+    [SerializeField]
+    private float alignDuration = 0.5f;
+
+    [SerializeField]
+    private float cameraDockDuration = 0.6f;
+
+    [SerializeField]
+    private float enterAnimDuration = 2.0f;
+
+    [Header("Animasyon & Ses")]
     [SerializeField]
     private Animator propAnimator;
 
@@ -30,19 +44,12 @@ public class HidingSpot : MonoBehaviour, IInteractable
     [SerializeField]
     private string propPeekBool = "IsPeeking";
 
-    [Tooltip("Oyuncunun gireceği animasyonun Trigger adı")]
     [SerializeField]
-    private string playerEnterAnimTrigger = "HideEnter";
+    private string playerAnimTrigger = "HideEnter";
 
-    [SerializeField]
-    private float enterAnimDuration = 2.0f;
-
-    [Header("Kamera Ayarları (Head Cam)")]
-    [Tooltip("Animasyon sırasında kameranın kafaya göre konumu (Göz hizası ayarı)")]
     [SerializeField]
     private Vector3 headOffset = new Vector3(0, 0.1f, 0.15f);
 
-    [Header("Ses Efektleri")]
     [SerializeField]
     private AudioSource audioSource;
 
@@ -59,13 +66,12 @@ public class HidingSpot : MonoBehaviour, IInteractable
     private bool isPeeking = false;
     private bool inTransition = false;
 
-    // Referanslar
     private UnityEngine.CharacterController playerController;
     private StarterAssets.StarterAssetsInputs playerInput;
     private Animator playerAnimator;
     private Transform mainCamera;
     private CinemachineBrain cinemachineBrain;
-    private Transform headBone; // Kafa kemiğini burada tutacağız
+    private Transform headBone;
 
     public bool IsOccupied => isOccupied;
 
@@ -76,25 +82,11 @@ public class HidingSpot : MonoBehaviour, IInteractable
         {
             playerInput = playerController.GetComponent<StarterAssets.StarterAssetsInputs>();
             playerAnimator = playerController.GetComponent<Animator>();
-
-            // KAFA KEMİĞİNİ OTOMATİK BULMA (Humanoid Rig ise çalışır)
             if (playerAnimator != null)
-            {
                 headBone = playerAnimator.GetBoneTransform(HumanBodyBones.Head);
-            }
-
-            // Eğer Humanoid değilse veya bulamazsa manuel atama gerekebilir,
-            // ama StarterAssets karakterleri genelde Humanoid'dir.
             if (headBone == null)
-            {
-                Debug.LogWarning(
-                    "Kafa kemiği bulunamadı! Lütfen karakterin Humanoid Rig olduğundan emin olun."
-                );
-                // Yedek olarak karakterin transformunu alalım ki hata vermesin
                 headBone = playerController.transform;
-            }
         }
-
         if (Camera.main != null)
         {
             mainCamera = Camera.main.transform;
@@ -106,7 +98,6 @@ public class HidingSpot : MonoBehaviour, IInteractable
     {
         if (inTransition)
             return;
-
         if (isOccupied)
             AttemptExit();
         else
@@ -125,17 +116,14 @@ public class HidingSpot : MonoBehaviour, IInteractable
         if (isOccupied && !inTransition)
         {
             HandlePeeking();
-            if (Input.GetKeyDown(KeyCode.Escape) || Input.GetMouseButtonDown(0))
-            {
+            if (Input.GetKeyDown(KeyCode.F) || Input.GetMouseButtonDown(0))
                 AttemptExit();
-            }
         }
     }
 
     private void HandlePeeking()
     {
         bool holdingPeek = Input.GetKey(KeyCode.W) || Input.GetMouseButton(1);
-
         if (holdingPeek != isPeeking)
         {
             isPeeking = holdingPeek;
@@ -144,19 +132,18 @@ public class HidingSpot : MonoBehaviour, IInteractable
             if (isPeeking && peekSound && audioSource)
                 audioSource.PlayOneShot(peekSound);
         }
-
         if (mainCamera != null && hideCameraPosition != null && peekCameraPosition != null)
         {
             Transform targetPos = isPeeking ? peekCameraPosition : hideCameraPosition;
             mainCamera.position = Vector3.Lerp(
                 mainCamera.position,
                 targetPos.position,
-                Time.deltaTime * 5f
+                Time.deltaTime * 6f
             );
             mainCamera.rotation = Quaternion.Slerp(
                 mainCamera.rotation,
                 targetPos.rotation,
-                Time.deltaTime * 5f
+                Time.deltaTime * 6f
             );
         }
     }
@@ -169,191 +156,199 @@ public class HidingSpot : MonoBehaviour, IInteractable
     private void AttemptExit()
     {
         if (GuderianAI.Instance != null && GuderianAI.Instance.IsCampingPlayer(this))
-        {
             StartCoroutine(CaughtSequence());
-        }
         else
-        {
             StartCoroutine(ExitSequence());
-        }
     }
 
-    // --- İŞTE OLAYI ÇÖZEN GİRİŞ KODU ---
+    // --- GİRİŞ SEKANSI ---
     private IEnumerator EnterSequence()
     {
         inTransition = true;
+        ToggleControls(false);
+
+        // 1. Kapı önüne git, İçeriye (InsidePos) dön
+        Quaternion lookInRot = Quaternion.LookRotation(
+            insidePosition.position - exitPosition.position
+        );
+        yield return StartCoroutine(
+            MoveAndLockRotation(exitPosition.position, lookInRot, alignDuration)
+        );
+
         isOccupied = true;
-
-        // 1. Kontrolleri Kapat
-        if (playerInput)
-        {
-            playerInput.cursorInputForLook = false;
-            playerInput.move = Vector2.zero;
-            playerInput.enabled = false;
-        }
-        if (playerController)
-            playerController.enabled = false;
-
-        // 2. Ses ve Dolap
         PlaySound(hideSound);
         if (propAnimator)
             propAnimator.SetTrigger(propOpenTrigger);
-
-        // 3. Karakteri Hizala (Dolaba dön)
-        playerController.transform.position = exitPosition.position;
-        playerController.transform.rotation = transform.rotation;
-
-        // 4. ANİMASYONU BAŞLAT
         if (playerAnimator)
-            playerAnimator.SetTrigger(playerEnterAnimTrigger);
+            playerAnimator.SetTrigger(playerAnimTrigger);
 
-        // --- 5. KAMERA HAREKETİ (SMOOTH HEAD LOCK) ---
+        // 2. İçeri Yürü (Rotasyon: İçeriye kilitli)
+        StartCoroutine(MoveAndLockRotation(insidePosition.position, lookInRot, enterAnimDuration));
 
-        // Cinemachine'i kapat (Kontrol bizde)
+        // Kamera Kafa Takibi
         if (cinemachineBrain)
             cinemachineBrain.enabled = false;
-
         if (headBone != null)
         {
-            // A) Kamerayı fiziksel olarak kafaya bağla (Parenting)
-            // Şu an kamera nerede duruyorsa orada kalsın ama artık kafayla beraber hareket etsin.
             mainCamera.SetParent(headBone);
-
-            // B) Şu anki yerel (Local) pozisyonunu kaydet
-            // (Bu pozisyon kafaya göre olan uzaklığıdır)
             Vector3 startLocalPos = mainCamera.localPosition;
             Quaternion startLocalRot = mainCamera.localRotation;
-
-            // C) Hedef: Senin belirlediğin Head Offset (Göz hizası) ve dümdüz rotasyon
-            Vector3 targetLocalPos = headOffset;
-            Quaternion targetLocalRot = Quaternion.identity;
-
-            float lockDuration = 0.5f; // Kafaya yerleşme süresi (Yarım saniye)
             float t = 0f;
-
-            // D) Kamerayı bulunduğu yerden gözün içine doğru yumuşakça kaydır
-            // Karakter animasyonla eğilirken kamera da yavaşça göz hizasına iner.
-            while (t < lockDuration)
+            while (t < 0.5f)
             {
                 t += Time.deltaTime;
-                float smoothT = Mathf.SmoothStep(0f, 1f, t / lockDuration);
-
-                mainCamera.localPosition = Vector3.Lerp(startLocalPos, targetLocalPos, smoothT);
-                mainCamera.localRotation = Quaternion.Slerp(startLocalRot, targetLocalRot, smoothT);
-
+                mainCamera.localPosition = Vector3.Lerp(startLocalPos, headOffset, t / 0.5f);
+                mainCamera.localRotation = Quaternion.Slerp(
+                    startLocalRot,
+                    Quaternion.identity,
+                    t / 0.5f
+                );
                 yield return null;
             }
-
-            // Tam yerine oturt (Küsürat kalmasın)
-            mainCamera.localPosition = targetLocalPos;
-            mainCamera.localRotation = targetLocalRot;
+            mainCamera.localPosition = headOffset;
+            mainCamera.localRotation = Quaternion.identity;
         }
 
-        // 6. Animasyonun Geri Kalanını Bekle
-        // lockDuration kadar zaman zaten geçti, onu düşüyoruz.
-        // Eğer animasyon 2 saniye ise, 0.5 saniye yerleşti, 1.5 saniye de kafada izleyeceğiz.
-        yield return new WaitForSeconds(enterAnimDuration - 0.5f);
+        // Docking Bekleme
+        float safeWaitDuration = enterAnimDuration - cameraDockDuration - 0.2f;
+        if (safeWaitDuration < 0)
+            safeWaitDuration = 0;
+        yield return new WaitForSeconds(safeWaitDuration);
 
-        // --- DOLABA YERLEŞME ---
-
-        mainCamera.SetParent(null); // Kamerayı kafadan ayır
-
-        // Kamerayı saklanma noktasına (hideCameraPosition) ışınla
-        // (Burada da istersen Lerp yapabilirsin ama karakter gizleneceği için gerek yok)
+        mainCamera.SetParent(null);
         if (hideCameraPosition)
         {
+            Vector3 startDockPos = mainCamera.position;
+            Quaternion startDockRot = mainCamera.rotation;
+            float t = 0f;
+            while (t < cameraDockDuration)
+            {
+                t += Time.deltaTime;
+                float smoothT = Mathf.SmoothStep(0f, 1f, t / cameraDockDuration);
+                mainCamera.position = Vector3.Lerp(
+                    startDockPos,
+                    hideCameraPosition.position,
+                    smoothT
+                );
+                mainCamera.rotation = Quaternion.Slerp(
+                    startDockRot,
+                    hideCameraPosition.rotation,
+                    smoothT
+                );
+
+                if (t > (cameraDockDuration * 0.3f))
+                    TogglePlayerModel(false);
+                yield return null;
+            }
             mainCamera.position = hideCameraPosition.position;
             mainCamera.rotation = hideCameraPosition.rotation;
         }
-
-        // Modeli gizle
         TogglePlayerModel(false);
         if (propAnimator)
             propAnimator.SetTrigger(propCloseTrigger);
-
         inTransition = false;
     }
 
+    // --- ÇIKIŞ SEKANSI (KİLİTLİ ROTASYON) ---
     private IEnumerator ExitSequence()
     {
         inTransition = true;
 
-        // 1. Kapıyı Aç ve Sesi Çal
         if (propAnimator)
             propAnimator.SetTrigger(propOpenTrigger);
         PlaySound(unhideSound);
+        yield return new WaitForSeconds(0.1f);
 
-        yield return new WaitForSeconds(0.2f); // Kapı açılma payı
-
-        // 2. Modeli Görünür Yap ve Oyuncuyu Işınla
-        TogglePlayerModel(true);
-
-        if (exitPosition)
+        // 1. POZİSYON VE YÖNÜ AYARLA (GÖRÜNMEZKEN)
+        if (insidePosition != null && playerController != null)
         {
-            // Işınlama sırasında CharacterController sorun çıkarmasın diye kapatıp açıyoruz
-            if (playerController)
-                playerController.enabled = false;
+            playerController.enabled = false;
 
-            playerController.transform.position = exitPosition.position;
+            // Konum: Dolap içi
+            playerController.transform.position = insidePosition.position;
+
+            // Rotasyon: ExitPosition objesinin rotasyonu neyse O. (Vektör hesabı yok)
+            // Bu sayede editörde oku nereye çevirirsen oraya bakar.
             playerController.transform.rotation = exitPosition.rotation;
-
-            if (playerController)
-                playerController.enabled = true;
-        }
-
-        // 3. ANİMASYON DÜZELTME (HATA VEREN KISIM SİLİNDİ)
-        // "Play" komutu yerine parametreleri sıfırlıyoruz.
-        // StarterAssets'in kendi scripti Update'te animasyonu otomatik düzeltecektir.
-        if (playerAnimator)
-        {
-            // Giriş animasyonu takılı kalmasın diye trigger'ı resetle
-            playerAnimator.ResetTrigger(playerEnterAnimTrigger);
-
-            // Hareketsiz durduğunu animatöre bildir
-            playerAnimator.SetFloat("Speed", 0f);
-            playerAnimator.SetFloat("MotionSpeed", 1f);
-        }
-
-        // 4. KAMERA GEÇİŞİ (Yumuşakça Dışarı Çıkış)
-        if (cinemachineBrain)
-            cinemachineBrain.enabled = false;
-        mainCamera.SetParent(null); // Kamerayı serbest bırak
-
-        Vector3 startPos = mainCamera.position;
-        Quaternion startRot = mainCamera.rotation;
-
-        // Hedef: Çıkış noktasında karakterin göz hizası (Yaklaşık 1.5m yukarı)
-        Vector3 targetPos = exitPosition.position + (Vector3.up * 1.5f);
-        Quaternion targetRot = exitPosition.rotation;
-
-        float duration = 0.8f; // Çıkış süresi
-        float t = 0f;
-
-        while (t < duration)
-        {
-            t += Time.deltaTime;
-            float smoothT = Mathf.SmoothStep(0f, 1f, t / duration);
-
-            mainCamera.position = Vector3.Lerp(startPos, targetPos, smoothT);
-            mainCamera.rotation = Quaternion.Slerp(startRot, targetRot, smoothT);
 
             yield return null;
         }
 
-        // 5. Bitiş: Kontrolü Cinemachine'e Devret
-        if (cinemachineBrain)
-            cinemachineBrain.enabled = true;
+        TogglePlayerModel(true);
 
-        if (playerInput)
+        // 2. KAMERAYI KAFAYA AL
+        if (headBone != null)
         {
-            playerInput.enabled = true;
-            playerInput.cursorInputForLook = true;
-            playerInput.move = Vector2.zero; // Hareket girdisini sıfırla
+            mainCamera.SetParent(headBone);
+            Vector3 startLocalPos = mainCamera.localPosition;
+            Quaternion startLocalRot = mainCamera.localRotation;
+            float t = 0f;
+            while (t < 0.2f)
+            {
+                t += Time.deltaTime;
+                float smoothT = Mathf.SmoothStep(0f, 1f, t / 0.2f);
+                mainCamera.localPosition = Vector3.Lerp(startLocalPos, headOffset, smoothT);
+                mainCamera.localRotation = Quaternion.Slerp(
+                    startLocalRot,
+                    Quaternion.identity,
+                    smoothT
+                );
+                yield return null;
+            }
+            mainCamera.localPosition = headOffset;
+            mainCamera.localRotation = Quaternion.identity;
         }
 
+        // 3. ANİMASYON
+        if (playerAnimator)
+        {
+            playerAnimator.ResetTrigger(playerAnimTrigger);
+            playerAnimator.SetTrigger(playerAnimTrigger);
+        }
+
+        // 4. DIŞARI YÜRÜ (ROTASYON KİLİTLİ)
+        // Burada MoveAndLockRotation kullanıyoruz. Karakterin dönmesine asla izin vermiyoruz.
+        StartCoroutine(
+            MoveAndLockRotation(exitPosition.position, exitPosition.rotation, enterAnimDuration)
+        );
+
+        yield return new WaitForSeconds(enterAnimDuration);
+
+        // 5. BİTİŞ
+        mainCamera.SetParent(null);
+        if (playerController)
+            playerController.enabled = true;
+        if (cinemachineBrain)
+            cinemachineBrain.enabled = true;
+        ToggleControls(true);
         isOccupied = false;
         isPeeking = false;
         inTransition = false;
+
+        if (propAnimator)
+            propAnimator.SetTrigger(propCloseTrigger);
+    }
+
+    // --- YENİ FONKSİYON: HAREKET ET VE ROTASYONU KİLİTLE ---
+    // Bu fonksiyon çalıştığı sürece karakterin rotasyonu 'fixedRot' olarak kalır. Asla değişmez.
+    private IEnumerator MoveAndLockRotation(Vector3 targetPos, Quaternion fixedRot, float duration)
+    {
+        Vector3 startPos = playerController.transform.position;
+        float t = 0f;
+        while (t < 1f)
+        {
+            t += Time.deltaTime / duration;
+            float smoothT = Mathf.SmoothStep(0f, 1f, t);
+
+            playerController.transform.position = Vector3.Lerp(startPos, targetPos, smoothT);
+
+            // HER KAREDE ZORLA BU TARAFA BAKTIRIYORUZ
+            playerController.transform.rotation = fixedRot;
+
+            yield return null;
+        }
+        playerController.transform.position = targetPos;
+        playerController.transform.rotation = fixedRot;
     }
 
     private IEnumerator CaughtSequence()
@@ -364,6 +359,18 @@ public class HidingSpot : MonoBehaviour, IInteractable
         PlaySound(unhideSound);
         yield return new WaitForSeconds(0.2f);
         GuderianAI.Instance.TriggerLockerJumpscare(exitPosition);
+    }
+
+    private void ToggleControls(bool state)
+    {
+        if (playerInput)
+        {
+            playerInput.cursorInputForLook = state;
+            playerInput.move = Vector2.zero;
+            playerInput.enabled = state;
+        }
+        if (playerController)
+            playerController.enabled = state;
     }
 
     private void TogglePlayerModel(bool show)
@@ -379,5 +386,16 @@ public class HidingSpot : MonoBehaviour, IInteractable
     {
         if (audioSource && clip)
             audioSource.PlayOneShot(clip);
+    }
+
+    // DEBUG: Çıkış Yönünü Editörde Gör
+    private void OnDrawGizmos()
+    {
+        if (exitPosition != null)
+        {
+            Gizmos.color = Color.blue;
+            Gizmos.DrawRay(exitPosition.position, exitPosition.forward * 1.5f);
+            Gizmos.DrawSphere(exitPosition.position + exitPosition.forward * 1.5f, 0.1f);
+        }
     }
 }
