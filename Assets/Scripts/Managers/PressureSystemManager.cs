@@ -136,5 +136,6 @@ public class PressureSystemManager : MonoBehaviour
     public float GetWarningThreshold() => warningThreshold;
 
     public bool IsWarningActive() => currentPressure > warningThreshold;
+    
     #endregion
 }

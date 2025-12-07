@@ -1,5 +1,5 @@
 using System.Collections;
-using Cinemachine; // Unity 6 ise Unity.Cinemachine olabilir
+using Cinemachine;
 using StarterAssets;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -9,7 +9,6 @@ public class JumpscareManager : MonoBehaviour
     public static JumpscareManager Instance;
 
     [Header("Referanslar")]
-    [Tooltip("StarterAssetsInputs scripti")]
     [SerializeField]
     private StarterAssetsInputs playerInput;
 
@@ -19,27 +18,22 @@ public class JumpscareManager : MonoBehaviour
     [SerializeField]
     private Animator playerAnimator;
 
-    [Header("Kamera Ayarları")]
-    [Tooltip("Sahnedeki Main Camera")]
     [SerializeField]
     private Camera mainCamera;
 
-    [Tooltip("Karakterin İskeletindeki KAFA (Head) Kemiği")]
     [SerializeField]
     private Transform headBone;
 
     [Header("Jumpscare Ayarları")]
-    [Tooltip("Siyah ekran öncesi bekleme süresi")]
     [SerializeField]
     private float scareDuration = 2.5f;
 
-    [Tooltip("Kamerayı kafaya bağlayınca yapılacak ince ayar (Göz hizası)")]
     [SerializeField]
     private Vector3 eyeOffset = new Vector3(0, 0.1f, 0.15f);
 
-    // Animator Parametreleri
     private int _animIDPanicRight;
     private int _animIDPanicLeft;
+    private int _animIDPanicBack;
 
     private void Awake()
     {
@@ -50,11 +44,11 @@ public class JumpscareManager : MonoBehaviour
 
         _animIDPanicRight = Animator.StringToHash("PanicTurnRight");
         _animIDPanicLeft = Animator.StringToHash("PanicTurnLeft");
+        _animIDPanicBack = Animator.StringToHash("PanicTurnBack");
     }
 
     private void Start()
     {
-        // Otomatik Bulma
         GameObject player = GameObject.FindGameObjectWithTag("Player");
         if (player)
         {
@@ -65,10 +59,8 @@ public class JumpscareManager : MonoBehaviour
             if (!playerAnimator)
                 playerAnimator = player.GetComponent<Animator>();
 
-            // Eğer headBone atanmadıysa, otomatik bulmaya çalış (İsimle)
             if (headBone == null)
             {
-                // Mixamo veya standart riglerde genelde bu isimlerdedir
                 Transform head = RecursiveFindChild(player.transform, "Head");
                 if (head == null)
                     head = RecursiveFindChild(player.transform, "mixamorig:Head");
@@ -76,17 +68,18 @@ public class JumpscareManager : MonoBehaviour
                     headBone = head;
             }
         }
-
         if (mainCamera == null)
             mainCamera = Camera.main;
     }
 
-    public void StartDirectionalJumpscare(Transform enemy, bool turnRight)
+    // --- GÜNCELLENEN FONKSİYON ---
+    // playTurnAnim: Eğer true ise dönme animasyonunu oynatır. False ise sadece kamerayı kilitler.
+    public void StartJumpscare(Transform enemy, bool playTurnAnim = true)
     {
-        StartCoroutine(BoneLockRoutine(enemy, turnRight));
+        StartCoroutine(BoneLockRoutine(enemy, playTurnAnim));
     }
 
-    private IEnumerator BoneLockRoutine(Transform enemy, bool turnRight)
+    private IEnumerator BoneLockRoutine(Transform enemy, bool playTurnAnim)
     {
         // 1. KONTROLLERİ KAPAT
         if (playerInput)
@@ -99,46 +92,51 @@ public class JumpscareManager : MonoBehaviour
         if (playerController)
             playerController.enabled = false;
 
-        // 2. CINEMACHINE'İ SUSTUR (Kamerayı serbest bırak)
+        // 2. CINEMACHINE KAPAT & KAFAYA MONTE ET
         if (mainCamera != null)
         {
             var brain = mainCamera.GetComponent<CinemachineBrain>();
             if (brain)
                 brain.enabled = false;
+
+            if (headBone != null)
+            {
+                mainCamera.transform.SetParent(headBone);
+                mainCamera.transform.localPosition = eyeOffset;
+                // Kameranın rotasyonunu sıfırla ki tam kafanın baktığı yere baksın
+                mainCamera.transform.localRotation = Quaternion.identity;
+            }
         }
 
-        // 3. KAMERAYI KAFAYA MONTE ET (Parenting)
-        if (mainCamera != null && headBone != null)
+        // 3. ANİMASYON (Sadece İstenirse Oynar)
+        if (playTurnAnim && playerAnimator != null)
         {
-            mainCamera.transform.SetParent(headBone);
+            // Yön Hesapla
+            Vector3 dirToEnemy = (enemy.position - playerController.transform.position).normalized;
+            float angle = Vector3.SignedAngle(
+                playerController.transform.forward,
+                dirToEnemy,
+                Vector3.up
+            );
 
-            // Pozisyonu kafanın tam ortasına (gözlere) getir
-            mainCamera.transform.localPosition = eyeOffset;
-
-            // Rotasyonu kafanın baktığı yöne eşitle
-            mainCamera.transform.localRotation = Quaternion.identity;
-
-            // Eğer kafa yamuk duruyorsa (bazı riglerde olur), buraya manuel düzeltme gerekebilir:
-            // mainCamera.transform.localRotation = Quaternion.Euler(0, 90, -90); // Örnek
-        }
-
-        // 4. ANİMASYONU BAŞLAT (Artık kamera kafa nereye giderse oraya gidecek)
-        if (playerAnimator)
-        {
-            if (turnRight)
+            // Arkadaysa (135+)
+            if (Mathf.Abs(angle) > 135f)
+                playerAnimator.SetTrigger(_animIDPanicBack);
+            // Sağdaysa
+            else if (angle > 0)
                 playerAnimator.SetTrigger(_animIDPanicRight);
+            // Soldaysa
             else
                 playerAnimator.SetTrigger(_animIDPanicLeft);
         }
 
-        // 5. BEKLE
+        // 4. BEKLE
         yield return new WaitForSeconds(scareDuration);
 
-        // 6. BİTİŞ
+        // 5. BİTİŞ
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 
-    // Kemikleri isme göre bulmak için yardımcı fonksiyon
     private Transform RecursiveFindChild(Transform parent, string childName)
     {
         foreach (Transform child in parent)

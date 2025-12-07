@@ -9866,9 +9866,10 @@ MonoBehaviour:
   playerInput: {fileID: 0}
   playerController: {fileID: 0}
   playerAnimator: {fileID: 2023056414}
-  cameraRoot: {fileID: 700051398}
-  turnDuration: 0.2
+  mainCamera: {fileID: 0}
+  headBone: {fileID: 0}
   scareDuration: 2
+  eyeOffset: {x: 0, y: 0.1, z: 0.15}
 --- !u!1 &1373385263
 GameObject:
   m_ObjectHideFlags: 0
@@ -10619,7 +10620,7 @@ MonoBehaviour:
   chanceIncreasePerSecond: 2
   spawnCheckInterval: 5
   maxIgnoranceTime: 30
-  maxReactionTime: 3
+  maxReactionTime: 2
   survivalWaitTime: 10
   movementTolerance: 0.1
   jumpscareDistance: 1.2
@@ -11264,6 +11265,10 @@ MonoBehaviour:
   lockedDoorBreachTime: 5
   walkSpeed: 2.5
   doorAnimationDelay: 1
+  jumpscareDistance: 1.2
+  lookAtDoorThreshold: 60
+  standoffKillDistance: 2
+  spawnYOffset: 1
   guderianModel: {fileID: 1567846634}
   audioSource: {fileID: 1552689768}
   footstepSounds:

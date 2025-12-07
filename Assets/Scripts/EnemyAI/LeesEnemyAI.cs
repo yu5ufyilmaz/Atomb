@@ -75,7 +75,10 @@ public class LeesEnemyAI : MonoBehaviour
     private float currentIgnoranceTimer;
     private float currentReactionTimer;
     private float currentSurvivalTimer;
+
     private bool hasBeenSpotted = false;
+    private bool hasTurnedAway = false; // YENİ: Arkasını döndü mü?
+
     private Vector3 lastPlayerPos;
 
     [Header("Referanslar")]
@@ -141,7 +144,7 @@ public class LeesEnemyAI : MonoBehaviour
         // SCENARIO B: FLIGHT (Odadan Kaçış)
         if (currentRoom != spawnRoom)
         {
-            TriggerDeath("Scenario B: Odadan dışarı kaçıldı! (Flight)");
+            TriggerDeath("Scenario B: Odadan dışarı kaçıldı! (Flight)", true);
             return;
         }
 
@@ -153,6 +156,7 @@ public class LeesEnemyAI : MonoBehaviour
             if (isVisible)
             {
                 hasBeenSpotted = true;
+                hasTurnedAway = false; // İlk görüşte henüz dönmedi
                 currentReactionTimer = 0f;
                 Debug.Log("Lees: FARK EDİLDİ!");
             }
@@ -168,7 +172,15 @@ public class LeesEnemyAI : MonoBehaviour
         {
             if (isVisible)
             {
-                // HALA BAKIYOR (Scenario C)
+                // --- YENİ KURAL: GERİ DÖNÜP BAKARSAN ÖLÜRSÜN ---
+                if (hasTurnedAway)
+                {
+                    TriggerDeath("HATA: Arkasını döndükten sonra tekrar baktı!");
+                    return;
+                }
+                // -----------------------------------------------
+
+                // HALA BAKIYOR (Scenario C - İlk Bakışma)
                 currentReactionTimer += Time.deltaTime;
                 currentSurvivalTimer = 0f;
 
@@ -180,6 +192,8 @@ public class LeesEnemyAI : MonoBehaviour
             else
             {
                 // ARKASINI DÖNDÜ (Scenario D)
+                hasTurnedAway = true; // Artık "Döndü" olarak işaretledik
+
                 if (playerSpeed > movementTolerance)
                 {
                     TriggerDeath("Scenario D Hatası: Arkasını döndün ama hareket ettin!");
@@ -201,23 +215,54 @@ public class LeesEnemyAI : MonoBehaviour
     }
 
     // --- TETİKLEYİCİ ---
-    public void TriggerDeath(string reason)
+    public void TriggerDeath(string reason, bool spawnBehind = false)
     {
         Debug.LogError($"ÖLÜM: {reason}");
 
-        // Eğer zaten Jumpscare modundaysak tekrar çalışma
         if (currentState == LeesState.Jumpscare)
             return;
 
-        StartCoroutine(ExecuteSmartJumpscare());
+        if (spawnBehind)
+        {
+            StartCoroutine(ExecuteBehindJumpscare());
+        }
+        else
+        {
+            StartCoroutine(ExecuteSmartJumpscare());
+        }
     }
 
-    // --- AKILLI JUMPSCARE (SAĞA/SOLA GEÇME) ---
+    private IEnumerator ExecuteBehindJumpscare()
+    {
+        currentState = LeesState.Jumpscare;
+
+        Vector3 behindPos =
+            playerTransform.position - (playerTransform.forward * jumpscareDistance);
+        behindPos.y = playerTransform.position.y + jumpscareYOffset;
+
+        transform.position = behindPos;
+        transform.LookAt(
+            new Vector3(
+                playerTransform.position.x,
+                transform.position.y,
+                playerTransform.position.z
+            )
+        );
+
+        ShowModel(true);
+
+        if (JumpscareManager.Instance != null)
+        {
+            JumpscareManager.Instance.StartJumpscare(transform, true);
+        }
+
+        yield return null;
+    }
+
     private IEnumerator ExecuteSmartJumpscare()
     {
         currentState = LeesState.Jumpscare;
 
-        // 1. Müsait Tarafı Bul (Sağ mı Sol mu?)
         bool rightIsClear = !Physics.Raycast(
             playerTransform.position + Vector3.up,
             playerTransform.right,
@@ -246,16 +291,13 @@ public class LeesEnemyAI : MonoBehaviour
         }
         else
         {
-            // İki taraf da doluysa (dar koridor), mecburen sağa koyalım (duvar içinden çıksın)
             spawnOnRight = true;
             targetPos =
                 playerTransform.position + (playerTransform.right * (jumpscareDistance * 0.5f));
         }
 
-        // Yükseklik ayarı
         targetPos.y = playerTransform.position.y + jumpscareYOffset;
 
-        // 2. Işınla ve Döndür
         transform.position = targetPos;
         transform.LookAt(
             new Vector3(
@@ -267,20 +309,14 @@ public class LeesEnemyAI : MonoBehaviour
 
         ShowModel(true);
 
-        // 3. Jumpscare Manager'ı Tetikle
         if (JumpscareManager.Instance != null)
         {
-            JumpscareManager.Instance.StartDirectionalJumpscare(transform, spawnOnRight);
-        }
-        else
-        {
-            Debug.LogError("JumpscareManager sahnede bulunamadı!");
+            JumpscareManager.Instance.StartJumpscare(transform, spawnOnRight);
         }
 
         yield return null;
     }
 
-    // --- SPAWN SİSTEMİ ---
     private void CheckSpawnLogic()
     {
         if (
@@ -294,7 +330,6 @@ public class LeesEnemyAI : MonoBehaviour
         if (!GlobalEnemyManager.Instance.CanAttack())
             return;
 
-        // Şans Hesapla
         float chance = baseSpawnChance + (timeSpentInCurrentRoom * chanceIncreasePerSecond);
         chance = Mathf.Clamp(chance, 0f, 90f);
 
@@ -311,7 +346,6 @@ public class LeesEnemyAI : MonoBehaviour
 
         Transform bestPoint = GetSafeSpawnPoint();
 
-        // Eğer hiçbir nokta uygun değilse çık (Görünürde doğmasın)
         if (bestPoint == null)
         {
             Debug.LogWarning("Lees: Uygun spawn noktası bulunamadı. Pas geçiliyor.");
@@ -321,7 +355,6 @@ public class LeesEnemyAI : MonoBehaviour
         spawnRoom = currentRoom;
 
         transform.position = bestPoint.position;
-        // Yüzünü oyuncuya dön (Y ekseninde)
         Vector3 targetPostition = new Vector3(
             playerTransform.position.x,
             transform.position.y,
@@ -332,14 +365,13 @@ public class LeesEnemyAI : MonoBehaviour
         GlobalEnemyManager.Instance.RegisterAttackStart();
         currentState = LeesState.Active;
 
-        // Saldırı başladığında şansı sıfırla
         timeSpentInCurrentRoom = 0;
 
-        // Sayaçları Sıfırla
         currentIgnoranceTimer = 0;
         currentReactionTimer = 0;
         currentSurvivalTimer = 0;
         hasBeenSpotted = false;
+        hasTurnedAway = false; // Spawn olunca sıfırla
         lastPlayerPos = playerTransform.position;
 
         ShowModel(true);
@@ -347,6 +379,9 @@ public class LeesEnemyAI : MonoBehaviour
 
     private Transform GetSafeSpawnPoint()
     {
+        if (currentRoom == null || currentRoom.spawnPoints.Count == 0)
+            return null;
+
         List<Transform> validPoints = new List<Transform>();
 
         foreach (Transform point in currentRoom.spawnPoints)
@@ -357,10 +392,8 @@ public class LeesEnemyAI : MonoBehaviour
             Vector3 directionToPoint = (point.position - playerTransform.position).normalized;
             float dotProduct = Vector3.Dot(playerTransform.forward, directionToPoint);
 
-            // Oyuncunun arkasında mı? (< -0.2)
             if (dotProduct < -0.2f)
             {
-                // Ekranda değil mi?
                 if (!IsPointOnScreen(point.position))
                 {
                     validPoints.Add(point);
@@ -368,27 +401,26 @@ public class LeesEnemyAI : MonoBehaviour
             }
         }
 
-        // Eğer uygun nokta varsa birini seç
         if (validPoints.Count > 0)
         {
             return validPoints[Random.Range(0, validPoints.Count)];
         }
 
-        // YEDEK PLAN: Eğer hiç uygun nokta yoksa ve oyunun durmasını istemiyorsak
-        // Rastgele bir noktada doğsun (Bunu istersen kapatabilirsin)
-        if (currentRoom.spawnPoints.Count > 0)
+        validPoints.Clear();
+        foreach (Transform point in currentRoom.spawnPoints)
         {
-            Debug.LogWarning("Lees: Güvenli nokta yok, rastgele doğuyor.");
-            return currentRoom.spawnPoints[Random.Range(0, currentRoom.spawnPoints.Count)];
+            if (point != null && !IsPointOnScreen(point.position))
+                validPoints.Add(point);
         }
 
-        return null;
+        if (validPoints.Count > 0)
+            return validPoints[Random.Range(0, validPoints.Count)];
+
+        return currentRoom.spawnPoints[Random.Range(0, currentRoom.spawnPoints.Count)];
     }
 
-    // --- YARDIMCI FONKSİYONLAR ---
     private bool CheckIfVisible()
     {
-        // 1. Ekran Kontrolü
         Vector3 viewPos = playerCamera.WorldToViewportPoint(transform.position);
         bool onScreen = (
             viewPos.x >= 0 && viewPos.x <= 1 && viewPos.y >= 0 && viewPos.y <= 1 && viewPos.z > 0
@@ -397,7 +429,6 @@ public class LeesEnemyAI : MonoBehaviour
         if (!onScreen)
             return false;
 
-        // 2. Raycast Kontrolü (Duvar vs.)
         Vector3 origin =
             eyesPosition != null ? eyesPosition.position : transform.position + Vector3.up * 1.6f;
         Vector3 direction = playerCamera.transform.position - origin;
@@ -406,16 +437,13 @@ public class LeesEnemyAI : MonoBehaviour
         RaycastHit hit;
         if (Physics.Raycast(origin, direction, out hit, distance + 0.5f, obstacleMask))
         {
-            // Eğer oyuncuya çarptıysa GÖRÜYOR demektir
             if (hit.transform == playerTransform || hit.transform.IsChildOf(playerTransform))
             {
                 return true;
             }
-            // Başka bir şeye (duvar) çarptıysa GÖREMİYOR
             return false;
         }
 
-        // Hiçbir şeye çarpmadıysa (boşluktaysa) görüyor kabul et
         return true;
     }
 
@@ -444,7 +472,6 @@ public class LeesEnemyAI : MonoBehaviour
         currentState = LeesState.Hidden;
         ShowModel(false);
 
-        // Cooldown'ı başlat
         currentCooldownTimer = spawnCooldownAfterDespawn;
     }
 
@@ -456,7 +483,6 @@ public class LeesEnemyAI : MonoBehaviour
             c.enabled = show;
     }
 
-    // Editör İçin
     public float GetCurrentSpawnChance()
     {
         if (currentRoom == null || !currentRoom.isDangerous)
