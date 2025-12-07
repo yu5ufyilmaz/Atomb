@@ -509,6 +509,57 @@ public class GuderianAI : MonoBehaviour
         TriggerPositionedJumpscare(JumpscareType.InFrontOfPlayer);
     }
 
+    // --- YENİ EKLENTİLER: DOLAP SİSTEMİ İÇİN ---
+
+    // Oyuncu bu dolabın içinde mi ve Guderian onu pusuya düşürdü mü?
+    public bool IsCampingPlayer(HidingSpot spot)
+    {
+        // Eğer Guderian arama modundaysa (Searching) VE oyuncunun olduğu odayı biliyorsa
+        // Basit bir mantık: Oyuncu odada gizliyse ve süre dolmak üzereyse "Buldum" diyebilir.
+
+        // Şimdilik basit tutalım: Eğer Guderian Searching modundaysa ve oyuncu saklandığı yerden çıkmaya çalışırsa %100 yakalasın mı?
+        // Yoksa mesafe kontrolü mü yapalım?
+
+        if (currentState == GuderianState.Searching && activeRoom != null)
+        {
+            // Eğer Guderian oyuncunun saklandığı odayı arıyorsa ve oyuncu çıkmaya çalışırsa
+            // Mesafe kontrolü yapalım. Eğer Guderian dolaba 3 metreden yakınsa yakalar.
+            float dist = Vector3.Distance(transform.position, spot.transform.position);
+            if (dist < 4.0f)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // Dolap Jumpscare'i: Oyuncu içeriden dışarı bakarken Guderian belirir
+    public void TriggerLockerJumpscare(Transform lockerExitPoint)
+    {
+        currentState = GuderianState.Jumpscare;
+        StopAllCoroutines();
+
+        // Guderian'ı dolabın tam önüne (çıkış noktasına) ışınla
+        // Oyuncuya (dolabın içine) baksın
+        if (lockerExitPoint != null)
+        {
+            transform.position = lockerExitPoint.position;
+            transform.LookAt(lockerExitPoint.position - lockerExitPoint.forward); // Dolaba dön
+        }
+
+        guderianModel.SetActive(true);
+        if (audioSource)
+            audioSource.PlayOneShot(jumpscareSound);
+
+        Debug.LogError("GUDERIAN: Dolaptan çıkarken yakaladı!");
+
+        // Jumpscare kamerasını tetikle (Animasyonsuz, çünkü zaten bakışıyoruz)
+        if (JumpscareManager.Instance != null)
+        {
+            JumpscareManager.Instance.StartJumpscare(transform, false);
+        }
+    }
+
     public void ForceLeave()
     {
         if (currentState == GuderianState.Hidden)
