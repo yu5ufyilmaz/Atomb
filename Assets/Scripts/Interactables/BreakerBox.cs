@@ -1,27 +1,36 @@
-using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq; 
+using System.Linq;
+using UnityEngine;
 
 public class BreakerBox : MonoBehaviour, IInteractable
 {
     public static BreakerBox Instance;
 
-    [Header("Breaker Ayarları")] 
-    [SerializeField] private float checkInterval = 180f;
-    
+    [Header("Breaker Ayarları")]
+    [SerializeField]
+    private float checkInterval = 180f;
+
     [Tooltip("Sisteme kayıtlı TÜM ışıklar yandığında oluşacak temel risk (örn: 0.8 = %80)")]
-    [SerializeField] [Range(0.1f, 1f)] private float maxRiskAtFullLoad = 0.8f; 
-    
+    [SerializeField]
+    [Range(0.1f, 1f)]
+    private float maxRiskAtFullLoad = 0.8f;
+
     [Tooltip("Her bir stabil döngünün riske eklediği çarpan (örn: 0.01 = %1)")]
-    [SerializeField] private float cycleRiskMultiplier = 0.01f;
+    [SerializeField]
+    private float cycleRiskMultiplier = 0.01f;
 
     [Header("Audio")]
-    [SerializeField] private AudioSource audioSource;
-    [SerializeField] private AudioClip breakerTripSound; 
-    [SerializeField] private AudioClip breakerResetSound; 
+    [SerializeField]
+    private AudioSource audioSource;
 
-    private int cycleCount = 0; 
+    [SerializeField]
+    private AudioClip breakerTripSound;
+
+    [SerializeField]
+    private AudioClip breakerResetSound;
+
+    private int cycleCount = 0;
     private bool isTripped = false;
     private List<ControllableLight> allLights = new List<ControllableLight>();
 
@@ -32,8 +41,10 @@ public class BreakerBox : MonoBehaviour, IInteractable
 
     private void Awake()
     {
-        if (Instance == null) Instance = this;
-        else Destroy(gameObject);
+        if (Instance == null)
+            Instance = this;
+        else
+            Destroy(gameObject);
     }
 
     private void Start()
@@ -76,16 +87,16 @@ public class BreakerBox : MonoBehaviour, IInteractable
                 // ŞARTEL ATIK: 180 saniye bekleme.
                 // Oyuncu şarteli kaldırana kadar (isTripped = false olana kadar)
                 // her frame hızlıca kontrol et.
-                yield return null; 
+                yield return null;
             }
             else
             {
                 // ŞARTEL AÇIK: 180 saniye bekle.
                 yield return new WaitForSeconds(checkInterval);
-                
+
                 // 180 saniye sonra, HÂLÂ AÇIKSA (bu bekleme sırasında atik duruma geçmemişse)
                 // risk kontrolünü çalıştır.
-                if (!isTripped) 
+                if (!isTripped)
                 {
                     RunRiskCheck();
                 }
@@ -98,7 +109,7 @@ public class BreakerBox : MonoBehaviour, IInteractable
     {
         int activeLights = GetActiveLightCount();
         int totalLights = allLights.Count;
-        
+
         // Eğer hiç ışık yanmıyorsa VEYA sisteme kayıtlı hiç ışık yoksa risk olmaz
         if (activeLights == 0 || totalLights == 0)
         {
@@ -108,20 +119,22 @@ public class BreakerBox : MonoBehaviour, IInteractable
 
         // 4. "Calculate the probability..."
         float loadPercentage = (float)activeLights / totalLights;
-        float baseRisk = loadPercentage * maxRiskAtFullLoad; 
+        float baseRisk = loadPercentage * maxRiskAtFullLoad;
         float cycleRisk = cycleCount * cycleRiskMultiplier;
-        float tripChance = Mathf.Clamp01(baseRisk + cycleRisk); 
+        float tripChance = Mathf.Clamp01(baseRisk + cycleRisk);
 
-        Debug.Log($"Breaker Check: {activeLights}/{totalLights} ışık (%{loadPercentage * 100:F0} yük). Temel Risk: {baseRisk * 100:F0}%. Döngü Riski: {cycleRisk * 100:F0}%. Toplam Trip Şansı: {tripChance * 100:F0}%");
+        Debug.Log(
+            $"Breaker Check: {activeLights}/{totalLights} ışık (%{loadPercentage * 100:F0} yük). Temel Risk: {baseRisk * 100:F0}%. Döngü Riski: {cycleRisk * 100:F0}%. Toplam Trip Şansı: {tripChance * 100:F0}%"
+        );
 
         if (Random.value < tripChance)
         {
             // 7. "YES" -> "Trigger global BREAKER TRIP event."
             Debug.LogWarning("BREAKER TRIPPED! System risk reset.");
             isTripped = true;
-            cycleCount = 0; 
+            cycleCount = 0;
             PlaySound(breakerTripSound);
-            OnBreakerTripped?.Invoke(); 
+            OnBreakerTripped?.Invoke();
         }
         else
         {
@@ -137,13 +150,14 @@ public class BreakerBox : MonoBehaviour, IInteractable
     #region IInteractable (Şarteli Kaldırma)
     public void Interact()
     {
-        if (!isTripped) return; 
+        if (!isTripped)
+            return;
 
         Debug.Log("Breaker Manually Reset!");
         isTripped = false;
-        cycleCount = 0; 
+        cycleCount = 0;
         PlaySound(breakerResetSound);
-        OnBreakerReset?.Invoke(); 
+        OnBreakerReset?.Invoke();
     }
 
     public string GetInteractionPrompt()
@@ -159,4 +173,25 @@ public class BreakerBox : MonoBehaviour, IInteractable
             audioSource.PlayOneShot(clip);
         }
     }
+
+    #region GETTERS
+    public float GetCurrentRiskPercentage()
+    {
+        if (allLights.Count == 0)
+            return 0f;
+
+        int activeLights = GetActiveLightCount();
+        float loadPercentage = (float)activeLights / allLights.Count;
+        float baseRisk = loadPercentage * maxRiskAtFullLoad;
+        float cycleRisk = cycleCount * cycleRiskMultiplier;
+
+        return Mathf.Clamp01(baseRisk + cycleRisk);
+    }
+
+    public int GetActiveLightCountPublic() => GetActiveLightCount();
+
+    public int GetTotalLightCount() => allLights.Count;
+
+    public int GetCycleCount() => cycleCount;
+    #endregion
 }

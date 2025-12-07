@@ -9,16 +9,17 @@ public class RoomEditor : Editor
     {
         RoomManager room = (RoomManager)target;
 
-        // --- STİL TANIMLARI ---
-        GUIStyle titleStyle = new GUIStyle(GUI.skin.label) { alignment = TextAnchor.MiddleCenter, fontSize = 14, fontStyle = FontStyle.Bold };
-        
-        // DÜZELTİLEN SATIR BURASI:
-        GUIStyle sectionStyle = new GUIStyle(EditorStyles.helpBox); 
-        
-        // --- BAŞLIK ---
+        GUIStyle titleStyle = new GUIStyle(GUI.skin.label)
+        {
+            alignment = TextAnchor.MiddleCenter,
+            fontSize = 14,
+            fontStyle = FontStyle.Bold,
+        };
+        GUIStyle sectionStyle = new GUIStyle(EditorStyles.helpBox);
+
         EditorGUILayout.Space(10);
         Rect rect = EditorGUILayout.GetControlRect(false, 30);
-        EditorGUI.DrawRect(rect, new Color(0.2f, 0.2f, 0.2f)); // Koyu gri zemin
+        EditorGUI.DrawRect(rect, new Color(0.2f, 0.2f, 0.2f));
         EditorGUI.LabelField(rect, room.roomName.ToUpper(), titleStyle);
         EditorGUILayout.Space(5);
 
@@ -30,14 +31,29 @@ public class RoomEditor : Editor
 
         EditorGUILayout.Space(10);
 
+        // --- IŞIK SİSTEMİ (ARTIK BURADA) ---
+        EditorGUILayout.BeginVertical(sectionStyle);
+        EditorGUILayout.LabelField("💡 Elektrik & Işıklandırma", EditorStyles.boldLabel);
+        // Guderian olsun olmasın, ışıklar her zaman ayarlanabilir
+        EditorGUILayout.PropertyField(
+            serializedObject.FindProperty("roomLights"),
+            new GUIContent("Oda Işıkları"),
+            true
+        );
+        EditorGUILayout.EndVertical();
+
+        EditorGUILayout.Space(10);
+
         // --- LEES BÖLÜMÜ ---
         EditorGUILayout.BeginVertical(sectionStyle);
         EditorGUILayout.LabelField("👻 Lees Yapılandırması", EditorStyles.boldLabel);
-        
+
         Color defaultColor = GUI.backgroundColor;
-        GUI.backgroundColor = room.isDangerous ? new Color(1f, 0.4f, 0.4f) : new Color(0.4f, 1f, 0.4f);
+        GUI.backgroundColor = room.isDangerous
+            ? new Color(1f, 0.4f, 0.4f)
+            : new Color(0.4f, 1f, 0.4f);
         string statusText = room.isDangerous ? "DURUM: TEHLİKELİ BÖLGE" : "DURUM: GÜVENLİ BÖLGE";
-        
+
         if (GUILayout.Button(statusText, GUILayout.Height(30)))
         {
             room.isDangerous = !room.isDangerous;
@@ -48,12 +64,14 @@ public class RoomEditor : Editor
         {
             EditorGUILayout.Space(5);
             if (GUILayout.Button("📍 Yeni Lees Spawn Noktası Ekle", GUILayout.Height(25)))
-            {
                 CreatePoint(room, "Lees_Spawn", "LeesSpawnPointParent", room.spawnPoints);
-            }
-            
+
             EditorGUI.indentLevel++;
-            EditorGUILayout.PropertyField(serializedObject.FindProperty("spawnPoints"), new GUIContent("Spawn Noktaları"), true);
+            EditorGUILayout.PropertyField(
+                serializedObject.FindProperty("spawnPoints"),
+                new GUIContent("Spawn Noktaları"),
+                true
+            );
             EditorGUI.indentLevel--;
         }
         EditorGUILayout.EndVertical();
@@ -64,7 +82,10 @@ public class RoomEditor : Editor
         EditorGUILayout.BeginVertical(sectionStyle);
         EditorGUILayout.LabelField("👹 Guderian Yapılandırması", EditorStyles.boldLabel);
 
-        room.canGuderianSpawn = EditorGUILayout.Toggle("Guderian Gelebilir Mi?", room.canGuderianSpawn);
+        room.canGuderianSpawn = EditorGUILayout.Toggle(
+            "Guderian Gelebilir Mi?",
+            room.canGuderianSpawn
+        );
 
         if (room.canGuderianSpawn)
         {
@@ -74,13 +95,15 @@ public class RoomEditor : Editor
             GUI.backgroundColor = defaultColor;
 
             EditorGUILayout.LabelField("1. Giriş Sistemi:", EditorStyles.miniBoldLabel);
-            EditorGUILayout.PropertyField(serializedObject.FindProperty("roomDoor"), new GUIContent("Oda Kapısı"));
-            
-            // --- GİRİŞ/ÇIKIŞ BUTONLARI ---
+            EditorGUILayout.PropertyField(
+                serializedObject.FindProperty("roomDoor"),
+                new GUIContent("Oda Kapısı")
+            );
+
             EditorGUILayout.BeginHorizontal();
             if (GUILayout.Button("Dışarı Noktası (Koridor)", GUILayout.Height(25)))
                 CreateSinglePoint(room, "Door_Outside_Point", ref room.doorOutsidePoint);
-            
+
             if (GUILayout.Button("İçeri Noktası (Oda)", GUILayout.Height(25)))
                 CreateSinglePoint(room, "Door_Inside_Point", ref room.doorInsidePoint);
             EditorGUILayout.EndHorizontal();
@@ -89,29 +112,45 @@ public class RoomEditor : Editor
             EditorGUILayout.PropertyField(serializedObject.FindProperty("doorInsidePoint"));
 
             EditorGUILayout.Space(5);
-            EditorGUILayout.LabelField("2. Arama & Saklanma:", EditorStyles.miniBoldLabel);
-            EditorGUILayout.PropertyField(serializedObject.FindProperty("roomLights"), true);
+            // IŞIKLAR BURADAN KALDIRILDI!
+            EditorGUILayout.LabelField("2. Saklanma & Rota:", EditorStyles.miniBoldLabel);
             EditorGUILayout.PropertyField(serializedObject.FindProperty("hidingSpots"), true);
 
             EditorGUILayout.Space(10);
-            
+
             GUI.backgroundColor = new Color(0.4f, 0.7f, 1f);
             if (GUILayout.Button("👣 Yeni Devriye Noktası Ekle", GUILayout.Height(25)))
-            {
-                CreatePoint(room, "Guderian_Patrol", "GuderianSearchSpot", room.guderianPatrolPoints);
-            }
+                CreatePoint(
+                    room,
+                    "Guderian_Patrol",
+                    "GuderianSearchSpot",
+                    room.guderianPatrolPoints
+                );
             GUI.backgroundColor = defaultColor;
 
             EditorGUI.indentLevel++;
-            EditorGUILayout.PropertyField(serializedObject.FindProperty("guderianPatrolPoints"), new GUIContent("Devriye Rota Listesi"), true);
+            EditorGUILayout.PropertyField(
+                serializedObject.FindProperty("guderianPatrolPoints"),
+                new GUIContent("Devriye Rota Listesi"),
+                true
+            );
             EditorGUI.indentLevel--;
         }
         EditorGUILayout.EndVertical();
 
-        if (GUI.changed) { EditorUtility.SetDirty(room); serializedObject.ApplyModifiedProperties(); }
+        if (GUI.changed)
+        {
+            EditorUtility.SetDirty(room);
+            serializedObject.ApplyModifiedProperties();
+        }
     }
 
-    void CreatePoint(RoomManager room, string baseName, string parentName, System.Collections.Generic.List<Transform> list)
+    void CreatePoint(
+        RoomManager room,
+        string baseName,
+        string parentName,
+        System.Collections.Generic.List<Transform> list
+    )
     {
         Transform parentTransform = room.transform.Find(parentName);
         if (parentTransform == null)
@@ -132,7 +171,11 @@ public class RoomEditor : Editor
 
     void CreateSinglePoint(RoomManager room, string name, ref Transform targetField)
     {
-        if (targetField != null) { Selection.activeGameObject = targetField.gameObject; return; }
+        if (targetField != null)
+        {
+            Selection.activeGameObject = targetField.gameObject;
+            return;
+        }
 
         GameObject newPoint = new GameObject(name);
         newPoint.transform.SetParent(room.transform);

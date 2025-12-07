@@ -1,34 +1,39 @@
-using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
 
 public class PasswordManager : MonoBehaviour
 {
     public static PasswordManager Instance;
-    
+
     [Header("Tüm Olası Şifre Verileri")]
-    [SerializeField] private List<PasswordData> allPossiblePasswordData; 
-    
+    [SerializeField]
+    private List<PasswordData> allPossiblePasswordData;
+
     [Header("Sahnedeki Potansiyel Şifreli Kitaplar")]
-    [SerializeField] private List<InteractableBook> allPasswordBooksInLevel;
+    [SerializeField]
+    private List<InteractableBook> allPasswordBooksInLevel;
 
     [Header("Mevcut Oyun Durumu")]
     [Tooltip("Turing makinesindeki gösterge (ışık) sayısı ile aynı olmalı.")]
-    [SerializeField] private int requiredPasswordCount = 5; // 5 göstergeniz var
-    
+    [SerializeField]
+    private int requiredPasswordCount = 5; // 5 göstergeniz var
+
     // Oyuncunun bu oyunda bulması gereken şifre ID'leri
-    private List<string> requiredPasswords = new List<string>(); 
-    
+    private List<string> requiredPasswords = new List<string>();
+
     // Oyuncunun kitaplardan "keşfettiği" (not defterine giden) şifreler
     private List<string> discoveredClues = new List<string>();
-    
+
     // Oyuncunun makineye "doğru girdiği" (ışıkları yakan) şifreler
     private List<string> validatedPasswords = new List<string>();
 
     private void Awake()
     {
-        if (Instance == null) Instance = this;
-        else Destroy(gameObject);
+        if (Instance == null)
+            Instance = this;
+        else
+            Destroy(gameObject);
     }
 
     private void Start()
@@ -60,7 +65,7 @@ public class PasswordManager : MonoBehaviour
 
             PasswordData dataToAssign = shuffledPasswordData[i];
             InteractableBook bookToAssign = shuffledBooks[i];
-            
+
             bookToAssign.AssignPassword(dataToAssign);
             requiredPasswords.Add(dataToAssign.passwordID);
         }
@@ -76,7 +81,7 @@ public class PasswordManager : MonoBehaviour
         {
             discoveredClues.Add(passwordID);
             Debug.Log($"İpucu keşfedildi: {passwordID}");
-            
+
             // Not defterine bildirim gönder
             if (NotebookUI.Instance != null)
             {
@@ -95,7 +100,7 @@ public class PasswordManager : MonoBehaviour
             Debug.Log($"Şifre DOĞRULANDI: {passwordID}");
             return true; // Başarılı (yeni doğrulandı)
         }
-        
+
         // Ya yanlış ya da zaten doğrulanmış
         return false; // Başarısız
     }
@@ -105,15 +110,26 @@ public class PasswordManager : MonoBehaviour
     {
         return discoveredClues;
     }
-    
+
     // Turing makinesi bu sayıyı kullanır
     public int GetValidatedPasswordCount()
     {
         return validatedPasswords.Count;
     }
-    
+
     public bool HasFoundAllRequiredPasswords()
     {
         return validatedPasswords.Count == requiredPasswords.Count;
     }
+
+    #region GETTERS
+    public int GetTotalRequiredCount() => requiredPasswordCount;
+
+    public int GetFoundCount() => discoveredClues.Count;
+
+    public int GetValidatedCount() => validatedPasswords.Count;
+
+    // Hangi şifrelerin bulunduğunu liste olarak verir
+    public List<string> GetFoundPasswordsList() => discoveredClues;
+    #endregion
 }

@@ -230,6 +230,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   roomName: Room_Area
+  roomLights: []
   isDangerous: 1
   spawnPoints:
   - {fileID: 556896077}
@@ -237,7 +238,6 @@ MonoBehaviour:
   roomDoor: {fileID: 0}
   doorOutsidePoint: {fileID: 0}
   doorInsidePoint: {fileID: 0}
-  roomLights: []
   hidingSpots: []
   guderianPatrolPoints: []
 --- !u!65 &30740255
@@ -463,7 +463,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   targetLight: {fileID: 1159236025}
-  desiredStateIsOn: 1
+  desiredStateIsOn: 0
   switchSound: {fileID: 0}
   errorSound: {fileID: 0}
   audioSource: {fileID: 0}
@@ -556,7 +556,8 @@ Transform:
   m_LocalPosition: {x: 1.5999999, y: 0, z: 0}
   m_LocalScale: {x: 0.49, y: 0.49, z: 0.49}
   m_ConstrainProportionsScale: 1
-  m_Children: []
+  m_Children:
+  - {fileID: 1159236023}
   m_Father: {fileID: 1860681090}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &88662701
@@ -696,11 +697,11 @@ Transform:
   m_GameObject: {fileID: 115289556}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 3.928, y: 3.395, z: 14.847}
-  m_LocalScale: {x: 0.49, y: 0.49, z: 0.49}
+  m_LocalPosition: {x: -5.0959187, y: 4.853061, z: -0.49591842}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 844182577}
+  m_Father: {fileID: 1781581033}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &115289558
 MonoBehaviour:
@@ -851,7 +852,7 @@ Light:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 115289556}
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 11
   m_Type: 2
   m_Color: {r: 0.62352943, g: 0.54139704, b: 0, a: 1}
@@ -2001,7 +2002,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::NotebookUI
   notebookPanel: {fileID: 1735270668}
   passwordListText: {fileID: 627914910}
-  notificationPanel: {fileID: 0}
+  notificationPanel: {fileID: 314848057}
 --- !u!1 &314848057
 GameObject:
   m_ObjectHideFlags: 0
@@ -2753,7 +2754,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   targetLight: {fileID: 1726911752}
-  desiredStateIsOn: 1
+  desiredStateIsOn: 0
   switchSound: {fileID: 0}
   errorSound: {fileID: 0}
   audioSource: {fileID: 0}
@@ -3580,6 +3581,7 @@ Transform:
   - {fileID: 211895211}
   - {fileID: 1360908236}
   - {fileID: 1847027963}
+  - {fileID: 846463804}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &542508511
@@ -6016,13 +6018,65 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 1726911754}
-  - {fileID: 1159236023}
-  - {fileID: 1889791878}
-  - {fileID: 115289557}
+  m_Children: []
   m_Father: {fileID: 784564593}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &846463803
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 846463804}
+  - component: {fileID: 846463805}
+  m_Layer: 0
+  m_Name: GameManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &846463804
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 846463803}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 491873391}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &846463805
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 846463803}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe8cdea175771b34399f6e986595aa78, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  breakerBox: {fileID: 1615095834}
+  passwordManager: {fileID: 914896467}
+  pressureManager: {fileID: 211895210}
+  allRooms:
+  - {fileID: 1302058744}
+  - {fileID: 1328313841}
+  - {fileID: 2125040026}
+  - {fileID: 1039778973}
+  - {fileID: 1201733591}
+  - {fileID: 30740254}
+  - {fileID: 1646726434}
+  isGamePaused: 0
 --- !u!1 &874605735
 GameObject:
   m_ObjectHideFlags: 0
@@ -7113,7 +7167,8 @@ Transform:
   m_LocalPosition: {x: 2.4569998, y: 0, z: 0}
   m_LocalScale: {x: 0.49, y: 0.49, z: 0.49}
   m_ConstrainProportionsScale: 1
-  m_Children: []
+  m_Children:
+  - {fileID: 1726911754}
   m_Father: {fileID: 1860681090}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &978826695
@@ -7129,7 +7184,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   targetLight: {fileID: 1726911752}
-  desiredStateIsOn: 1
+  desiredStateIsOn: 0
   switchSound: {fileID: 0}
   errorSound: {fileID: 0}
   audioSource: {fileID: 0}
@@ -7754,7 +7809,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   targetLight: {fileID: 1889791876}
-  desiredStateIsOn: 1
+  desiredStateIsOn: 0
   switchSound: {fileID: 0}
   errorSound: {fileID: 0}
   audioSource: {fileID: 0}
@@ -7847,7 +7902,8 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 0.49, y: 0.49, z: 0.49}
   m_ConstrainProportionsScale: 1
-  m_Children: []
+  m_Children:
+  - {fileID: 1889791878}
   m_Father: {fileID: 1860681090}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1039778971
@@ -7896,13 +7952,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   roomName: Fuse_Room
+  roomLights: []
   isDangerous: 0
   spawnPoints: []
   canGuderianSpawn: 0
   roomDoor: {fileID: 0}
   doorOutsidePoint: {fileID: 0}
   doorInsidePoint: {fileID: 0}
-  roomLights: []
   hidingSpots: []
   guderianPatrolPoints: []
 --- !u!65 &1039778974
@@ -8602,11 +8658,11 @@ Transform:
   m_GameObject: {fileID: 1159236022}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.644, y: 3.395, z: 14.847}
-  m_LocalScale: {x: 0.49, y: 0.49, z: 0.49}
+  m_LocalPosition: {x: -13.528572, y: 4.853061, z: -0.49591842}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 844182577}
+  m_Father: {fileID: 83947995}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1159236024
 MonoBehaviour:
@@ -8897,7 +8953,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   targetLight: {fileID: 115289559}
-  desiredStateIsOn: 1
+  desiredStateIsOn: 0
   switchSound: {fileID: 0}
   errorSound: {fileID: 0}
   audioSource: {fileID: 0}
@@ -9084,6 +9140,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   roomName: Office_Room
+  roomLights:
+  - {fileID: 433840400}
+  - {fileID: 1134978558}
+  - {fileID: 182256110}
+  - {fileID: 1177338851}
   isDangerous: 1
   spawnPoints:
   - {fileID: 21514874}
@@ -9095,11 +9156,6 @@ MonoBehaviour:
   roomDoor: {fileID: 2226780882230219282}
   doorOutsidePoint: {fileID: 1525713151}
   doorInsidePoint: {fileID: 366771450}
-  roomLights:
-  - {fileID: 433840400}
-  - {fileID: 1134978558}
-  - {fileID: 182256110}
-  - {fileID: 1177338851}
   hidingSpots:
   - {fileID: 454887305}
   guderianPatrolPoints:
@@ -9149,15 +9205,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8944336655422409503, guid: f6d148d888ffbf54b9afe9936dfaec1f, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 13.009187
+      value: 13.194936
       objectReference: {fileID: 0}
     - target: {fileID: 8944336655422409503, guid: f6d148d888ffbf54b9afe9936dfaec1f, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 1.7
+      value: 1.65
       objectReference: {fileID: 0}
     - target: {fileID: 8944336655422409503, guid: f6d148d888ffbf54b9afe9936dfaec1f, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 5.9742785
+      value: 5.8797994
       objectReference: {fileID: 0}
     - target: {fileID: 8944336655422409503, guid: f6d148d888ffbf54b9afe9936dfaec1f, type: 3}
       propertyPath: m_LocalRotation.w
@@ -9455,6 +9511,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   roomName: Chemistry_Lab
+  roomLights:
+  - {fileID: 978826695}
+  - {fileID: 83947991}
+  - {fileID: 1028803236}
+  - {fileID: 1781581029}
   isDangerous: 1
   spawnPoints:
   - {fileID: 894529377}
@@ -9465,7 +9526,6 @@ MonoBehaviour:
   roomDoor: {fileID: 0}
   doorOutsidePoint: {fileID: 0}
   doorInsidePoint: {fileID: 0}
-  roomLights: []
   hidingSpots: []
   guderianPatrolPoints: []
 --- !u!65 &1302058745
@@ -9605,13 +9665,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   roomName: Corridor
+  roomLights: []
   isDangerous: 0
   spawnPoints: []
   canGuderianSpawn: 0
   roomDoor: {fileID: 0}
   doorOutsidePoint: {fileID: 0}
   doorInsidePoint: {fileID: 0}
-  roomLights: []
   hidingSpots: []
   guderianPatrolPoints: []
 --- !u!65 &1328313842
@@ -9753,6 +9813,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1360908236}
   - component: {fileID: 1360908237}
+  - component: {fileID: 1360908238}
   m_Layer: 0
   m_Name: Enemy_Manager
   m_TagString: Untagged
@@ -9788,6 +9849,26 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isAttackInProgress: 0
+  postAttackCooldown: 30
+  currentGlobalCooldown: 0
+--- !u!114 &1360908238
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1360908235}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 98846b6751b18e54cbbe71de5cd82df4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playerInput: {fileID: 0}
+  playerController: {fileID: 0}
+  playerAnimator: {fileID: 2023056414}
+  cameraRoot: {fileID: 700051398}
+  turnDuration: 0.2
+  scareDuration: 2
 --- !u!1 &1373385263
 GameObject:
   m_ObjectHideFlags: 0
@@ -9878,15 +9959,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2070925441746177912, guid: a1a802ecaf6775746bb2a929fb554ad8, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0.20000005
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2070925441746177912, guid: a1a802ecaf6775746bb2a929fb554ad8, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.32500005
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2070925441746177912, guid: a1a802ecaf6775746bb2a929fb554ad8, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0.09900001
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2070925441746177912, guid: a1a802ecaf6775746bb2a929fb554ad8, type: 3}
       propertyPath: m_LocalRotation.w
@@ -10541,6 +10622,8 @@ MonoBehaviour:
   maxReactionTime: 3
   survivalWaitTime: 10
   movementTolerance: 0.1
+  jumpscareDistance: 1.2
+  jumpscareYOffset: 1
   spawnCooldownAfterDespawn: 10
   debugCooldownTimer: 0
   debugReactionTimer: 0
@@ -12374,6 +12457,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   roomName: Room_Area
+  roomLights: []
   isDangerous: 1
   spawnPoints:
   - {fileID: 603963118}
@@ -12381,7 +12465,6 @@ MonoBehaviour:
   roomDoor: {fileID: 0}
   doorOutsidePoint: {fileID: 0}
   doorInsidePoint: {fileID: 0}
-  roomLights: []
   hidingSpots: []
   guderianPatrolPoints: []
 --- !u!65 &1646726435
@@ -12461,7 +12544,7 @@ Light:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1726911751}
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 11
   m_Type: 2
   m_Color: {r: 0.6226415, g: 0, b: 0, a: 1}
@@ -12670,11 +12753,11 @@ Transform:
   m_GameObject: {fileID: 1726911751}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 1.597025, y: 3.395, z: 14.847}
-  m_LocalScale: {x: 0.49, y: 0.49, z: 0.49}
+  m_LocalPosition: {x: -13.3326025, y: 4.853061, z: -0.49591842}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 844182577}
+  m_Father: {fileID: 978826694}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1735270668
 GameObject:
@@ -12877,6 +12960,18 @@ PrefabInstance:
     - target: {fileID: 4416926081852918490, guid: 64dce48905ffd9b4293e595fa6941544, type: 3}
       propertyPath: GroundLayers.m_Bits
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8338988566280778637, guid: 64dce48905ffd9b4293e595fa6941544, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0.023
+      objectReference: {fileID: 0}
+    - target: {fileID: 8338988566280778637, guid: 64dce48905ffd9b4293e595fa6941544, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 1.65
+      objectReference: {fileID: 0}
+    - target: {fileID: 8338988566280778637, guid: 64dce48905ffd9b4293e595fa6941544, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0.209
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -13397,7 +13492,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   targetLight: {fileID: 115289559}
-  desiredStateIsOn: 1
+  desiredStateIsOn: 0
   switchSound: {fileID: 0}
   errorSound: {fileID: 0}
   audioSource: {fileID: 0}
@@ -13490,7 +13585,8 @@ Transform:
   m_LocalPosition: {x: 0.75199986, y: 0, z: 0}
   m_LocalScale: {x: 0.49, y: 0.49, z: 0.49}
   m_ConstrainProportionsScale: 1
-  m_Children: []
+  m_Children:
+  - {fileID: 115289557}
   m_Father: {fileID: 1860681090}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1801715815
@@ -14590,11 +14686,11 @@ Transform:
   m_GameObject: {fileID: 1889791875}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 2.684, y: 3.395, z: 14.847}
-  m_LocalScale: {x: 0.49, y: 0.49, z: 0.49}
+  m_LocalPosition: {x: -6.1000004, y: 4.853061, z: -0.49591842}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 844182577}
+  m_Father: {fileID: 1028803240}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1919845628 stripped
 GameObject:
@@ -15464,13 +15560,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   roomName: Corridor
+  roomLights: []
   isDangerous: 0
   spawnPoints: []
   canGuderianSpawn: 0
   roomDoor: {fileID: 0}
   doorOutsidePoint: {fileID: 0}
   doorInsidePoint: {fileID: 0}
-  roomLights: []
   hidingSpots: []
   guderianPatrolPoints: []
 --- !u!1 &2142328218

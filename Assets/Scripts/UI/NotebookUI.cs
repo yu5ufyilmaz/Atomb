@@ -1,19 +1,25 @@
-using UnityEngine;
-using TMPro;
-using System.Text;
 using System.Collections.Generic;
+using System.Text;
+using TMPro;
+using UnityEngine;
 
 public class NotebookUI : MonoBehaviour
 {
     public static NotebookUI Instance;
 
-    [SerializeField] private GameObject notebookPanel; 
-    [SerializeField] private TextMeshProUGUI passwordListText; 
-    [SerializeField] private GameObject notificationPanel; 
+    [SerializeField]
+    private GameObject notebookPanel;
+
+    [SerializeField]
+    private TextMeshProUGUI passwordListText;
+
+    [SerializeField]
+    private GameObject notificationPanel;
 
     private void Awake()
     {
-        if (Instance == null) Instance = this;
+        if (Instance == null)
+            Instance = this;
     }
 
     private void Start()
@@ -40,7 +46,7 @@ public class NotebookUI : MonoBehaviour
             UpdatePasswordList();
         }
     }
-    
+
     private void UpdatePasswordList()
     {
         List<string> passwords = PasswordManager.Instance.GetDiscoveredClues();
@@ -53,7 +59,7 @@ public class NotebookUI : MonoBehaviour
 
         passwordListText.text = sb.ToString();
     }
-    
+
     public void ShowPasswordNotification(string passwordID)
     {
         Debug.Log($"Bildirim: {passwordID} not defterine eklendi.");

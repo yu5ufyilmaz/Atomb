@@ -9,8 +9,18 @@ public class GlobalEnemyManagerEditor : Editor
     {
         GlobalEnemyManager manager = (GlobalEnemyManager)target;
 
-        GUIStyle titleStyle = new GUIStyle(EditorStyles.boldLabel) { fontSize = 18, alignment = TextAnchor.MiddleCenter, normal = { textColor = new Color(0.8f, 0.8f, 0.8f) } };
-        GUIStyle headerStyle = new GUIStyle(EditorStyles.boldLabel) { fontSize = 13, alignment = TextAnchor.MiddleLeft, normal = { textColor = Color.white } };
+        GUIStyle titleStyle = new GUIStyle(EditorStyles.boldLabel)
+        {
+            fontSize = 18,
+            alignment = TextAnchor.MiddleCenter,
+            normal = { textColor = new Color(0.8f, 0.8f, 0.8f) },
+        };
+        GUIStyle headerStyle = new GUIStyle(EditorStyles.boldLabel)
+        {
+            fontSize = 13,
+            alignment = TextAnchor.MiddleLeft,
+            normal = { textColor = Color.white },
+        };
         GUIStyle sectionStyle = new GUIStyle(EditorStyles.helpBox);
 
         // BAŞLIK
@@ -28,15 +38,36 @@ public class GlobalEnemyManagerEditor : Editor
         bool isAttack = manager.isAttackInProgress;
         EditorGUILayout.BeginHorizontal();
         GUI.backgroundColor = isAttack ? new Color(1f, 0.3f, 0.3f) : new Color(0.4f, 0.8f, 0.4f);
-        GUILayout.Box(isAttack ? "⛔ SALDIRI VAR (KİLİTLİ)" : "✅ SAKİN (MÜSAİT)", GUILayout.Height(30), GUILayout.ExpandWidth(true));
+        GUILayout.Box(
+            isAttack ? "⛔ SALDIRI VAR (KİLİTLİ)" : "✅ SAKİN (MÜSAİT)",
+            GUILayout.Height(30),
+            GUILayout.ExpandWidth(true)
+        );
         GUI.backgroundColor = Color.white;
-        
-        if (isAttack && GUILayout.Button("KİLİDİ AÇ (Reset)", GUILayout.Height(30), GUILayout.Width(140)))
+
+        if (
+            isAttack
+            && GUILayout.Button("KİLİDİ AÇ (Reset)", GUILayout.Height(30), GUILayout.Width(140))
+        )
         {
             manager.RegisterAttackEnd();
             Debug.Log("Global kilit editörden zorla açıldı.");
         }
         EditorGUILayout.EndHorizontal();
+
+        // --- YENİ: GLOBAL COOLDOWN BARI ---
+        if (Application.isPlaying && !isAttack && manager.currentGlobalCooldown > 0)
+        {
+            EditorGUILayout.Space(5);
+            float ratio = manager.currentGlobalCooldown / manager.postAttackCooldown;
+            DrawBar(ratio, $"HUZUR SÜRESİ: {manager.currentGlobalCooldown:F1}s", Color.cyan);
+            EditorGUILayout.HelpBox(
+                "Global Cooldown devrede. Hiçbir düşman saldıramaz.",
+                MessageType.Info
+            );
+        }
+        // ----------------------------------
+
         EditorGUILayout.EndVertical();
 
         EditorGUILayout.Space(15);
@@ -50,20 +81,26 @@ public class GlobalEnemyManagerEditor : Editor
         DrawGuderianSection(headerStyle, sectionStyle);
 
         EditorGUILayout.Space(20);
-        
-        if (Application.isPlaying) Repaint(); // Canlı Yenileme
+
+        if (Application.isPlaying)
+            Repaint(); // Canlı Yenileme
     }
 
     // --- LEES ---
     void DrawLeesSection(GUIStyle headerStyle, GUIStyle sectionStyle)
     {
         LeesEnemyAI lees = FindObjectOfType<LeesEnemyAI>();
-        GUI.backgroundColor = new Color(0.9f, 0.85f, 1f); 
+        GUI.backgroundColor = new Color(0.9f, 0.85f, 1f);
         EditorGUILayout.BeginVertical(sectionStyle);
         GUI.backgroundColor = Color.white;
 
         EditorGUILayout.LabelField("👻 LEES", headerStyle);
-        if (lees == null) { EditorGUILayout.HelpBox("Yok!", MessageType.Warning); EditorGUILayout.EndVertical(); return; }
+        if (lees == null)
+        {
+            EditorGUILayout.HelpBox("Yok!", MessageType.Warning);
+            EditorGUILayout.EndVertical();
+            return;
+        }
 
         bool isActive = lees.currentState == LeesEnemyAI.LeesState.Active;
 
@@ -71,37 +108,74 @@ public class GlobalEnemyManagerEditor : Editor
         if (isActive)
         {
             GUI.backgroundColor = new Color(1f, 0.4f, 0.4f);
-            GUILayout.Box($"AKTİF: {lees.currentState}", GUILayout.Height(25), GUILayout.ExpandWidth(true));
+            GUILayout.Box(
+                $"AKTİF: {lees.currentState}",
+                GUILayout.Height(25),
+                GUILayout.ExpandWidth(true)
+            );
         }
         else
         {
             GUI.backgroundColor = Color.gray;
             float chance = lees.GetCurrentSpawnChance();
-            string chanceInfo = lees.debugCooldownTimer > 0 ? $"Cooldown: {lees.debugCooldownTimer:F1}s" : $"Gelme Şansı: %{chance:F1}";
-            GUILayout.Box($"GİZLİ ({chanceInfo})", GUILayout.Height(25), GUILayout.ExpandWidth(true));
+            string chanceInfo =
+                lees.debugCooldownTimer > 0
+                    ? $"Cooldown: {lees.debugCooldownTimer:F1}s"
+                    : $"Gelme Şansı: %{chance:F1}";
+            GUILayout.Box(
+                $"GİZLİ ({chanceInfo})",
+                GUILayout.Height(25),
+                GUILayout.ExpandWidth(true)
+            );
         }
         GUI.backgroundColor = Color.white;
-        
+
         GUI.backgroundColor = lees.debugIsVisible ? Color.red : Color.green;
-        GUILayout.Box(lees.debugIsVisible ? "👁️" : "🙈", GUILayout.Width(30), GUILayout.Height(25));
+        GUILayout.Box(
+            lees.debugIsVisible ? "👁️" : "🙈",
+            GUILayout.Width(30),
+            GUILayout.Height(25)
+        );
         GUI.backgroundColor = Color.white;
         EditorGUILayout.EndHorizontal();
 
-        if(Application.isPlaying)
+        if (Application.isPlaying)
         {
             if (lees.debugCooldownTimer > 0)
-                DrawBar(lees.debugCooldownTimer / lees.spawnCooldownAfterDespawn, $"Cooldown: {lees.debugCooldownTimer:F1}s", Color.cyan);
+                DrawBar(
+                    lees.debugCooldownTimer / lees.spawnCooldownAfterDespawn,
+                    $"Cooldown: {lees.debugCooldownTimer:F1}s",
+                    Color.cyan
+                );
             else if (isActive)
             {
                 if (!lees.debugHasBeenSpotted)
-                    DrawBar(lees.debugIgnoranceTimer / lees.maxIgnoranceTime, "Fark Edilmedi (A)", new Color(0.8f, 0.2f, 1f));
+                {
+                    DrawBar(
+                        lees.debugIgnoranceTimer / lees.maxIgnoranceTime,
+                        "Fark Edilmedi (A)",
+                        new Color(0.8f, 0.2f, 1f)
+                    );
+                }
                 else
                 {
-                    DrawBar(lees.debugReactionTimer / lees.maxReactionTime, "Tepki Süresi (C)", Color.Lerp(Color.yellow, Color.red, lees.debugReactionTimer / lees.maxReactionTime));
-                    if(!lees.debugIsVisible)
+                    DrawBar(
+                        lees.debugReactionTimer / lees.maxReactionTime,
+                        "Tepki Süresi (C)",
+                        Color.Lerp(
+                            Color.yellow,
+                            Color.red,
+                            lees.debugReactionTimer / lees.maxReactionTime
+                        )
+                    );
+                    if (!lees.debugIsVisible)
                     {
                         EditorGUILayout.Space(2);
-                        DrawBar(lees.debugSurvivalTimer / lees.survivalWaitTime, $"Kurtuluş: %{lees.debugSurvivalTimer/lees.survivalWaitTime*100:F0}", Color.green);
+                        DrawBar(
+                            lees.debugSurvivalTimer / lees.survivalWaitTime,
+                            $"Kurtuluş: %{lees.debugSurvivalTimer / lees.survivalWaitTime * 100:F0}",
+                            Color.green
+                        );
                     }
                 }
             }
@@ -109,10 +183,13 @@ public class GlobalEnemyManagerEditor : Editor
 
         EditorGUILayout.Space(5);
         EditorGUILayout.BeginHorizontal();
-        if (GUILayout.Button("Spawn", GUILayout.Height(25))) lees.SpawnLeesInRoom();
-        if (GUILayout.Button("Despawn", GUILayout.Height(25))) lees.DespawnLees();
+        if (GUILayout.Button("Spawn", GUILayout.Height(25)))
+            lees.SpawnLeesInRoom();
+        if (GUILayout.Button("Despawn", GUILayout.Height(25)))
+            lees.DespawnLees();
         GUI.backgroundColor = new Color(1f, 0.3f, 0.3f);
-        if (GUILayout.Button("KILL", GUILayout.Height(25))) lees.TriggerDeath("GM Kill");
+        if (GUILayout.Button("KILL", GUILayout.Height(25)))
+            lees.TriggerDeath("GM Kill");
         GUI.backgroundColor = Color.white;
         EditorGUILayout.EndHorizontal();
         EditorGUILayout.EndVertical();
@@ -127,7 +204,12 @@ public class GlobalEnemyManagerEditor : Editor
         GUI.backgroundColor = Color.white;
 
         EditorGUILayout.LabelField("👹 GUDERIAN", headerStyle);
-        if (guderian == null) { EditorGUILayout.HelpBox("Yok!", MessageType.Warning); EditorGUILayout.EndVertical(); return; }
+        if (guderian == null)
+        {
+            EditorGUILayout.HelpBox("Yok!", MessageType.Warning);
+            EditorGUILayout.EndVertical();
+            return;
+        }
 
         bool isActive = guderian.currentState != GuderianAI.GuderianState.Hidden;
 
@@ -135,38 +217,54 @@ public class GlobalEnemyManagerEditor : Editor
         if (isActive)
         {
             GUI.backgroundColor = new Color(1f, 0.6f, 0.2f);
-            GUILayout.Box($"AKTİF: {guderian.currentState}", GUILayout.Height(25), GUILayout.ExpandWidth(true));
+            GUILayout.Box(
+                $"AKTİF: {guderian.currentState}",
+                GUILayout.Height(25),
+                GUILayout.ExpandWidth(true)
+            );
         }
         else
         {
             GUI.backgroundColor = Color.gray;
             string info;
-            if (guderian.IsOnCooldown()) info = $"Cooldown: {guderian.debugCooldown:F1}s";
-            else 
-            {
-                // YENİ: Artan Şansı Göster
-                info = $"Şans: %{guderian.GetCurrentChance()} (Kontrol: {guderian.GetTimeUntilNextSpawnCheck():F1}s)";
-            }
-            
+            if (guderian.IsOnCooldown())
+                info = $"Cooldown: {guderian.debugCooldown:F1}s";
+            else
+                info =
+                    $"Şans: %{guderian.GetCurrentChance()} (Kontrol: {guderian.GetTimeUntilNextSpawnCheck():F1}s)";
+
             GUILayout.Box($"GİZLİ ({info})", GUILayout.Height(25), GUILayout.ExpandWidth(true));
         }
         GUI.backgroundColor = Color.white;
         EditorGUILayout.EndHorizontal();
 
-        if(isActive && Application.isPlaying) EditorGUILayout.HelpBox(guderian.debugStatus, MessageType.None);
+        if (isActive && Application.isPlaying)
+            EditorGUILayout.HelpBox(guderian.debugStatus, MessageType.None);
 
         if (Application.isPlaying)
         {
             if (guderian.IsOnCooldown())
-                DrawBar(guderian.debugCooldown / guderian.minTimeBetweenAttacks, "Cooldown", Color.cyan);
+                DrawBar(
+                    guderian.debugCooldown / guderian.minTimeBetweenAttacks,
+                    "Cooldown",
+                    Color.cyan
+                );
             else if (isActive)
             {
                 if (guderian.currentState == GuderianAI.GuderianState.Approaching)
                     DrawBar(guderian.debugApproachProgress, "Adımlar", Color.yellow);
                 else if (guderian.currentState == GuderianAI.GuderianState.Breaching)
-                    DrawBar(guderian.debugBreachProgress, "Kapı Zorlanıyor", new Color(1f, 0.5f, 0f));
+                    DrawBar(
+                        guderian.debugBreachProgress,
+                        "Kapı Zorlanıyor",
+                        new Color(1f, 0.5f, 0f)
+                    );
                 else if (guderian.currentState == GuderianAI.GuderianState.Searching)
-                    DrawBar(guderian.debugSearchProgress, "Arama Süresi", Color.Lerp(Color.green, Color.red, 1f - guderian.debugSearchProgress));
+                    DrawBar(
+                        guderian.debugSearchProgress,
+                        "Arama Süresi",
+                        Color.Lerp(Color.green, Color.red, 1f - guderian.debugSearchProgress)
+                    );
             }
         }
 
@@ -175,12 +273,20 @@ public class GlobalEnemyManagerEditor : Editor
         if (GUILayout.Button("Spawn (Rastgele)", GUILayout.Height(25)))
         {
             RoomManager[] rooms = FindObjectsOfType<RoomManager>();
-            foreach(var room in rooms) { if (room.canGuderianSpawn) { guderian.TrySpawnGuderian(room); break; } }
+            foreach (var room in rooms)
+            {
+                if (room.canGuderianSpawn)
+                {
+                    guderian.TrySpawnGuderian(room);
+                    break;
+                }
+            }
         }
-        
+
         if (isActive)
         {
-            if (GUILayout.Button("GİT (Leave)", GUILayout.Height(25))) guderian.ForceLeave();
+            if (GUILayout.Button("GİT (Leave)", GUILayout.Height(25)))
+                guderian.ForceLeave();
         }
         else
         {
@@ -190,7 +296,8 @@ public class GlobalEnemyManagerEditor : Editor
         }
 
         GUI.backgroundColor = new Color(1f, 0.3f, 0.3f);
-        if (GUILayout.Button("KILL", GUILayout.Height(25))) guderian.TriggerJumpscare();
+        if (GUILayout.Button("KILL", GUILayout.Height(25)))
+            guderian.TriggerJumpscare();
         GUI.backgroundColor = Color.white;
         EditorGUILayout.EndHorizontal();
         EditorGUILayout.EndVertical();
@@ -199,7 +306,11 @@ public class GlobalEnemyManagerEditor : Editor
     void DrawBar(float value, string label, Color color)
     {
         GUI.color = color;
-        EditorGUI.ProgressBar(EditorGUILayout.GetControlRect(false, 20), Mathf.Clamp01(value), label);
+        EditorGUI.ProgressBar(
+            EditorGUILayout.GetControlRect(false, 20),
+            Mathf.Clamp01(value),
+            label
+        );
         GUI.color = Color.white;
     }
 }
