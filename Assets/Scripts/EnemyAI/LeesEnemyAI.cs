@@ -77,13 +77,16 @@ public class LeesEnemyAI : MonoBehaviour
     private float currentSurvivalTimer;
 
     private bool hasBeenSpotted = false;
-    private bool hasTurnedAway = false; // YENİ: Arkasını döndü mü?
+    private bool hasTurnedAway = false;
 
     private Vector3 lastPlayerPos;
 
     [Header("Referanslar")]
     public Transform playerTransform;
     public Camera playerCamera;
+
+    // YENİ: Oyuncunun kontrolcüsüne referans (Etkileşim kontrolü için)
+    private UnityEngine.CharacterController targetCharacterController;
 
     private void Awake()
     {
@@ -95,6 +98,11 @@ public class LeesEnemyAI : MonoBehaviour
     {
         if (playerTransform == null)
             playerTransform = GameObject.FindGameObjectWithTag("Player").transform;
+
+        if (playerTransform != null)
+            targetCharacterController =
+                playerTransform.GetComponent<UnityEngine.CharacterController>();
+
         if (playerCamera == null)
             playerCamera = Camera.main;
 
@@ -104,6 +112,8 @@ public class LeesEnemyAI : MonoBehaviour
 
     private void Update()
     {
+        if (GlobalEnemyManager.Instance.stopAllEnemies)
+            return;
         // 1. Cooldown Sayacı
         if (currentCooldownTimer > 0)
         {
@@ -148,37 +158,54 @@ public class LeesEnemyAI : MonoBehaviour
             return;
         }
 
-        bool isVisible = CheckIfVisible();
+        // --- KONTROL DURUMUNA GÖRE GÖRÜŞ ---
+        bool isPlayerControllable = true;
+        if (targetCharacterController != null)
+            isPlayerControllable = targetCharacterController.enabled;
+
+        // Gerçekte görüyor muyuz?
+        bool actuallyVisible = CheckIfVisible();
+
+        // Mantıkta kullanacağımız görüş:
+        bool logicVisible = actuallyVisible;
+
+        // KURAL: Eğer oyuncunun kontrolü yoksa (Animasyondaysa) VE henüz Lees ile göz göze gelmediyse:
+        // Kameranın Lees'in üzerinden geçmesini "görmek" sayma. (Kör taklidi yap)
+        // Böylece animasyon sırasında yanlışlıkla ölmezsin.
+        if (!isPlayerControllable && !hasBeenSpotted)
+        {
+            logicVisible = false;
+        }
 
         // HENÜZ FARK EDİLMEDİ (Scenario A)
         if (!hasBeenSpotted)
         {
-            if (isVisible)
+            if (logicVisible)
             {
                 hasBeenSpotted = true;
-                hasTurnedAway = false; // İlk görüşte henüz dönmedi
+                hasTurnedAway = false;
                 currentReactionTimer = 0f;
-                Debug.Log("Lees: FARK EDİLDİ!");
+                Debug.Log("Lees: FARK EDİLDİ! (Oyuncunun kontrolü açık)");
             }
             else
             {
+                // Animasyonda olsan bile burası çalışır. Süre işlemeye devam eder.
                 currentIgnoranceTimer += Time.deltaTime;
                 if (currentIgnoranceTimer >= maxIgnoranceTime)
-                    TriggerDeath("Scenario A: Süre doldu (Ignorance)");
+                    TriggerDeath("Scenario A: Süre doldu (Ignorance) - Etkileşimde olsan bile!");
             }
         }
         // FARK EDİLDİ (Scenario C & D)
         else
         {
-            if (isVisible)
+            if (logicVisible)
             {
-                // --- YENİ KURAL: GERİ DÖNÜP BAKARSAN ÖLÜRSÜN ---
+                // --- KURAL: GERİ DÖNÜP BAKARSAN ÖLÜRSÜN ---
                 if (hasTurnedAway)
                 {
                     TriggerDeath("HATA: Arkasını döndükten sonra tekrar baktı!");
                     return;
                 }
-                // -----------------------------------------------
 
                 // HALA BAKIYOR (Scenario C - İlk Bakışma)
                 currentReactionTimer += Time.deltaTime;
@@ -192,7 +219,7 @@ public class LeesEnemyAI : MonoBehaviour
             else
             {
                 // ARKASINI DÖNDÜ (Scenario D)
-                hasTurnedAway = true; // Artık "Döndü" olarak işaretledik
+                hasTurnedAway = true;
 
                 if (playerSpeed > movementTolerance)
                 {
@@ -201,7 +228,6 @@ public class LeesEnemyAI : MonoBehaviour
                 else
                 {
                     currentSurvivalTimer += Time.deltaTime;
-                    // Bakmadığı sürece tepki süresi azalabilir (opsiyonel)
                     currentReactionTimer = Mathf.Max(0, currentReactionTimer - Time.deltaTime);
 
                     if (currentSurvivalTimer >= survivalWaitTime)
@@ -214,13 +240,63 @@ public class LeesEnemyAI : MonoBehaviour
         }
     }
 
-    // --- TETİKLEYİCİ ---
+    // --- TETİKLEYİCİ VE ÖLÜM YÖNETİMİ ---
     public void TriggerDeath(string reason, bool spawnBehind = false)
     {
-        Debug.LogError($"ÖLÜM: {reason}");
-
         if (currentState == LeesState.Jumpscare)
             return;
+
+        // YENİ MANTIK: Eğer oyuncu bir cihazdaysa (kontrolü yoksa), önce çıkart sonra öldür.
+        if (targetCharacterController != null && !targetCharacterController.enabled)
+        {
+            StartCoroutine(ForceExitAndKillRoutine(reason, spawnBehind));
+            return;
+        }
+
+        // Oyuncu serbestse, direkt öldür
+        ExecuteDeathNow(reason, spawnBehind);
+    }
+
+    // Bu Coroutine, oyuncunun animasyonunun bitmesini bekler
+    private IEnumerator ForceExitAndKillRoutine(string reason, bool spawnBehind)
+    {
+        Debug.LogWarning(
+            $"Lees: Oyuncu cihaz başında yakalandı ({reason}). Çıkış yapması bekleniyor..."
+        );
+
+        // 1. GameManager üzerinden aktif cihazı bul ve zorla çıkart
+        // Bu işlem cihazın "ExitSequence"ını tetikler (Model görünür olur, animasyon oynar)
+        if (GameManager.Instance != null && GameManager.Instance.activeInteraction != null)
+        {
+            GameManager.Instance.activeInteraction.ForceExit();
+        }
+
+        // 2. Emniyet süresi (Maksimum bekleme süresi - takılı kalırsa diye)
+        float maxWait = 6.0f;
+        float timer = 0f;
+
+        // 3. Oyuncunun CharacterController'ı açılana kadar bekle
+        // Cihaz scriptleri, çıkış animasyonu bitince CharacterController.enabled = true yapar.
+        while (
+            targetCharacterController != null
+            && !targetCharacterController.enabled
+            && timer < maxWait
+        )
+        {
+            timer += Time.deltaTime;
+            yield return null;
+        }
+
+        // 4. Küçük bir gecikme (Kamera yerine tam otursun, model render edilsin)
+        yield return new WaitForSeconds(0.2f);
+
+        // 5. Ve şimdi Jumpscare'i patlat
+        ExecuteDeathNow(reason, spawnBehind);
+    }
+
+    private void ExecuteDeathNow(string reason, bool spawnBehind)
+    {
+        Debug.LogError($"ÖLÜM: {reason}");
 
         if (spawnBehind)
         {
@@ -371,7 +447,7 @@ public class LeesEnemyAI : MonoBehaviour
         currentReactionTimer = 0;
         currentSurvivalTimer = 0;
         hasBeenSpotted = false;
-        hasTurnedAway = false; // Spawn olunca sıfırla
+        hasTurnedAway = false;
         lastPlayerPos = playerTransform.position;
 
         ShowModel(true);

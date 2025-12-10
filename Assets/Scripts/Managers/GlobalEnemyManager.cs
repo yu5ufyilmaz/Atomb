@@ -4,16 +4,16 @@ public class GlobalEnemyManager : MonoBehaviour
 {
     public static GlobalEnemyManager Instance;
 
+    [Header("TEST MODU")]
+    [Tooltip("Eğer işaretliyse hiçbir düşman spawn olmaz, sayaçlar ilerlemez.")]
+    public bool stopAllEnemies = false;
+
     [Header("Durum")]
-    public bool isAttackInProgress = false; // Şu an sahada düşman var mı?
+    public bool isAttackInProgress = false;
 
-    [Header("Huzur Ayarları (Global Cooldown)")]
-    [Tooltip(
-        "Bir saldırı bittikten sonra diğerinin başlaması için geçmesi gereken ZORUNLU huzur süresi."
-    )]
-    public float postAttackCooldown = 30f; // Örn: 30 Saniye boyunca kimse gelemez
+    [Header("Huzur Ayarları")]
+    public float postAttackCooldown = 30f;
 
-    // Editörün okuması için public (ama inspector'da gizli)
     [HideInInspector]
     public float currentGlobalCooldown = 0f;
 
@@ -27,38 +27,44 @@ public class GlobalEnemyManager : MonoBehaviour
 
     private void Update()
     {
-        // Huzur Süresi Geri Sayımı
+        // --- DÜZELTME: TEST MODU KONTROLÜ ---
+        if (stopAllEnemies)
+        {
+            // Eğer test modundaysak, saldırı bayrağını indir.
+            // Yoksa testi kapattığında sistem "Hala saldırı var" sanıp kilitli kalır.
+            if (isAttackInProgress)
+            {
+                isAttackInProgress = false;
+                Debug.Log("TEST MODU: Aktif saldırı iptal edildi.");
+            }
+            return;
+        }
+        // ------------------------------------
+
         if (currentGlobalCooldown > 0)
         {
             currentGlobalCooldown -= Time.deltaTime;
         }
     }
 
-    // Düşmanlar saldırmadan önce buraya sorar
     public bool CanAttack()
     {
-        // 1. Şu an başka saldırı yoksa
-        // 2. VE Huzur süresi (Global Cooldown) bittiyse
+        if (stopAllEnemies)
+            return false;
         return !isAttackInProgress && currentGlobalCooldown <= 0;
     }
 
-    // Saldırı başlayınca kilitler
     public void RegisterAttackStart()
     {
         isAttackInProgress = true;
-        currentGlobalCooldown = 0f; // Saldırı başladı, cooldown'ı iptal et
-        Debug.Log("GLOBAL: Saldırı başladı, sıra kilitlendi.");
+        currentGlobalCooldown = 0f;
+        Debug.Log("GLOBAL: Saldırı başladı.");
     }
 
-    // Düşman gidince kilidi açar ve HUZUR SÜRESİNİ başlatır
     public void RegisterAttackEnd()
     {
         isAttackInProgress = false;
-
-        // KRİTİK NOKTA: Saldırı bitti, sayacı başlat!
         currentGlobalCooldown = postAttackCooldown;
-        Debug.Log(
-            $"GLOBAL: Tehdit geçti. {postAttackCooldown} saniye huzur modu (Global Cooldown)."
-        );
+        Debug.Log($"GLOBAL: Tehdit geçti. {postAttackCooldown}s huzur.");
     }
 }

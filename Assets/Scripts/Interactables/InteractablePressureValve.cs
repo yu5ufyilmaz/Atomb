@@ -2,8 +2,9 @@ using System.Collections;
 using Cinemachine;
 using UnityEngine;
 
-public class InteractablePressureValve : MonoBehaviour, IInteractable
+public class InteractablePressureValve : MonoBehaviour, IInteractable, IForceExitable
 {
+    // ... (Değişkenler aynı) ...
     [Header("Components")]
     [SerializeField]
     private Transform valveHandleModel;
@@ -20,7 +21,6 @@ public class InteractablePressureValve : MonoBehaviour, IInteractable
 
     [SerializeField]
     private Vector3 headOffset = new Vector3(0, 0.1f, 0.15f);
-
     private Transform mainCamera;
     private CinemachineBrain cinemachineBrain;
     private Transform headBone;
@@ -33,17 +33,15 @@ public class InteractablePressureValve : MonoBehaviour, IInteractable
     [SerializeField]
     private float resistanceMultiplier = 0.15f;
 
-    [Tooltip("Tek seferde dönebileceği maksimum açı (Hızlı çevirmeyi engeller)")]
+    [Tooltip("Tek seferde dönebileceği maksimum açı")]
     [SerializeField]
     private float maxRotationPerFrame = 2.0f;
 
-    [Tooltip("Sadece Saat Yönünde (Sıkma) mi dönsün?")]
+    [Tooltip("Sadece Saat Yönünde mi dönsün?")]
     [SerializeField]
     private bool onlyClockwise = true;
-
     private UnityEngine.CharacterController playerPhysicsController;
     private MonoBehaviour playerInputScript;
-
     private bool isInteracting = false;
     private Vector2 screenCenter;
     private float lastAngle;
@@ -61,11 +59,9 @@ public class InteractablePressureValve : MonoBehaviour, IInteractable
                 headBone = playerAnimator.GetBoneTransform(HumanBodyBones.Head);
             if (headBone == null)
                 headBone = p.transform;
-
             Transform camRoot = p.transform.Find("PlayerCameraRoot");
             cinemachineTarget = (camRoot != null) ? camRoot : headBone;
         }
-
         if (Camera.main != null)
         {
             mainCamera = Camera.main.transform;
@@ -86,21 +82,23 @@ public class InteractablePressureValve : MonoBehaviour, IInteractable
     {
         isInteracting = true;
 
+        // --- GM KAYIT ---
+        if (GameManager.Instance != null)
+            GameManager.Instance.activeInteraction = this;
+        // ----------------
+
         Vector2 mousePos = Input.mousePosition;
         Vector2 direction = mousePos - screenCenter;
         lastAngle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
-
         if (playerPhysicsController)
             playerPhysicsController.enabled = false;
         if (playerInputScript)
             playerInputScript.enabled = false;
         if (playerAnimator)
             playerAnimator.SetTrigger(interactAnimTrigger);
-
         if (cinemachineBrain)
             cinemachineBrain.enabled = false;
 
-        // 1. KAFAYA YAPIŞ
         if (headBone != null)
         {
             mainCamera.SetParent(headBone);
@@ -116,10 +114,7 @@ public class InteractablePressureValve : MonoBehaviour, IInteractable
                 yield return null;
             }
         }
-
         yield return new WaitForSeconds(animationDuration - 0.5f);
-
-        // 2. SABİT NOKTAYA GEÇ
         if (cameraViewTarget != null)
         {
             mainCamera.SetParent(null);
@@ -138,7 +133,6 @@ public class InteractablePressureValve : MonoBehaviour, IInteractable
             mainCamera.position = cameraViewTarget.position;
             mainCamera.rotation = cameraViewTarget.rotation;
         }
-
         TogglePlayerModel(false);
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
@@ -147,9 +141,14 @@ public class InteractablePressureValve : MonoBehaviour, IInteractable
     private IEnumerator ExitValveMode()
     {
         isInteracting = false;
+
+        // --- GM KAYIT SİL ---
+        if (GameManager.Instance != null)
+            GameManager.Instance.activeInteraction = null;
+        // --------------------
+
         TogglePlayerModel(true);
 
-        // --- UNDOCK ---
         if (cinemachineTarget != null)
         {
             mainCamera.SetParent(null);
@@ -166,7 +165,6 @@ public class InteractablePressureValve : MonoBehaviour, IInteractable
                 yield return null;
             }
         }
-
         if (playerPhysicsController != null)
         {
             Vector3 camForward = mainCamera.forward;
@@ -174,30 +172,26 @@ public class InteractablePressureValve : MonoBehaviour, IInteractable
             if (camForward != Vector3.zero)
                 playerPhysicsController.transform.rotation = Quaternion.LookRotation(camForward);
         }
-
         if (cinemachineBrain)
             cinemachineBrain.enabled = true;
         if (playerPhysicsController)
             playerPhysicsController.enabled = true;
         if (playerInputScript)
             playerInputScript.enabled = true;
-
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
     }
 
+    // ... (Update ve diğerleri aynı) ...
     private void Update()
     {
         if (!isInteracting)
             return;
-
-        // F TUŞU veya SAĞ TIK
         if (Input.GetKeyDown(KeyCode.F) || Input.GetMouseButtonDown(1))
         {
             StartCoroutine(ExitValveMode());
             return;
         }
-
         HandleCircularMotion();
     }
 
@@ -214,30 +208,16 @@ public class InteractablePressureValve : MonoBehaviour, IInteractable
     {
         Vector2 mousePos = Input.mousePosition;
         Vector2 direction = mousePos - screenCenter;
-
         float currentAngle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
         float deltaAngle = Mathf.DeltaAngle(lastAngle, currentAngle);
-
-        // Tek Yön Kontrolü (Sadece Saat Yönü)
         if (onlyClockwise && deltaAngle > 0)
-        {
             deltaAngle = 0;
-        }
-
         if (Mathf.Abs(deltaAngle) > 0.01f)
         {
-            // Ağırlık ve Hız Limiti
             float dampenedDelta = deltaAngle * resistanceMultiplier;
             dampenedDelta = Mathf.Clamp(dampenedDelta, -maxRotationPerFrame, maxRotationPerFrame);
-
-            // --- DÜZELTME 1: TERS DÖNME SORUNU ---
-            // Dönüş yönünü eksi ile çarparak fare hareketiyle eşitledik
             if (valveHandleModel != null)
-            {
                 valveHandleModel.Rotate(Vector3.forward, -dampenedDelta, Space.Self);
-            }
-
-            // Basınç Düşürme
             if (dampenedDelta < 0 && PressureSystemManager.Instance != null)
             {
                 float reduction =
@@ -245,15 +225,17 @@ public class InteractablePressureValve : MonoBehaviour, IInteractable
                     * Time.deltaTime
                     * Mathf.Abs(dampenedDelta);
                 PressureSystemManager.Instance.ReducePressure(reduction);
-
-                // --- DÜZELTME 2: %0 BASINÇTA OTOMATİK ÇIKIŞ ---
                 if (PressureSystemManager.Instance.GetPressure() <= 0f)
-                {
                     StartCoroutine(ExitValveMode());
-                }
             }
         }
-
         lastAngle = currentAngle;
+    }
+
+    // --- IFORCEEXITABLE ---
+    public void ForceExit()
+    {
+        if (isInteracting)
+            StartCoroutine(ExitValveMode());
     }
 }

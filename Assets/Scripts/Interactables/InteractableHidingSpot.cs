@@ -2,7 +2,8 @@ using System.Collections;
 using Cinemachine;
 using UnityEngine;
 
-public class HidingSpot : MonoBehaviour, IInteractable
+// IForceExitable arayüzü eklendi
+public class InteractableHidingSpot : MonoBehaviour, IInteractable, IForceExitable
 {
     [Header("Pozisyon Ayarları")]
     [Tooltip("Saklanınca kameranın duracağı dip nokta (Dolabın içi)")]
@@ -167,6 +168,12 @@ public class HidingSpot : MonoBehaviour, IInteractable
         inTransition = true;
         ToggleControls(false);
 
+        // --- GÜNCELLEME: GameManager'a Kayıt Ol ---
+        // Lees bizi burada bulsun diye kendimizi kaydediyoruz.
+        if (GameManager.Instance != null)
+            GameManager.Instance.activeInteraction = this;
+        // ------------------------------------------
+
         // 1. Kapı önüne git, İçeriye (InsidePos) dön
         Quaternion lookInRot = Quaternion.LookRotation(
             insidePosition.position - exitPosition.position
@@ -254,6 +261,12 @@ public class HidingSpot : MonoBehaviour, IInteractable
     {
         inTransition = true;
 
+        // --- GÜNCELLEME: GameManager'dan Kaydı Sil ---
+        // Artık çıkıyoruz, Lees bizi cihazda aramasın.
+        if (GameManager.Instance != null)
+            GameManager.Instance.activeInteraction = null;
+        // --------------------------------------------
+
         if (propAnimator)
             propAnimator.SetTrigger(propOpenTrigger);
         PlaySound(unhideSound);
@@ -266,9 +279,6 @@ public class HidingSpot : MonoBehaviour, IInteractable
 
             // Konum: Dolap içi
             playerController.transform.position = insidePosition.position;
-
-            // Rotasyon: ExitPosition objesinin rotasyonu neyse O. (Vektör hesabı yok)
-            // Bu sayede editörde oku nereye çevirirsen oraya bakar.
             playerController.transform.rotation = exitPosition.rotation;
 
             yield return null;
@@ -307,7 +317,6 @@ public class HidingSpot : MonoBehaviour, IInteractable
         }
 
         // 4. DIŞARI YÜRÜ (ROTASYON KİLİTLİ)
-        // Burada MoveAndLockRotation kullanıyoruz. Karakterin dönmesine asla izin vermiyoruz.
         StartCoroutine(
             MoveAndLockRotation(exitPosition.position, exitPosition.rotation, enterAnimDuration)
         );
@@ -329,8 +338,7 @@ public class HidingSpot : MonoBehaviour, IInteractable
             propAnimator.SetTrigger(propCloseTrigger);
     }
 
-    // --- YENİ FONKSİYON: HAREKET ET VE ROTASYONU KİLİTLE ---
-    // Bu fonksiyon çalıştığı sürece karakterin rotasyonu 'fixedRot' olarak kalır. Asla değişmez.
+    // --- HAREKET ET VE ROTASYONU KİLİTLE ---
     private IEnumerator MoveAndLockRotation(Vector3 targetPos, Quaternion fixedRot, float duration)
     {
         Vector3 startPos = playerController.transform.position;
@@ -341,8 +349,6 @@ public class HidingSpot : MonoBehaviour, IInteractable
             float smoothT = Mathf.SmoothStep(0f, 1f, t);
 
             playerController.transform.position = Vector3.Lerp(startPos, targetPos, smoothT);
-
-            // HER KAREDE ZORLA BU TARAFA BAKTIRIYORUZ
             playerController.transform.rotation = fixedRot;
 
             yield return null;
@@ -351,14 +357,18 @@ public class HidingSpot : MonoBehaviour, IInteractable
         playerController.transform.rotation = fixedRot;
     }
 
+    // --- GUDERIAN YAKALANMA SEKANSI ---
     private IEnumerator CaughtSequence()
     {
         inTransition = true;
-        if (propAnimator)
-            propAnimator.SetTrigger(propOpenTrigger);
-        PlaySound(unhideSound);
-        yield return new WaitForSeconds(0.2f);
-        GuderianAI.Instance.TriggerLockerJumpscare(exitPosition);
+
+        // Bu senaryoda kapıyı Guderian açacağı için biz animasyon tetiklemiyoruz.
+        yield return new WaitForSeconds(0.1f);
+
+        if (GuderianAI.Instance != null)
+        {
+            GuderianAI.Instance.TriggerLockerJumpscare(exitPosition);
+        }
     }
 
     private void ToggleControls(bool state)
@@ -388,7 +398,6 @@ public class HidingSpot : MonoBehaviour, IInteractable
             audioSource.PlayOneShot(clip);
     }
 
-    // DEBUG: Çıkış Yönünü Editörde Gör
     private void OnDrawGizmos()
     {
         if (exitPosition != null)
@@ -397,5 +406,18 @@ public class HidingSpot : MonoBehaviour, IInteractable
             Gizmos.DrawRay(exitPosition.position, exitPosition.forward * 1.5f);
             Gizmos.DrawSphere(exitPosition.position + exitPosition.forward * 1.5f, 0.1f);
         }
+    }
+
+    // --- IForceExitable Arayüzü Uygulaması ---
+    // Lees (veya başka sistemler) tarafından çağrılır.
+    public void ForceExit()
+    {
+        // Eğer zaten çıkıyorsak veya boşsa bir şey yapma
+        if (inTransition || !isOccupied)
+            return;
+
+        // Normal çıkış rutinini başlat.
+        // Bu sayede karakter animasyonla çıkar ve görünür olur.
+        StartCoroutine(ExitSequence());
     }
 }

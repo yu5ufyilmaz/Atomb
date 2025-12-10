@@ -3,8 +3,9 @@ using Cinemachine;
 using TMPro;
 using UnityEngine;
 
-public class InteractableMassSpectrometer : MonoBehaviour, IInteractable
+public class InteractableMassSpectrometer : MonoBehaviour, IInteractable, IForceExitable
 {
+    // ... (Değişkenler aynı) ...
     [Header("Components")]
     [SerializeField]
     private Transform magnetPivot;
@@ -86,16 +87,13 @@ public class InteractableMassSpectrometer : MonoBehaviour, IInteractable
 
     [SerializeField]
     private AudioClip beamHumSound;
-
     private Transform mainCamera;
     private CinemachineBrain cinemachineBrain;
     private Transform headBone;
     private Transform cinemachineTarget;
     private Animator playerAnimator;
-
     private UnityEngine.CharacterController playerPhysicsController;
     private MonoBehaviour playerInputScript;
-
     private bool isInteracting = false;
     private bool isPoweredOn = false;
     private bool isBroken = false;
@@ -118,29 +116,26 @@ public class InteractableMassSpectrometer : MonoBehaviour, IInteractable
                 headBone = playerAnimator.GetBoneTransform(HumanBodyBones.Head);
             if (headBone == null)
                 headBone = p.transform;
-
             Transform camRoot = p.transform.Find("PlayerCameraRoot");
             cinemachineTarget = (camRoot != null) ? camRoot : headBone;
         }
-
         if (Camera.main != null)
         {
             mainCamera = Camera.main.transform;
             cinemachineBrain = mainCamera.GetComponent<CinemachineBrain>();
         }
-
         if (mainLever != null)
         {
             leverStartRot = mainLever.localRotation;
             leverEndRot = leverStartRot * Quaternion.Euler(45, 0, 0);
         }
-
         float randomOffset = Random.Range(-40f, 40f);
         currentRingAngleValue = ringTargetAngle + 180f + randomOffset;
         UpdateRingRotation();
         ResetMachineVisuals();
     }
 
+    // ... (ResetMachineVisuals, UpdateRingRotation, GetInteractionPrompt, Interact aynı) ...
     private void ResetMachineVisuals()
     {
         if (screenText != null)
@@ -201,17 +196,20 @@ public class InteractableMassSpectrometer : MonoBehaviour, IInteractable
     {
         isInteracting = true;
 
+        // --- GM KAYIT ---
+        if (GameManager.Instance != null)
+            GameManager.Instance.activeInteraction = this;
+        // ----------------
+
         if (playerPhysicsController)
             playerPhysicsController.enabled = false;
         if (playerInputScript)
             playerInputScript.enabled = false;
         if (playerAnimator)
             playerAnimator.SetTrigger(interactAnimTrigger);
-
         if (cinemachineBrain)
             cinemachineBrain.enabled = false;
 
-        // 1. KAFAYA YAPIŞ
         if (headBone != null)
         {
             mainCamera.SetParent(headBone);
@@ -227,10 +225,7 @@ public class InteractableMassSpectrometer : MonoBehaviour, IInteractable
                 yield return null;
             }
         }
-
         yield return new WaitForSeconds(animationDuration - 0.5f);
-
-        // 2. SABİT NOKTAYA
         if (cameraViewTarget != null)
         {
             mainCamera.SetParent(null);
@@ -249,7 +244,6 @@ public class InteractableMassSpectrometer : MonoBehaviour, IInteractable
             mainCamera.position = cameraViewTarget.position;
             mainCamera.rotation = cameraViewTarget.rotation;
         }
-
         TogglePlayerModel(false);
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
@@ -258,31 +252,31 @@ public class InteractableMassSpectrometer : MonoBehaviour, IInteractable
     private IEnumerator ExitMachineView()
     {
         isInteracting = false;
-        ResetPenalty();
 
+        // --- GM KAYIT SİL ---
+        if (GameManager.Instance != null)
+            GameManager.Instance.activeInteraction = null;
+        // --------------------
+
+        ResetPenalty();
         TogglePlayerModel(true);
 
-        // --- SMOOTH UNDOCK ---
         if (cinemachineTarget != null)
         {
-            mainCamera.SetParent(null); // Parent yok, Lerp var
+            mainCamera.SetParent(null);
             Vector3 startPos = mainCamera.position;
             Quaternion startRot = mainCamera.rotation;
             float undockTime = 0.5f;
             float t = 0f;
-
             while (t < undockTime)
             {
                 t += Time.deltaTime;
                 float s = Mathf.SmoothStep(0f, 1f, t / undockTime);
-                // Cinemachine hedef noktasına (CameraRoot) süzül
                 mainCamera.position = Vector3.Lerp(startPos, cinemachineTarget.position, s);
                 mainCamera.rotation = Quaternion.Slerp(startRot, cinemachineTarget.rotation, s);
                 yield return null;
             }
         }
-
-        // SNAP FIX: Karakteri kameranın baktığı yere çevir
         if (playerPhysicsController != null)
         {
             Vector3 camForward = mainCamera.forward;
@@ -290,18 +284,17 @@ public class InteractableMassSpectrometer : MonoBehaviour, IInteractable
             if (camForward != Vector3.zero)
                 playerPhysicsController.transform.rotation = Quaternion.LookRotation(camForward);
         }
-
         if (cinemachineBrain)
             cinemachineBrain.enabled = true;
         if (playerPhysicsController)
             playerPhysicsController.enabled = true;
         if (playerInputScript)
             playerInputScript.enabled = true;
-
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
     }
 
+    // ... (Update ve diğer fonksiyonlar aynı) ...
     private void Update()
     {
         if (isBroken)
@@ -316,29 +309,23 @@ public class InteractableMassSpectrometer : MonoBehaviour, IInteractable
             }
             return;
         }
-
         if (!isInteracting || isSolved)
             return;
-
         if (Input.GetKeyDown(KeyCode.F))
         {
             StartCoroutine(ExitMachineView());
             return;
         }
-
         float mouseX = Input.GetAxis("Mouse X");
         if (magnetPivot != null)
             magnetPivot.Rotate(Vector3.forward * mouseX * magnetRotateSpeed * -1);
-
         float currentMagAngle = magnetPivot.localEulerAngles.z;
         float magDiff = Mathf.Abs(Mathf.DeltaAngle(currentMagAngle, safeZoneAngle));
         bool isMagnetSafe = magDiff < safeZoneTolerance;
-
         float ringDiff = Mathf.Abs(Mathf.DeltaAngle(currentRingAngleValue, ringTargetAngle));
         float displayRingAngle = currentRingAngleValue % 360;
         if (displayRingAngle < 0)
             displayRingAngle += 360;
-
         if (screenText != null)
         {
             if (isMagnetSafe)
@@ -355,13 +342,11 @@ public class InteractableMassSpectrometer : MonoBehaviour, IInteractable
                 screenText.text = $"MAGNET UNSTABLE ({displayMagAngle:F0}°)\nALIGN MAGNET (0°)";
             }
         }
-
         float ringInput = 0f;
         if (Input.GetKey(KeyCode.D))
             ringInput = 1f;
         if (Input.GetKey(KeyCode.A))
             ringInput = -1f;
-
         if (ringInput != 0)
         {
             if (isMagnetSafe)
@@ -468,5 +453,12 @@ public class InteractableMassSpectrometer : MonoBehaviour, IInteractable
             screenText.color = Color.yellow;
             screenText.text = "SYSTEM READY\nWAITING INPUT";
         }
+    }
+
+    // --- IFORCEEXITABLE ---
+    public void ForceExit()
+    {
+        if (isInteracting)
+            StartCoroutine(ExitMachineView());
     }
 }

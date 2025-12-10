@@ -109,6 +109,8 @@ public class GuderianAI : MonoBehaviour
 
     private void Update()
     {
+        if (GlobalEnemyManager.Instance.stopAllEnemies)
+            return;
         if (cooldownTimer > 0)
         {
             cooldownTimer -= Time.deltaTime;
@@ -511,49 +513,66 @@ public class GuderianAI : MonoBehaviour
 
     // --- YENİ EKLENTİLER: DOLAP SİSTEMİ İÇİN ---
 
-    // Oyuncu bu dolabın içinde mi ve Guderian onu pusuya düşürdü mü?
-    public bool IsCampingPlayer(HidingSpot spot)
+    // Scripts/EnemyAI/GuderianAI.cs içinde bu fonksiyonu bul ve değiştir:
+
+    public bool IsCampingPlayer(InteractableHidingSpot spot)
     {
-        // Eğer Guderian arama modundaysa (Searching) VE oyuncunun olduğu odayı biliyorsa
-        // Basit bir mantık: Oyuncu odada gizliyse ve süre dolmak üzereyse "Buldum" diyebilir.
-
-        // Şimdilik basit tutalım: Eğer Guderian Searching modundaysa ve oyuncu saklandığı yerden çıkmaya çalışırsa %100 yakalasın mı?
-        // Yoksa mesafe kontrolü mü yapalım?
-
+        // Mesafe kontrolünü KALDIRDIK.
+        // Eğer Guderian "Searching" modundaysa ve senin olduğun odadaysa (activeRoom),
+        // sen çıkmaya çalıştığın an mesafesi ne olursa olsun seni yakalar (ışınlanır).
         if (currentState == GuderianState.Searching && activeRoom != null)
         {
-            // Eğer Guderian oyuncunun saklandığı odayı arıyorsa ve oyuncu çıkmaya çalışırsa
-            // Mesafe kontrolü yapalım. Eğer Guderian dolaba 3 metreden yakınsa yakalar.
-            float dist = Vector3.Distance(transform.position, spot.transform.position);
-            if (dist < 4.0f)
-            {
-                return true;
-            }
+            return true;
         }
         return false;
     }
 
-    // Dolap Jumpscare'i: Oyuncu içeriden dışarı bakarken Guderian belirir
+    // Scripts/EnemyAI/GuderianAI.cs dosyasında bu fonksiyonu bul ve değiştir:
+
     public void TriggerLockerJumpscare(Transform lockerExitPoint)
     {
         currentState = GuderianState.Jumpscare;
         StopAllCoroutines();
 
-        // Guderian'ı dolabın tam önüne (çıkış noktasına) ışınla
-        // Oyuncuya (dolabın içine) baksın
+        GameObject player = GameObject.FindGameObjectWithTag("Player");
+
         if (lockerExitPoint != null)
         {
-            transform.position = lockerExitPoint.position;
-            transform.LookAt(lockerExitPoint.position - lockerExitPoint.forward); // Dolaba dön
+            // --- DÜZELTME 1: YÜKSEKLİK AYARI (Spawn Offset) ---
+            // Yere gömülmeyi engellemek için spawnYOffset'i ekliyoruz.
+            Vector3 finalPos = lockerExitPoint.position;
+            finalPos.y += spawnYOffset;
+
+            transform.position = finalPos;
+
+            // Guderian dolabın içine (oyuncuya) baksın
+            // lockerExitPoint.forward dolaptan dışarı baktığı için, tersini alıp içeri baktırıyoruz.
+            transform.LookAt(finalPos - lockerExitPoint.forward);
+        }
+
+        // --- DÜZELTME 2: OYUNCU YÖNÜNÜ ZORLA ÇEVİR ---
+        // JumpscareManager kamerayı oyuncunun kafasına kilitler.
+        // Bu yüzden önce oyuncunun gövdesini Guderian'a döndürmeliyiz.
+        if (player != null)
+        {
+            // Sadece Y ekseninde döndür (yukarı/aşağı bakmasın, sadece sağa/sola)
+            Vector3 lookTarget = new Vector3(
+                transform.position.x,
+                player.transform.position.y,
+                transform.position.z
+            );
+            player.transform.LookAt(lookTarget);
         }
 
         guderianModel.SetActive(true);
+
         if (audioSource)
             audioSource.PlayOneShot(jumpscareSound);
 
         Debug.LogError("GUDERIAN: Dolaptan çıkarken yakaladı!");
 
-        // Jumpscare kamerasını tetikle (Animasyonsuz, çünkü zaten bakışıyoruz)
+        // Jumpscare kamerasını tetikle
+        // 'false' gönderiyoruz çünkü animasyonla dönmesine gerek yok, zaten biz yukarıda döndürdük.
         if (JumpscareManager.Instance != null)
         {
             JumpscareManager.Instance.StartJumpscare(transform, false);

@@ -27,14 +27,30 @@ public class RoomEditor : Editor
         EditorGUILayout.BeginVertical(sectionStyle);
         EditorGUILayout.LabelField("🏠 Genel Ayarlar", EditorStyles.boldLabel);
         room.roomName = EditorGUILayout.TextField("Oda ID", room.roomName);
+
+        // --- İŞTE EKSİK OLAN KISIM (KORİDOR KUTUCUĞU) ---
+        EditorGUILayout.Space(5);
+
+        // Dikkat çeksin diye eğer işaretliyse Sarı yapıyoruz
+        GUI.backgroundColor = room.isCorridor ? Color.yellow : Color.white;
+
+        room.isCorridor = EditorGUILayout.Toggle("Bu Bir Koridor Mu?", room.isCorridor);
+
+        if (room.isCorridor)
+        {
+            EditorGUILayout.HelpBox("AdamAI sayacı burada DURAKLAYACAK (Pause).", MessageType.Info);
+        }
+
+        GUI.backgroundColor = Color.white;
+        // -------------------------------------------------
+
         EditorGUILayout.EndVertical();
 
         EditorGUILayout.Space(10);
 
-        // --- IŞIK SİSTEMİ (ARTIK BURADA) ---
+        // --- IŞIK SİSTEMİ ---
         EditorGUILayout.BeginVertical(sectionStyle);
         EditorGUILayout.LabelField("💡 Elektrik & Işıklandırma", EditorStyles.boldLabel);
-        // Guderian olsun olmasın, ışıklar her zaman ayarlanabilir
         EditorGUILayout.PropertyField(
             serializedObject.FindProperty("roomLights"),
             new GUIContent("Oda Işıkları"),
@@ -112,7 +128,6 @@ public class RoomEditor : Editor
             EditorGUILayout.PropertyField(serializedObject.FindProperty("doorInsidePoint"));
 
             EditorGUILayout.Space(5);
-            // IŞIKLAR BURADAN KALDIRILDI!
             EditorGUILayout.LabelField("2. Saklanma & Rota:", EditorStyles.miniBoldLabel);
             EditorGUILayout.PropertyField(serializedObject.FindProperty("hidingSpots"), true);
 

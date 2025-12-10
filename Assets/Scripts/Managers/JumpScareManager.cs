@@ -31,9 +31,14 @@ public class JumpscareManager : MonoBehaviour
     [SerializeField]
     private Vector3 eyeOffset = new Vector3(0, 0.1f, 0.15f);
 
+    // Animasyon ID'leri
     private int _animIDPanicRight;
     private int _animIDPanicLeft;
     private int _animIDPanicBack;
+
+    // YENİ: Hız parametrelerini sıfırlamak için
+    private int _animIDSpeed;
+    private int _animIDMotionSpeed;
 
     private void Awake()
     {
@@ -42,9 +47,14 @@ public class JumpscareManager : MonoBehaviour
         else
             Destroy(gameObject);
 
+        // ID'leri bir kez cache'liyoruz
         _animIDPanicRight = Animator.StringToHash("PanicTurnRight");
         _animIDPanicLeft = Animator.StringToHash("PanicTurnLeft");
         _animIDPanicBack = Animator.StringToHash("PanicTurnBack");
+
+        // StarterAssets animatör parametreleri
+        _animIDSpeed = Animator.StringToHash("Speed");
+        _animIDMotionSpeed = Animator.StringToHash("MotionSpeed");
     }
 
     private void Start()
@@ -72,8 +82,6 @@ public class JumpscareManager : MonoBehaviour
             mainCamera = Camera.main;
     }
 
-    // --- GÜNCELLENEN FONKSİYON ---
-    // playTurnAnim: Eğer true ise dönme animasyonunu oynatır. False ise sadece kamerayı kilitler.
     public void StartJumpscare(Transform enemy, bool playTurnAnim = true)
     {
         StartCoroutine(BoneLockRoutine(enemy, playTurnAnim));
@@ -92,6 +100,16 @@ public class JumpscareManager : MonoBehaviour
         if (playerController)
             playerController.enabled = false;
 
+        // --- DÜZELTME BAŞLANGICI ---
+        // Karakterin yürüme animasyonunu ZORLA durdur.
+        // Aksi takdirde script kapansa bile Animator son hızı hatırlar ve karakter olduğu yerde yürür.
+        if (playerAnimator != null)
+        {
+            playerAnimator.SetFloat(_animIDSpeed, 0f);
+            playerAnimator.SetFloat(_animIDMotionSpeed, 0f);
+        }
+        // --- DÜZELTME BİTİŞİ ---
+
         // 2. CINEMACHINE KAPAT & KAFAYA MONTE ET
         if (mainCamera != null)
         {
@@ -108,7 +126,7 @@ public class JumpscareManager : MonoBehaviour
             }
         }
 
-        // 3. ANİMASYON (Sadece İstenirse Oynar)
+        // 3. ANİMASYON (Sadece İstenirse Oynar - Örn: Arkadan yakalanınca)
         if (playTurnAnim && playerAnimator != null)
         {
             // Yön Hesapla
@@ -133,7 +151,7 @@ public class JumpscareManager : MonoBehaviour
         // 4. BEKLE
         yield return new WaitForSeconds(scareDuration);
 
-        // 5. BİTİŞ
+        // 5. BİTİŞ (Sahneyi Yenile)
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 

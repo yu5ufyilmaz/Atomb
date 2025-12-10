@@ -3,27 +3,40 @@ using UnityEngine;
 public class ControllableLight : MonoBehaviour, IInteractable
 {
     [Header("Light Settings")]
-    [SerializeField] private Light targetLight; // Kontrol edilecek ışık
+    [SerializeField]
+    private Light targetLight; // Kontrol edilecek ışık
+
     [Tooltip("Oyuncu bu ışığın açık olmasını mı istiyor?")]
-    [SerializeField] private bool desiredStateIsOn = true;
-    
+    [SerializeField]
+    private bool desiredStateIsOn = true;
+
     [Header("Audio")]
-    [SerializeField] private AudioClip switchSound;
-    [SerializeField] private AudioClip errorSound; // Şartel atıkken basma sesi
-    [SerializeField] private AudioSource audioSource; //
-    
+    [SerializeField]
+    private AudioClip switchSound;
+
+    [SerializeField]
+    private AudioClip errorSound; // Şartel atıkken basma sesi
+
+    [SerializeField]
+    private AudioSource audioSource; //
+
     [Header("Visual Feedback (Opsiyonel)")]
-    [SerializeField] private Material onMaterial; //
-    [SerializeField] private Material offMaterial; //
-    [SerializeField] private MeshRenderer switchRenderer; //
-    
-    public bool IsOn => desiredStateIsOn; 
+    [SerializeField]
+    private Material onMaterial; //
+
+    [SerializeField]
+    private Material offMaterial; //
+
+    [SerializeField]
+    private MeshRenderer switchRenderer; //
+
+    public bool IsOn => desiredStateIsOn;
 
     private void Start()
     {
         if (targetLight == null)
         {
-            Debug.LogError("ControllableLight'a ışık atanmamış!", this);
+            // Eğer ışık atanmamışsa hata verme, sessizce geç (Editörde bazen boş kalabilir)
             return;
         }
 
@@ -50,6 +63,20 @@ public class ControllableLight : MonoBehaviour, IInteractable
         }
     }
 
+    // --- YENİ: Editörde Değişiklik Yapınca Anında Güncelle ---
+    private void OnValidate()
+    {
+        UpdateLightVisual();
+    }
+
+    // --- YENİ: Editör Butonu İçin Özel Fonksiyon ---
+    // Bu fonksiyon oyun mantığını (ses, şartel kontrolü vb.) bypass eder.
+    public void ToggleLightEditor()
+    {
+        desiredStateIsOn = !desiredStateIsOn;
+        UpdateLightVisual();
+    }
+
     public void Interact()
     {
         // Eğer şartel atmışsa, ışığı açmaya izin verme
@@ -62,7 +89,7 @@ public class ControllableLight : MonoBehaviour, IInteractable
         // Oyuncunun "isteğini" değiştir
         desiredStateIsOn = !desiredStateIsOn;
         PlaySound(switchSound);
-        
+
         // Görseli güncelle
         UpdateLightVisual();
     }
@@ -73,29 +100,29 @@ public class ControllableLight : MonoBehaviour, IInteractable
         {
             return "Şartel Atık";
         }
-        
+
         return desiredStateIsOn ? "[Sol Tık] Işığı Kapat" : "[Sol Tık] Işığı Aç";
     }
-    
+
     private void HandleBreakerTrip()
     {
-        Debug.Log(gameObject.name + " -> Breaker attı, ışık kapandı.");
+        // Debug.Log(gameObject.name + " -> Breaker attı, ışık kapandı.");
         UpdateLightVisual();
     }
 
-    // BreakerBox'tan "Şartel Kaldırıldı" olayı geldiğinde çalışır
     private void HandleBreakerReset()
     {
-        Debug.Log(gameObject.name + " -> Breaker kaldırıldı, durum kontrol ediliyor.");
+        // Debug.Log(gameObject.name + " -> Breaker kaldırıldı, durum kontrol ediliyor.");
         UpdateLightVisual();
     }
 
     // Işığın GÖRSEL durumunu günceller
     private void UpdateLightVisual()
     {
-        // Işığın yanabilmesi için şartelin atmamış olması GEREKİR
+        // Editörde BreakerBox.Instance NULL olabilir, bu durumda "Elektrik Var" kabul ediyoruz.
+        // Böylece editörde rahatça ışıkları açıp kapatabilirsin.
         bool canBeOn = (BreakerBox.Instance == null) || !BreakerBox.Instance.IsTripped;
-        
+
         // Nihai durum: Şartel atmamışsa VE oyuncu açık olmasını istiyorsa
         bool finalState = canBeOn && desiredStateIsOn;
 
@@ -107,10 +134,10 @@ public class ControllableLight : MonoBehaviour, IInteractable
         // Düğme materyalini GÜNCEL duruma göre ayarla
         if (switchRenderer != null && onMaterial != null && offMaterial != null)
         {
-            switchRenderer.material = finalState ? onMaterial : offMaterial;
+            switchRenderer.sharedMaterial = finalState ? onMaterial : offMaterial;
         }
     }
-    
+
     private void PlaySound(AudioClip clip)
     {
         if (clip != null && audioSource != null)

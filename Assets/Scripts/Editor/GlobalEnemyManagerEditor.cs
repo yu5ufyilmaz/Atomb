@@ -30,6 +30,34 @@ public class GlobalEnemyManagerEditor : Editor
         EditorGUI.LabelField(rect, "👾 DÜŞMAN KOMUTA MERKEZİ", titleStyle);
         EditorGUILayout.Space(10);
 
+        // --- YENİ: MASTER SWITCH (DURDURMA BUTONU) ---
+        // En tepeye koyuyoruz ki kolay erişilsin
+        GUI.backgroundColor = manager.stopAllEnemies
+            ? new Color(1f, 0.3f, 0.3f)
+            : new Color(0.4f, 1f, 0.4f);
+        if (
+            GUILayout.Button(
+                manager.stopAllEnemies
+                    ? "▶️ SİSTEMİ BAŞLAT (DEVAM ET)"
+                    : "⏸️ TÜM AI SİSTEMİNİ DURDUR (TEST MODU)",
+                GUILayout.Height(35)
+            )
+        )
+        {
+            manager.stopAllEnemies = !manager.stopAllEnemies;
+        }
+        GUI.backgroundColor = Color.white;
+
+        if (manager.stopAllEnemies)
+        {
+            EditorGUILayout.HelpBox(
+                "⚠️ DİKKAT: Tüm düşman mantığı durduruldu. Spawn olmayacaklar ve sayaçları işlemeyecek.",
+                MessageType.Warning
+            );
+            EditorGUILayout.Space(10);
+        }
+        // ---------------------------------------------
+
         // 1. GLOBAL TRAFİK
         EditorGUILayout.BeginVertical(sectionStyle);
         EditorGUILayout.LabelField("🌍 GLOBAL TRAFİK DURUMU", headerStyle);
@@ -55,7 +83,7 @@ public class GlobalEnemyManagerEditor : Editor
         }
         EditorGUILayout.EndHorizontal();
 
-        // --- YENİ: GLOBAL COOLDOWN BARI ---
+        // --- GLOBAL COOLDOWN BARI ---
         if (Application.isPlaying && !isAttack && manager.currentGlobalCooldown > 0)
         {
             EditorGUILayout.Space(5);
@@ -66,8 +94,6 @@ public class GlobalEnemyManagerEditor : Editor
                 MessageType.Info
             );
         }
-        // ----------------------------------
-
         EditorGUILayout.EndVertical();
 
         EditorGUILayout.Space(15);
@@ -80,10 +106,15 @@ public class GlobalEnemyManagerEditor : Editor
         // 3. GUDERIAN PANELİ
         DrawGuderianSection(headerStyle, sectionStyle);
 
+        EditorGUILayout.Space(10);
+
+        // 4. ADAM PANELİ
+        DrawAdamSection(headerStyle, sectionStyle);
+
         EditorGUILayout.Space(20);
 
         if (Application.isPlaying)
-            Repaint(); // Canlı Yenileme
+            Repaint();
     }
 
     // --- LEES ---
@@ -300,6 +331,70 @@ public class GlobalEnemyManagerEditor : Editor
             guderian.TriggerJumpscare();
         GUI.backgroundColor = Color.white;
         EditorGUILayout.EndHorizontal();
+        EditorGUILayout.EndVertical();
+    }
+
+    // --- ADAM ---
+    void DrawAdamSection(GUIStyle headerStyle, GUIStyle sectionStyle)
+    {
+        AdamAI adam = FindObjectOfType<AdamAI>();
+        GUI.backgroundColor = new Color(0.2f, 0.2f, 0.2f);
+        EditorGUILayout.BeginVertical(sectionStyle);
+        GUI.backgroundColor = Color.white;
+
+        EditorGUILayout.LabelField("🌑 ADAM (KARANLIK)", headerStyle);
+        if (adam == null)
+        {
+            EditorGUILayout.HelpBox("AdamAI Sahneye Eklenmemiş!", MessageType.Warning);
+            EditorGUILayout.EndVertical();
+            return;
+        }
+
+        EditorGUILayout.BeginHorizontal();
+        if (adam.debugTimer > 0)
+        {
+            float urgency = Mathf.Clamp01(adam.debugTimer / adam.debugTotalTimeNeeded);
+            GUI.backgroundColor = Color.Lerp(Color.yellow, Color.red, urgency);
+            GUILayout.Box(
+                $"TEHDİT: {adam.debugStatus}",
+                GUILayout.Height(25),
+                GUILayout.ExpandWidth(true)
+            );
+        }
+        else
+        {
+            GUI.backgroundColor = Color.green;
+            GUILayout.Box(
+                $"DURUM: {adam.debugStatus}",
+                GUILayout.Height(25),
+                GUILayout.ExpandWidth(true)
+            );
+        }
+        GUI.backgroundColor = Color.white;
+        EditorGUILayout.EndHorizontal();
+
+        if (Application.isPlaying)
+        {
+            EditorGUILayout.Space(5);
+            float progress = adam.debugTimer / adam.debugTotalTimeNeeded;
+            string barLabel = adam.debugTimer > 0 ? $"Karanlık: {adam.debugTimer:F1}s" : "Güvenli";
+
+            Color barColor = Color.Lerp(Color.green, Color.red, progress);
+            DrawBar(progress, barLabel, barColor);
+            EditorGUILayout.LabelField(
+                $"Uyarılar: {adam.timeToFirstWarning}s -> {adam.timeToFirstWarning + adam.timeToSecondWarning}s -> Ölüm",
+                EditorStyles.miniLabel
+            );
+        }
+
+        EditorGUILayout.Space(5);
+        GUI.backgroundColor = new Color(1f, 0.3f, 0.3f);
+        if (GUILayout.Button("KILL (Test)", GUILayout.Height(25)))
+        {
+            adam.KillPlayer();
+        }
+        GUI.backgroundColor = Color.white;
+
         EditorGUILayout.EndVertical();
     }
 

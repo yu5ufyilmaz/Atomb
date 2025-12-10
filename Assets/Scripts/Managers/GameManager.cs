@@ -1,6 +1,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+public interface IForceExitable
+{
+    void ForceExit(); // "Zorla çıkış yap" komutu
+}
+
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
@@ -13,6 +18,7 @@ public class GameManager : MonoBehaviour
     public PressureSystemManager pressureManager;
 
     public List<RoomManager> allRooms = new List<RoomManager>();
+    public IForceExitable activeInteraction;
 
     [Header("Oyun Durumu")]
     public bool isGamePaused = false;

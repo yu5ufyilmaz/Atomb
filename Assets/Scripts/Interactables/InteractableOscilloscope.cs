@@ -2,8 +2,9 @@ using System.Collections;
 using Cinemachine;
 using UnityEngine;
 
-public class InteractableOscilloscope : MonoBehaviour, IInteractable
+public class InteractableOscilloscope : MonoBehaviour, IInteractable, IForceExitable
 {
+    // ... (Değişkenler aynı) ...
     [Header("Player Control")]
     [SerializeField]
     private UnityEngine.CharacterController playerController;
@@ -23,7 +24,6 @@ public class InteractableOscilloscope : MonoBehaviour, IInteractable
 
     [SerializeField]
     private Vector3 headOffset = new Vector3(0, 0.1f, 0.15f);
-
     private Transform mainCamera;
     private CinemachineBrain cinemachineBrain;
     private Transform headBone;
@@ -70,12 +70,10 @@ public class InteractableOscilloscope : MonoBehaviour, IInteractable
 
     [SerializeField]
     private float maxVolume = 1.0f;
-
     private int currentVoltsSetting = 0;
     private int currentTimeSetting = 0;
     private bool isSolved = false;
     private bool isInteracting = false;
-
     private Quaternion voltsKnobInitialRot;
     private Quaternion timeKnobInitialRot;
 
@@ -92,17 +90,14 @@ public class InteractableOscilloscope : MonoBehaviour, IInteractable
                 headBone = playerAnimator.GetBoneTransform(HumanBodyBones.Head);
             if (headBone == null)
                 headBone = playerController.transform;
-
             Transform camRoot = playerController.transform.Find("PlayerCameraRoot");
             cinemachineTarget = (camRoot != null) ? camRoot : headBone;
         }
-
         if (Camera.main != null)
         {
             mainCamera = Camera.main.transform;
             cinemachineBrain = mainCamera.GetComponent<CinemachineBrain>();
         }
-
         if (voltsKnob)
             voltsKnobInitialRot = voltsKnob.localRotation;
         if (timeKnob)
@@ -112,7 +107,6 @@ public class InteractableOscilloscope : MonoBehaviour, IInteractable
             audioSource.Stop();
             audioSource.loop = true;
         }
-
         currentVoltsSetting = 2;
         currentTimeSetting = 2;
         UpdateKnobVisuals();
@@ -131,13 +125,18 @@ public class InteractableOscilloscope : MonoBehaviour, IInteractable
     private IEnumerator EnterMachineView()
     {
         isInteracting = true;
+
+        // --- GM KAYIT ---
+        if (GameManager.Instance != null)
+            GameManager.Instance.activeInteraction = this;
+        // ----------------
+
         if (playerController)
             playerController.enabled = false;
         if (playerLookScript)
             playerLookScript.enabled = false;
         if (playerAnimator)
             playerAnimator.SetTrigger(interactAnimTrigger);
-
         if (cinemachineBrain)
             cinemachineBrain.enabled = false;
 
@@ -156,9 +155,7 @@ public class InteractableOscilloscope : MonoBehaviour, IInteractable
                 yield return null;
             }
         }
-
         yield return new WaitForSeconds(animationDuration - 0.5f);
-
         if (cameraViewTarget != null)
         {
             mainCamera.SetParent(null);
@@ -177,11 +174,9 @@ public class InteractableOscilloscope : MonoBehaviour, IInteractable
             mainCamera.position = cameraViewTarget.position;
             mainCamera.rotation = cameraViewTarget.rotation;
         }
-
         TogglePlayerModel(false);
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
-
         if (audioSource)
         {
             UpdateAudioAndWaveform();
@@ -193,12 +188,16 @@ public class InteractableOscilloscope : MonoBehaviour, IInteractable
     private IEnumerator ExitMachineView()
     {
         isInteracting = false;
+
+        // --- GM KAYIT SİL ---
+        if (GameManager.Instance != null)
+            GameManager.Instance.activeInteraction = null;
+        // --------------------
+
         if (audioSource)
             audioSource.Stop();
-
         TogglePlayerModel(true);
 
-        // --- SMOOTH UNDOCK ---
         if (cinemachineTarget != null)
         {
             mainCamera.SetParent(null);
@@ -215,8 +214,6 @@ public class InteractableOscilloscope : MonoBehaviour, IInteractable
                 yield return null;
             }
         }
-
-        // SNAP FIX
         if (playerController != null)
         {
             Vector3 camForward = mainCamera.forward;
@@ -224,14 +221,12 @@ public class InteractableOscilloscope : MonoBehaviour, IInteractable
             if (camForward != Vector3.zero)
                 playerController.transform.rotation = Quaternion.LookRotation(camForward);
         }
-
         if (cinemachineBrain)
             cinemachineBrain.enabled = true;
         if (playerController)
             playerController.enabled = true;
         if (playerLookScript)
             playerLookScript.enabled = true;
-
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
     }
@@ -251,7 +246,6 @@ public class InteractableOscilloscope : MonoBehaviour, IInteractable
                 waveformScript.frequency = 1.0f;
             return;
         }
-
         bool changed = false;
         if (Input.GetKeyDown(KeyCode.W))
         {
@@ -273,7 +267,6 @@ public class InteractableOscilloscope : MonoBehaviour, IInteractable
             currentTimeSetting = Mathf.Max(currentTimeSetting - 1, 0);
             changed = true;
         }
-
         if (changed)
         {
             UpdateKnobVisuals();
@@ -282,6 +275,7 @@ public class InteractableOscilloscope : MonoBehaviour, IInteractable
         }
     }
 
+    // ... (Diğer fonksiyonlar aynı kalsın) ...
     private void TogglePlayerModel(bool show)
     {
         if (!playerController)
@@ -336,6 +330,13 @@ public class InteractableOscilloscope : MonoBehaviour, IInteractable
     private IEnumerator AutoExit(float delay)
     {
         yield return new WaitForSeconds(delay);
+        if (isInteracting)
+            StartCoroutine(ExitMachineView());
+    }
+
+    // --- IFORCEEXITABLE ---
+    public void ForceExit()
+    {
         if (isInteracting)
             StartCoroutine(ExitMachineView());
     }

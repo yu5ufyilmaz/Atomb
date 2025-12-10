@@ -3,7 +3,8 @@ using System.Text;
 using Cinemachine;
 using UnityEngine;
 
-public class InteractableTuringMachine : MonoBehaviour, IInteractable
+// IForceExitable EKLENDİ
+public class InteractableTuringMachine : MonoBehaviour, IInteractable, IForceExitable
 {
     [Header("Player Control")]
     [SerializeField]
@@ -31,9 +32,8 @@ public class InteractableTuringMachine : MonoBehaviour, IInteractable
     private Transform mainCamera;
     private CinemachineBrain cinemachineBrain;
     private Transform headBone;
-    private Transform cinemachineTarget; // Oyunun asıl kamera hedefi
+    private Transform cinemachineTarget;
 
-    // --- Makine Bileşenleri ---
     [Header("Makine Bileşenleri")]
     [SerializeField]
     private Transform[] wordWheelModels;
@@ -129,12 +129,11 @@ public class InteractableTuringMachine : MonoBehaviour, IInteractable
             if (headBone == null)
                 headBone = playerController.transform;
 
-            // Cinemachine Target'ı bul (PlayerCameraRoot)
             Transform camRoot = playerController.transform.Find("PlayerCameraRoot");
             if (camRoot != null)
                 cinemachineTarget = camRoot;
             else
-                cinemachineTarget = headBone; // Bulamazsa kafayı kullan
+                cinemachineTarget = headBone;
         }
 
         if (Camera.main != null)
@@ -176,7 +175,6 @@ public class InteractableTuringMachine : MonoBehaviour, IInteractable
             symbolWheelInitialRot = symbolWheelModel.localRotation;
             symbolWheelTarget = symbolWheelModel.localRotation;
         }
-
         ClearAllHighlights();
         UpdateIndicators(0);
     }
@@ -194,6 +192,11 @@ public class InteractableTuringMachine : MonoBehaviour, IInteractable
     {
         isInteracting = true;
 
+        // --- GM KAYIT ---
+        if (GameManager.Instance != null)
+            GameManager.Instance.activeInteraction = this;
+        // ----------------
+
         if (playerController)
             playerController.enabled = false;
         if (playerLookScript)
@@ -206,7 +209,6 @@ public class InteractableTuringMachine : MonoBehaviour, IInteractable
         if (cinemachineBrain)
             cinemachineBrain.enabled = false;
 
-        // 1. KAFAYA YAPIŞ (Animasyonla in)
         if (headBone != null)
         {
             mainCamera.SetParent(headBone);
@@ -225,7 +227,6 @@ public class InteractableTuringMachine : MonoBehaviour, IInteractable
 
         yield return new WaitForSeconds(animationDuration - 0.5f);
 
-        // 2. EKRANA GEÇ (Sabitle)
         if (cameraViewTarget != null)
         {
             mainCamera.SetParent(null);
@@ -233,7 +234,6 @@ public class InteractableTuringMachine : MonoBehaviour, IInteractable
             Quaternion startDockRot = mainCamera.rotation;
             float dockTime = 0.8f;
             float t = 0f;
-
             while (t < dockTime)
             {
                 t += Time.deltaTime;
@@ -252,55 +252,48 @@ public class InteractableTuringMachine : MonoBehaviour, IInteractable
 
         if (PasswordManager.Instance != null)
             UpdateIndicators(PasswordManager.Instance.GetValidatedPasswordCount());
-
         UpdateActiveWheelHighlight();
     }
 
     private IEnumerator ExitMachineView()
     {
         isInteracting = false;
+
+        // --- GM KAYIT SİL ---
+        if (GameManager.Instance != null)
+            GameManager.Instance.activeInteraction = null;
+        // --------------------
+
         PlaySound(exitSound);
         ClearAllHighlights();
 
-        // 1. Karakteri Görünür Yap
         TogglePlayerModel(true);
 
-        // 2. EKRANDAN KAFAYA GERİ DÖN (Undock)
-        // Kamerayı geçici olarak tekrar kafaya/kamera köküne alıyoruz
         if (cinemachineTarget != null)
         {
-            // Parent yapmadan direkt pozisyona Lerp et (Daha temiz)
             mainCamera.SetParent(null);
-
             Vector3 startPos = mainCamera.position;
             Quaternion startRot = mainCamera.rotation;
-
             float undockTime = 0.6f;
             float t = 0f;
             while (t < undockTime)
             {
                 t += Time.deltaTime;
                 float s = Mathf.SmoothStep(0f, 1f, t / undockTime);
-
-                // Hedef: Cinemachine'in baktığı yer (PlayerCameraRoot)
                 mainCamera.position = Vector3.Lerp(startPos, cinemachineTarget.position, s);
                 mainCamera.rotation = Quaternion.Slerp(startRot, cinemachineTarget.rotation, s);
-
                 yield return null;
             }
         }
 
-        // 3. KARAKTER ROTASYONUNU DÜZELT (Snap Önleyici)
-        // Karakterin gövdesini kameranın baktığı yöne çevir
         if (playerController != null)
         {
             Vector3 camForward = mainCamera.forward;
-            camForward.y = 0; // Yere paralel
+            camForward.y = 0;
             if (camForward != Vector3.zero)
                 playerController.transform.rotation = Quaternion.LookRotation(camForward);
         }
 
-        // 4. KONTROLÜ VER
         if (cinemachineBrain)
             cinemachineBrain.enabled = true;
         if (playerController)
@@ -322,6 +315,7 @@ public class InteractableTuringMachine : MonoBehaviour, IInteractable
             return;
         }
 
+        // ... (Tuş kontrolleri aynı) ...
         if (Input.GetKeyDown(KeyCode.W))
         {
             currentGroup = (currentGroup - 1 + 3) % 3;
@@ -362,6 +356,8 @@ public class InteractableTuringMachine : MonoBehaviour, IInteractable
 
         AnimateWheels();
     }
+
+    // ... (Diğer fonksiyonlar: TogglePlayerModel, AnimateWheels, vb. AYNEN KALSIN) ...
 
     private void TogglePlayerModel(bool show)
     {
@@ -514,5 +510,12 @@ public class InteractableTuringMachine : MonoBehaviour, IInteractable
     {
         if (audioSource && c)
             audioSource.PlayOneShot(c);
+    }
+
+    // --- IFORCEEXITABLE ---
+    public void ForceExit()
+    {
+        if (isInteracting)
+            StartCoroutine(ExitMachineView());
     }
 }

@@ -7,7 +7,7 @@ public class GameManagerEditor : Editor
 {
     // Katlanabilir menü durumları
     private static bool showBreakerSection = true;
-    private static bool showPressureSection = true; // YENİ
+    private static bool showPressureSection = true;
     private static bool showLightsSection = true;
     private static bool showPasswordSection = true;
 
@@ -42,6 +42,7 @@ public class GameManagerEditor : Editor
         if (GUILayout.Button("🔄 Sahne Taraması Yap (Verileri Yenile)", GUILayout.Height(25)))
         {
             gm.RefreshReferences();
+            EditorUtility.SetDirty(gm);
         }
         EditorGUILayout.Space(10);
 
@@ -58,7 +59,8 @@ public class GameManagerEditor : Editor
             if (gm.breakerBox != null)
             {
                 BreakerBox bb = gm.breakerBox;
-                bool isTripped = bb.IsTripped;
+                // BreakerBox editörde her zaman "Kapalı" (IsTripped = false) başlar varsayılan olarak.
+                bool isTripped = Application.isPlaying && bb.IsTripped;
 
                 GUI.backgroundColor = isTripped
                     ? new Color(1f, 0.3f, 0.3f)
@@ -83,14 +85,17 @@ public class GameManagerEditor : Editor
                         EditorStyles.miniLabel
                     );
                 }
-                else if (isTripped)
+                else if (Application.isPlaying && isTripped)
                 {
                     if (GUILayout.Button("🛠️ Şarteli Kaldır", GUILayout.Height(25)))
                         bb.Interact();
                 }
             }
             else
-                EditorGUILayout.HelpBox("BreakerBox Yok!", MessageType.Error);
+                EditorGUILayout.HelpBox(
+                    "BreakerBox Yok! 'Sahne Taraması' yapın.",
+                    MessageType.Error
+                );
             EditorGUILayout.EndVertical();
         }
         EditorGUILayout.EndFoldoutHeaderGroup();
@@ -98,7 +103,7 @@ public class GameManagerEditor : Editor
         EditorGUILayout.Space(5);
 
         // =================================================================
-        // 2. BASINÇ SİSTEMİ (YENİ BÖLÜM)
+        // 2. BASINÇ SİSTEMİ (VANA)
         // =================================================================
         showPressureSection = EditorGUILayout.BeginFoldoutHeaderGroup(
             showPressureSection,
@@ -172,7 +177,7 @@ public class GameManagerEditor : Editor
         EditorGUILayout.Space(5);
 
         // =================================================================
-        // 3. ODA & IŞIKLAR
+        // 3. ODA & IŞIK KONTROLÜ (GÜNCELLENDİ)
         // =================================================================
         showLightsSection = EditorGUILayout.BeginFoldoutHeaderGroup(
             showLightsSection,
@@ -194,8 +199,11 @@ public class GameManagerEditor : Editor
                     {
                         if (light == null)
                             continue;
+
+                        // Editörde de durumu görebilmek için IsOn özelliğini kullanıyoruz
                         bool isOn = light.IsOn;
                         GUI.backgroundColor = isOn ? new Color(0.4f, 1f, 0.4f) : Color.gray;
+
                         if (
                             GUILayout.Button(
                                 $"{light.gameObject.name}\n{(isOn ? "ON" : "OFF")}",
@@ -204,7 +212,19 @@ public class GameManagerEditor : Editor
                             )
                         )
                         {
-                            light.Interact();
+                            // OYUN AÇIKSA:
+                            if (Application.isPlaying)
+                            {
+                                light.Interact();
+                            }
+                            // OYUN KAPALIYSA (EDİTÖR):
+                            else
+                            {
+                                // Undo sistemine kaydet (Ctrl+Z ile geri alınabilsin diye)
+                                Undo.RecordObject(light, "Toggle Light");
+                                light.ToggleLightEditor(); // Yeni fonksiyonu çağır
+                                EditorUtility.SetDirty(light); // Değişikliği kaydet
+                            }
                         }
                         GUI.backgroundColor = Color.white;
                     }
