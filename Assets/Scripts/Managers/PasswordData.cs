@@ -1,19 +1,22 @@
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "PasswordData", menuName = "Atomb/Password Data", order = 0)]
+[CreateAssetMenu(
+    fileName = "PasswordLocation",
+    menuName = "Atomb/Password Location Data",
+    order = 0
+)]
 public class PasswordData : ScriptableObject
 {
-    public int totalPages;
-    
-    [Tooltip("Not defterine eklenecek ve Turing makinesinde kontrol edilecek ID. Örn: INFINITY_=_123")]
-    public string passwordID;
-
-    [Tooltip("Bu şifreyi içeren sayfaların bulunduğu Texture Atlas (Pages0-7.png gibi)")]
+    [Header("Görsel Ayarları")]
     public Texture2D pageTexture;
 
-    [Tooltip("Şifrenin bulunduğu sayfa (Shader'daki index'e göre. Genellikle sağ sayfalar 1, 3, 5...)")]
-    public int passwordPage;
+    [Tooltip("Texture içinde toplam kaç sayfa var? (Yatay şerit varsayılır)")]
+    public int totalPages = 8; // Şu an 8 ama değişebilir dedin.
 
-    [Tooltip("BU TEXTURE'A ÖZEL şifrenin tıklanabilir alanı (UV koordinatları)")]
+    [Tooltip("Şifrenin bulunduğu sayfa indeksi (0'dan başlar)")]
+    public int passwordPage = 0;
+
+    [Header("Otomatik Hesaplanacak Alan")]
+    [Tooltip("Editörde çizilen alan (Sadece o sayfaya göre 0-1 arası değer)")]
     public Rect passwordHotspotUV;
 }
