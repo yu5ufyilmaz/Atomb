@@ -6,12 +6,10 @@ public class PasswordManager : MonoBehaviour
 {
     public static PasswordManager Instance;
 
-    [Header("Şifre Üretim Ayarları")]
+    [Header("Şifre Üretim")]
     [SerializeField]
     private WordPool wordPool;
-
-    // Turing Makinesindeki sembollerin AYNISI olmalı
-    private readonly string[] validSymbols =
+    private readonly string[] symbols =
     {
         ">=",
         "+",
@@ -27,19 +25,15 @@ public class PasswordManager : MonoBehaviour
         ",",
     };
 
-    [Header("Tüm Olası Şifre Konum Verileri")]
+    [Header("Sahne Kitapları")]
+    [Tooltip("Sahnedeki tüm InteractableBook'ları buraya sürükle.")]
     [SerializeField]
-    private List<PasswordData> allPossiblePasswordData;
+    private List<InteractableBook> allBooksInLevel;
 
-    [Header("Sahnedeki Potansiyel Şifreli Kitaplar")]
-    [SerializeField]
-    private List<InteractableBook> allPasswordBooksInLevel;
-
-    [Header("Mevcut Oyun Durumu")]
-    [Tooltip("Turing makinesindeki gösterge (ışık) sayısı ile aynı olmalı.")]
     [SerializeField]
     private int requiredPasswordCount = 5;
 
+    // Listeler
     private List<string> requiredPasswords = new List<string>();
     private List<string> discoveredClues = new List<string>();
     private List<string> validatedPasswords = new List<string>();
@@ -52,70 +46,95 @@ public class PasswordManager : MonoBehaviour
             Destroy(gameObject);
     }
 
-    private void Start()
-    {
-        InitializeNewGame();
-    }
+    private void Start() => InitializeNewGame();
 
     public void InitializeNewGame()
     {
+        // Temizlik
         discoveredClues.Clear();
         validatedPasswords.Clear();
         requiredPasswords.Clear();
 
-        foreach (var book in allPasswordBooksInLevel)
+        // 1. Şifre almaya uygun ve Datası olan kitapları bul
+        var eligibleBooks = allBooksInLevel
+            .Where(b =>
+                b.canContainPassword
+                && b.bookIdentity != null
+                && b.bookIdentity.possibleLocations.Count > 0
+            )
+            .ToList();
+
+        if (eligibleBooks.Count < requiredPasswordCount)
         {
-            book.ClearPassword();
+            Debug.LogError(
+                $"Yeterli sayıda uygun kitap yok! Bulunan: {eligibleBooks.Count}, İstenen: {requiredPasswordCount}"
+            );
+            return;
         }
 
-        // Verileri karıştır
-        var shuffledPasswordData = allPossiblePasswordData.OrderBy(x => Random.value).ToList();
-        var shuffledBooks = allPasswordBooksInLevel.OrderBy(x => Random.value).ToList();
+        // 2. Rastgele 5 kitap seç
+        var selectedBooks = eligibleBooks
+            .OrderBy(x => Random.value)
+            .Take(requiredPasswordCount)
+            .ToList();
 
-        for (int i = 0; i < requiredPasswordCount; i++)
+        foreach (var book in selectedBooks)
         {
-            if (i >= shuffledPasswordData.Count || i >= shuffledBooks.Count)
-            {
-                Debug.LogWarning("Yeterli sayıda kitap veya şifre verisi yok!", this);
-                break;
-            }
+            // Şifre Stringi Oluştur
+            string w = (wordPool != null) ? wordPool.GetRandomWord() : "NULL";
+            string s = symbols[Random.Range(0, symbols.Length)];
+            string n = Random.Range(0, 1000).ToString("D3");
 
-            PasswordData locationData = shuffledPasswordData[i];
-            InteractableBook bookToAssign = shuffledBooks[i];
+            string finalPass = $"{w}_{s}_{n}";
 
-            // --- YENİ ŞİFRE ÜRETİM MANTIĞI ---
+            // 3. Kitabın kendi datasından rastgele bir konum indeksi seç
+            int randomLocIndex = Random.Range(0, book.bookIdentity.possibleLocations.Count);
 
-            // 1. Kelime Havuzundan Kelime Çek
-            string randomWord = (wordPool != null) ? wordPool.GetRandomWord() : "ERROR";
+            // 4. Kitaba emret
+            book.AssignPassword(finalPass, randomLocIndex);
 
-            // 2. Sabit Listeden Rastgele Sembol Çek
-            string randomSymbol = validSymbols[Random.Range(0, validSymbols.Length)];
-
-            // 3. 3 Haneli Sayı Üret (000 - 999 arası)
-            // "D3" formatı sayesinde 5 -> "005", 89 -> "089" olur.
-            string randomNumber = Random.Range(0, 1000).ToString("D3");
-
-            // Format: KELIME_SEMBOL_SAYI (Örn: RED_>_012)
-            string generatedPasswordID = $"{randomWord}_{randomSymbol}_{randomNumber}";
-
-            // ---------------------------------
-
-            // Kitaba ata
-            bookToAssign.AssignPassword(locationData, generatedPasswordID);
-            requiredPasswords.Add(generatedPasswordID);
+            // --- KRİTİK DÜZELTME BURASI ---
+            // Bu şifreyi 'Gerekli Şifreler' listesine ekle ki Manager bunu tanısın.
+            requiredPasswords.Add(finalPass);
+            // ------------------------------
         }
 
-        Debug.Log($"Yeni oyun başlatıldı. {requiredPasswords.Count} adet şifre atandı.");
+        Debug.Log($"Oyun Başladı! {requiredPasswords.Count} adet şifre dağıtıldı.");
     }
 
-    // --- DİĞER FONKSİYONLAR AYNEN KALIYOR ---
     public void DiscoverClue(string passwordID)
     {
-        if (requiredPasswords.Contains(passwordID) && !discoveredClues.Contains(passwordID))
+        // Debug: Gelen şifre ne?
+        Debug.Log($"Manager: Şifre bildirimi alındı -> {passwordID}");
+
+        // 1. Bu şifre bu oyunda gerekli mi?
+        if (!requiredPasswords.Contains(passwordID))
         {
-            discoveredClues.Add(passwordID);
-            if (NotebookUI.Instance != null)
-                NotebookUI.Instance.ShowPasswordNotification(passwordID);
+            Debug.LogWarning(
+                $"REDDEDİLDİ: '{passwordID}' bu oyunun şifre listesinde yok! (Required Listesi: {string.Join(", ", requiredPasswords)})"
+            );
+            return;
+        }
+
+        // 2. Zaten bulundu mu?
+        if (discoveredClues.Contains(passwordID))
+        {
+            Debug.Log($"BİLGİ: '{passwordID}' zaten daha önce bulunmuştu.");
+            return;
+        }
+
+        // 3. KABUL ET
+        discoveredClues.Add(passwordID);
+        Debug.Log(
+            $"ONAYLANDI: '{passwordID}' bulundu ve listeye eklendi. Toplam Bulunan: {discoveredClues.Count}"
+        );
+
+        // UI Güncelle (Varsa)
+        if (NotebookUI.Instance != null)
+        {
+            NotebookUI.Instance.ShowPasswordNotification(passwordID);
+            // NotebookUI içindeki listeyi anlık yenilemek istersen burada bir fonksiyon çağırabilirsin
+            // Ancak NotebookUI genelde açıldığında (Toggle) listeyi yeniler.
         }
     }
 
@@ -129,6 +148,7 @@ public class PasswordManager : MonoBehaviour
         return false;
     }
 
+    // Getters
     public List<string> GetDiscoveredClues() => discoveredClues;
 
     public int GetValidatedPasswordCount() => validatedPasswords.Count;

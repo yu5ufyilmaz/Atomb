@@ -2738,6 +2738,8 @@ MonoBehaviour:
   singlePageSize: {x: 0.9, y: 1.25}
   gizmoYOffset: 0.18
   animationDuration: 1
+  bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
+  canContainPassword: 1
   isOpen: 0
   isAnimating: 0
   currentPage: 0
@@ -8178,13 +8180,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PasswordManager
   wordPool: {fileID: 11400000, guid: 662e7c5db45a9284d9a3f1fb47d1cbf3, type: 2}
-  allPossiblePasswordData:
-  - {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
-  - {fileID: 11400000, guid: 725e301b34f00429ca9064b7d0eaa616, type: 2}
-  - {fileID: 11400000, guid: 68c38d3c612350b469eae38a92325f04, type: 2}
-  - {fileID: 11400000, guid: 01b419214305057499d37282561032d6, type: 2}
-  - {fileID: 11400000, guid: 13ee8ef5d22cfdf49aac291690717c00, type: 2}
-  allPasswordBooksInLevel:
+  allBooksInLevel:
   - {fileID: 1806095637}
   - {fileID: 938416270}
   - {fileID: 1322135890}
@@ -8502,6 +8498,8 @@ MonoBehaviour:
   singlePageSize: {x: 0.9, y: 1.25}
   gizmoYOffset: 0.18
   animationDuration: 1
+  bookIdentity: {fileID: 11400000, guid: 725e301b34f00429ca9064b7d0eaa616, type: 2}
+  canContainPassword: 1
   isOpen: 0
   isAnimating: 0
   currentPage: 0
@@ -10886,6 +10884,8 @@ MonoBehaviour:
   singlePageSize: {x: 0.9, y: 1.25}
   gizmoYOffset: 0.18
   animationDuration: 1
+  bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
+  canContainPassword: 1
   isOpen: 0
   isAnimating: 0
   currentPage: 0
@@ -11640,6 +11640,8 @@ MonoBehaviour:
   singlePageSize: {x: 0.9, y: 1.25}
   gizmoYOffset: 0.18
   animationDuration: 1
+  bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
+  canContainPassword: 1
   isOpen: 0
   isAnimating: 0
   currentPage: 0
@@ -11922,6 +11924,8 @@ MonoBehaviour:
   singlePageSize: {x: 0.9, y: 1.25}
   gizmoYOffset: 0.18
   animationDuration: 1
+  bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
+  canContainPassword: 1
   isOpen: 0
   isAnimating: 0
   currentPage: 0
@@ -14474,8 +14478,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ec3ea1311d54a4427aea793a7d0ffb41, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  checkInterval: 10
-  maxRiskAtFullLoad: 0.8
+  checkInterval: 100
+  maxRiskAtFullLoad: 0.256
   cycleRiskMultiplier: 0.01
   audioSource: {fileID: 0}
   breakerTripSound: {fileID: 0}
@@ -16174,6 +16178,8 @@ MonoBehaviour:
   singlePageSize: {x: 0.9, y: 1.25}
   gizmoYOffset: 0.18
   animationDuration: 1
+  bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
+  canContainPassword: 1
   isOpen: 0
   isAnimating: 0
   currentPage: 0

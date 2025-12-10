@@ -57,6 +57,13 @@ public class InteractableBook : MonoBehaviour, IInteractable, IForceExitable
     [SerializeField]
     private float animationDuration = 1f;
 
+    [Header("📘 KİTAP KİMLİĞİ")]
+    [Tooltip("Bu kitabın türü ne? (Kırmızı Kitap Datası vb.)")]
+    public PasswordData bookIdentity;
+
+    [Tooltip("Bu kitaptan şifre çıkabilir mi? (Süs ise kapat)")]
+    public bool canContainPassword = true;
+
     // --- EDİTÖRDE GİZLENECEK TEKNİK DEĞİŞKENLER (Runtime) ---
     // Bunlar Manager ve kod tarafından yönetilir.
 
@@ -571,31 +578,24 @@ public class InteractableBook : MonoBehaviour, IInteractable, IForceExitable
     }
 
     // --- ÖNEMLİ: PasswordManager tarafından çağrılan fonksiyon ---
-    public void AssignPassword(PasswordData data, string newPasswordID)
+    public void AssignPassword(string newPasswordID, int locationIndex)
     {
-        isPasswordBook = true;
+        if (!canContainPassword || bookIdentity == null)
+            return;
+        if (locationIndex >= bookIdentity.possibleLocations.Count)
+            return;
 
-        // Şifre ID'si parametreden gelir (WordPool'dan üretilmiştir)
+        isPasswordBook = true;
         passwordID = newPasswordID;
 
-        // Konum verileri Data'dan gelir
-        passwordPage = data.passwordPage;
-        passwordHotspotUV = data.passwordHotspotUV;
+        // Kendi datamdan, bana söylenen indexi çekiyorum
+        var locEntry = bookIdentity.possibleLocations[locationIndex];
+
+        passwordPage = locEntry.pageIndex;
+        passwordHotspotUV = locEntry.hotspotUV;
         hasPasswordBeenFound = false;
 
-        // Sayfa sayısı ve texture'ı veriden al
-        this.totalPages = data.totalPages;
-
-        if (bookPagesMaterial != null)
-        {
-            bookPagesMaterial.SetTexture("_PagesTex", data.pageTexture);
-            bookPagesMaterial.SetFloat("_PageCount", this.totalPages);
-        }
-        if (pageTurnMaterial != null)
-        {
-            pageTurnMaterial.SetTexture("_PagesTex", data.pageTexture);
-            pageTurnMaterial.SetFloat("_PageCount", this.totalPages);
-        }
+        Debug.Log($"{gameObject.name} şifrelendi. ID: {passwordID} | Yer: {locEntry.note}");
     }
 
     public void ClearPassword()

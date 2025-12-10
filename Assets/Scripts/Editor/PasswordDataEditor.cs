@@ -7,169 +7,127 @@ public class PasswordDataEditor : Editor
 {
     private bool isDragging = false;
     private Vector2 startPos;
-    private Vector2 currentPos;
+    private int selectedIndex = 0; // Listeden hangisini düzenliyoruz?
 
     public override void OnInspectorGUI()
     {
         PasswordData data = (PasswordData)target;
 
-        // Standart değişkenleri çiz
-        DrawDefaultInspector();
+        DrawDefaultInspector(); // Listeyi standart göster
 
-        EditorGUILayout.Space(15);
-
-        // --- GÜVENLİK KONTROLLERİ ---
         if (data.pageTexture == null)
+            return;
+
+        EditorGUILayout.Space(10);
+        EditorGUILayout.LabelField("GÖRSEL DÜZENLEYİCİ", EditorStyles.boldLabel);
+
+        if (data.possibleLocations.Count == 0)
         {
-            EditorGUILayout.HelpBox("Lütfen bir 'Page Texture' atayın.", MessageType.Warning);
+            EditorGUILayout.HelpBox(
+                "Lütfen yukarıdaki 'Possible Locations' listesine '+' ile bir eleman ekleyin.",
+                MessageType.Info
+            );
             return;
         }
-        if (data.totalPages < 1)
-            data.totalPages = 1; // 0'a bölünme hatasını önle
-        if (data.passwordPage >= data.totalPages)
-            data.passwordPage = data.totalPages - 1;
-        if (data.passwordPage < 0)
-            data.passwordPage = 0;
 
-        EditorGUILayout.LabelField($"SAYFA {data.passwordPage} EDİTÖRÜ", EditorStyles.boldLabel);
-        EditorGUILayout.HelpBox(
-            "Alanı belirlemek için aşağıda GÖRÜNTÜLENEN SAYFA üzerinde sürükleyip bırakın.",
-            MessageType.Info
-        );
+        // --- Seçim Menüsü ---
+        string[] options = new string[data.possibleLocations.Count];
+        for (int i = 0; i < data.possibleLocations.Count; i++)
+            options[i] =
+                $"{i}: {data.possibleLocations[i].note} (P: {data.possibleLocations[i].pageIndex})";
 
-        // --- SAYFA BOYUT HESAPLAMALARI ---
-        // Texture'ın tamamının değil, tek bir sayfanın en/boy oranını buluyoruz.
-        // Texture yatay şerit (Atlas) olduğu için: Genişlik / SayfaSayısı
-        float singlePageTextureWidth = data.pageTexture.width / (float)data.totalPages;
-        float singlePageTextureHeight = data.pageTexture.height;
-        float singlePageAspectRatio = singlePageTextureWidth / singlePageTextureHeight;
+        EditorGUILayout.BeginHorizontal();
+        EditorGUILayout.LabelField("Düzenlenen:", GUILayout.Width(80));
+        selectedIndex = EditorGUILayout.Popup(selectedIndex, options);
+        EditorGUILayout.EndHorizontal();
 
-        // Editörde çizilecek alanın genişliği
-        float displayWidth = EditorGUIUtility.currentViewWidth - 40;
-        float displayHeight = displayWidth / singlePageAspectRatio;
+        // Dizi sınırlarını koru
+        if (selectedIndex >= data.possibleLocations.Count)
+            selectedIndex = 0;
 
-        // Editörde yer ayır (Rect)
-        Rect displayRect = GUILayoutUtility.GetRect(displayWidth, displayHeight);
+        PasswordLocationEntry currentEntry = data.possibleLocations[selectedIndex];
 
-        // --- TEXTURE'IN SADECE İLGİLİ KISMINI ÇİZ (CROP) ---
-        // UV koordinatlarında (0 ile 1 arası) hangi dilimi göstereceğimizi hesaplıyoruz.
-        float uvWidthPerPage = 1.0f / data.totalPages;
-        float uvStartX = data.passwordPage * uvWidthPerPage;
+        // --- Texture Çizimi (Crop) ---
+        float singlePageW = data.pageTexture.width / (float)data.totalPages;
+        float aspect = singlePageW / data.pageTexture.height;
+        float dispW = EditorGUIUtility.currentViewWidth - 40;
+        float dispH = dispW / aspect;
 
-        // Rect(x, y, width, height) -> UV uzayında
-        Rect uvCropRect = new Rect(uvStartX, 0f, uvWidthPerPage, 1.0f);
+        Rect dispRect = GUILayoutUtility.GetRect(dispW, dispH);
 
-        // Sadece o dilimi ekrana çiz
-        GUI.DrawTextureWithTexCoords(displayRect, data.pageTexture, uvCropRect);
+        float uvW = 1.0f / data.totalPages;
+        Rect uvCrop = new Rect(currentEntry.pageIndex * uvW, 0, uvW, 1);
+        GUI.DrawTextureWithTexCoords(dispRect, data.pageTexture, uvCrop);
 
-        // --- HOTSPOT ÇİZİMİ (YEŞİL KUTU) ---
-        // Kaydedilen veri artık sayfa-lokal olduğu için (0-1), direkt displayRect ile çarpabiliriz.
-        Rect currentHotspotScreenRect = new Rect(
-            displayRect.x + (data.passwordHotspotUV.x * displayRect.width),
-            // Y ekseni Unity GUI'de yukarıdan başlar, o yüzden ters çeviriyoruz
-            displayRect.y
-                + (
-                    (1f - (data.passwordHotspotUV.y + data.passwordHotspotUV.height))
-                    * displayRect.height
-                ),
-            data.passwordHotspotUV.width * displayRect.width,
-            data.passwordHotspotUV.height * displayRect.height
-        );
+        // --- Mevcut Kutuyu Çiz ---
+        Rect screenRect = UVToScreen(currentEntry.hotspotUV, dispRect);
+        Handles.DrawSolidRectangleWithOutline(screenRect, new Color(0, 1, 0, 0.3f), Color.green);
 
-        Handles.DrawSolidRectangleWithOutline(
-            currentHotspotScreenRect,
-            new Color(0, 1, 0, 0.25f),
-            Color.green
-        );
-
-        // --- MOUSE ETKİLEŞİMİ ---
-        HandleInput(displayRect, data);
-
-        // --- BİLGİ GÖSTERİMİ ---
-        EditorGUILayout.Space(5);
-        EditorGUILayout.LabelField("Kaydedilen Lokal UV:", EditorStyles.miniBoldLabel);
-        EditorGUILayout.LabelField(
-            $"X: {data.passwordHotspotUV.x:F3}  Y: {data.passwordHotspotUV.y:F3}",
-            EditorStyles.miniLabel
-        );
-        EditorGUILayout.LabelField(
-            $"W: {data.passwordHotspotUV.width:F3}  H: {data.passwordHotspotUV.height:F3}",
-            EditorStyles.miniLabel
-        );
+        // --- Mouse ---
+        HandleInput(dispRect, data, selectedIndex);
     }
 
-    private void HandleInput(Rect bounds, PasswordData data)
+    private void HandleInput(Rect bounds, PasswordData data, int idx)
     {
         Event e = Event.current;
-
-        // Mouse bu alanın içinde mi veya sürükleme işlemi devam mı ediyor?
         if (bounds.Contains(e.mousePosition) || isDragging)
         {
             if (e.type == EventType.MouseDown && e.button == 0)
             {
                 isDragging = true;
                 startPos = e.mousePosition;
-                currentPos = e.mousePosition;
                 e.Use();
             }
             else if (e.type == EventType.MouseDrag && isDragging)
             {
-                currentPos = e.mousePosition;
-
-                // Sürüklerken mavi taslak çiz
-                Rect dragRect = GetRectFromPoints(startPos, currentPos);
-                dragRect = ClampRect(dragRect, bounds); // Dışarı taşmayı engelle
-                Handles.DrawSolidRectangleWithOutline(
-                    dragRect,
-                    new Color(0, 0.5f, 1, 0.2f),
-                    Color.cyan
-                );
-
+                Rect r = Clamp(FromPoints(startPos, e.mousePosition), bounds);
+                Handles.DrawSolidRectangleWithOutline(r, new Color(0, 0.5f, 1, 0.2f), Color.cyan);
                 Repaint();
                 e.Use();
             }
             else if (e.type == EventType.MouseUp && isDragging)
             {
                 isDragging = false;
+                Rect final = Clamp(FromPoints(startPos, e.mousePosition), bounds);
 
-                // Son Rect'i al
-                Rect finalRect = GetRectFromPoints(startPos, e.mousePosition);
-                finalRect = ClampRect(finalRect, bounds);
+                // Screen -> Local UV
+                float uX = (final.x - bounds.x) / bounds.width;
+                float uW = final.width / bounds.width;
+                float uH = final.height / bounds.height;
+                float uY = 1f - ((final.y - bounds.y) / bounds.height) - uH;
 
-                // --- EKRAN KOORDİNATLARINI LOCAL UV'YE ÇEVİR ---
-                // Buradaki matematik artık tüm Atlas'a göre değil, sadece GÖSTERİLEN KUTUYA göre çalışır.
-                float localUvX = (finalRect.x - bounds.x) / bounds.width;
-                float localUvW = finalRect.width / bounds.width;
-                float localUvH = finalRect.height / bounds.height;
-                // Y'yi ters çevir (GUI vs Texture koordinat farkı)
-                float localUvY = 1f - ((finalRect.y - bounds.y) / bounds.height) - localUvH;
-
-                Undo.RecordObject(data, "Set Password Hotspot");
-                data.passwordHotspotUV = new Rect(localUvX, localUvY, localUvW, localUvH);
+                Undo.RecordObject(data, "Set Hotspot");
+                PasswordLocationEntry entry = data.possibleLocations[idx];
+                entry.hotspotUV = new Rect(uX, uY, uW, uH);
+                data.possibleLocations[idx] = entry;
                 EditorUtility.SetDirty(data);
-
                 e.Use();
             }
         }
     }
 
-    private Rect GetRectFromPoints(Vector2 p1, Vector2 p2)
-    {
-        return new Rect(
-            Mathf.Min(p1.x, p2.x),
-            Mathf.Min(p1.y, p2.y),
-            Mathf.Abs(p1.x - p2.x),
-            Mathf.Abs(p1.y - p2.y)
+    Rect FromPoints(Vector2 a, Vector2 b) =>
+        new Rect(
+            Mathf.Min(a.x, b.x),
+            Mathf.Min(a.y, b.y),
+            Mathf.Abs(a.x - b.x),
+            Mathf.Abs(a.y - b.y)
         );
-    }
 
-    private Rect ClampRect(Rect r, Rect bounds)
-    {
-        float x = Mathf.Max(r.x, bounds.x);
-        float y = Mathf.Max(r.y, bounds.y);
-        float xMax = Mathf.Min(r.xMax, bounds.xMax);
-        float yMax = Mathf.Min(r.yMax, bounds.yMax);
-        return new Rect(x, y, xMax - x, yMax - y);
-    }
+    Rect Clamp(Rect r, Rect b) =>
+        new Rect(
+            Mathf.Max(r.x, b.x),
+            Mathf.Max(r.y, b.y),
+            Mathf.Min(r.xMax, b.xMax) - Mathf.Max(r.x, b.x),
+            Mathf.Min(r.yMax, b.yMax) - Mathf.Max(r.y, b.y)
+        );
+
+    Rect UVToScreen(Rect uv, Rect b) =>
+        new Rect(
+            b.x + uv.x * b.width,
+            b.y + (1 - (uv.y + uv.height)) * b.height,
+            uv.width * b.width,
+            uv.height * b.height
+        );
 }
 #endif
