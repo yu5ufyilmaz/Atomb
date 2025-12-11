@@ -3,7 +3,6 @@ using System.Text;
 using Cinemachine;
 using UnityEngine;
 
-// IForceExitable EKLENDİ
 public class InteractableTuringMachine : MonoBehaviour, IInteractable, IForceExitable
 {
     [Header("Player Control")]
@@ -34,7 +33,7 @@ public class InteractableTuringMachine : MonoBehaviour, IInteractable, IForceExi
     private Transform headBone;
     private Transform cinemachineTarget;
 
-    [Header("Makine Bileşenleri")]
+    [Header("Makine Bileşenleri (Çarklar)")]
     [SerializeField]
     private Transform[] wordWheelModels;
 
@@ -43,6 +42,28 @@ public class InteractableTuringMachine : MonoBehaviour, IInteractable, IForceExi
 
     [SerializeField]
     private Transform[] numberWheelModels;
+
+    [Header("Makine Bileşenleri (Kollar/Levers)")]
+    [Tooltip("Harf çarklarının altındaki kollar")]
+    [SerializeField]
+    private Transform[] wordLeverModels;
+
+    [Tooltip("Sembol çarkının altındaki kol")]
+    [SerializeField]
+    private Transform symbolLeverModel;
+
+    [Tooltip("Sayı çarklarının altındaki kollar")]
+    [SerializeField]
+    private Transform[] numberLeverModels;
+
+    [Header("Lever Settings (Kol Ayarları)")]
+    [Tooltip("Kollar hangi eksende dönecek? (X: 1,0,0 | Y: 0,1,0 | Z: 0,0,1)")]
+    [SerializeField]
+    private Vector3 leverRotationAxis = Vector3.right;
+
+    [Tooltip("Her adımda kol kaç derece dönecek?")]
+    [SerializeField]
+    private float leverRotationStep = 15f;
 
     [Header("Highlights")]
     [SerializeField]
@@ -103,6 +124,7 @@ public class InteractableTuringMachine : MonoBehaviour, IInteractable, IForceExi
     private int currentWordIndex = 0;
     private int currentNumberIndex = 0;
 
+    // --- WHEEL STATE ---
     private int[] wordWheelIndices;
     private int symbolWheelIndex = 0;
     private int[] numberWheelIndices;
@@ -110,9 +132,19 @@ public class InteractableTuringMachine : MonoBehaviour, IInteractable, IForceExi
     private Quaternion[] wordWheelTargets;
     private Quaternion symbolWheelTarget;
     private Quaternion[] numberWheelTargets;
+
     private Quaternion[] wordWheelInitialRots;
     private Quaternion symbolWheelInitialRot;
     private Quaternion[] numberWheelInitialRots;
+
+    // --- LEVER STATE ---
+    private Quaternion[] wordLeverTargets;
+    private Quaternion symbolLeverTarget;
+    private Quaternion[] numberLeverTargets;
+
+    private Quaternion[] wordLeverInitialRots;
+    private Quaternion symbolLeverInitialRot;
+    private Quaternion[] numberLeverInitialRots;
 
     private void Start()
     {
@@ -147,13 +179,21 @@ public class InteractableTuringMachine : MonoBehaviour, IInteractable, IForceExi
 
     private void InitializeWheels()
     {
+        // --- Dizi Başlatmaları ---
         wordWheelIndices = new int[wordWheelModels.Length];
         numberWheelIndices = new int[numberWheelModels.Length];
+
         wordWheelTargets = new Quaternion[wordWheelModels.Length];
         numberWheelTargets = new Quaternion[numberWheelModels.Length];
         wordWheelInitialRots = new Quaternion[wordWheelModels.Length];
         numberWheelInitialRots = new Quaternion[numberWheelModels.Length];
 
+        wordLeverTargets = new Quaternion[wordWheelModels.Length];
+        numberLeverTargets = new Quaternion[numberWheelModels.Length];
+        wordLeverInitialRots = new Quaternion[wordWheelModels.Length];
+        numberLeverInitialRots = new Quaternion[numberWheelModels.Length];
+
+        // --- Harf Çarkları ve Kolları ---
         for (int i = 0; i < wordWheelModels.Length; i++)
         {
             if (wordWheelModels[i])
@@ -161,7 +201,14 @@ public class InteractableTuringMachine : MonoBehaviour, IInteractable, IForceExi
                 wordWheelInitialRots[i] = wordWheelModels[i].localRotation;
                 wordWheelTargets[i] = wordWheelModels[i].localRotation;
             }
+            if (i < wordLeverModels.Length && wordLeverModels[i])
+            {
+                wordLeverInitialRots[i] = wordLeverModels[i].localRotation;
+                wordLeverTargets[i] = wordLeverModels[i].localRotation;
+            }
         }
+
+        // --- Sayı Çarkları ve Kolları ---
         for (int i = 0; i < numberWheelModels.Length; i++)
         {
             if (numberWheelModels[i])
@@ -169,12 +216,25 @@ public class InteractableTuringMachine : MonoBehaviour, IInteractable, IForceExi
                 numberWheelInitialRots[i] = numberWheelModels[i].localRotation;
                 numberWheelTargets[i] = numberWheelModels[i].localRotation;
             }
+            if (i < numberLeverModels.Length && numberLeverModels[i])
+            {
+                numberLeverInitialRots[i] = numberLeverModels[i].localRotation;
+                numberLeverTargets[i] = numberLeverModels[i].localRotation;
+            }
         }
+
+        // --- Sembol Çarkı ve Kolu ---
         if (symbolWheelModel)
         {
             symbolWheelInitialRot = symbolWheelModel.localRotation;
             symbolWheelTarget = symbolWheelModel.localRotation;
         }
+        if (symbolLeverModel)
+        {
+            symbolLeverInitialRot = symbolLeverModel.localRotation;
+            symbolLeverTarget = symbolLeverModel.localRotation;
+        }
+
         ClearAllHighlights();
         UpdateIndicators(0);
     }
@@ -192,10 +252,8 @@ public class InteractableTuringMachine : MonoBehaviour, IInteractable, IForceExi
     {
         isInteracting = true;
 
-        // --- GM KAYIT ---
         if (GameManager.Instance != null)
             GameManager.Instance.activeInteraction = this;
-        // ----------------
 
         if (playerController)
             playerController.enabled = false;
@@ -259,10 +317,8 @@ public class InteractableTuringMachine : MonoBehaviour, IInteractable, IForceExi
     {
         isInteracting = false;
 
-        // --- GM KAYIT SİL ---
         if (GameManager.Instance != null)
             GameManager.Instance.activeInteraction = null;
-        // --------------------
 
         PlaySound(exitSound);
         ClearAllHighlights();
@@ -309,13 +365,14 @@ public class InteractableTuringMachine : MonoBehaviour, IInteractable, IForceExi
     {
         if (!isInteracting)
             return;
+
         if (Input.GetKeyDown(KeyCode.F))
         {
             StartCoroutine(ExitMachineView());
             return;
         }
 
-        // ... (Tuş kontrolleri aynı) ...
+        // Seçim değiştirme (W/S)
         if (Input.GetKeyDown(KeyCode.W))
         {
             currentGroup = (currentGroup - 1 + 3) % 3;
@@ -327,6 +384,7 @@ public class InteractableTuringMachine : MonoBehaviour, IInteractable, IForceExi
             UpdateActiveWheelHighlight();
         }
 
+        // Sütun değiştirme (Q/E)
         if (Input.GetKeyDown(KeyCode.Q))
         {
             HandleIndexChange(-1);
@@ -338,11 +396,13 @@ public class InteractableTuringMachine : MonoBehaviour, IInteractable, IForceExi
             UpdateActiveWheelHighlight();
         }
 
+        // Çevirme (D/A veya Oklar)
         float rotationInput = 0f;
         if (Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.RightArrow))
             rotationInput = 1f;
         if (Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.LeftArrow))
             rotationInput = -1f;
+
         float scroll = Input.mouseScrollDelta.y;
         if (scroll > 0.1f)
             rotationInput = 1f;
@@ -351,46 +411,14 @@ public class InteractableTuringMachine : MonoBehaviour, IInteractable, IForceExi
 
         if (rotationInput != 0)
             RotateActiveWheel((int)rotationInput);
-        if (Input.GetKeyDown(KeyCode.Return))
+
+        // --- ENTER KONTROLÜ (GÜNCELLENDİ) ---
+        if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter))
+        {
             CheckPassword();
+        }
 
         AnimateWheels();
-    }
-
-    // ... (Diğer fonksiyonlar: TogglePlayerModel, AnimateWheels, vb. AYNEN KALSIN) ...
-
-    private void TogglePlayerModel(bool show)
-    {
-        if (!playerController)
-            return;
-        Renderer[] renderers = playerController.GetComponentsInChildren<Renderer>();
-        foreach (var r in renderers)
-            r.enabled = show;
-    }
-
-    private void AnimateWheels()
-    {
-        float s = Time.deltaTime * rotationSpeed;
-        for (int i = 0; i < wordWheelModels.Length; i++)
-            if (wordWheelModels[i])
-                wordWheelModels[i].localRotation = Quaternion.Slerp(
-                    wordWheelModels[i].localRotation,
-                    wordWheelTargets[i],
-                    s
-                );
-        for (int i = 0; i < numberWheelModels.Length; i++)
-            if (numberWheelModels[i])
-                numberWheelModels[i].localRotation = Quaternion.Slerp(
-                    numberWheelModels[i].localRotation,
-                    numberWheelTargets[i],
-                    s
-                );
-        if (symbolWheelModel)
-            symbolWheelModel.localRotation = Quaternion.Slerp(
-                symbolWheelModel.localRotation,
-                symbolWheelTarget,
-                s
-            );
     }
 
     private void HandleIndexChange(int d)
@@ -413,34 +441,78 @@ public class InteractableTuringMachine : MonoBehaviour, IInteractable, IForceExi
         PlaySound(wheelClickSound);
         switch (currentGroup)
         {
-            case 0:
+            case 0: // Kelime
                 int cW = wordChars.Length;
                 wordWheelIndices[currentWordIndex] =
                     (wordWheelIndices[currentWordIndex] + d + cW) % cW;
+
+                // Çark Hedefi
                 wordWheelTargets[currentWordIndex] =
                     wordWheelInitialRots[currentWordIndex]
                     * Quaternion.AngleAxis(
                         (360f / cW) * wordWheelIndices[currentWordIndex],
                         rotationAxis
                     );
+
+                // Kol Hedefi
+                if (currentWordIndex < wordLeverModels.Length && wordLeverModels[currentWordIndex])
+                {
+                    wordLeverTargets[currentWordIndex] =
+                        wordLeverInitialRots[currentWordIndex]
+                        * Quaternion.AngleAxis(
+                            leverRotationStep * wordWheelIndices[currentWordIndex],
+                            leverRotationAxis
+                        );
+                }
                 break;
-            case 1:
+
+            case 1: // Sembol
                 int cS = symbolChars.Length;
                 symbolWheelIndex = (symbolWheelIndex + d + cS) % cS;
+
+                // Çark Hedefi
                 symbolWheelTarget =
                     symbolWheelInitialRot
                     * Quaternion.AngleAxis((360f / cS) * symbolWheelIndex, rotationAxis);
+
+                // Kol Hedefi
+                if (symbolLeverModel)
+                {
+                    symbolLeverTarget =
+                        symbolLeverInitialRot
+                        * Quaternion.AngleAxis(
+                            leverRotationStep * symbolWheelIndex,
+                            leverRotationAxis
+                        );
+                }
                 break;
-            case 2:
+
+            case 2: // Sayı
                 int cN = numberChars.Length;
                 numberWheelIndices[currentNumberIndex] =
                     (numberWheelIndices[currentNumberIndex] + d + cN) % cN;
+
+                // Çark Hedefi
                 numberWheelTargets[currentNumberIndex] =
                     numberWheelInitialRots[currentNumberIndex]
                     * Quaternion.AngleAxis(
                         (360f / cN) * numberWheelIndices[currentNumberIndex],
                         rotationAxis
                     );
+
+                // Kol Hedefi
+                if (
+                    currentNumberIndex < numberLeverModels.Length
+                    && numberLeverModels[currentNumberIndex]
+                )
+                {
+                    numberLeverTargets[currentNumberIndex] =
+                        numberLeverInitialRots[currentNumberIndex]
+                        * Quaternion.AngleAxis(
+                            leverRotationStep * numberWheelIndices[currentNumberIndex],
+                            leverRotationAxis
+                        );
+                }
                 break;
         }
     }
@@ -448,19 +520,38 @@ public class InteractableTuringMachine : MonoBehaviour, IInteractable, IForceExi
     private void CheckPassword()
     {
         if (!PasswordManager.Instance)
+        {
+            Debug.LogError("Turing Makinesi: PasswordManager bulunamadı!");
             return;
+        }
+
         StringBuilder sb = new StringBuilder();
+        // Harfleri topla
         for (int i = 0; i < wordWheelIndices.Length; i++)
+        {
             sb.Append(wordChars[wordWheelIndices[i]]);
-        string pw =
-            $"{sb.ToString().TrimEnd('-')}_{symbolChars[symbolWheelIndex]}_{numberChars[numberWheelIndices[0]]}{numberChars[numberWheelIndices[1]]}{numberChars[numberWheelIndices[2]]}";
+        }
+        string wordPart = sb.ToString();
+
+        string symbolPart = symbolChars[symbolWheelIndex];
+
+        string numberPart =
+            $"{numberChars[numberWheelIndices[0]]}{numberChars[numberWheelIndices[1]]}{numberChars[numberWheelIndices[2]]}";
+
+        // Format: KELIME_SEMBOL_SAYI
+        string pw = $"{wordPart}_{symbolPart}_{numberPart}";
+
+        Debug.Log($"Turing Giriş Denemesi: {pw}");
+
         if (PasswordManager.Instance.ValidatePassword(pw))
         {
             PlaySound(successSound);
             UpdateIndicators(PasswordManager.Instance.GetValidatedPasswordCount());
         }
         else
+        {
             PlaySound(failSound);
+        }
     }
 
     private void UpdateIndicators(int c)
@@ -506,13 +597,77 @@ public class InteractableTuringMachine : MonoBehaviour, IInteractable, IForceExi
                     h.SetActive(false);
     }
 
+    private void TogglePlayerModel(bool show)
+    {
+        if (!playerController)
+            return;
+        Renderer[] renderers = playerController.GetComponentsInChildren<Renderer>();
+        foreach (var r in renderers)
+            r.enabled = show;
+    }
+
+    private void AnimateWheels()
+    {
+        float s = Time.deltaTime * rotationSpeed;
+
+        // Harf Çarkları & Kolları
+        for (int i = 0; i < wordWheelModels.Length; i++)
+        {
+            if (wordWheelModels[i])
+                wordWheelModels[i].localRotation = Quaternion.Slerp(
+                    wordWheelModels[i].localRotation,
+                    wordWheelTargets[i],
+                    s
+                );
+
+            if (i < wordLeverModels.Length && wordLeverModels[i])
+                wordLeverModels[i].localRotation = Quaternion.Slerp(
+                    wordLeverModels[i].localRotation,
+                    wordLeverTargets[i],
+                    s
+                );
+        }
+
+        // Sayı Çarkları & Kolları
+        for (int i = 0; i < numberWheelModels.Length; i++)
+        {
+            if (numberWheelModels[i])
+                numberWheelModels[i].localRotation = Quaternion.Slerp(
+                    numberWheelModels[i].localRotation,
+                    numberWheelTargets[i],
+                    s
+                );
+
+            if (i < numberLeverModels.Length && numberLeverModels[i])
+                numberLeverModels[i].localRotation = Quaternion.Slerp(
+                    numberLeverModels[i].localRotation,
+                    numberLeverTargets[i],
+                    s
+                );
+        }
+
+        // Sembol Çarkı & Kolu
+        if (symbolWheelModel)
+            symbolWheelModel.localRotation = Quaternion.Slerp(
+                symbolWheelModel.localRotation,
+                symbolWheelTarget,
+                s
+            );
+
+        if (symbolLeverModel)
+            symbolLeverModel.localRotation = Quaternion.Slerp(
+                symbolLeverModel.localRotation,
+                symbolLeverTarget,
+                s
+            );
+    }
+
     private void PlaySound(AudioClip c)
     {
         if (audioSource && c)
             audioSource.PlayOneShot(c);
     }
 
-    // --- IFORCEEXITABLE ---
     public void ForceExit()
     {
         if (isInteracting)

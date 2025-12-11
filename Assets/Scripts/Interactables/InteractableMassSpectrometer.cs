@@ -103,6 +103,7 @@ public class InteractableMassSpectrometer : MonoBehaviour, IInteractable, IForce
     private Quaternion leverStartRot;
     private Quaternion leverEndRot;
     private float currentRingAngleValue = 0f;
+    private string assignedPassword = ""; // Manager'dan gelecek
 
     private void Start()
     {
@@ -418,11 +419,22 @@ public class InteractableMassSpectrometer : MonoBehaviour, IInteractable, IForce
         ResetPenalty();
         if (audioSource)
             audioSource.PlayOneShot(successSound);
+
+        // --- YENİ KISIM: Şifreyi Ekrana Yaz ---
         if (screenText)
         {
             screenText.color = Color.cyan;
-            screenText.text = "CALIBRATION COMPLETE\nCODE: 84-12-99";
+            // Eski "CODE: 84-12-99" yerine gerçek şifreyi yazıyoruz
+            screenText.text = $"CALIBRATION COMPLETE\nCODE: {assignedPassword}";
         }
+
+        // Şifreyi bulduğumuzu Manager'a bildir
+        if (PasswordManager.Instance != null)
+        {
+            PasswordManager.Instance.DiscoverClue(assignedPassword);
+        }
+        // --------------------------------------
+
         if (ionBeamObj)
         {
             ionBeamObj.SetActive(true);
@@ -432,8 +444,13 @@ public class InteractableMassSpectrometer : MonoBehaviour, IInteractable, IForce
                 loopAudioSource.Play();
             }
         }
-        yield return new WaitForSeconds(3.0f);
+        yield return new WaitForSeconds(4.0f); // Okumak için biraz süre tanı
         StartCoroutine(ExitMachineView());
+    }
+
+    public void AssignPassword(string pw)
+    {
+        assignedPassword = pw;
     }
 
     private IEnumerator PullLeverSequence()

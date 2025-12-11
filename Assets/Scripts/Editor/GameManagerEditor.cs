@@ -256,14 +256,14 @@ public class GameManagerEditor : Editor
                 if (Application.isPlaying)
                 {
                     int total = pm.GetTotalRequiredCount();
-                    int validated = pm.GetValidatedCount();
+                    int validated = pm.GetFoundCount();
                     float progress = (float)validated / Mathf.Max(1, total);
 
                     DrawBar(progress, $"İlerleme: {validated}/{total}", Color.cyan);
 
                     EditorGUILayout.Space(5);
                     EditorGUILayout.LabelField("📝 Bulunan Şifreler:", EditorStyles.boldLabel);
-                    var clues = pm.GetFoundPasswordsList();
+                    var clues = pm.GetDiscoveredClues();
                     if (clues.Count > 0)
                     {
                         foreach (var clue in clues)

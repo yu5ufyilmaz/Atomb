@@ -1,5 +1,6 @@
 using System.Collections;
 using Cinemachine;
+using TMPro;
 using UnityEngine;
 
 public class InteractableOscilloscope : MonoBehaviour, IInteractable, IForceExitable
@@ -76,6 +77,11 @@ public class InteractableOscilloscope : MonoBehaviour, IInteractable, IForceExit
     private bool isInteracting = false;
     private Quaternion voltsKnobInitialRot;
     private Quaternion timeKnobInitialRot;
+
+    [Header("Password Settings")]
+    [SerializeField]
+    private TextMeshPro screenText; // Makinenin ekranındaki yazı (Unity'den ata)
+    private string assignedPassword = ""; // Manager'dan gelecek şifre
 
     void Start()
     {
@@ -323,8 +329,31 @@ public class InteractableOscilloscope : MonoBehaviour, IInteractable, IForceExit
         if (currentVoltsSetting == correctVoltsSetting && currentTimeSetting == correctTimeSetting)
         {
             isSolved = true;
-            StartCoroutine(AutoExit(2.0f));
+
+            // --- YENİ KISIM: Şifreyi Göster ve Kaydet ---
+            if (screenText != null)
+            {
+                screenText.text = $"STABLE\nKEY: {assignedPassword}";
+                screenText.color = Color.green;
+            }
+
+            // Şifreyi bulduğumuzu Manager'a bildir (Deftere eklensin)
+            if (PasswordManager.Instance != null)
+            {
+                PasswordManager.Instance.DiscoverClue(assignedPassword);
+            }
+            // --------------------------------------------
+
+            StartCoroutine(AutoExit(3.0f)); // Süreyi biraz uzattım ki şifre okunsun
         }
+    }
+
+    public void AssignPassword(string pw)
+    {
+        assignedPassword = pw;
+        // Başlangıçta ekranda "NO SIGNAL" veya boşluk yazsın
+        if (screenText != null)
+            screenText.text = "NO SIGNAL";
     }
 
     private IEnumerator AutoExit(float delay)
