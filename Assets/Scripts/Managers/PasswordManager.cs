@@ -1,6 +1,8 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using Random = UnityEngine.Random; // <--- BU SATIRI EKLE VE HATA DÜZELSİN
 
 public class PasswordManager : MonoBehaviour
 {
@@ -15,6 +17,7 @@ public class PasswordManager : MonoBehaviour
     [Header("Sembol Ayarları")]
     [Tooltip("Turing Makinesindeki sembollerin 3D modeldeki sırasıyla AYNISI olmalı!")]
     public string[] symbols = { "+", "-", "/", "√", "%", "<=", "=", "<", ">", ".", ",", ">=" };
+
     // Sıralama: 0:+, 1:-, 2:/, 3:√, 4:%, 5:<=, 6:=, 7:<, 8:>, 9:., 10:,, 11:>=
 
     [Header("Makineler")]
@@ -35,6 +38,7 @@ public class PasswordManager : MonoBehaviour
     private List<string> requiredPasswords = new List<string>();
     private List<string> discoveredClues = new List<string>();
     private List<string> validatedPasswords = new List<string>();
+    public event Action OnGameReadyToFinish;
 
     private void Awake()
     {
@@ -70,7 +74,9 @@ public class PasswordManager : MonoBehaviour
 
         if (eligibleBooks.Count < bookCount)
         {
-            Debug.LogError($"Yeterli sayıda uygun kitap yok! Gereken: {bookCount}, Uygun: {eligibleBooks.Count}");
+            Debug.LogError(
+                $"Yeterli sayıda uygun kitap yok! Gereken: {bookCount}, Uygun: {eligibleBooks.Count}"
+            );
             return;
         }
 
@@ -118,8 +124,10 @@ public class PasswordManager : MonoBehaviour
 
     public void DiscoverClue(string passwordID)
     {
-        if (!requiredPasswords.Contains(passwordID)) return;
-        if (discoveredClues.Contains(passwordID)) return;
+        if (!requiredPasswords.Contains(passwordID))
+            return;
+        if (discoveredClues.Contains(passwordID))
+            return;
 
         discoveredClues.Add(passwordID);
 
@@ -144,13 +152,29 @@ public class PasswordManager : MonoBehaviour
         }
 
         validatedPasswords.Add(passwordID);
-        Debug.Log($"✅ DOĞRU ŞİFRE ONAYLANDI: '{passwordID}'");
+        Debug.Log(
+            $"✅ DOĞRU ŞİFRE ONAYLANDI: '{passwordID}' ({validatedPasswords.Count}/{totalPasswordsNeeded})"
+        );
+
+        // --- YENİ EKLENEN KISIM: KONTROL ---
+        if (validatedPasswords.Count >= totalPasswordsNeeded)
+        {
+            Debug.Log("🎉 TÜM ŞİFRELER BULUNDU! FİNAL KAPISI AÇILIYOR...");
+            OnGameReadyToFinish?.Invoke(); // Abone olanlara (Kapıya) haber ver
+        }
+        // -----------------------------------
+
         return true;
     }
 
     public int GetValidatedPasswordCount() => validatedPasswords.Count;
+
     public int GetTotalRequiredCount() => totalPasswordsNeeded;
+
     public int GetFoundCount() => discoveredClues.Count;
+
     public List<string> GetDiscoveredClues() => discoveredClues;
-    public bool HasFoundAllRequiredPasswords() => validatedPasswords.Count == requiredPasswords.Count;
+
+    public bool HasFoundAllRequiredPasswords() =>
+        validatedPasswords.Count == requiredPasswords.Count;
 }

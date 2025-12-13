@@ -8,6 +8,15 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/OutdoorsScene.unity
     guid: 8124e5870f4fd4c779e7a5f994e84ad1
+  - enabled: 1
+    path: Assets/Scenes/Osman_GameScene.unity
+    guid: 69db779f08b31b941949389b9e6674d0
+  - enabled: 1
+    path: Assets/Scenes/MainMenu.unity
+    guid: ab093048dc1969c45a00eb93ea9af6f0
+  - enabled: 1
+    path: Assets/Scenes/CreditsMenu.unity
+    guid: 381841f0aa55e674bbb2f09dce66ce8e
   m_configObjects:
     com.unity.input.settings: {fileID: 11400000, guid: 9e7be553448fa2546aea5752021cbcf7, type: 2}
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 35845fe01580c41289b024647b1d1c53, type: 3}

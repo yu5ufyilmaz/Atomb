@@ -151,8 +151,16 @@ public class JumpscareManager : MonoBehaviour
         // 4. BEKLE
         yield return new WaitForSeconds(scareDuration);
 
-        // 5. BİTİŞ (Sahneyi Yenile)
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        if (DeathUIManager.Instance != null)
+        {
+            DeathUIManager.Instance.ShowDeathScreen();
+        }
+        else
+        {
+            // Yedek plan: Eğer UI Manager yoksa sahneyi resetle (Hata önleyici)
+            Debug.LogError("DeathUIManager bulunamadı! Sahne yeniden başlatılıyor.");
+            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        }
     }
 
     private Transform RecursiveFindChild(Transform parent, string childName)

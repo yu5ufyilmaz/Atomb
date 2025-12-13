@@ -1,3 +1,4 @@
+using System.Collections;
 using TMPro; // TextMeshPro kullanıyorsanız (UI için)
 using UnityEngine;
 
@@ -119,15 +120,34 @@ public class PressureSystemManager : MonoBehaviour
             currentPressure = 0;
     }
 
+    // Scripts/Managers/PressureSystemManager.cs
+
     private void TriggerGameOver()
     {
+        if (isGameOver)
+            return;
         isGameOver = true;
+
         Debug.LogError("GAME OVER: PRESSURE REACHED 100%!");
 
+        // Patlama efekti
         if (explosionEffect != null)
             Instantiate(explosionEffect, transform.position, Quaternion.identity);
 
-        // Time.timeScale = 0;
+        // --- GÜNCELLENEN KISIM ---
+        StartCoroutine(WaitAndShowDeathUI());
+    }
+
+    private IEnumerator WaitAndShowDeathUI()
+    {
+        // Patlama efektini ve sesi 3 saniye izlet/dinlet
+        yield return new WaitForSeconds(3.0f);
+
+        // Sonra UI panelini aç
+        if (DeathUIManager.Instance != null)
+        {
+            DeathUIManager.Instance.ShowDeathScreen();
+        }
     }
 
     #region GETTERS
@@ -136,6 +156,6 @@ public class PressureSystemManager : MonoBehaviour
     public float GetWarningThreshold() => warningThreshold;
 
     public bool IsWarningActive() => currentPressure > warningThreshold;
-    
+
     #endregion
 }
