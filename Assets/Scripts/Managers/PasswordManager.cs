@@ -11,36 +11,23 @@ public class PasswordManager : MonoBehaviour
     [SerializeField]
     private WordPool wordPool;
 
-    // Sabit sembol listesi (Turing makinesindeki ile aynı olmalı)
-    private readonly string[] symbols =
-    {
-        ">=",
-        "+",
-        "-",
-        "/",
-        "√",
-        "%",
-        "<=",
-        "=",
-        "<",
-        ">",
-        ".",
-        ",",
-    };
+    // --- GÜNCELLENDİ: Senin verdiğin sıralama ---
+    [Header("Sembol Ayarları")]
+    [Tooltip("Turing Makinesindeki sembollerin 3D modeldeki sırasıyla AYNISI olmalı!")]
+    public string[] symbols = { "+", "-", "/", "√", "%", "<=", "=", "<", ">", ".", ",", ">=" };
+    // Sıralama: 0:+, 1:-, 2:/, 3:√, 4:%, 5:<=, 6:=, 7:<, 8:>, 9:., 10:,, 11:>=
 
-    [Header("Makineler (2 Şifre Buraya)")]
+    [Header("Makineler")]
     [SerializeField]
     private InteractableOscilloscope oscilloscope;
 
     [SerializeField]
     private InteractableMassSpectrometer spectrometer;
 
-    [Header("Kitaplar (Kalan Şifreler Buraya)")]
-    [Tooltip("Sahnedeki şifre çıkma ihtimali olan TÜM kitapları buraya listele.")]
+    [Header("Kitaplar")]
     [SerializeField]
     private List<InteractableBook> allBooksInLevel;
 
-    [Tooltip("Toplam kaç şifre üretilsin? (Makineler dahil)")]
     [SerializeField]
     private int totalPasswordsNeeded = 5;
 
@@ -83,9 +70,7 @@ public class PasswordManager : MonoBehaviour
 
         if (eligibleBooks.Count < bookCount)
         {
-            Debug.LogError(
-                $"Yeterli sayıda uygun kitap yok! Gereken Kitap Şifresi: {bookCount}, Uygun Kitap: {eligibleBooks.Count}"
-            );
+            Debug.LogError($"Yeterli sayıda uygun kitap yok! Gereken: {bookCount}, Uygun: {eligibleBooks.Count}");
             return;
         }
 
@@ -95,7 +80,7 @@ public class PasswordManager : MonoBehaviour
             string pass1 = GenerateRandomPassword();
             oscilloscope.AssignPassword(pass1);
             requiredPasswords.Add(pass1);
-            Debug.Log($"[Şifre 1] Osiloskop'a atandı: {pass1}");
+            Debug.Log($"[Şifre 1] Osiloskop: {pass1}");
         }
 
         // B) SPEKTROMETRE ŞİFRESİ
@@ -104,7 +89,7 @@ public class PasswordManager : MonoBehaviour
             string pass2 = GenerateRandomPassword();
             spectrometer.AssignPassword(pass2);
             requiredPasswords.Add(pass2);
-            Debug.Log($"[Şifre 2] Spektrometre'ye atandı: {pass2}");
+            Debug.Log($"[Şifre 2] Spektrometre: {pass2}");
         }
 
         // C) KİTAP ŞİFRELERİ
@@ -117,7 +102,7 @@ public class PasswordManager : MonoBehaviour
 
             book.AssignPassword(bookPass, randomLocIndex);
             requiredPasswords.Add(bookPass);
-            Debug.Log($"[Kitap Şifresi] {book.name} kitabına atandı: {bookPass}");
+            Debug.Log($"[Kitap Şifresi] {book.name}: {bookPass}");
         }
 
         Debug.Log($"DAĞITIM TAMAMLANDI! Toplam {requiredPasswords.Count} adet şifre aktif.");
@@ -133,10 +118,8 @@ public class PasswordManager : MonoBehaviour
 
     public void DiscoverClue(string passwordID)
     {
-        if (!requiredPasswords.Contains(passwordID))
-            return;
-        if (discoveredClues.Contains(passwordID))
-            return;
+        if (!requiredPasswords.Contains(passwordID)) return;
+        if (discoveredClues.Contains(passwordID)) return;
 
         discoveredClues.Add(passwordID);
 
@@ -148,24 +131,26 @@ public class PasswordManager : MonoBehaviour
 
     public bool ValidatePassword(string passwordID)
     {
-        if (requiredPasswords.Contains(passwordID) && !validatedPasswords.Contains(passwordID))
+        if (!requiredPasswords.Contains(passwordID))
         {
-            validatedPasswords.Add(passwordID);
+            Debug.Log($"❌ YANLIŞ ŞİFRE: '{passwordID}'");
+            return false;
+        }
+
+        if (validatedPasswords.Contains(passwordID))
+        {
+            Debug.Log($"⚠️ ZATEN GİRİLMİŞ: '{passwordID}'");
             return true;
         }
-        return false;
+
+        validatedPasswords.Add(passwordID);
+        Debug.Log($"✅ DOĞRU ŞİFRE ONAYLANDI: '{passwordID}'");
+        return true;
     }
 
-    // --- GETTERS (DÜZELTİLEN KISIM) ---
     public int GetValidatedPasswordCount() => validatedPasswords.Count;
-
     public int GetTotalRequiredCount() => totalPasswordsNeeded;
-
     public int GetFoundCount() => discoveredClues.Count;
-
-    // DÜZELTME: NotebookUI bu ismi arıyor, doğrusu bu:
     public List<string> GetDiscoveredClues() => discoveredClues;
-
-    public bool HasFoundAllRequiredPasswords() =>
-        validatedPasswords.Count == requiredPasswords.Count;
+    public bool HasFoundAllRequiredPasswords() => validatedPasswords.Count == requiredPasswords.Count;
 }

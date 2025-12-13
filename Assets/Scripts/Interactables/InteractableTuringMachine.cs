@@ -43,25 +43,20 @@ public class InteractableTuringMachine : MonoBehaviour, IInteractable, IForceExi
     [SerializeField]
     private Transform[] numberWheelModels;
 
-    [Header("Makine Bileşenleri (Kollar/Levers)")]
-    [Tooltip("Harf çarklarının altındaki kollar")]
+    [Header("Makine Bileşenleri (Kollar)")]
     [SerializeField]
     private Transform[] wordLeverModels;
 
-    [Tooltip("Sembol çarkının altındaki kol")]
     [SerializeField]
     private Transform symbolLeverModel;
 
-    [Tooltip("Sayı çarklarının altındaki kollar")]
     [SerializeField]
     private Transform[] numberLeverModels;
 
-    [Header("Lever Settings (Kol Ayarları)")]
-    [Tooltip("Kollar hangi eksende dönecek? (X: 1,0,0 | Y: 0,1,0 | Z: 0,0,1)")]
+    [Header("Lever Settings")]
     [SerializeField]
     private Vector3 leverRotationAxis = Vector3.right;
 
-    [Tooltip("Her adımda kol kaç derece dönecek?")]
     [SerializeField]
     private float leverRotationStep = 15f;
 
@@ -75,21 +70,36 @@ public class InteractableTuringMachine : MonoBehaviour, IInteractable, IForceExi
     [SerializeField]
     private GameObject[] numberWheelHighlights;
 
-    [Header("Data")]
+    [Header("Data (Otomatik Senkronize)")]
     [SerializeField]
     private string wordChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ-";
 
     [SerializeField]
-    private string[] symbolChars = { ">=", "+", "-", "/", "√", "%", "<=", "=", "<", ">", ".", "," };
-
-    [SerializeField]
     private string numberChars = "0123456789";
+
+    // Yedek liste
+    private string[] symbolChars = { "+", "-", "/", "√", "%", "<=", "=", "<", ">", ".", ",", ">=" };
 
     [SerializeField]
     private Vector3 rotationAxis = Vector3.up;
 
     [SerializeField]
     private float rotationSpeed = 10f;
+
+    // --- YENİ EKLENEN BASİT AYARLAR ---
+    [Header("🔧 SEMBOL DÜZELTME (CANLI AYARLA)")]
+    [Tooltip("Çarkı döndürdüğünde semboller ters sırada geliyorsa bunu işaretle.")]
+    public bool isSymbolOrderReversed = true; // Senin durumunda muhtemelen TRUE olacak
+
+    [Tooltip(
+        "Ekranda gördüğün sembol ile aşağıdaki Debug yazısı tutmuyorsa bu sayıyı değiştir (+1, -1 vb)."
+    )]
+    public int symbolVisualOffset = 0;
+
+    [Header("👀 CANLI KONTROL")]
+    [Tooltip("Şu an kodun algıladığı sembol budur. Modeldekiyle aynı olmalı!")]
+    [SerializeField]
+    private string DEBUG_CurrentSymbol = "";
 
     [Header("Göstergeler & Ses")]
     [SerializeField]
@@ -121,33 +131,43 @@ public class InteractableTuringMachine : MonoBehaviour, IInteractable, IForceExi
 
     private bool isInteracting = false;
     private int currentGroup = 0;
+
+    // İndeksler
     private int currentWordIndex = 0;
     private int currentNumberIndex = 0;
 
-    // --- WHEEL STATE ---
     private int[] wordWheelIndices;
-    private int symbolWheelIndex = 0;
+
+    // SEMBOL İÇİN ARTIK SADECE "ADIM" SAYIYORUZ
+    private int symbolVisualStep = 0;
+
     private int[] numberWheelIndices;
 
+    // Hedef Rotasyonlar
     private Quaternion[] wordWheelTargets;
     private Quaternion symbolWheelTarget;
     private Quaternion[] numberWheelTargets;
 
+    // Başlangıç Rotasyonları
     private Quaternion[] wordWheelInitialRots;
     private Quaternion symbolWheelInitialRot;
     private Quaternion[] numberWheelInitialRots;
 
-    // --- LEVER STATE ---
+    // Kol Rotasyonları
     private Quaternion[] wordLeverTargets;
     private Quaternion symbolLeverTarget;
     private Quaternion[] numberLeverTargets;
-
     private Quaternion[] wordLeverInitialRots;
     private Quaternion symbolLeverInitialRot;
     private Quaternion[] numberLeverInitialRots;
 
     private void Start()
     {
+        if (PasswordManager.Instance != null && PasswordManager.Instance.symbols.Length > 0)
+        {
+            symbolChars = PasswordManager.Instance.symbols;
+        }
+
         if (playerController == null)
             playerController = FindObjectOfType<UnityEngine.CharacterController>();
 
@@ -162,10 +182,7 @@ public class InteractableTuringMachine : MonoBehaviour, IInteractable, IForceExi
                 headBone = playerController.transform;
 
             Transform camRoot = playerController.transform.Find("PlayerCameraRoot");
-            if (camRoot != null)
-                cinemachineTarget = camRoot;
-            else
-                cinemachineTarget = headBone;
+            cinemachineTarget = (camRoot != null) ? camRoot : headBone;
         }
 
         if (Camera.main != null)
@@ -175,11 +192,11 @@ public class InteractableTuringMachine : MonoBehaviour, IInteractable, IForceExi
         }
 
         InitializeWheels();
+        UpdateDebugSymbol(); // Başlangıçta ne görüyoruz?
     }
 
     private void InitializeWheels()
     {
-        // --- Dizi Başlatmaları ---
         wordWheelIndices = new int[wordWheelModels.Length];
         numberWheelIndices = new int[numberWheelModels.Length];
 
@@ -193,7 +210,6 @@ public class InteractableTuringMachine : MonoBehaviour, IInteractable, IForceExi
         wordLeverInitialRots = new Quaternion[wordWheelModels.Length];
         numberLeverInitialRots = new Quaternion[numberWheelModels.Length];
 
-        // --- Harf Çarkları ve Kolları ---
         for (int i = 0; i < wordWheelModels.Length; i++)
         {
             if (wordWheelModels[i])
@@ -208,7 +224,6 @@ public class InteractableTuringMachine : MonoBehaviour, IInteractable, IForceExi
             }
         }
 
-        // --- Sayı Çarkları ve Kolları ---
         for (int i = 0; i < numberWheelModels.Length; i++)
         {
             if (numberWheelModels[i])
@@ -223,7 +238,6 @@ public class InteractableTuringMachine : MonoBehaviour, IInteractable, IForceExi
             }
         }
 
-        // --- Sembol Çarkı ve Kolu ---
         if (symbolWheelModel)
         {
             symbolWheelInitialRot = symbolWheelModel.localRotation;
@@ -241,9 +255,8 @@ public class InteractableTuringMachine : MonoBehaviour, IInteractable, IForceExi
 
     public void Interact()
     {
-        if (isInteracting)
-            return;
-        StartCoroutine(EnterMachineView());
+        if (!isInteracting)
+            StartCoroutine(EnterMachineView());
     }
 
     public string GetInteractionPrompt() => isInteracting ? "" : "[Sol Tık] Turing Makinesi";
@@ -251,7 +264,6 @@ public class InteractableTuringMachine : MonoBehaviour, IInteractable, IForceExi
     private IEnumerator EnterMachineView()
     {
         isInteracting = true;
-
         if (GameManager.Instance != null)
             GameManager.Instance.activeInteraction = this;
 
@@ -263,7 +275,6 @@ public class InteractableTuringMachine : MonoBehaviour, IInteractable, IForceExi
             playerAnimator.SetTrigger(interactAnimTrigger);
 
         PlaySound(accessSound);
-
         if (cinemachineBrain)
             cinemachineBrain.enabled = false;
 
@@ -316,13 +327,11 @@ public class InteractableTuringMachine : MonoBehaviour, IInteractable, IForceExi
     private IEnumerator ExitMachineView()
     {
         isInteracting = false;
-
         if (GameManager.Instance != null)
             GameManager.Instance.activeInteraction = null;
 
         PlaySound(exitSound);
         ClearAllHighlights();
-
         TogglePlayerModel(true);
 
         if (cinemachineTarget != null)
@@ -366,13 +375,15 @@ public class InteractableTuringMachine : MonoBehaviour, IInteractable, IForceExi
         if (!isInteracting)
             return;
 
+        // Debug'ı sürekli güncelle ki editörden değiştirdiğinde sonucu gör
+        UpdateDebugSymbol();
+
         if (Input.GetKeyDown(KeyCode.F))
         {
             StartCoroutine(ExitMachineView());
             return;
         }
 
-        // Seçim değiştirme (W/S)
         if (Input.GetKeyDown(KeyCode.W))
         {
             currentGroup = (currentGroup - 1 + 3) % 3;
@@ -384,7 +395,6 @@ public class InteractableTuringMachine : MonoBehaviour, IInteractable, IForceExi
             UpdateActiveWheelHighlight();
         }
 
-        // Sütun değiştirme (Q/E)
         if (Input.GetKeyDown(KeyCode.Q))
         {
             HandleIndexChange(-1);
@@ -396,7 +406,6 @@ public class InteractableTuringMachine : MonoBehaviour, IInteractable, IForceExi
             UpdateActiveWheelHighlight();
         }
 
-        // Çevirme (D/A veya Oklar)
         float rotationInput = 0f;
         if (Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.RightArrow))
             rotationInput = 1f;
@@ -412,11 +421,8 @@ public class InteractableTuringMachine : MonoBehaviour, IInteractable, IForceExi
         if (rotationInput != 0)
             RotateActiveWheel((int)rotationInput);
 
-        // --- ENTER KONTROLÜ (GÜNCELLENDİ) ---
         if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter))
-        {
             CheckPassword();
-        }
 
         AnimateWheels();
     }
@@ -439,14 +445,13 @@ public class InteractableTuringMachine : MonoBehaviour, IInteractable, IForceExi
     private void RotateActiveWheel(int d)
     {
         PlaySound(wheelClickSound);
+
         switch (currentGroup)
         {
-            case 0: // Kelime
+            case 0:
                 int cW = wordChars.Length;
                 wordWheelIndices[currentWordIndex] =
-                    (wordWheelIndices[currentWordIndex] + d + cW) % cW;
-
-                // Çark Hedefi
+                    (wordWheelIndices[currentWordIndex] - d + cW) % cW;
                 wordWheelTargets[currentWordIndex] =
                     wordWheelInitialRots[currentWordIndex]
                     * Quaternion.AngleAxis(
@@ -454,45 +459,42 @@ public class InteractableTuringMachine : MonoBehaviour, IInteractable, IForceExi
                         rotationAxis
                     );
 
-                // Kol Hedefi
                 if (currentWordIndex < wordLeverModels.Length && wordLeverModels[currentWordIndex])
-                {
                     wordLeverTargets[currentWordIndex] =
                         wordLeverInitialRots[currentWordIndex]
                         * Quaternion.AngleAxis(
                             leverRotationStep * wordWheelIndices[currentWordIndex],
                             leverRotationAxis
                         );
-                }
                 break;
 
-            case 1: // Sembol
+            case 1:
                 int cS = symbolChars.Length;
-                symbolWheelIndex = (symbolWheelIndex + d + cS) % cS;
 
-                // Çark Hedefi
+                // GÖRSEL ROTASYON (Sadece modeli döndürüyoruz)
+                // Kod -d yaparak modeli sola/sağa doğru yönde çevirir
+                symbolVisualStep = (symbolVisualStep - d + cS) % cS;
+
+                // Modeli güncelle
                 symbolWheelTarget =
                     symbolWheelInitialRot
-                    * Quaternion.AngleAxis((360f / cS) * symbolWheelIndex, rotationAxis);
+                    * Quaternion.AngleAxis((360f / cS) * symbolVisualStep, rotationAxis);
 
-                // Kol Hedefi
                 if (symbolLeverModel)
-                {
                     symbolLeverTarget =
                         symbolLeverInitialRot
                         * Quaternion.AngleAxis(
-                            leverRotationStep * symbolWheelIndex,
+                            leverRotationStep * symbolVisualStep,
                             leverRotationAxis
                         );
-                }
+
+                UpdateDebugSymbol();
                 break;
 
-            case 2: // Sayı
+            case 2:
                 int cN = numberChars.Length;
                 numberWheelIndices[currentNumberIndex] =
-                    (numberWheelIndices[currentNumberIndex] + d + cN) % cN;
-
-                // Çark Hedefi
+                    (numberWheelIndices[currentNumberIndex] - d + cN) % cN;
                 numberWheelTargets[currentNumberIndex] =
                     numberWheelInitialRots[currentNumberIndex]
                     * Quaternion.AngleAxis(
@@ -500,50 +502,73 @@ public class InteractableTuringMachine : MonoBehaviour, IInteractable, IForceExi
                         rotationAxis
                     );
 
-                // Kol Hedefi
                 if (
                     currentNumberIndex < numberLeverModels.Length
                     && numberLeverModels[currentNumberIndex]
                 )
-                {
                     numberLeverTargets[currentNumberIndex] =
                         numberLeverInitialRots[currentNumberIndex]
                         * Quaternion.AngleAxis(
                             leverRotationStep * numberWheelIndices[currentNumberIndex],
                             leverRotationAxis
                         );
-                }
                 break;
+        }
+    }
+
+    // --- BÜYÜLÜ FONKSİYON BURASI ---
+    private int GetCorrectSymbolIndex()
+    {
+        int total = symbolChars.Length;
+        int calculatedIndex = symbolVisualStep;
+
+        // 1. TERSLİK VARSA DÜZELT
+        if (isSymbolOrderReversed)
+        {
+            // Örn: Görsel 1. adımdaysa (sola döndü), Dizi 11. indekse gitmeli.
+            // (12 - 1) % 12 = 11
+            calculatedIndex = (total - (symbolVisualStep % total)) % total;
+        }
+
+        // 2. KAYMA VARSA DÜZELT
+        // calculatedIndex + offset
+        calculatedIndex = (calculatedIndex + symbolVisualOffset + total) % total;
+
+        return calculatedIndex;
+    }
+
+    private void UpdateDebugSymbol()
+    {
+        int idx = GetCorrectSymbolIndex();
+        if (idx >= 0 && idx < symbolChars.Length)
+        {
+            DEBUG_CurrentSymbol = symbolChars[idx];
         }
     }
 
     private void CheckPassword()
     {
         if (!PasswordManager.Instance)
-        {
-            Debug.LogError("Turing Makinesi: PasswordManager bulunamadı!");
             return;
-        }
 
         StringBuilder sb = new StringBuilder();
-        // Harfleri topla
         for (int i = 0; i < wordWheelIndices.Length; i++)
-        {
             sb.Append(wordChars[wordWheelIndices[i]]);
-        }
         string wordPart = sb.ToString();
 
-        string symbolPart = symbolChars[symbolWheelIndex];
+        // SEMBOL İÇİN BÜYÜLÜ FONKSİYONU KULLAN
+        int finalSymbolIndex = GetCorrectSymbolIndex();
+        string symbolPart = symbolChars[finalSymbolIndex];
 
         string numberPart =
             $"{numberChars[numberWheelIndices[0]]}{numberChars[numberWheelIndices[1]]}{numberChars[numberWheelIndices[2]]}";
 
-        // Format: KELIME_SEMBOL_SAYI
-        string pw = $"{wordPart}_{symbolPart}_{numberPart}";
+        string inputPassword = $"{wordPart}_{symbolPart}_{numberPart}";
+        Debug.Log(
+            $"GİRİLEN ŞİFRE: '{inputPassword}' (Görsel Adım: {symbolVisualStep} -> Kod İndeksi: {finalSymbolIndex})"
+        );
 
-        Debug.Log($"Turing Giriş Denemesi: {pw}");
-
-        if (PasswordManager.Instance.ValidatePassword(pw))
+        if (PasswordManager.Instance.ValidatePassword(inputPassword))
         {
             PlaySound(successSound);
             UpdateIndicators(PasswordManager.Instance.GetValidatedPasswordCount());
@@ -554,6 +579,7 @@ public class InteractableTuringMachine : MonoBehaviour, IInteractable, IForceExi
         }
     }
 
+    // --- Diğer standart fonksiyonlar ---
     private void UpdateIndicators(int c)
     {
         if (indicatorRenderers == null)
@@ -609,8 +635,6 @@ public class InteractableTuringMachine : MonoBehaviour, IInteractable, IForceExi
     private void AnimateWheels()
     {
         float s = Time.deltaTime * rotationSpeed;
-
-        // Harf Çarkları & Kolları
         for (int i = 0; i < wordWheelModels.Length; i++)
         {
             if (wordWheelModels[i])
@@ -619,7 +643,6 @@ public class InteractableTuringMachine : MonoBehaviour, IInteractable, IForceExi
                     wordWheelTargets[i],
                     s
                 );
-
             if (i < wordLeverModels.Length && wordLeverModels[i])
                 wordLeverModels[i].localRotation = Quaternion.Slerp(
                     wordLeverModels[i].localRotation,
@@ -627,8 +650,6 @@ public class InteractableTuringMachine : MonoBehaviour, IInteractable, IForceExi
                     s
                 );
         }
-
-        // Sayı Çarkları & Kolları
         for (int i = 0; i < numberWheelModels.Length; i++)
         {
             if (numberWheelModels[i])
@@ -637,7 +658,6 @@ public class InteractableTuringMachine : MonoBehaviour, IInteractable, IForceExi
                     numberWheelTargets[i],
                     s
                 );
-
             if (i < numberLeverModels.Length && numberLeverModels[i])
                 numberLeverModels[i].localRotation = Quaternion.Slerp(
                     numberLeverModels[i].localRotation,
@@ -645,15 +665,12 @@ public class InteractableTuringMachine : MonoBehaviour, IInteractable, IForceExi
                     s
                 );
         }
-
-        // Sembol Çarkı & Kolu
         if (symbolWheelModel)
             symbolWheelModel.localRotation = Quaternion.Slerp(
                 symbolWheelModel.localRotation,
                 symbolWheelTarget,
                 s
             );
-
         if (symbolLeverModel)
             symbolLeverModel.localRotation = Quaternion.Slerp(
                 symbolLeverModel.localRotation,

@@ -1858,7 +1858,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &182865401
 Transform:
   m_ObjectHideFlags: 0
@@ -5719,7 +5719,7 @@ MonoBehaviour:
   maxTimeSetting: 10
   correctVoltsSetting: 3
   correctTimeSetting: 5
-  waveformScript: {fileID: 0}
+  waveformScript: {fileID: 944185729}
   minPitch: 0.5
   maxPitch: 2
   minVolume: 0.2
@@ -8719,6 +8719,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PasswordManager
   wordPool: {fileID: 11400000, guid: 662e7c5db45a9284d9a3f1fb47d1cbf3, type: 2}
+  symbols:
+  - +
+  - '-'
+  - /
+  - "\u221A"
+  - '%'
+  - <=
+  - =
+  - <
+  - '>'
+  - .
+  - ','
+  - '>='
   oscilloscope: {fileID: 601288413}
   spectrometer: {fileID: 210862872}
   allBooksInLevel:
@@ -13114,7 +13127,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 960627ba2c1815a4ea307872fa0317db, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  stopAllEnemies: 0
+  stopAllEnemies: 1
   isAttackInProgress: 0
   postAttackCooldown: 30
   currentGlobalCooldown: 0
@@ -14037,15 +14050,15 @@ MonoBehaviour:
   currentRoom: {fileID: 0}
   timeSpentInCurrentRoom: 0
   baseSpawnChance: 5
-  chanceIncreasePerSecond: 1
-  spawnCheckInterval: 30
+  chanceIncreasePerSecond: 5
+  spawnCheckInterval: 10
   maxIgnoranceTime: 30
   maxReactionTime: 2
   survivalWaitTime: 10
   movementTolerance: 0.1
   jumpscareDistance: 1.2
   jumpscareYOffset: 1
-  spawnCooldownAfterDespawn: 60
+  spawnCooldownAfterDespawn: 0
   debugCooldownTimer: 0
   debugReactionTimer: 0
   debugSurvivalTimer: 0
@@ -14471,7 +14484,7 @@ Material:
     m_Colors:
     - _BaseColor: {r: 0, g: 1, b: 1, a: 1}
     - _BaseColorMap_MipInfo: {r: 0, g: 0, b: 0, a: 0}
-    - _Color: {r: 0.72794116, g: 0.72794116, b: 0.72794116, a: 1}
+    - _Color: {r: 0, g: 1, b: 1, a: 1}
     - _DiffusionProfileAsset: {r: 0, g: 0, b: 0, a: 0}
     - _DoubleSidedConstants: {r: 1, g: 1, b: -1, a: 0}
     - _EmissionColor: {r: 1, g: 1, b: 1, a: 1}
@@ -14674,7 +14687,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   currentState: 0
   checkInterval: 5
-  baseSpawnChance: 5
+  baseSpawnChance: 15
   chanceIncreaseStep: 5
   minTimeBetweenAttacks: 30
   currentSpawnChance: 0
@@ -21172,22 +21185,11 @@ MonoBehaviour:
   - {fileID: 4201333361926913396}
   - {fileID: 1407999026498090543}
   wordChars: ABCDEFGHIJKLMNOPQRSTUVWXYZ
-  symbolChars:
-  - +
-  - '-'
-  - /
-  - "\u221A"
-  - '%'
-  - <=
-  - =
-  - <
-  - '>'
-  - .
-  - ','
-  - '>='
   numberChars: 9876543210
   rotationAxis: {x: 0, y: 0, z: 1}
   rotationSpeed: 10
+  reverseSymbolRotation: 0
+  symbolCalibrationOffset: 0
   indicatorRenderers:
   - {fileID: 2447142927725322767}
   - {fileID: 869506389238663150}
