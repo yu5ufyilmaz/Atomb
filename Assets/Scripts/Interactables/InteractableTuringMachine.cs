@@ -682,6 +682,10 @@ public class InteractableTuringMachine : MonoBehaviour, IInteractable, IForceExi
             );
     }
 
+    public void OnFocus() { } // Şimdilik boş kalsın
+
+    public void OnLoseFocus() { } // Şimdilik boş kalsın
+
     private void PlaySound(AudioClip c)
     {
         if (audioSource && c)

@@ -145,4 +145,8 @@ public class ControllableLight : MonoBehaviour, IInteractable
             audioSource.PlayOneShot(clip);
         }
     }
+
+    public void OnFocus() { } // Şimdilik boş kalsın
+
+    public void OnLoseFocus() { } // Şimdilik boş kalsın
 }

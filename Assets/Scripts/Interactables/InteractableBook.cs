@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using StarterAssets;
 using TMPro;
 using UnityEngine;
@@ -99,6 +100,13 @@ public class InteractableBook : MonoBehaviour, IInteractable, IForceExitable
     private Animator playerAnimator;
     private Camera mainCamera;
     private BoxCollider interactionCollider;
+
+    [Header("✨ Highlight Ayarları")]
+    [Tooltip("Üzerine gelince kitap bu renge dönecek (HDR kullanabilirsin)")]
+    [SerializeField]
+    private Color highlightColor = new Color(0.3f, 0.3f, 0.3f); // Hafif gri parlama
+    private Dictionary<Material, Color> originalColors = new Dictionary<Material, Color>();
+    private Renderer[] allRenderers;
 
     // ...
 
@@ -227,7 +235,20 @@ public class InteractableBook : MonoBehaviour, IInteractable, IForceExitable
 
         if (pageFlipObject != null)
             pageFlipObject.SetActive(false);
-
+        allRenderers = GetComponentsInChildren<Renderer>();
+        foreach (var r in allRenderers)
+        {
+            foreach (var mat in r.materials)
+            {
+                if (mat.HasProperty("_Color")) // Eğer materyalin rengi değiştirilebiliyorsa
+                {
+                    if (!originalColors.ContainsKey(mat))
+                    {
+                        originalColors.Add(mat, mat.color);
+                    }
+                }
+            }
+        }
         InitializePages();
     }
 
@@ -623,6 +644,28 @@ public class InteractableBook : MonoBehaviour, IInteractable, IForceExitable
     {
         if (audioSource != null && clip != null)
             audioSource.PlayOneShot(clip);
+    }
+
+    public void OnFocus()
+    {
+        if (isOpen || isAnimating)
+            return; // Kitap açıksa parlamasın
+
+        foreach (var entry in originalColors)
+        {
+            // Orijinal rengin üzerine Highlight rengini ekle (Emission gibi dursun diye)
+            entry.Key.color = entry.Value + highlightColor;
+        }
+    }
+
+    public void OnLoseFocus()
+    {
+        // Rengi orijinale döndür
+        foreach (var entry in originalColors)
+        {
+            if (entry.Key != null)
+                entry.Key.color = entry.Value;
+        }
     }
 
     // --- IForceExitable Implementation ---

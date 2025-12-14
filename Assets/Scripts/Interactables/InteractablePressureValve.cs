@@ -232,6 +232,10 @@ public class InteractablePressureValve : MonoBehaviour, IInteractable, IForceExi
         lastAngle = currentAngle;
     }
 
+    public void OnFocus() { } // Şimdilik boş kalsın
+
+    public void OnLoseFocus() { } // Şimdilik boş kalsın
+
     // --- IFORCEEXITABLE ---
     public void ForceExit()
     {

@@ -408,6 +408,10 @@ public class InteractableHidingSpot : MonoBehaviour, IInteractable, IForceExitab
         }
     }
 
+    public void OnFocus() { } // Şimdilik boş kalsın
+
+    public void OnLoseFocus() { } // Şimdilik boş kalsın
+
     // --- IForceExitable Arayüzü Uygulaması ---
     // Lees (veya başka sistemler) tarafından çağrılır.
     public void ForceExit()

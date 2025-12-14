@@ -182,6 +182,10 @@ public class InteractableDoor : MonoBehaviour, IInteractable
         }
     }
 
+    public void OnFocus() { } // Şimdilik boş kalsın
+
+    public void OnLoseFocus() { } // Şimdilik boş kalsın
+
     public void OnDoorOpenComplete()
     {
         Debug.Log("Kapı tamamen açıldı");

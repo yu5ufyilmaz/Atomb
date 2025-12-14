@@ -348,6 +348,10 @@ public class InteractableOscilloscope : MonoBehaviour, IInteractable, IForceExit
         }
     }
 
+    public void OnFocus() { } // Şimdilik boş kalsın
+
+    public void OnLoseFocus() { } // Şimdilik boş kalsın
+
     public void AssignPassword(string pw)
     {
         assignedPassword = pw;

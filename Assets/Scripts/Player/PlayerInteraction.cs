@@ -1,36 +1,44 @@
+using TMPro; // TextMeshPro için
 using UnityEngine;
 
 public interface IInteractable
 {
     void Interact();
-    string GetInteractionPrompt(); 
+    string GetInteractionPrompt();
+    void OnFocus(); // Üzerine bakınca çalışır
+    void OnLoseFocus(); // Bakışı çekince çalışır
 }
 
 public class PlayerInteraction : MonoBehaviour
 {
     [Header("Interaction Settings")]
-    [SerializeField] private float interactionDistance = 3f;
-    [SerializeField] private LayerMask interactionLayer;
-    [SerializeField] private Transform raycastOrigin; // Kamera transform'u (Inspector'dan ata)
-    
+    [SerializeField]
+    private float interactionDistance = 3f;
+
+    [SerializeField]
+    private LayerMask interactionLayer;
+
+    [SerializeField]
+    private Transform raycastOrigin;
+
     [Header("UI References")]
-    [SerializeField] private GameObject interactionUI; // UI Canvas'Ä±
-    [SerializeField] private TMPro.TextMeshProUGUI interactionText; // EtkileÅŸim yazÄ±sÄ±
-    
+    [SerializeField]
+    private GameObject interactionUI;
+
+    [SerializeField]
+    private TextMeshProUGUI interactionText;
+
     private IInteractable currentInteractable;
     private Camera playerCamera;
 
     private void Start()
     {
-        // Ana kamerayÄ± bul
         playerCamera = Camera.main;
-        
-        // EÄŸer raycastOrigin atanmadÄ±ysa, kamerayÄ± kullan
         if (raycastOrigin == null && playerCamera != null)
         {
             raycastOrigin = playerCamera.transform;
         }
-        
+
         if (interactionUI != null)
             interactionUI.SetActive(false);
     }
@@ -43,57 +51,58 @@ public class PlayerInteraction : MonoBehaviour
 
     private void CheckForInteractable()
     {
-        if (raycastOrigin == null) return;
-        
+        if (raycastOrigin == null)
+            return;
+
         Ray ray = new Ray(raycastOrigin.position, raycastOrigin.forward);
-        
+
         if (Physics.Raycast(ray, out RaycastHit hit, interactionDistance, interactionLayer))
         {
-            IInteractable interactable = hit.collider.GetComponent<IInteractable>();
-            
-            if (interactable != null)
+            IInteractable newInteractable = hit.collider.GetComponent<IInteractable>();
+
+            // Eğer yeni bir objeye bakıyorsak
+            if (newInteractable != null)
             {
-                SetCurrentInteractable(interactable);
-                return;
+                if (currentInteractable != newInteractable)
+                {
+                    // Eski objenin highlightını kapat
+                    if (currentInteractable != null)
+                        currentInteractable.OnLoseFocus();
+
+                    // Yeni objeyi kaydet ve highlightını aç
+                    currentInteractable = newInteractable;
+                    currentInteractable.OnFocus();
+
+                    UpdateUI(true);
+                }
+                return; // Bulduk, fonksiyondan çık
             }
         }
-        
-        SetCurrentInteractable(null);
+
+        // Hiçbir şeye bakmıyorsak veya mesafe dışındaysak
+        if (currentInteractable != null)
+        {
+            currentInteractable.OnLoseFocus();
+            currentInteractable = null;
+            UpdateUI(false);
+        }
     }
 
-    private void SetCurrentInteractable(IInteractable interactable)
+    private void UpdateUI(bool isActive)
     {
-        currentInteractable = interactable;
-        
         if (interactionUI != null)
         {
-            if (currentInteractable != null)
-            {
-                interactionUI.SetActive(true);
-                if (interactionText != null)
-                    interactionText.text = currentInteractable.GetInteractionPrompt();
-            }
-            else
-            {
-                interactionUI.SetActive(false);
-            }
+            interactionUI.SetActive(isActive);
+            if (isActive && interactionText != null && currentInteractable != null)
+                interactionText.text = currentInteractable.GetInteractionPrompt();
         }
     }
 
     private void HandleInteractionInput()
     {
-        // Sol tÄ±k (Mouse0) ile etkileÅŸim
         if (currentInteractable != null && Input.GetMouseButtonDown(0))
         {
             currentInteractable.Interact();
         }
-    }
-    
-    private void OnDrawGizmos()
-    {
-        if (raycastOrigin == null) return;
-        
-        Gizmos.color = Color.yellow;
-        Gizmos.DrawRay(raycastOrigin.position, raycastOrigin.forward * interactionDistance);
     }
 }

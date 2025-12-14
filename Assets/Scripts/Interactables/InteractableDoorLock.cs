@@ -88,6 +88,10 @@ public class InteractableDoorLock : MonoBehaviour, IInteractable
         }
     }
 
+    public void OnFocus() { } // Şimdilik boş kalsın
+
+    public void OnLoseFocus() { } // Şimdilik boş kalsın
+
     private void UpdateVisuals()
     {
         if (targetDoor == null)

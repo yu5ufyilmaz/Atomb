@@ -1,28 +1,43 @@
 using System.Collections.Generic;
 using System.Text;
-using TMPro; // TextMeshPro referansı için şart
+using TMPro;
 using UnityEngine;
 
 public class NotebookUI : MonoBehaviour
 {
     public static NotebookUI Instance;
 
-    [Header("UI Panelleri")]
+    [Header("UI Referansları")]
     [SerializeField]
     private GameObject notebookPanel;
 
     [SerializeField]
     private TextMeshProUGUI passwordListText;
 
+    [Header("Hareket Ayarları")]
+    [Tooltip("Defterin kapalıyken duracağı konum (Ekranın altı)")]
+    [SerializeField]
+    private Vector2 hiddenPosition = new Vector2(0, -800); // Ekran dışı (aşağısı)
+
+    [Tooltip("Defterin açıkken duracağı konum (Ekran ortası)")]
+    [SerializeField]
+    private Vector2 visiblePosition = Vector2.zero; // Ekran merkezi
+
+    [Tooltip("Kayma hızı (Yüksek değer = Hızlı)")]
+    [SerializeField]
+    private float moveSpeed = 10f;
+
     [Header("Bildirim Ayarları")]
     [SerializeField]
-    private GameObject notificationPanel; // Ekranda çıkacak "Şifre Bulundu" kutusu
+    private GameObject notificationPanel;
 
     [SerializeField]
-    private TextMeshProUGUI notificationText; // (Opsiyonel) Kutunun içindeki yazı
+    private TextMeshProUGUI notificationText;
 
     [SerializeField]
-    private float notificationDuration = 3.0f; // Bildirimin ekranda kalma süresi
+    private float notificationDuration = 3.0f;
+
+    private RectTransform panelRect;
 
     private void Awake()
     {
@@ -34,43 +49,53 @@ public class NotebookUI : MonoBehaviour
 
     private void Start()
     {
-        // Başlangıçta panelleri kapat
+        // Paneli başta aktif yapıyoruz (Yoksa hareket edemez)
         if (notebookPanel != null)
-            notebookPanel.SetActive(false);
+        {
+            notebookPanel.SetActive(true);
+            panelRect = notebookPanel.GetComponent<RectTransform>();
+
+            // Başlangıçta gizli konuma gönder
+            if (panelRect != null)
+                panelRect.anchoredPosition = hiddenPosition;
+        }
+
         if (notificationPanel != null)
             notificationPanel.SetActive(false);
     }
 
     private void Update()
     {
-        // TAB tuşu ile not defterini aç/kapat
-        if (Input.GetKeyDown(KeyCode.Tab))
-        {
-            ToggleNotebook();
-        }
+        HandleNotebookInput();
     }
 
-    public void ToggleNotebook()
+    private void HandleNotebookInput()
     {
-        if (notebookPanel == null)
+        if (panelRect == null)
             return;
 
-        bool isActive = !notebookPanel.activeSelf;
-        notebookPanel.SetActive(isActive);
+        // TAB tuşuna basılı tutuluyor mu?
+        bool isHolding = Input.GetKey(KeyCode.Tab);
 
-        if (isActive)
+        // Hedef konumu belirle (Basılıysa Görünür, Değilse Gizli)
+        Vector2 targetPos = isHolding ? visiblePosition : hiddenPosition;
+
+        // Yumuşak geçiş yap (Lerp)
+        panelRect.anchoredPosition = Vector2.Lerp(
+            panelRect.anchoredPosition,
+            targetPos,
+            Time.deltaTime * moveSpeed
+        );
+
+        // Tuşa ilk basıldığı an listeyi güncelle (Performans için her kare yapmıyoruz)
+        if (Input.GetKeyDown(KeyCode.Tab))
         {
             UpdatePasswordList();
-
-            // Defteri açınca bildirimi kapatabiliriz (temizlik olsun)
-            if (notificationPanel != null)
-                notificationPanel.SetActive(false);
         }
     }
 
     private void UpdatePasswordList()
     {
-        // PasswordManager yoksa hata vermesin
         if (PasswordManager.Instance == null)
             return;
 
@@ -79,7 +104,6 @@ public class NotebookUI : MonoBehaviour
 
         foreach (string pw in passwords)
         {
-            // Şifreleri daha okunaklı yap (RED_>_005 yerine RED > 005)
             sb.AppendLine(pw.Replace("_", " "));
         }
 
@@ -89,20 +113,12 @@ public class NotebookUI : MonoBehaviour
 
     public void ShowPasswordNotification(string passwordID)
     {
-        Debug.Log($"Bildirim: {passwordID} not defterine eklendi.");
-
-        // Bildirim Panelini Aç
         if (notificationPanel != null)
         {
             notificationPanel.SetActive(true);
-
-            // Eğer panelde bir yazı alanı varsa, bulunan şifreyi oraya yaz
             if (notificationText != null)
-            {
                 notificationText.text = $"YENİ İPUCU:\n{passwordID.Replace("_", " ")}";
-            }
 
-            // Süre dolunca kapatmak için zamanlayıcıyı sıfırla ve başlat
             CancelInvoke(nameof(HideNotification));
             Invoke(nameof(HideNotification), notificationDuration);
         }

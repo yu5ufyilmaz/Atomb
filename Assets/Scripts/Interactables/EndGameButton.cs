@@ -57,6 +57,10 @@ public class EndGameButton : MonoBehaviour, IInteractable
         return isTriggered ? "" : "[Sol Tık] Sistemi Başlat";
     }
 
+    public void OnFocus() { } // Şimdilik boş kalsın
+
+    public void OnLoseFocus() { } // Şimdilik boş kalsın
+
     private IEnumerator EndingSequence()
     {
         isTriggered = true;

@@ -174,6 +174,9 @@ public class BreakerBox : MonoBehaviour, IInteractable
         }
     }
 
+    public void OnFocus() { } // Şimdilik boş kalsın
+
+    public void OnLoseFocus() { } // Şimdilik boş kalsın
     #region GETTERS
     public float GetCurrentRiskPercentage()
     {
