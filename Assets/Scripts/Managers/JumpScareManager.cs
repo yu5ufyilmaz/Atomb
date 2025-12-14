@@ -2,6 +2,7 @@ using System.Collections;
 using Cinemachine;
 using StarterAssets;
 using UnityEngine;
+using UnityEngine.Rendering; // Post-Processing için (Volume kullanıyorsan)
 using UnityEngine.SceneManagement;
 
 public class JumpscareManager : MonoBehaviour
@@ -24,9 +25,26 @@ public class JumpscareManager : MonoBehaviour
     [SerializeField]
     private Transform headBone;
 
-    [Header("Jumpscare Ayarları")]
+    [Header("Jumpscare Hissi (The Juice)")]
+    [Tooltip("Sarsıntının şiddeti")]
     [SerializeField]
-    private float scareDuration = 2.5f;
+    private float shakeIntensity = 0.5f;
+
+    [Tooltip("Sarsıntının hızı")]
+    [SerializeField]
+    private float shakeFrequency = 20f;
+
+    [Tooltip("Kameranın eğilme açısı (Dutch Angle). Örn: 15 derece.")]
+    [SerializeField]
+    private float tiltAngle = 10f;
+
+    [Tooltip("Jumpscare anında gidilecek FOV değeri (Daha düşük = Daha yakın/Klostrofobik)")]
+    [SerializeField]
+    private float targetFOV = 40f;
+
+    [Header("Ayarlar")]
+    [SerializeField]
+    private float defaultScareDuration = 2.5f;
 
     [SerializeField]
     private Vector3 eyeOffset = new Vector3(0, 0.1f, 0.15f);
@@ -35,10 +53,10 @@ public class JumpscareManager : MonoBehaviour
     private int _animIDPanicRight;
     private int _animIDPanicLeft;
     private int _animIDPanicBack;
-
-    // YENİ: Hız parametrelerini sıfırlamak için
     private int _animIDSpeed;
     private int _animIDMotionSpeed;
+
+    private float originalFOV;
 
     private void Awake()
     {
@@ -47,12 +65,9 @@ public class JumpscareManager : MonoBehaviour
         else
             Destroy(gameObject);
 
-        // ID'leri bir kez cache'liyoruz
         _animIDPanicRight = Animator.StringToHash("PanicTurnRight");
         _animIDPanicLeft = Animator.StringToHash("PanicTurnLeft");
         _animIDPanicBack = Animator.StringToHash("PanicTurnBack");
-
-        // StarterAssets animatör parametreleri
         _animIDSpeed = Animator.StringToHash("Speed");
         _animIDMotionSpeed = Animator.StringToHash("MotionSpeed");
     }
@@ -80,14 +95,18 @@ public class JumpscareManager : MonoBehaviour
         }
         if (mainCamera == null)
             mainCamera = Camera.main;
+
+        if (mainCamera != null)
+            originalFOV = mainCamera.fieldOfView;
     }
 
-    public void StartJumpscare(Transform enemy, bool playTurnAnim = true)
+    public void StartJumpscare(Transform enemy, bool playTurnAnim = true, float customDuration = 0f)
     {
-        StartCoroutine(BoneLockRoutine(enemy, playTurnAnim));
+        float duration = customDuration > 0 ? customDuration : defaultScareDuration;
+        StartCoroutine(JumpscareRoutine(enemy, playTurnAnim, duration));
     }
 
-    private IEnumerator BoneLockRoutine(Transform enemy, bool playTurnAnim)
+    private IEnumerator JumpscareRoutine(Transform enemy, bool playTurnAnim, float duration)
     {
         // 1. KONTROLLERİ KAPAT
         if (playerInput)
@@ -100,15 +119,12 @@ public class JumpscareManager : MonoBehaviour
         if (playerController)
             playerController.enabled = false;
 
-        // --- DÜZELTME BAŞLANGICI ---
-        // Karakterin yürüme animasyonunu ZORLA durdur.
-        // Aksi takdirde script kapansa bile Animator son hızı hatırlar ve karakter olduğu yerde yürür.
+        // Karakteri durdur
         if (playerAnimator != null)
         {
             playerAnimator.SetFloat(_animIDSpeed, 0f);
             playerAnimator.SetFloat(_animIDMotionSpeed, 0f);
         }
-        // --- DÜZELTME BİTİŞİ ---
 
         // 2. CINEMACHINE KAPAT & KAFAYA MONTE ET
         if (mainCamera != null)
@@ -120,16 +136,16 @@ public class JumpscareManager : MonoBehaviour
             if (headBone != null)
             {
                 mainCamera.transform.SetParent(headBone);
+                // Pozisyonu sıfırla ama aşağıda Shake ile değiştireceğiz
                 mainCamera.transform.localPosition = eyeOffset;
-                // Kameranın rotasyonunu sıfırla ki tam kafanın baktığı yere baksın
-                mainCamera.transform.localRotation = Quaternion.identity;
+                // Önce düşmana dümdüz baktır
+                mainCamera.transform.LookAt(enemy.position + Vector3.up * 1.5f); // Göz hizasına bakması için +1.5f ekledim
             }
         }
 
-        // 3. ANİMASYON (Sadece İstenirse Oynar - Örn: Arkadan yakalanınca)
+        // 3. ANİMASYON (Karakterin tepkisi)
         if (playTurnAnim && playerAnimator != null)
         {
-            // Yön Hesapla
             Vector3 dirToEnemy = (enemy.position - playerController.transform.position).normalized;
             float angle = Vector3.SignedAngle(
                 playerController.transform.forward,
@@ -137,28 +153,67 @@ public class JumpscareManager : MonoBehaviour
                 Vector3.up
             );
 
-            // Arkadaysa (135+)
             if (Mathf.Abs(angle) > 135f)
                 playerAnimator.SetTrigger(_animIDPanicBack);
-            // Sağdaysa
             else if (angle > 0)
                 playerAnimator.SetTrigger(_animIDPanicRight);
-            // Soldaysa
             else
                 playerAnimator.SetTrigger(_animIDPanicLeft);
         }
 
-        // 4. BEKLE
-        yield return new WaitForSeconds(scareDuration);
+        // 4. KAOS DÖNGÜSÜ (Shake, Tilt, Zoom)
+        float timer = 0f;
 
+        // Rastgele bir eğilme yönü seç (Sağa mı sola mı yatacak?)
+        float randomTilt = Random.Range(-1f, 1f) > 0 ? tiltAngle : -tiltAngle;
+
+        while (timer < duration)
+        {
+            timer += Time.deltaTime;
+
+            // A) Shake (Titreme)
+            // Perlin Noise kullanarak daha "doğal" bir titreme yapıyoruz
+            float xShake =
+                (Mathf.PerlinNoise(Time.time * shakeFrequency, 0f) - 0.5f) * shakeIntensity;
+            float yShake =
+                (Mathf.PerlinNoise(0f, Time.time * shakeFrequency) - 0.5f) * shakeIntensity;
+
+            if (headBone != null)
+            {
+                // Kamerayı kafa kemiğine göre ofsetliyoruz + titreme ekliyoruz
+                mainCamera.transform.localPosition = eyeOffset + new Vector3(xShake, yShake, 0);
+            }
+
+            // B) Look At (Düşmanın gözüne kilitli kal ama titreyerek)
+            // Düşmanın kafa hizasını tahmin ediyoruz (Enemy pos + 1.6m)
+            Vector3 targetLookPos = enemy.position + (Vector3.up * 1.5f);
+            mainCamera.transform.LookAt(targetLookPos);
+
+            // C) Tilt (Eğilme) ve Zoom (FOV) - Lerp ile yumuşak geçiş
+            // Zamanla hedef FOV'a ve hedef Tilt açısına git
+            float t = timer / 0.5f; // İlk 0.5 saniyede bu etki otursun
+            mainCamera.fieldOfView = Mathf.Lerp(originalFOV, targetFOV, t);
+
+            // LookAt rotasyonu sıfırladığı için, Tilt'i Z eksenine sonradan ekliyoruz
+            Vector3 currentEuler = mainCamera.transform.localEulerAngles;
+            // Z eksenini yumuşakça hedef açıya götür
+            float currentZ = Mathf.LerpAngle(0, randomTilt, t);
+            mainCamera.transform.localRotation = Quaternion.Euler(
+                currentEuler.x,
+                currentEuler.y,
+                currentZ
+            );
+
+            yield return null;
+        }
+
+        // 5. SONUÇ
         if (DeathUIManager.Instance != null)
         {
             DeathUIManager.Instance.ShowDeathScreen();
         }
         else
         {
-            // Yedek plan: Eğer UI Manager yoksa sahneyi resetle (Hata önleyici)
-            Debug.LogError("DeathUIManager bulunamadı! Sahne yeniden başlatılıyor.");
             SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
         }
     }

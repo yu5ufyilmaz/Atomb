@@ -14,6 +14,7 @@ public class LeesEnemyAI : MonoBehaviour
     }
 
     public LeesState currentState = LeesState.Hidden;
+    private static readonly int JumpscareTrigger = Animator.StringToHash("Jumpscare");
 
     [Header("Görüş Ayarları")]
     public LayerMask obstacleMask;
@@ -48,6 +49,10 @@ public class LeesEnemyAI : MonoBehaviour
     [Header("Spawn Sıklığı")]
     public float spawnCooldownAfterDespawn = 20f;
     private float currentCooldownTimer = 0f;
+
+    [Header("Model & Animasyon")]
+    [SerializeField]
+    private Animator leesAnimator; // <--- YENİ: Animator'ı buraya atayacağız
 
     // --- DEBUG VERİLERİ (Editör İçin) ---
     [HideInInspector]
@@ -86,6 +91,7 @@ public class LeesEnemyAI : MonoBehaviour
     public Camera playerCamera;
 
     // YENİ: Oyuncunun kontrolcüsüne referans (Etkileşim kontrolü için)
+
     private UnityEngine.CharacterController targetCharacterController;
 
     private void Awake()
@@ -298,17 +304,26 @@ public class LeesEnemyAI : MonoBehaviour
     {
         Debug.LogError($"ÖLÜM: {reason}");
 
+        if (leesAnimator != null)
+        {
+            leesAnimator.SetTrigger(JumpscareTrigger);
+        }
+
+        // Animasyonun kaç saniye olduğunu buraya yaz (Örn: 4.0f)
+        // Animasyon dosyasına bakarak bu sayıyı tam ayarla.
+        float myAnimDuration = 4.0f;
+
         if (spawnBehind)
         {
-            StartCoroutine(ExecuteBehindJumpscare());
+            StartCoroutine(ExecuteBehindJumpscare(myAnimDuration)); // Süreyi buraya da taşıman gerekebilir
         }
         else
         {
-            StartCoroutine(ExecuteSmartJumpscare());
+            StartCoroutine(ExecuteSmartJumpscare(myAnimDuration));
         }
     }
 
-    private IEnumerator ExecuteBehindJumpscare()
+    private IEnumerator ExecuteBehindJumpscare(float duration)
     {
         currentState = LeesState.Jumpscare;
 
@@ -329,13 +344,13 @@ public class LeesEnemyAI : MonoBehaviour
 
         if (JumpscareManager.Instance != null)
         {
-            JumpscareManager.Instance.StartJumpscare(transform, true);
+            // 3. Parametre olarak süreyi gönderiyoruz
+            JumpscareManager.Instance.StartJumpscare(transform, true, duration);
         }
-
         yield return null;
     }
 
-    private IEnumerator ExecuteSmartJumpscare()
+    private IEnumerator ExecuteSmartJumpscare(float duration)
     {
         currentState = LeesState.Jumpscare;
 
@@ -387,7 +402,7 @@ public class LeesEnemyAI : MonoBehaviour
 
         if (JumpscareManager.Instance != null)
         {
-            JumpscareManager.Instance.StartJumpscare(transform, spawnOnRight);
+            JumpscareManager.Instance.StartJumpscare(transform, spawnOnRight, duration);
         }
 
         yield return null;
@@ -451,6 +466,11 @@ public class LeesEnemyAI : MonoBehaviour
         lastPlayerPos = playerTransform.position;
 
         ShowModel(true);
+        if (leesAnimator != null)
+        {
+            leesAnimator.Rebind(); // Animatörü sıfırlar
+            leesAnimator.Update(0f);
+        }
     }
 
     private Transform GetSafeSpawnPoint()
