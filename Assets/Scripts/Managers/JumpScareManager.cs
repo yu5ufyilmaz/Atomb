@@ -167,7 +167,7 @@ public class JumpscareManager : MonoBehaviour
         JumpscareStyle style
     )
     {
-        // 1. KONTROLLERİ VE KAMERAYI KAPAT (Standart Prosedür)
+        // 1. KONTROLLERİ VE KAMERAYI KAPAT
         if (playerInput)
         {
             playerInput.cursorInputForLook = false;
@@ -190,39 +190,35 @@ public class JumpscareManager : MonoBehaviour
             mainCamera.transform.localPosition = eyeOffset;
         }
 
-        // 2. POZİSYON VE HEDEF BELİRLEME (TİPE GÖRE AYRILIYOR)
+        // 2. POZİSYON VE HEDEF BELİRLEME
         Vector3 targetPos = enemy.position;
-        float currentTurnSpeed = fastTurnSpeed; // Varsayılan hızlı
+        float currentTurnSpeed = fastTurnSpeed;
 
         switch (style)
         {
             case JumpscareStyle.Direct:
-                // Adam veya Guderian: Düşman olduğu yerde kalsın veya basitçe oyuncunun önüne ışınlansın
-                // Şimdilik olduğu yerde bırakıyoruz, çağıran script (AI) pozisyonu ayarlamış olmalı.
-                currentTurnSpeed = fastTurnSpeed; // Hızlı, agresif dönüş
+                currentTurnSpeed = fastTurnSpeed;
                 break;
 
             case JumpscareStyle.SmartDisplacement:
-                // Lees Özel: Duvar kontrolü yap ve yer değiştir
                 targetPos = GetSmartJumpscarePosition(playerController.transform, 1.2f);
                 targetPos.y = playerController.transform.position.y;
                 enemy.position = targetPos;
                 enemy.LookAt(playerController.transform.position);
-                currentTurnSpeed = slowTurnSpeed; // Yavaş, gerilimli dönüş
+                currentTurnSpeed = slowTurnSpeed;
                 break;
 
             case JumpscareStyle.ForcedBehind:
-                // Kaçış Senaryosu: Zorla arkaya
                 Vector3 backDir = -playerController.transform.forward;
                 targetPos = playerController.transform.position + (backDir * 1.2f);
                 targetPos.y = playerController.transform.position.y;
                 enemy.position = targetPos;
                 enemy.LookAt(playerController.transform.position);
-                currentTurnSpeed = slowTurnSpeed; // Zorla çevrilme hissi için yavaş olabilir
+                currentTurnSpeed = slowTurnSpeed;
                 break;
         }
 
-        // 3. ANİMASYON TETİKLEME (Düşmanın yeni yerine göre)
+        // 3. ANİMASYON TETİKLEME
         if (playTurnAnim && playerAnimator != null)
         {
             Vector3 dirToTarget = (enemy.position - playerController.transform.position).normalized;
@@ -240,27 +236,37 @@ public class JumpscareManager : MonoBehaviour
                 playerAnimator.SetTrigger(_animIDPanicLeft);
         }
 
-        // 4. DÖNGÜ
+        // 4. DÖNGÜ (DÜZELTİLMİŞ KISIM)
         float timer = 0f;
+
+        // Kamera dönüşü başlamadan önce beklenecek süre (saniye)
+        // Animasyonun biraz ilerlemesine izin verir.
+        float rotationDelay = 0.35f;
+
         while (timer < duration)
         {
             timer += Time.deltaTime;
             float progress = timer / duration;
 
-            // Düşmanın kafasına bak
+            // Düşmanın kafasına bakmak için hedef rotasyon
             Vector3 enemyHeadPos = enemy.position + (Vector3.up * 1.6f);
             Quaternion targetRot = Quaternion.LookRotation(
                 enemyHeadPos - mainCamera.transform.position
             );
 
-            // TİPE GÖRE HIZ İLE DÖN
-            mainCamera.transform.rotation = Quaternion.Slerp(
-                mainCamera.transform.rotation,
-                targetRot,
-                Time.deltaTime * currentTurnSpeed
-            );
+            // GECİKMELİ DÖNÜŞ KONTROLÜ
+            if (timer > rotationDelay)
+            {
+                // Belirlenen süre geçtiyse kamerayı düşmana çevir
+                mainCamera.transform.rotation = Quaternion.Slerp(
+                    mainCamera.transform.rotation,
+                    targetRot,
+                    Time.deltaTime * currentTurnSpeed
+                );
+            }
+            // else: Süre dolmadıysa kamera karakterin kafasına bağlı olarak doğal açısında kalsın.
 
-            // Titreşim ve Efektler
+            // Titreşim (Shake) her zaman aktif olabilir
             float shake =
                 (Mathf.PerlinNoise(Time.time * shakeFrequency, 0f) - 0.5f) * shakeIntensity;
             mainCamera.transform.Rotate(new Vector3(shake, shake * 0.5f, 0));

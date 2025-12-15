@@ -333,21 +333,43 @@ public class GuderianAI : MonoBehaviour
     {
         currentState = GuderianState.Exiting;
         debugStatus = "Odadan Çıkıyor...";
-        yield return StartCoroutine(MoveToTarget(activeRoom.doorInsidePoint.position));
-        yield return StartCoroutine(MoveToTarget(activeRoom.doorOutsidePoint.position));
+
+        // --- DÜZELTME BAŞLANGICI ---
+        // Eğer bir oda tanımlıysa kapıdan çık, yoksa direkt yok ol.
+        if (
+            activeRoom != null
+            && activeRoom.doorInsidePoint != null
+            && activeRoom.doorOutsidePoint != null
+        )
+        {
+            yield return StartCoroutine(MoveToTarget(activeRoom.doorInsidePoint.position));
+            yield return StartCoroutine(MoveToTarget(activeRoom.doorOutsidePoint.position));
+
+            if (activeRoom.roomDoor != null && activeRoom.roomDoor.isOpen)
+                activeRoom.roomDoor.SetOpen(false);
+        }
+        else
+        {
+            // Oda yoksa 1 saniye bekle ve kaybol (Editör testleri için)
+            yield return new WaitForSeconds(1.0f);
+        }
+        // --- DÜZELTME BİTİŞİ ---
 
         guderianModel.SetActive(false);
 
         // YENİ: Çıkarken sesi yavaşça kapat (Fade Out) - 2 saniye
         FadeAudio(null, 2.0f, false);
 
-        if (activeRoom.roomDoor != null && activeRoom.roomDoor.isOpen)
-            activeRoom.roomDoor.SetOpen(false);
-
         currentState = GuderianState.Hidden;
         debugStatus = "Gitti.";
-        GlobalEnemyManager.Instance.RegisterAttackEnd();
+
+        if (GlobalEnemyManager.Instance != null)
+            GlobalEnemyManager.Instance.RegisterAttackEnd();
+
         cooldownTimer = minTimeBetweenAttacks;
+
+        // Odayı temizle ki bir sonraki sefere temiz başlasın
+        activeRoom = null;
     }
 
     // --- YENİ SES SİSTEMİ (Hard Cut Önleyici) ---
@@ -414,28 +436,46 @@ public class GuderianAI : MonoBehaviour
         Transform player = GameObject.FindGameObjectWithTag("Player").transform;
         bool shouldPlayAnim = false;
 
-        switch (type)
+        // --- DÜZELTME BAŞLANGICI ---
+        // Eğer bir oda yoksa (Editörden basıldıysa), varsayılan olarak oyuncunun dibinde doğsun.
+        if (activeRoom == null)
         {
-            case JumpscareType.AtDoor:
-                SetPositionWithOffset(activeRoom.doorOutsidePoint.position, false);
-                LookAtTargetFlat(player);
-                shouldPlayAnim = false;
-                break;
-            case JumpscareType.BehindPlayer:
-                Vector3 behindPos = player.position - (player.forward * jumpscareDistance);
-                SetPositionWithOffset(
-                    new Vector3(behindPos.x, player.position.y, behindPos.z),
-                    true
-                );
-                LookAtTargetFlat(player);
-                shouldPlayAnim = true;
-                break;
-            case JumpscareType.InFrontOfPlayer:
-                SetPositionWithOffset(activeRoom.doorInsidePoint.position, true);
-                LookAtTargetFlat(player);
-                shouldPlayAnim = false;
-                break;
+            // Odaya bağlı olmayan acil durum pozisyonu
+            Vector3 emergencyPos = player.position + (player.forward * 1.0f);
+            SetPositionWithOffset(emergencyPos, true);
+            LookAtTargetFlat(player);
+            shouldPlayAnim = false;
+            // Tip ne olursa olsun, oda yoksa oyuncunun önüne ışınla ve çık.
         }
+        else
+        {
+            // Oda varsa eski mantık çalışsın
+            switch (type)
+            {
+                case JumpscareType.AtDoor:
+                    if (activeRoom.doorOutsidePoint != null)
+                        SetPositionWithOffset(activeRoom.doorOutsidePoint.position, false);
+                    LookAtTargetFlat(player);
+                    shouldPlayAnim = false;
+                    break;
+                case JumpscareType.BehindPlayer:
+                    Vector3 behindPos = player.position - (player.forward * jumpscareDistance);
+                    SetPositionWithOffset(
+                        new Vector3(behindPos.x, player.position.y, behindPos.z),
+                        true
+                    );
+                    LookAtTargetFlat(player);
+                    shouldPlayAnim = true;
+                    break;
+                case JumpscareType.InFrontOfPlayer:
+                    if (activeRoom.doorInsidePoint != null)
+                        SetPositionWithOffset(activeRoom.doorInsidePoint.position, true);
+                    LookAtTargetFlat(player);
+                    shouldPlayAnim = false;
+                    break;
+            }
+        }
+        // --- DÜZELTME BİTİŞİ ---
 
         guderianModel.SetActive(true);
         Debug.LogError($"GUDERIAN YAKALADI! Tip: {type}");
@@ -443,7 +483,7 @@ public class GuderianAI : MonoBehaviour
         if (JumpscareManager.Instance != null)
             JumpscareManager.Instance.StartJumpscare(transform, shouldPlayAnim);
         else
-            StartCoroutine(ExitSequence());
+            StartCoroutine(ExitSequence()); // ExitSequence'da da hata almamak için orayı da düzelteceğiz.
     }
 
     private void SetPositionWithOffset(Vector3 targetPos, bool useSpawnOffset = true)

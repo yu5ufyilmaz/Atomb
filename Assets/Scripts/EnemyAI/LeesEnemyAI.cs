@@ -414,17 +414,30 @@ public class LeesEnemyAI : MonoBehaviour
             SpawnLeesInRoom();
     }
 
+    // LeesEnemyAI.cs içindeki mevcut fonksiyonu bununla güncelle:
+
     public void SpawnLeesInRoom()
     {
         if (currentRoom == null || currentRoom.spawnPoints.Count == 0)
             return;
 
         Transform bestPoint = GetSafeSpawnPoint();
+
+        // --- DÜZELTME BURADA ---
+        // Eğer uygun nokta bulunamadıysa (bestPoint == null), ZORLAMA!
         if (bestPoint == null)
-            bestPoint = currentRoom.spawnPoints[0];
+        {
+            Debug.Log("Lees: Spawn iptal edildi. (Tüm noktalar oyuncunun görüş açısında)");
+            // Şansı sıfırlamıyoruz ki bir sonraki kontrolde (5 saniye sonra) tekrar denesin.
+            // Ama çok agresif olmasın diye belki cooldown koyabiliriz, şimdilik return yeterli.
+            return;
+        }
+        // -----------------------
 
         spawnRoom = currentRoom;
         transform.position = bestPoint.position;
+
+        // Yüzünü oyuncuya dön
         transform.LookAt(
             new Vector3(
                 playerTransform.position.x,
@@ -437,6 +450,8 @@ public class LeesEnemyAI : MonoBehaviour
             GlobalEnemyManager.Instance.RegisterAttackStart();
 
         currentState = LeesState.Active;
+
+        // Değişkenleri sıfırla
         timeSpentInCurrentRoom = 0;
         currentIgnoranceTimer = 0;
         currentReactionTimer = 0;
@@ -451,24 +466,76 @@ public class LeesEnemyAI : MonoBehaviour
             leesAnimator.Rebind();
             leesAnimator.Update(0f);
         }
+
+        Debug.Log($"Lees Spawn Oldu! Nokta: {bestPoint.name}");
     }
+
+    // LeesEnemyAI.cs içindeki mevcut fonksiyonu bununla değiştir:
 
     private Transform GetSafeSpawnPoint()
     {
         if (currentRoom == null || currentRoom.spawnPoints.Count == 0)
             return null;
 
-        foreach (Transform point in currentRoom.spawnPoints)
+        // Listeyi karıştır ki hep aynı sırayla kontrol etmesin (Rastgelelik)
+        List<Transform> shuffledPoints = new List<Transform>(currentRoom.spawnPoints);
+        for (int i = 0; i < shuffledPoints.Count; i++)
         {
-            Vector3 dirToPoint = (point.position - playerTransform.position).normalized;
-            float dot = Vector3.Dot(playerTransform.forward, dirToPoint);
+            Transform temp = shuffledPoints[i];
+            int randomIndex = Random.Range(i, shuffledPoints.Count);
+            shuffledPoints[i] = shuffledPoints[randomIndex];
+            shuffledPoints[randomIndex] = temp;
+        }
 
-            if (dot < -0.2f)
+        // Şimdi noktaları kontrol et
+        foreach (Transform point in shuffledPoints)
+        {
+            // Eğer bu nokta oyuncuya GÖRÜNMÜYORSA, burası güvenlidir.
+            if (!IsPositionVisibleToPlayer(point.position))
             {
                 return point;
             }
         }
-        return currentRoom.spawnPoints[Random.Range(0, currentRoom.spawnPoints.Count)];
+
+        // HİÇBİR YER GÜVENLİ DEĞİLSE (Oyuncu her yere hakimse)
+        // Kesinlikle NULL dönüyoruz. Asla rastgele bir yer seçmiyoruz.
+        return null;
+    }
+
+    // LeesEnemyAI.cs içine eklenecek yardımcı fonksiyon
+
+    private bool IsPositionVisibleToPlayer(Vector3 position)
+    {
+        if (playerCamera == null)
+            return false;
+
+        // 1. Nokta Kamera Açısında mı? (Frustum Check)
+        Vector3 viewportPoint = playerCamera.WorldToViewportPoint(position);
+        bool isInScreen = (
+            viewportPoint.x > 0
+            && viewportPoint.x < 1
+            && viewportPoint.y > 0
+            && viewportPoint.y < 1
+            && viewportPoint.z > 0
+        );
+
+        // Eğer ekranda değilse, direkt görünmüyordur (Güvenli)
+        if (!isInScreen)
+            return false;
+
+        // 2. Ekranda ama arada duvar var mı? (Raycast Check)
+        // Oyuncunun kafasından o noktaya ışın atıyoruz
+        Vector3 direction = position - playerCamera.transform.position;
+        float distance = direction.magnitude;
+
+        // Arada engel (Obstacle) varsa görünmüyordur (Güvenli)
+        if (Physics.Raycast(playerCamera.transform.position, direction, distance, obstacleMask))
+        {
+            return false;
+        }
+
+        // Hem ekranda hem de arada engel yok -> GÖRÜNÜYOR (Tehlikeli)
+        return true;
     }
 
     public void DespawnLees()

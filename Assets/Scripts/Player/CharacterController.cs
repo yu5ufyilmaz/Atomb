@@ -160,6 +160,10 @@ namespace StarterAssets
         private int _animIDFreeFall;
         private int _animIDMotionSpeed;
 
+        // Mevcut ID'lerin yanına ekle
+        private int _animIDVelocityX;
+        private int _animIDVelocityZ;
+
         [Header("Head Bob System")]
         [Tooltip("Adım atma hızı (Adım sıklığı). 12-14 arası idealdir.")]
         public float BobFrequency = 12f;
@@ -260,6 +264,11 @@ namespace StarterAssets
             _animIDJump = Animator.StringToHash("Jump");
             _animIDFreeFall = Animator.StringToHash("FreeFall");
             _animIDMotionSpeed = Animator.StringToHash("MotionSpeed");
+
+            // --- YENİ EKLENECEK KISIM ---
+            _animIDVelocityX = Animator.StringToHash("VelocityX");
+            _animIDVelocityZ = Animator.StringToHash("VelocityZ");
+            // ----------------------------
         }
 
         private void GroundedCheck()
@@ -410,6 +419,19 @@ namespace StarterAssets
             {
                 _animator.SetFloat(_animIDSpeed, _animationBlend);
                 _animator.SetFloat(_animIDMotionSpeed, inputMagnitude);
+
+                // --- YENİ EKLENECEK KISIM: YÖNLÜ ANİMASYON ---
+                Vector3 localVelocity = transform.InverseTransformDirection(_controller.velocity);
+
+                // ESKİ HALİ (Sert Geçiş):
+                // _animator.SetFloat(_animIDVelocityX, localVelocity.x);
+                // _animator.SetFloat(_animIDVelocityZ, localVelocity.z);
+
+                // YENİ HALİ (Yumuşak Geçiş - Damping):
+                // 0.15f değeri geçiş süresidir. Daha yumuşak istersen 0.2f veya 0.3f yapabilirsin.
+                _animator.SetFloat(_animIDVelocityX, localVelocity.x, 0.15f, Time.deltaTime);
+                _animator.SetFloat(_animIDVelocityZ, localVelocity.z, 0.15f, Time.deltaTime);
+                // ---------------------------------------------
             }
         }
 
