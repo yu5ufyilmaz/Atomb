@@ -2476,7 +2476,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   currentPressure: 0
-  pressureIncreaseRate: 1
+  pressureIncreaseRate: 0.2
   warningThreshold: 80
   pressureDecreaseRate: 15
   globalVolume: {fileID: 994232616}
@@ -17025,7 +17025,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 960627ba2c1815a4ea307872fa0317db, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  stopAllEnemies: 1
+  stopAllEnemies: 0
   isAttackInProgress: 0
   postAttackCooldown: 30
   currentGlobalCooldown: 0
@@ -17046,10 +17046,17 @@ MonoBehaviour:
   playerAnimator: {fileID: 6982812147933622147}
   mainCamera: {fileID: 0}
   headBone: {fileID: 0}
+  globalVolume: {fileID: 994232616}
   shakeIntensity: 0.05
   shakeFrequency: 10
   tiltAngle: 10
   targetFOV: 35
+  slowTurnSpeed: 3.5
+  fastTurnSpeed: 15
+  obstacleLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  obstacleCheckDistance: 1
   defaultScareDuration: 2.5
   eyeOffset: {x: 0, y: 0.1, z: 0.15}
 --- !u!1 &1373385263
@@ -32331,7 +32338,7 @@ MonoBehaviour:
   leesAnimator: {fileID: 5866666021288599346}
   obstacleMask:
     serializedVersion: 2
-    m_Bits: 119
+    m_Bits: 375
   eyesPosition: {fileID: 198386370}
   currentRoom: {fileID: 0}
   timeSpentInCurrentRoom: 0

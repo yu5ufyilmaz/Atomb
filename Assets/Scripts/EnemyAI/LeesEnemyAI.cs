@@ -358,48 +358,39 @@ public class LeesEnemyAI : MonoBehaviour
     private IEnumerator ExecuteBehindJumpscare(float duration)
     {
         currentState = LeesState.Jumpscare;
-        Vector3 behindPos =
-            playerTransform.position - (playerTransform.forward * jumpscareDistance);
-        behindPos.y = playerTransform.position.y + jumpscareYOffset;
-
-        transform.position = behindPos;
-        transform.LookAt(
-            new Vector3(
-                playerTransform.position.x,
-                transform.position.y,
-                playerTransform.position.z
-            )
-        );
-
         ShowModel(true);
 
         if (JumpscareManager.Instance != null)
-            JumpscareManager.Instance.StartJumpscare(transform, true, duration);
-
+        {
+            // Stil: FORCED BEHIND (Zorla Arka)
+            JumpscareManager.Instance.StartJumpscare(
+                transform,
+                true,
+                duration,
+                JumpscareStyle.ForcedBehind
+            );
+        }
         yield return null;
     }
 
+    // 2. Durum: Bakışma Cezası (Akıllı Halüsinasyon)
     private IEnumerator ExecuteSmartJumpscare(float duration)
     {
         currentState = LeesState.Jumpscare;
-        Vector3 targetPos =
-            playerTransform.position + (playerTransform.forward * jumpscareDistance);
-        targetPos.y = playerTransform.position.y + jumpscareYOffset;
-
-        transform.position = targetPos;
-        transform.LookAt(
-            new Vector3(
-                playerTransform.position.x,
-                transform.position.y,
-                playerTransform.position.z
-            )
-        );
-
         ShowModel(true);
 
-        if (JumpscareManager.Instance != null)
-            JumpscareManager.Instance.StartJumpscare(transform, true, duration);
+        // Not: Pozisyonu JumpscareManager ayarlayacağı için burada transform.position değiştirmene gerek yok.
 
+        if (JumpscareManager.Instance != null)
+        {
+            // Stil: SMART DISPLACEMENT (Lees'in özel mekaniği)
+            JumpscareManager.Instance.StartJumpscare(
+                transform,
+                true,
+                duration,
+                JumpscareStyle.SmartDisplacement
+            );
+        }
         yield return null;
     }
 
