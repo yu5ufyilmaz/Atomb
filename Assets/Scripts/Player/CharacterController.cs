@@ -725,5 +725,34 @@ namespace StarterAssets
                 );
             }
         }
+
+        // --- DIŞARIDAN STAMINA DOLDURMA (Kitap Okurken vb.) ---
+        public void ExternalStaminaRegen(float deltaTime)
+        {
+            // Eğer stamina zaten doluysa işlem yapma
+            if (currentStamina >= maxStamina)
+                return;
+
+            // Staminayı artır
+            currentStamina += staminaRegenRate * deltaTime;
+            if (currentStamina > maxStamina)
+                currentStamina = maxStamina;
+
+            // Yorgunluk cezasını (Exhausted) kontrol et
+            if (isExhausted && currentStamina >= maxStamina * exhaustionThreshold)
+            {
+                isExhausted = false;
+            }
+
+            // UI Güncelle (Script kapalı olduğu için Update'te güncellenmez, elle yapıyoruz)
+            if (staminaSlider != null)
+            {
+                staminaSlider.value = currentStamina;
+            }
+            if (staminaFillImage != null)
+            {
+                staminaFillImage.color = isExhausted ? Color.red : Color.white;
+            }
+        }
     }
 }

@@ -889,7 +889,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   targetLight: {fileID: 1159236025}
-  desiredStateIsOn: 0
+  desiredStateIsOn: 1
   switchSound: {fileID: 8300000, guid: b3d8f3277b2012743874445cab25994e, type: 3}
   errorSound: {fileID: 8300000, guid: 49c01fb0ec75d814cb0ba90fabd92054, type: 3}
   audioSource: {fileID: 83947996}
@@ -1375,7 +1375,7 @@ Light:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 115289556}
-  m_Enabled: 0
+  m_Enabled: 1
   serializedVersion: 11
   m_Type: 2
   m_Color: {r: 0.62352943, g: 0.54139704, b: 0, a: 1}
@@ -3269,7 +3269,7 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 4190c7a1cd6375b4c94d2f18b34c18d5, type: 3}
   passwordFoundSound: {fileID: 8300000, guid: 9130f0df2171329429a2013529d6ac06, type: 3}
   cameraTransform: {fileID: 198386370}
-  viewPositionOffset: {x: 0, y: 0.02, z: 0.75}
+  viewPositionOffset: {x: 0, y: 0, z: 0.175}
   viewRotationOffset: {x: 90, y: 180, z: 0}
   moveDuration: 0.5
   bookUI: {fileID: 0}
@@ -3534,8 +3534,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::NotebookUI
   notebookPanel: {fileID: 1735270668}
   passwordListText: {fileID: 627914910}
-  hiddenPosition: {x: 0, y: -800}
-  visiblePosition: {x: 0, y: 0}
+  hiddenPosition: {x: 50, y: -800}
+  visiblePosition: {x: 50, y: 0}
   moveSpeed: 10
   notificationPanel: {fileID: 314848057}
   notificationText: {fileID: 0}
@@ -10843,7 +10843,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1275883878094561872, guid: d8beee09b321bde4e84057eb76a6b369, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -0.98
+      value: -1.002
       objectReference: {fileID: 0}
     - target: {fileID: 1275883878094561872, guid: d8beee09b321bde4e84057eb76a6b369, type: 3}
       propertyPath: m_LocalRotation.w
@@ -10933,7 +10933,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1275883878094561872, guid: d8beee09b321bde4e84057eb76a6b369, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 6.762053
+      value: 6.777
       objectReference: {fileID: 0}
     - target: {fileID: 1275883878094561872, guid: d8beee09b321bde4e84057eb76a6b369, type: 3}
       propertyPath: m_LocalPosition.y
@@ -10941,7 +10941,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1275883878094561872, guid: d8beee09b321bde4e84057eb76a6b369, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -4.961626
+      value: -4.962
       objectReference: {fileID: 0}
     - target: {fileID: 1275883878094561872, guid: d8beee09b321bde4e84057eb76a6b369, type: 3}
       propertyPath: m_LocalRotation.w
@@ -10974,6 +10974,10 @@ PrefabInstance:
     - target: {fileID: 1723878305000749320, guid: d8beee09b321bde4e84057eb76a6b369, type: 3}
       propertyPath: m_Name
       value: DoorParent (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 2526622566136708282, guid: d8beee09b321bde4e84057eb76a6b369, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.036
       objectReference: {fileID: 0}
     - target: {fileID: 4871637498770822932, guid: d8beee09b321bde4e84057eb76a6b369, type: 3}
       propertyPath: lockSound
@@ -11073,7 +11077,7 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 4190c7a1cd6375b4c94d2f18b34c18d5, type: 3}
   passwordFoundSound: {fileID: 8300000, guid: 9130f0df2171329429a2013529d6ac06, type: 3}
   cameraTransform: {fileID: 198386370}
-  viewPositionOffset: {x: 0, y: 0.02, z: 0.75}
+  viewPositionOffset: {x: 0, y: 0, z: 0.175}
   viewRotationOffset: {x: 90, y: 180, z: 0}
   moveDuration: 0.5
   bookUI: {fileID: 0}
@@ -12123,7 +12127,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   targetLight: {fileID: 1726911752}
-  desiredStateIsOn: 0
+  desiredStateIsOn: 1
   switchSound: {fileID: 8300000, guid: b3d8f3277b2012743874445cab25994e, type: 3}
   errorSound: {fileID: 8300000, guid: 49c01fb0ec75d814cb0ba90fabd92054, type: 3}
   audioSource: {fileID: 83947996}
@@ -12420,7 +12424,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   targetLight: {fileID: 1889791876}
-  desiredStateIsOn: 0
+  desiredStateIsOn: 1
   switchSound: {fileID: 8300000, guid: b3d8f3277b2012743874445cab25994e, type: 3}
   errorSound: {fileID: 8300000, guid: 49c01fb0ec75d814cb0ba90fabd92054, type: 3}
   audioSource: {fileID: 83947996}
@@ -13879,7 +13883,7 @@ Light:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1159236022}
-  m_Enabled: 0
+  m_Enabled: 1
   serializedVersion: 11
   m_Type: 2
   m_Color: {r: 0, g: 0.1308025, b: 0.62352943, a: 1}
@@ -14756,7 +14760,7 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 4190c7a1cd6375b4c94d2f18b34c18d5, type: 3}
   passwordFoundSound: {fileID: 8300000, guid: 9130f0df2171329429a2013529d6ac06, type: 3}
   cameraTransform: {fileID: 198386370}
-  viewPositionOffset: {x: 0, y: 0.02, z: 0.75}
+  viewPositionOffset: {x: 0, y: 0, z: 0.175}
   viewRotationOffset: {x: 90, y: 180, z: 0}
   moveDuration: 0.5
   bookUI: {fileID: 0}
@@ -16258,7 +16262,7 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 4190c7a1cd6375b4c94d2f18b34c18d5, type: 3}
   passwordFoundSound: {fileID: 8300000, guid: 9130f0df2171329429a2013529d6ac06, type: 3}
   cameraTransform: {fileID: 198386370}
-  viewPositionOffset: {x: 0, y: 0.02, z: 0.75}
+  viewPositionOffset: {x: 0, y: 0, z: 0.175}
   viewRotationOffset: {x: 90, y: 180, z: 0}
   moveDuration: 0.5
   bookUI: {fileID: 0}
@@ -16666,7 +16670,7 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 4190c7a1cd6375b4c94d2f18b34c18d5, type: 3}
   passwordFoundSound: {fileID: 8300000, guid: 9130f0df2171329429a2013529d6ac06, type: 3}
   cameraTransform: {fileID: 198386370}
-  viewPositionOffset: {x: 0, y: 0.02, z: 0.75}
+  viewPositionOffset: {x: 0, y: 0, z: 0.175}
   viewRotationOffset: {x: 90, y: 180, z: 0}
   moveDuration: 0.5
   bookUI: {fileID: 0}
@@ -18672,7 +18676,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   currentState: 0
-  checkInterval: 5
+  checkInterval: 100
   baseSpawnChance: 0
   chanceIncreaseStep: 5
   minTimeBetweenAttacks: 30
@@ -20501,7 +20505,7 @@ Light:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1726911751}
-  m_Enabled: 0
+  m_Enabled: 1
   serializedVersion: 11
   m_Type: 2
   m_Color: {r: 0.6226415, g: 0, b: 0, a: 1}
@@ -21066,7 +21070,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   targetLight: {fileID: 115289559}
-  desiredStateIsOn: 0
+  desiredStateIsOn: 1
   switchSound: {fileID: 8300000, guid: b3d8f3277b2012743874445cab25994e, type: 3}
   errorSound: {fileID: 8300000, guid: 49c01fb0ec75d814cb0ba90fabd92054, type: 3}
   audioSource: {fileID: 83947996}
@@ -21537,7 +21541,7 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 4190c7a1cd6375b4c94d2f18b34c18d5, type: 3}
   passwordFoundSound: {fileID: 8300000, guid: 9130f0df2171329429a2013529d6ac06, type: 3}
   cameraTransform: {fileID: 198386370}
-  viewPositionOffset: {x: 0, y: 0.02, z: 0.75}
+  viewPositionOffset: {x: 0, y: 0, z: 0.175}
   viewRotationOffset: {x: 90, y: 180, z: 0}
   moveDuration: 0.5
   bookUI: {fileID: 0}
@@ -22413,7 +22417,7 @@ Light:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1889791875}
-  m_Enabled: 0
+  m_Enabled: 1
   serializedVersion: 11
   m_Type: 2
   m_Color: {r: 0, g: 0.62352943, b: 0.1861322, a: 1}
@@ -24107,7 +24111,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   screenViewTarget: {fileID: 2034522339}
   finalVideoPlayer: {fileID: 355226258}
-  creditsSceneName: CreditsMenu
+  creditsSceneName: MainMenu
   moveDuration: 1
 --- !u!1 &2125040023
 GameObject:
@@ -30104,7 +30108,7 @@ Transform:
   m_GameObject: {fileID: 2550463728302944697}
   serializedVersion: 2
   m_LocalRotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
-  m_LocalPosition: {x: -0, y: -0.01, z: 0}
+  m_LocalPosition: {x: -0, y: 0.05, z: 0}
   m_LocalScale: {x: 100, y: 100, z: 100}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -36068,7 +36072,7 @@ MonoBehaviour:
   currentRoom: {fileID: 0}
   timeSpentInCurrentRoom: 0
   baseSpawnChance: 5
-  chanceIncreasePerSecond: 5
+  chanceIncreasePerSecond: 1
   spawnCheckInterval: 20
   maxIgnoranceTime: 60
   maxReactionTime: 2
@@ -36080,7 +36084,7 @@ MonoBehaviour:
   jumpscareSound: {fileID: 8300000, guid: 1e329910c4b3d3c4092a119bd02a1489, type: 3}
   jumpscareDistance: 1.2
   jumpscareYOffset: 0
-  spawnCooldownAfterDespawn: 0
+  spawnCooldownAfterDespawn: 30
   debugCooldownTimer: 0
   debugReactionTimer: 0
   debugSurvivalTimer: 0
@@ -38505,41 +38509,9 @@ PrefabInstance:
       value: DoorParent (1)
       objectReference: {fileID: 0}
     - target: {fileID: 4871637498770822932, guid: d8beee09b321bde4e84057eb76a6b369, type: 3}
-      propertyPath: lockSound
-      value: 
-      objectReference: {fileID: 8300000, guid: 9f655b83441045740a1844f69eb8a399, type: 3}
-    - target: {fileID: 4871637498770822932, guid: d8beee09b321bde4e84057eb76a6b369, type: 3}
-      propertyPath: openSound
-      value: 
-      objectReference: {fileID: 8300000, guid: 4f5175587bb18a449940b912db21b8f5, type: 3}
-    - target: {fileID: 4871637498770822932, guid: d8beee09b321bde4e84057eb76a6b369, type: 3}
-      propertyPath: closeSound
-      value: 
-      objectReference: {fileID: 8300000, guid: 18869af7cc809b14f96f3d08f3935782, type: 3}
-    - target: {fileID: 4871637498770822932, guid: d8beee09b321bde4e84057eb76a6b369, type: 3}
       propertyPath: audioSource
       value: 
       objectReference: {fileID: 466315132}
-    - target: {fileID: 4871637498770822932, guid: d8beee09b321bde4e84057eb76a6b369, type: 3}
-      propertyPath: lockedSound
-      value: 
-      objectReference: {fileID: 8300000, guid: 9f655b83441045740a1844f69eb8a399, type: 3}
-    - target: {fileID: 4871637498770822932, guid: d8beee09b321bde4e84057eb76a6b369, type: 3}
-      propertyPath: unlockSound
-      value: 
-      objectReference: {fileID: 8300000, guid: 290619d38bd804f4c88e3e476f15dff5, type: 3}
-    - target: {fileID: 4871637498770822932, guid: d8beee09b321bde4e84057eb76a6b369, type: 3}
-      propertyPath: doorOpenSound
-      value: 
-      objectReference: {fileID: 8300000, guid: 4f5175587bb18a449940b912db21b8f5, type: 3}
-    - target: {fileID: 4871637498770822932, guid: d8beee09b321bde4e84057eb76a6b369, type: 3}
-      propertyPath: doorCloseSound
-      value: 
-      objectReference: {fileID: 8300000, guid: 18869af7cc809b14f96f3d08f3935782, type: 3}
-    - target: {fileID: 4871637498770822932, guid: d8beee09b321bde4e84057eb76a6b369, type: 3}
-      propertyPath: lockedTryOpenSound
-      value: 
-      objectReference: {fileID: 8300000, guid: cd90140df257b8c4bb0db9f436dbcfb5, type: 3}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -38658,7 +38630,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!1 &7469504202727168141
 GameObject:
   m_ObjectHideFlags: 0

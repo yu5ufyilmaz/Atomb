@@ -259,6 +259,15 @@ public class InteractableBook : MonoBehaviour, IInteractable, IForceExitable
 
             if (isPasswordBook && !hasPasswordBeenFound && Input.GetMouseButtonDown(0))
                 CheckForPasswordClick();
+
+            // --- YENİ EKLENECEK KISIM: STAMINA YENİLEME ---
+            // Kitap açıkken karakter scripti (playerGameScript) kapalıdır.
+            // Bu yüzden staminayı buradan elle dolduruyoruz.
+            if (playerGameScript != null)
+            {
+                playerGameScript.ExternalStaminaRegen(Time.deltaTime);
+            }
+            // ---------------------------------------------
         }
 
         if (isOpen && Input.GetKeyDown(KeyCode.F))
