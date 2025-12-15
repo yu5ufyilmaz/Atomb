@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using StarterAssets; // Input erişimi için gerekli
 using UnityEngine;
 
 public class LeesEnemyAI : MonoBehaviour
@@ -14,6 +15,9 @@ public class LeesEnemyAI : MonoBehaviour
     }
 
     public LeesState currentState = LeesState.Hidden;
+
+    [Header("Model & Animasyon")]
+    public Animator leesAnimator;
     private static readonly int JumpscareTrigger = Animator.StringToHash("Jumpscare");
 
     [Header("Görüş Ayarları")]
@@ -25,7 +29,6 @@ public class LeesEnemyAI : MonoBehaviour
     private RoomManager currentRoom;
     private RoomManager spawnRoom;
 
-    [Tooltip("Lees saldırana kadar biriken toplam tehlike süresi")]
     [SerializeField]
     private float timeSpentInCurrentRoom;
 
@@ -39,22 +42,27 @@ public class LeesEnemyAI : MonoBehaviour
     public float survivalWaitTime = 15f;
     public float movementTolerance = 0.1f;
 
-    [Header("Jumpscare Ayarları")]
-    [Tooltip("Lees yanına ışınlandığında ne kadar uzakta dursun?")]
-    public float jumpscareDistance = 1.2f;
+    [Header("Ses Efektleri")]
+    public AudioSource audioSource;
 
-    [Tooltip("Yükseklik ayarı (Kapsülse 1.0, Modelse 0)")]
-    public float jumpscareYOffset = 0f;
+    [Tooltip("Sesin açılma/kapanma süresi (Saniye)")]
+    public float audioFadeDuration = 2.0f;
+
+    [Tooltip("Oyuncu Leesi gördüğünde çalacak gerilim sesi (Loop olmalı)")]
+    public AudioClip stareSound;
+
+    [Tooltip("Saldırı anında çalacak ses")]
+    public AudioClip jumpscareSound;
+
+    [Header("Jumpscare Ayarları")]
+    public float jumpscareDistance = 1.2f;
+    public float jumpscareYOffset = -0.5f;
 
     [Header("Spawn Sıklığı")]
     public float spawnCooldownAfterDespawn = 20f;
     private float currentCooldownTimer = 0f;
 
-    [Header("Model & Animasyon")]
-    [SerializeField]
-    private Animator leesAnimator; // <--- YENİ: Animator'ı buraya atayacağız
-
-    // --- DEBUG VERİLERİ (Editör İçin) ---
+    // --- DEBUG VERİLERİ ---
     [HideInInspector]
     public float debugCooldownTimer;
 
@@ -68,31 +76,30 @@ public class LeesEnemyAI : MonoBehaviour
     public float debugIgnoranceTimer;
 
     [HideInInspector]
-    public float debugPlayerSpeed;
-
-    [HideInInspector]
     public bool debugIsVisible;
 
     [HideInInspector]
     public bool debugHasBeenSpotted;
 
-    // Sayaçlar ve Durumlar
+    // Sayaçlar
     private float currentIgnoranceTimer;
     private float currentReactionTimer;
     private float currentSurvivalTimer;
 
     private bool hasBeenSpotted = false;
     private bool hasTurnedAway = false;
-
     private Vector3 lastPlayerPos;
+
+    // Ses Kontrolü İçin Coroutine
+    private Coroutine audioFadeRoutine;
 
     [Header("Referanslar")]
     public Transform playerTransform;
     public Camera playerCamera;
-
-    // YENİ: Oyuncunun kontrolcüsüne referans (Etkileşim kontrolü için)
-
     private UnityEngine.CharacterController targetCharacterController;
+
+    // YENİ: Input kontrolü için (Sarhoşlukta ölmemek adına)
+    private StarterAssetsInputs playerInputs;
 
     private void Awake()
     {
@@ -106,11 +113,21 @@ public class LeesEnemyAI : MonoBehaviour
             playerTransform = GameObject.FindGameObjectWithTag("Player").transform;
 
         if (playerTransform != null)
+        {
             targetCharacterController =
                 playerTransform.GetComponent<UnityEngine.CharacterController>();
+            // Input referansını al
+            playerInputs = playerTransform.GetComponent<StarterAssetsInputs>();
+        }
 
         if (playerCamera == null)
             playerCamera = Camera.main;
+
+        if (audioSource != null)
+        {
+            audioSource.loop = true;
+            audioSource.volume = 0f; // Başlangıçta sessiz
+        }
 
         DespawnLees();
         InvokeRepeating(nameof(CheckSpawnLogic), 5f, spawnCheckInterval);
@@ -118,9 +135,9 @@ public class LeesEnemyAI : MonoBehaviour
 
     private void Update()
     {
-        if (GlobalEnemyManager.Instance.stopAllEnemies)
+        if (GlobalEnemyManager.Instance != null && GlobalEnemyManager.Instance.stopAllEnemies)
             return;
-        // 1. Cooldown Sayacı
+
         if (currentCooldownTimer > 0)
         {
             currentCooldownTimer -= Time.deltaTime;
@@ -128,108 +145,98 @@ public class LeesEnemyAI : MonoBehaviour
             return;
         }
 
-        // 2. GİZLİ DURUM: Şans Biriktirme
         if (currentState == LeesState.Hidden && currentRoom != null && currentRoom.isDangerous)
         {
             timeSpentInCurrentRoom += Time.deltaTime;
         }
 
-        // 3. AKTİF DURUM: Senaryolar
         if (currentState == LeesState.Active)
         {
             HandleActiveLogic();
         }
 
-        // Debug Verilerini Güncelle
+        // Debug Güncellemeleri
         debugReactionTimer = currentReactionTimer;
         debugSurvivalTimer = currentSurvivalTimer;
         debugIgnoranceTimer = currentIgnoranceTimer;
         debugIsVisible = CheckIfVisible();
         debugHasBeenSpotted = hasBeenSpotted;
-        debugPlayerSpeed =
-            Vector3.Distance(playerTransform.position, lastPlayerPos) / Time.deltaTime;
     }
 
-    // --- SENARYO MANTIĞI ---
     private void HandleActiveLogic()
     {
+        // Oyuncunun hareket hızını hesapla
         float playerSpeed =
             Vector3.Distance(playerTransform.position, lastPlayerPos) / Time.deltaTime;
         lastPlayerPos = playerTransform.position;
 
-        // SCENARIO B: FLIGHT (Odadan Kaçış)
+        // Odadan kaçarsa (Scenario B)
         if (currentRoom != spawnRoom)
         {
-            TriggerDeath("Scenario B: Odadan dışarı kaçıldı! (Flight)", true);
+            TriggerDeath("Scenario B: Odadan dışarı kaçıldı!", true);
             return;
         }
 
-        // --- KONTROL DURUMUNA GÖRE GÖRÜŞ ---
-        bool isPlayerControllable = true;
-        if (targetCharacterController != null)
-            isPlayerControllable = targetCharacterController.enabled;
+        bool isPlayerControllable = (
+            targetCharacterController != null && targetCharacterController.enabled
+        );
+        bool logicVisible = CheckIfVisible();
 
-        // Gerçekte görüyor muyuz?
-        bool actuallyVisible = CheckIfVisible();
-
-        // Mantıkta kullanacağımız görüş:
-        bool logicVisible = actuallyVisible;
-
-        // KURAL: Eğer oyuncunun kontrolü yoksa (Animasyondaysa) VE henüz Lees ile göz göze gelmediyse:
-        // Kameranın Lees'in üzerinden geçmesini "görmek" sayma. (Kör taklidi yap)
-        // Böylece animasyon sırasında yanlışlıkla ölmezsin.
         if (!isPlayerControllable && !hasBeenSpotted)
-        {
             logicVisible = false;
-        }
 
-        // HENÜZ FARK EDİLMEDİ (Scenario A)
+        // --- HENÜZ FARK EDİLMEDİ (A) ---
         if (!hasBeenSpotted)
         {
             if (logicVisible)
             {
+                // İlk görüş anı
                 hasBeenSpotted = true;
                 hasTurnedAway = false;
                 currentReactionTimer = 0f;
-                Debug.Log("Lees: FARK EDİLDİ! (Oyuncunun kontrolü açık)");
+
+                // Sesi Fade-In ile başlat
+                if (audioSource && stareSound)
+                    StartFadeAudio(stareSound, true);
+
+                Debug.Log("Lees: FARK EDİLDİ!");
             }
             else
             {
-                // Animasyonda olsan bile burası çalışır. Süre işlemeye devam eder.
                 currentIgnoranceTimer += Time.deltaTime;
                 if (currentIgnoranceTimer >= maxIgnoranceTime)
-                    TriggerDeath("Scenario A: Süre doldu (Ignorance) - Etkileşimde olsan bile!");
+                    TriggerDeath("Scenario A: Süre doldu (Ignorance)");
             }
         }
-        // FARK EDİLDİ (Scenario C & D)
+        // --- FARK EDİLDİKTEN SONRA (C ve D) ---
         else
         {
-            if (logicVisible)
+            if (logicVisible) // Hala bakıyor
             {
-                // --- KURAL: GERİ DÖNÜP BAKARSAN ÖLÜRSÜN ---
                 if (hasTurnedAway)
                 {
                     TriggerDeath("HATA: Arkasını döndükten sonra tekrar baktı!");
                     return;
                 }
-
-                // HALA BAKIYOR (Scenario C - İlk Bakışma)
                 currentReactionTimer += Time.deltaTime;
                 currentSurvivalTimer = 0f;
 
                 if (currentReactionTimer >= maxReactionTime)
-                {
-                    TriggerDeath("Scenario C: Çok uzun süre baktın! (Staring)");
-                }
+                    TriggerDeath("Scenario C: Çok uzun süre baktın!");
             }
-            else
+            else // Arkasını döndü (Survival)
             {
-                // ARKASINI DÖNDÜ (Scenario D)
                 hasTurnedAway = true;
 
-                if (playerSpeed > movementTolerance)
+                // --- HAREKET KONTROLÜ (DÜZELTİLDİ) ---
+                // Oyuncu tuşlara basıyor mu? (Input var mı?)
+                bool isInputting = (playerInputs != null && playerInputs.move != Vector2.zero);
+
+                // Eğer tuşa basıyorsa ve hareket ediyorsa -> ÖLÜM
+                // Tuşa basmıyorsa (sarhoşluktan kaysa bile) -> GÜVENLİ
+                if (isInputting && playerSpeed > movementTolerance)
                 {
-                    TriggerDeath("Scenario D Hatası: Arkasını döndün ama hareket ettin!");
+                    TriggerDeath("Scenario D: Arkasını döndün ama hareket ettin (Tuşlara bastın)!");
                 }
                 else
                 {
@@ -238,7 +245,7 @@ public class LeesEnemyAI : MonoBehaviour
 
                     if (currentSurvivalTimer >= survivalWaitTime)
                     {
-                        Debug.Log("Lees: Başarılı kurtuluş. Gidiyorum.");
+                        Debug.Log("Lees: Başarılı kurtuluş.");
                         DespawnLees();
                     }
                 }
@@ -246,43 +253,28 @@ public class LeesEnemyAI : MonoBehaviour
         }
     }
 
-    // --- TETİKLEYİCİ VE ÖLÜM YÖNETİMİ ---
     public void TriggerDeath(string reason, bool spawnBehind = false)
     {
         if (currentState == LeesState.Jumpscare)
             return;
 
-        // YENİ MANTIK: Eğer oyuncu bir cihazdaysa (kontrolü yoksa), önce çıkart sonra öldür.
+        // Oyuncu etkileşimdeyse önce çıkarsın, sonra öldürsün
         if (targetCharacterController != null && !targetCharacterController.enabled)
         {
             StartCoroutine(ForceExitAndKillRoutine(reason, spawnBehind));
             return;
         }
-
-        // Oyuncu serbestse, direkt öldür
         ExecuteDeathNow(reason, spawnBehind);
     }
 
-    // Bu Coroutine, oyuncunun animasyonunun bitmesini bekler
     private IEnumerator ForceExitAndKillRoutine(string reason, bool spawnBehind)
     {
-        Debug.LogWarning(
-            $"Lees: Oyuncu cihaz başında yakalandı ({reason}). Çıkış yapması bekleniyor..."
-        );
-
-        // 1. GameManager üzerinden aktif cihazı bul ve zorla çıkart
-        // Bu işlem cihazın "ExitSequence"ını tetikler (Model görünür olur, animasyon oynar)
         if (GameManager.Instance != null && GameManager.Instance.activeInteraction != null)
-        {
             GameManager.Instance.activeInteraction.ForceExit();
-        }
 
-        // 2. Emniyet süresi (Maksimum bekleme süresi - takılı kalırsa diye)
         float maxWait = 6.0f;
         float timer = 0f;
 
-        // 3. Oyuncunun CharacterController'ı açılana kadar bekle
-        // Cihaz scriptleri, çıkış animasyonu bitince CharacterController.enabled = true yapar.
         while (
             targetCharacterController != null
             && !targetCharacterController.enabled
@@ -292,11 +284,7 @@ public class LeesEnemyAI : MonoBehaviour
             timer += Time.deltaTime;
             yield return null;
         }
-
-        // 4. Küçük bir gecikme (Kamera yerine tam otursun, model render edilsin)
         yield return new WaitForSeconds(0.2f);
-
-        // 5. Ve şimdi Jumpscare'i patlat
         ExecuteDeathNow(reason, spawnBehind);
     }
 
@@ -304,29 +292,72 @@ public class LeesEnemyAI : MonoBehaviour
     {
         Debug.LogError($"ÖLÜM: {reason}");
 
-        if (leesAnimator != null)
+        // Jumpscare anında sesi hemen kes ve patlat
+        if (audioFadeRoutine != null)
+            StopCoroutine(audioFadeRoutine);
+
+        if (audioSource)
         {
-            leesAnimator.SetTrigger(JumpscareTrigger);
+            audioSource.Stop();
+            audioSource.volume = 1.0f; // Sesi fulle
+            if (jumpscareSound)
+                audioSource.PlayOneShot(jumpscareSound);
         }
 
-        // Animasyonun kaç saniye olduğunu buraya yaz (Örn: 4.0f)
-        // Animasyon dosyasına bakarak bu sayıyı tam ayarla.
-        float myAnimDuration = 4.0f;
+        if (leesAnimator != null)
+            leesAnimator.SetTrigger(JumpscareTrigger);
+
+        float animDuration = 3.5f;
 
         if (spawnBehind)
-        {
-            StartCoroutine(ExecuteBehindJumpscare(myAnimDuration)); // Süreyi buraya da taşıman gerekebilir
-        }
+            StartCoroutine(ExecuteBehindJumpscare(animDuration));
         else
+            StartCoroutine(ExecuteSmartJumpscare(animDuration));
+    }
+
+    // --- SES YUMUŞATMA (FADE) ---
+    private void StartFadeAudio(AudioClip clip, bool fadeIn)
+    {
+        if (audioSource == null)
+            return;
+
+        if (audioFadeRoutine != null)
+            StopCoroutine(audioFadeRoutine);
+        audioFadeRoutine = StartCoroutine(FadeAudioRoutine(clip, fadeIn));
+    }
+
+    private IEnumerator FadeAudioRoutine(AudioClip clip, bool fadeIn)
+    {
+        float targetVolume = fadeIn ? 1.0f : 0.0f;
+        float startVolume = audioSource.volume;
+        float timer = 0f;
+
+        if (fadeIn)
         {
-            StartCoroutine(ExecuteSmartJumpscare(myAnimDuration));
+            audioSource.clip = clip;
+            if (!audioSource.isPlaying)
+                audioSource.Play();
+        }
+
+        while (timer < audioFadeDuration)
+        {
+            timer += Time.deltaTime;
+            audioSource.volume = Mathf.Lerp(startVolume, targetVolume, timer / audioFadeDuration);
+            yield return null;
+        }
+
+        audioSource.volume = targetVolume;
+
+        if (!fadeIn)
+        {
+            audioSource.Stop();
         }
     }
 
+    // --- JUMPSCARE COROUTINES ---
     private IEnumerator ExecuteBehindJumpscare(float duration)
     {
         currentState = LeesState.Jumpscare;
-
         Vector3 behindPos =
             playerTransform.position - (playerTransform.forward * jumpscareDistance);
         behindPos.y = playerTransform.position.y + jumpscareYOffset;
@@ -343,50 +374,16 @@ public class LeesEnemyAI : MonoBehaviour
         ShowModel(true);
 
         if (JumpscareManager.Instance != null)
-        {
-            // 3. Parametre olarak süreyi gönderiyoruz
             JumpscareManager.Instance.StartJumpscare(transform, true, duration);
-        }
+
         yield return null;
     }
 
     private IEnumerator ExecuteSmartJumpscare(float duration)
     {
         currentState = LeesState.Jumpscare;
-
-        bool rightIsClear = !Physics.Raycast(
-            playerTransform.position + Vector3.up,
-            playerTransform.right,
-            1.5f,
-            obstacleMask
-        );
-        bool leftIsClear = !Physics.Raycast(
-            playerTransform.position + Vector3.up,
-            -playerTransform.right,
-            1.5f,
-            obstacleMask
-        );
-
-        Vector3 targetPos;
-        bool spawnOnRight;
-
-        if (rightIsClear)
-        {
-            spawnOnRight = true;
-            targetPos = playerTransform.position + (playerTransform.right * jumpscareDistance);
-        }
-        else if (leftIsClear)
-        {
-            spawnOnRight = false;
-            targetPos = playerTransform.position - (playerTransform.right * jumpscareDistance);
-        }
-        else
-        {
-            spawnOnRight = true;
-            targetPos =
-                playerTransform.position + (playerTransform.right * (jumpscareDistance * 0.5f));
-        }
-
+        Vector3 targetPos =
+            playerTransform.position + (playerTransform.forward * jumpscareDistance);
         targetPos.y = playerTransform.position.y + jumpscareYOffset;
 
         transform.position = targetPos;
@@ -401,13 +398,12 @@ public class LeesEnemyAI : MonoBehaviour
         ShowModel(true);
 
         if (JumpscareManager.Instance != null)
-        {
-            JumpscareManager.Instance.StartJumpscare(transform, spawnOnRight, duration);
-        }
+            JumpscareManager.Instance.StartJumpscare(transform, true, duration);
 
         yield return null;
     }
 
+    // --- SPAWN LOGIC ---
     private void CheckSpawnLogic()
     {
         if (
@@ -418,16 +414,13 @@ public class LeesEnemyAI : MonoBehaviour
             || !currentRoom.isDangerous
         )
             return;
-        if (!GlobalEnemyManager.Instance.CanAttack())
+
+        if (GlobalEnemyManager.Instance != null && !GlobalEnemyManager.Instance.CanAttack())
             return;
 
         float chance = baseSpawnChance + (timeSpentInCurrentRoom * chanceIncreasePerSecond);
-        chance = Mathf.Clamp(chance, 0f, 90f);
-
-        if (Random.Range(0f, 100f) < chance)
-        {
+        if (Random.Range(0f, 100f) < Mathf.Clamp(chance, 0f, 90f))
             SpawnLeesInRoom();
-        }
     }
 
     public void SpawnLeesInRoom()
@@ -436,28 +429,24 @@ public class LeesEnemyAI : MonoBehaviour
             return;
 
         Transform bestPoint = GetSafeSpawnPoint();
-
         if (bestPoint == null)
-        {
-            Debug.LogWarning("Lees: Uygun spawn noktası bulunamadı. Pas geçiliyor.");
-            return;
-        }
+            bestPoint = currentRoom.spawnPoints[0];
 
         spawnRoom = currentRoom;
-
         transform.position = bestPoint.position;
-        Vector3 targetPostition = new Vector3(
-            playerTransform.position.x,
-            transform.position.y,
-            playerTransform.position.z
+        transform.LookAt(
+            new Vector3(
+                playerTransform.position.x,
+                transform.position.y,
+                playerTransform.position.z
+            )
         );
-        transform.LookAt(targetPostition);
 
-        GlobalEnemyManager.Instance.RegisterAttackStart();
+        if (GlobalEnemyManager.Instance != null)
+            GlobalEnemyManager.Instance.RegisterAttackStart();
+
         currentState = LeesState.Active;
-
         timeSpentInCurrentRoom = 0;
-
         currentIgnoranceTimer = 0;
         currentReactionTimer = 0;
         currentSurvivalTimer = 0;
@@ -468,7 +457,7 @@ public class LeesEnemyAI : MonoBehaviour
         ShowModel(true);
         if (leesAnimator != null)
         {
-            leesAnimator.Rebind(); // Animatörü sıfırlar
+            leesAnimator.Rebind();
             leesAnimator.Update(0f);
         }
     }
@@ -478,75 +467,38 @@ public class LeesEnemyAI : MonoBehaviour
         if (currentRoom == null || currentRoom.spawnPoints.Count == 0)
             return null;
 
-        List<Transform> validPoints = new List<Transform>();
-
         foreach (Transform point in currentRoom.spawnPoints)
         {
-            if (point == null)
-                continue;
+            Vector3 dirToPoint = (point.position - playerTransform.position).normalized;
+            float dot = Vector3.Dot(playerTransform.forward, dirToPoint);
 
-            Vector3 directionToPoint = (point.position - playerTransform.position).normalized;
-            float dotProduct = Vector3.Dot(playerTransform.forward, directionToPoint);
-
-            if (dotProduct < -0.2f)
+            if (dot < -0.2f)
             {
-                if (!IsPointOnScreen(point.position))
-                {
-                    validPoints.Add(point);
-                }
+                return point;
             }
         }
-
-        if (validPoints.Count > 0)
-        {
-            return validPoints[Random.Range(0, validPoints.Count)];
-        }
-
-        validPoints.Clear();
-        foreach (Transform point in currentRoom.spawnPoints)
-        {
-            if (point != null && !IsPointOnScreen(point.position))
-                validPoints.Add(point);
-        }
-
-        if (validPoints.Count > 0)
-            return validPoints[Random.Range(0, validPoints.Count)];
-
         return currentRoom.spawnPoints[Random.Range(0, currentRoom.spawnPoints.Count)];
     }
 
-    private bool CheckIfVisible()
+    public void DespawnLees()
     {
-        Vector3 viewPos = playerCamera.WorldToViewportPoint(transform.position);
-        bool onScreen = (
-            viewPos.x >= 0 && viewPos.x <= 1 && viewPos.y >= 0 && viewPos.y <= 1 && viewPos.z > 0
-        );
+        if (GlobalEnemyManager.Instance != null && currentState == LeesState.Active)
+            GlobalEnemyManager.Instance.RegisterAttackEnd();
 
-        if (!onScreen)
-            return false;
+        // Sesi yavaşça kapat
+        StartFadeAudio(null, false);
 
-        Vector3 origin =
-            eyesPosition != null ? eyesPosition.position : transform.position + Vector3.up * 1.6f;
-        Vector3 direction = playerCamera.transform.position - origin;
-        float distance = direction.magnitude;
-
-        RaycastHit hit;
-        if (Physics.Raycast(origin, direction, out hit, distance + 0.5f, obstacleMask))
-        {
-            if (hit.transform == playerTransform || hit.transform.IsChildOf(playerTransform))
-            {
-                return true;
-            }
-            return false;
-        }
-
-        return true;
+        currentState = LeesState.Hidden;
+        ShowModel(false);
+        currentCooldownTimer = spawnCooldownAfterDespawn;
     }
 
-    private bool IsPointOnScreen(Vector3 targetPos)
+    private void ShowModel(bool show)
     {
-        Vector3 viewPos = playerCamera.WorldToViewportPoint(targetPos);
-        return (viewPos.x > 0 && viewPos.x < 1 && viewPos.y > 0 && viewPos.y < 1 && viewPos.z > 0);
+        foreach (var r in GetComponentsInChildren<Renderer>())
+            r.enabled = show;
+        foreach (var c in GetComponentsInChildren<Collider>())
+            c.enabled = show;
     }
 
     public void EnterRoom(RoomManager room)
@@ -560,30 +512,54 @@ public class LeesEnemyAI : MonoBehaviour
             currentRoom = null;
     }
 
-    public void DespawnLees()
-    {
-        if (GlobalEnemyManager.Instance != null && currentState == LeesState.Active)
-            GlobalEnemyManager.Instance.RegisterAttackEnd();
-
-        currentState = LeesState.Hidden;
-        ShowModel(false);
-
-        currentCooldownTimer = spawnCooldownAfterDespawn;
-    }
-
-    private void ShowModel(bool show)
-    {
-        foreach (var r in GetComponentsInChildren<Renderer>())
-            r.enabled = show;
-        foreach (var c in GetComponentsInChildren<Collider>())
-            c.enabled = show;
-    }
-
     public float GetCurrentSpawnChance()
     {
-        if (currentRoom == null || !currentRoom.isDangerous)
-            return 0f;
-        float chance = baseSpawnChance + (timeSpentInCurrentRoom * chanceIncreasePerSecond);
-        return Mathf.Clamp(chance, 0f, 90f);
+        return (currentRoom != null && currentRoom.isDangerous)
+            ? Mathf.Clamp(
+                baseSpawnChance + (timeSpentInCurrentRoom * chanceIncreasePerSecond),
+                0f,
+                90f
+            )
+            : 0f;
+    }
+
+    private bool CheckIfVisible()
+    {
+        if (playerCamera == null)
+            return false;
+
+        Plane[] planes = GeometryUtility.CalculateFrustumPlanes(playerCamera);
+        Collider col = GetComponent<Collider>();
+
+        if (col != null)
+        {
+            if (!GeometryUtility.TestPlanesAABB(planes, col.bounds))
+                return false;
+        }
+        else
+        {
+            Vector3 viewPos = playerCamera.WorldToViewportPoint(transform.position);
+            if (viewPos.x < 0 || viewPos.x > 1 || viewPos.y < 0 || viewPos.y > 1 || viewPos.z <= 0)
+                return false;
+        }
+
+        Vector3 targetPoint =
+            (eyesPosition != null) ? eyesPosition.position : transform.position + Vector3.up * 1.5f;
+        Vector3 directionToTarget = targetPoint - playerCamera.transform.position;
+        float distance = directionToTarget.magnitude;
+
+        if (
+            Physics.Raycast(
+                playerCamera.transform.position,
+                directionToTarget,
+                distance,
+                obstacleMask
+            )
+        )
+        {
+            return false;
+        }
+
+        return true;
     }
 }

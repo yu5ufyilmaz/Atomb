@@ -4,50 +4,46 @@ public class InteractableDoorLock : MonoBehaviour, IInteractable
 {
     [Header("Lock Settings")]
     [SerializeField]
-    private InteractableDoor targetDoor; // Kontrol edilecek kapı
+    private InteractableDoor targetDoor;
 
     [SerializeField]
-    private bool startsLocked = false; // Başlangıçta kilitli mi?
+    private bool startsLocked = false;
 
-    [Header("Audio")]
-    [SerializeField]
-    private AudioClip lockSound;
-
-    [SerializeField]
-    private AudioClip unlockSound;
-
-    [SerializeField]
-    private AudioSource audioSource;
+    // NOT: Sesleri artık InteractableDoor.cs içindeki değişkenlerden alıyor.
+    // Buraya ses eklemene gerek yok.
 
     [Header("Visual Feedback (Opsiyonel)")]
     [SerializeField]
-    private Material lockedMaterial; // Kilitli materiali
+    private Material lockedMaterial;
 
     [SerializeField]
-    private Material unlockedMaterial; // Açık materiali
+    private Material unlockedMaterial;
 
     [SerializeField]
-    private MeshRenderer lockRenderer; // Kilit mesh renderer'ı
-
-    [SerializeField]
-    private GameObject lockIndicator; // Kilit göstergesi (örn: kırmızı/yeşil ışık)
+    private MeshRenderer lockRenderer;
 
     private void Start()
     {
         if (targetDoor == null)
-        {
-            // Eğer atanmamışsa, parent'ta veya aynı objede kapı ara
             targetDoor = GetComponentInParent<InteractableDoor>();
 
-            if (targetDoor == null)
-            {
-                Debug.LogError("Door Lock'a kapı atanmamış!", this);
-                return;
-            }
+        if (targetDoor != null)
+        {
+            // Başlangıçta kilit durumunu ayarla (Ses çalmadan)
+            // SetLocked fonksiyonu ses çalar, o yüzden manuel yapıyoruz:
+            // targetDoor.SetLocked(startsLocked); <- YERİNE
+            // Manuel ayar yapıp görseli güncelliyoruz.
+
+            // Not: InteractableDoor içindeki isLocked değişkenine doğrudan erişemiyorsak
+            // mecburen SetLocked kullanacağız ama başlangıçta (Start) ses çalmasını istemeyiz.
+            // Şimdilik InteractableDoor'daki isLocked'i public yapmadıysak SetLocked kullanıyoruz.
+            // Ancak Start'ta ses çıkarsa rahatsız edici olabilir.
+
+            // ÇÖZÜM: SetLocked'ı çağırıp sesi InteractableDoor'da Start'tan sonra çalacak şekilde ayarlayabiliriz
+            // ya da basitçe oyun başlar başlamaz kilit sesi duymak sorun değilse böyle kalsın.
+            targetDoor.SetLocked(startsLocked);
         }
 
-        // Başlangıç durumunu ayarla
-        targetDoor.SetLocked(startsLocked);
         UpdateVisuals();
     }
 
@@ -60,7 +56,6 @@ public class InteractableDoorLock : MonoBehaviour, IInteractable
     {
         if (targetDoor == null)
             return "";
-
         return targetDoor.IsLocked() ? "[E] Kilidi Aç" : "[E] Kilitle";
     }
 
@@ -69,54 +64,27 @@ public class InteractableDoorLock : MonoBehaviour, IInteractable
         if (targetDoor == null)
             return;
 
-        bool newLockState = !targetDoor.IsLocked();
-        targetDoor.SetLocked(newLockState);
+        // Mevcut durumun tersini uygula
+        bool newState = !targetDoor.IsLocked();
 
-        PlayLockSound(newLockState);
+        // Bu fonksiyon artık InteractableDoor içindeki Lock/Unlock sesini de tetikler
+        targetDoor.SetLocked(newState);
+
         UpdateVisuals();
     }
 
-    private void PlayLockSound(bool locked)
-    {
-        if (audioSource != null)
-        {
-            AudioClip soundToPlay = locked ? lockSound : unlockSound;
-            if (soundToPlay != null)
-            {
-                audioSource.PlayOneShot(soundToPlay);
-            }
-        }
-    }
+    public void OnFocus() { }
 
-    public void OnFocus() { } // Şimdilik boş kalsın
-
-    public void OnLoseFocus() { } // Şimdilik boş kalsın
+    public void OnLoseFocus() { }
 
     private void UpdateVisuals()
     {
-        if (targetDoor == null)
+        if (targetDoor == null || lockRenderer == null)
             return;
 
-        bool isLocked = targetDoor.IsLocked();
-
-        // Materyal değiştir
-        if (lockRenderer != null && lockedMaterial != null && unlockedMaterial != null)
+        if (lockedMaterial != null && unlockedMaterial != null)
         {
-            lockRenderer.material = isLocked ? lockedMaterial : unlockedMaterial;
+            lockRenderer.material = targetDoor.IsLocked() ? lockedMaterial : unlockedMaterial;
         }
-
-        // Gösterge objesi (örn: ışık)
-        if (lockIndicator != null)
-        {
-            // Kırmızı=kilitli, Yeşil=açık gibi bir gösterge için
-            // lockIndicator.GetComponent<Light>().color = isLocked ? Color.red : Color.green;
-        }
-    }
-
-    // Inspector'da kolayca test etmek için
-    [ContextMenu("Toggle Lock")]
-    private void TestToggle()
-    {
-        ToggleLock();
     }
 }

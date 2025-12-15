@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class InteractableOscilloscope : MonoBehaviour, IInteractable, IForceExitable
 {
-    // ... (Değişkenler aynı) ...
+    // ... (Eski Değişkenler Aynı) ...
     [Header("Player Control")]
     [SerializeField]
     private UnityEngine.CharacterController playerController;
@@ -25,6 +25,7 @@ public class InteractableOscilloscope : MonoBehaviour, IInteractable, IForceExit
 
     [SerializeField]
     private Vector3 headOffset = new Vector3(0, 0.1f, 0.15f);
+
     private Transform mainCamera;
     private CinemachineBrain cinemachineBrain;
     private Transform headBone;
@@ -33,9 +34,6 @@ public class InteractableOscilloscope : MonoBehaviour, IInteractable, IForceExit
 
     [Header("Audio & Settings")]
     [SerializeField]
-    private AudioSource audioSource;
-
-    [SerializeField]
     private Transform voltsKnob;
 
     [SerializeField]
@@ -43,6 +41,22 @@ public class InteractableOscilloscope : MonoBehaviour, IInteractable, IForceExit
 
     [SerializeField]
     private float rotationPerStep = 36f;
+
+    // --- YENİ SES AYARLARI ---
+    [Header("🔊 PROXIMITY AUDIO (Mesafe/Doğruluk Sesi)")]
+    [Tooltip("Net, stabil osiloskop sesi (Doğru ayarda duyulur)")]
+    [SerializeField]
+    private AudioSource stableAudioSource;
+
+    [Tooltip("Bozuk, cızırtılı ses (Yanlış ayarda duyulur)")]
+    [SerializeField]
+    private AudioSource staticAudioSource;
+
+    [Tooltip("Pitch değişimi ne kadar etkili olsun?")]
+    [SerializeField]
+    private float pitchVariation = 0.5f;
+
+    // -------------------------
 
     [Header("Puzzle Logic")]
     [SerializeField]
@@ -60,17 +74,6 @@ public class InteractableOscilloscope : MonoBehaviour, IInteractable, IForceExit
     [SerializeField]
     private WaveformGenerator waveformScript;
 
-    [SerializeField]
-    private float minPitch = 0.5f;
-
-    [SerializeField]
-    private float maxPitch = 2.0f;
-
-    [SerializeField]
-    private float minVolume = 0.2f;
-
-    [SerializeField]
-    private float maxVolume = 1.0f;
     private int currentVoltsSetting = 0;
     private int currentTimeSetting = 0;
     private bool isSolved = false;
@@ -80,13 +83,17 @@ public class InteractableOscilloscope : MonoBehaviour, IInteractable, IForceExit
 
     [Header("Password Settings")]
     [SerializeField]
-    private TextMeshPro screenText; // Makinenin ekranındaki yazı (Unity'den ata)
-    private string assignedPassword = ""; // Manager'dan gelecek şifre
+    private TextMeshPro screenText;
+    private string assignedPassword = "";
+
+    // SES FADE KONTROLÜ
+    private Coroutine audioFadeRoutine;
 
     void Start()
     {
         if (playerController == null)
             playerController = FindObjectOfType<UnityEngine.CharacterController>();
+
         if (playerController != null)
         {
             playerLookScript =
@@ -99,21 +106,31 @@ public class InteractableOscilloscope : MonoBehaviour, IInteractable, IForceExit
             Transform camRoot = playerController.transform.Find("PlayerCameraRoot");
             cinemachineTarget = (camRoot != null) ? camRoot : headBone;
         }
+
         if (Camera.main != null)
         {
             mainCamera = Camera.main.transform;
             cinemachineBrain = mainCamera.GetComponent<CinemachineBrain>();
         }
+
         if (voltsKnob)
             voltsKnobInitialRot = voltsKnob.localRotation;
         if (timeKnob)
             timeKnobInitialRot = timeKnob.localRotation;
-        if (audioSource)
+
+        // --- SESLERİ BAŞLAT (AMA KISIK) ---
+        if (stableAudioSource)
         {
-            audioSource.Stop();
-            audioSource.loop = true;
+            stableAudioSource.loop = true;
+            stableAudioSource.volume = 0f;
         }
-        currentVoltsSetting = 2;
+        if (staticAudioSource)
+        {
+            staticAudioSource.loop = true;
+            staticAudioSource.volume = 0f;
+        }
+
+        currentVoltsSetting = 2; // Rastgele başlangıç
         currentTimeSetting = 2;
         UpdateKnobVisuals();
     }
@@ -131,11 +148,8 @@ public class InteractableOscilloscope : MonoBehaviour, IInteractable, IForceExit
     private IEnumerator EnterMachineView()
     {
         isInteracting = true;
-
-        // --- GM KAYIT ---
         if (GameManager.Instance != null)
             GameManager.Instance.activeInteraction = this;
-        // ----------------
 
         if (playerController)
             playerController.enabled = false;
@@ -161,7 +175,9 @@ public class InteractableOscilloscope : MonoBehaviour, IInteractable, IForceExit
                 yield return null;
             }
         }
+
         yield return new WaitForSeconds(animationDuration - 0.5f);
+
         if (cameraViewTarget != null)
         {
             mainCamera.SetParent(null);
@@ -180,28 +196,27 @@ public class InteractableOscilloscope : MonoBehaviour, IInteractable, IForceExit
             mainCamera.position = cameraViewTarget.position;
             mainCamera.rotation = cameraViewTarget.rotation;
         }
+
         TogglePlayerModel(false);
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
-        if (audioSource)
-        {
-            UpdateAudioAndWaveform();
-            audioSource.Play();
-        }
+
+        // YENİ: Makineye girince sesleri başlat (Fade In)
+        FadeAudio(true, 1.0f);
+        UpdateAudioAndWaveform(); // İlk karışımı yap
+
         UpdateKnobVisuals();
     }
 
     private IEnumerator ExitMachineView()
     {
         isInteracting = false;
-
-        // --- GM KAYIT SİL ---
         if (GameManager.Instance != null)
             GameManager.Instance.activeInteraction = null;
-        // --------------------
 
-        if (audioSource)
-            audioSource.Stop();
+        // YENİ: Makineden çıkınca sesleri kapat (Fade Out)
+        FadeAudio(false, 0.5f);
+
         TogglePlayerModel(true);
 
         if (cinemachineTarget != null)
@@ -220,6 +235,7 @@ public class InteractableOscilloscope : MonoBehaviour, IInteractable, IForceExit
                 yield return null;
             }
         }
+
         if (playerController != null)
         {
             Vector3 camForward = mainCamera.forward;
@@ -227,6 +243,7 @@ public class InteractableOscilloscope : MonoBehaviour, IInteractable, IForceExit
             if (camForward != Vector3.zero)
                 playerController.transform.rotation = Quaternion.LookRotation(camForward);
         }
+
         if (cinemachineBrain)
             cinemachineBrain.enabled = true;
         if (playerController)
@@ -235,6 +252,131 @@ public class InteractableOscilloscope : MonoBehaviour, IInteractable, IForceExit
             playerLookScript.enabled = true;
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
+    }
+
+    // --- GÜNCELLENMİŞ SES VE GÖRSEL MANTIĞI ---
+    private void UpdateAudioAndWaveform()
+    {
+        // 1. Doğruluk Oranını Hesapla (0.0 = Tamamen Yanlış, 1.0 = Tamamen Doğru)
+        float voltsDiff = Mathf.Abs(currentVoltsSetting - correctVoltsSetting);
+        float timeDiff = Mathf.Abs(currentTimeSetting - correctTimeSetting);
+
+        float maxError = maxVoltsSetting + maxTimeSetting;
+        float currentError = voltsDiff + timeDiff;
+
+        // Doğruluk oranı (1'e ne kadar yakınsa o kadar iyi)
+        float accuracy = 1.0f - (currentError / maxError);
+        accuracy = Mathf.Clamp01(accuracy);
+
+        // --- SES KARIŞTIRMA (CROSSFADE) ---
+        if (audioFadeRoutine == null)
+        {
+            float stableVol = Mathf.Pow(accuracy, 2);
+            float staticVol = 1.0f - accuracy;
+
+            if (stableAudioSource)
+                stableAudioSource.volume = stableVol;
+            if (staticAudioSource)
+                staticAudioSource.volume = staticVol * 0.5f;
+        }
+
+        // Pitch ayarı
+        float targetPitch = 1.0f + ((0.5f - accuracy) * pitchVariation);
+        if (stableAudioSource)
+            stableAudioSource.pitch = isSolved ? 1.0f : targetPitch;
+        if (staticAudioSource)
+            staticAudioSource.pitch = Random.Range(0.8f, 1.2f);
+
+        // --- WAVEFORM GÖRSELİ (YENİLENEN KISIM) ---
+        if (waveformScript)
+        {
+            // Genlik ve Frekans ayarları (Görsel olarak knobların etkisini görelim)
+            float vRatio = (float)currentVoltsSetting / maxVoltsSetting;
+            float tRatio = (float)currentTimeSetting / maxTimeSetting;
+
+            waveformScript.amplitude = Mathf.Lerp(0.2f, 2.5f, vRatio);
+            waveformScript.frequency = Mathf.Lerp(0.5f, 3.0f, tRatio);
+
+            // YENİ: Gürültü (Noise) Kontrolü
+            // Accuracy 0 iken (yanlışken) gürültü 0.8f olsun (çok bozuk)
+            // Accuracy 1 iken (doğruyken) gürültü 0f olsun (tertemiz)
+
+            // Eğer çözüldüyse direkt 0 yap
+            if (isSolved)
+            {
+                waveformScript.noiseAmount = 0f;
+            }
+            else
+            {
+                // Yanlışlık arttıkça bozulma artar
+                waveformScript.noiseAmount = Mathf.Lerp(0.8f, 0f, accuracy);
+            }
+        }
+    }
+
+    // --- GİRİŞ / ÇIKIŞ FADE İŞLEMİ ---
+    private void FadeAudio(bool fadeIn, float duration)
+    {
+        if (audioFadeRoutine != null)
+            StopCoroutine(audioFadeRoutine);
+        audioFadeRoutine = StartCoroutine(FadeAudioRoutine(fadeIn, duration));
+    }
+
+    private IEnumerator FadeAudioRoutine(bool fadeIn, float duration)
+    {
+        float t = 0f;
+        float startStable = stableAudioSource ? stableAudioSource.volume : 0;
+        float startStatic = staticAudioSource ? staticAudioSource.volume : 0;
+
+        // Hedef değerleri UpdateAudioAndWaveform hesaplasın ama biz master volume gibi düşünelim
+        // Basitçe: FadeIn ise sesleri aç (Play), FadeOut ise kapat (Stop)
+
+        if (fadeIn)
+        {
+            if (stableAudioSource && !stableAudioSource.isPlaying)
+                stableAudioSource.Play();
+            if (staticAudioSource && !staticAudioSource.isPlaying)
+                staticAudioSource.Play();
+
+            // İlk değerleri hesapla ki birden patlamasın
+            UpdateAudioAndWaveform();
+        }
+
+        float initialStableTarget = stableAudioSource ? stableAudioSource.volume : 0;
+        float initialStaticTarget = staticAudioSource ? staticAudioSource.volume : 0;
+
+        // Eğer FadeIn ise 0'dan hedefe, FadeOut ise mevcut olandan 0'a
+        while (t < duration)
+        {
+            t += Time.deltaTime;
+            float ratio = t / duration;
+
+            if (fadeIn)
+            {
+                if (stableAudioSource)
+                    stableAudioSource.volume = Mathf.Lerp(0, initialStableTarget, ratio);
+                if (staticAudioSource)
+                    staticAudioSource.volume = Mathf.Lerp(0, initialStaticTarget, ratio);
+            }
+            else // Fade Out
+            {
+                if (stableAudioSource)
+                    stableAudioSource.volume = Mathf.Lerp(startStable, 0, ratio);
+                if (staticAudioSource)
+                    staticAudioSource.volume = Mathf.Lerp(startStatic, 0, ratio);
+            }
+            yield return null;
+        }
+
+        if (!fadeIn)
+        {
+            if (stableAudioSource)
+                stableAudioSource.Stop();
+            if (staticAudioSource)
+                staticAudioSource.Stop();
+        }
+
+        audioFadeRoutine = null;
     }
 
     private void Update()
@@ -252,6 +394,7 @@ public class InteractableOscilloscope : MonoBehaviour, IInteractable, IForceExit
                 waveformScript.frequency = 1.0f;
             return;
         }
+
         bool changed = false;
         if (Input.GetKeyDown(KeyCode.W))
         {
@@ -263,6 +406,7 @@ public class InteractableOscilloscope : MonoBehaviour, IInteractable, IForceExit
             currentVoltsSetting = Mathf.Max(currentVoltsSetting - 1, 0);
             changed = true;
         }
+
         if (Input.GetKeyDown(KeyCode.D))
         {
             currentTimeSetting = Mathf.Min(currentTimeSetting + 1, maxTimeSetting);
@@ -273,15 +417,15 @@ public class InteractableOscilloscope : MonoBehaviour, IInteractable, IForceExit
             currentTimeSetting = Mathf.Max(currentTimeSetting - 1, 0);
             changed = true;
         }
+
         if (changed)
         {
             UpdateKnobVisuals();
-            UpdateAudioAndWaveform();
+            UpdateAudioAndWaveform(); // <-- HER TUŞTA SESİ GÜNCELLE
             CheckForSolution();
         }
     }
 
-    // ... (Diğer fonksiyonlar aynı kalsın) ...
     private void TogglePlayerModel(bool show)
     {
         if (!playerController)
@@ -289,29 +433,6 @@ public class InteractableOscilloscope : MonoBehaviour, IInteractable, IForceExit
         Renderer[] renderers = playerController.GetComponentsInChildren<Renderer>();
         foreach (var r in renderers)
             r.enabled = show;
-    }
-
-    private void UpdateAudioAndWaveform()
-    {
-        float tRatio = (float)currentTimeSetting / maxTimeSetting;
-        float targetPitch =
-            (currentTimeSetting == correctTimeSetting)
-                ? 1.0f
-                : Mathf.Lerp(minPitch, maxPitch, tRatio);
-        if (audioSource)
-            audioSource.pitch = targetPitch;
-        float vRatio = (float)currentVoltsSetting / maxVoltsSetting;
-        float targetVolume =
-            (currentVoltsSetting == correctVoltsSetting)
-                ? 1.0f
-                : Mathf.Lerp(minVolume, maxVolume, vRatio);
-        if (audioSource)
-            audioSource.volume = targetVolume;
-        if (waveformScript)
-        {
-            waveformScript.frequency = targetPitch;
-            waveformScript.amplitude = Mathf.Lerp(0.5f, 2.5f, vRatio);
-        }
     }
 
     private void UpdateKnobVisuals()
@@ -329,33 +450,34 @@ public class InteractableOscilloscope : MonoBehaviour, IInteractable, IForceExit
         if (currentVoltsSetting == correctVoltsSetting && currentTimeSetting == correctTimeSetting)
         {
             isSolved = true;
-
-            // --- YENİ KISIM: Şifreyi Göster ve Kaydet ---
             if (screenText != null)
             {
                 screenText.text = $"STABLE\nKEY: {assignedPassword}";
                 screenText.color = Color.green;
             }
-
-            // Şifreyi bulduğumuzu Manager'a bildir (Deftere eklensin)
             if (PasswordManager.Instance != null)
-            {
                 PasswordManager.Instance.DiscoverClue(assignedPassword);
-            }
-            // --------------------------------------------
 
-            StartCoroutine(AutoExit(3.0f)); // Süreyi biraz uzattım ki şifre okunsun
+            // Çözülünce sadece temiz ses kalsın
+            if (staticAudioSource)
+                staticAudioSource.volume = 0;
+            if (stableAudioSource)
+            {
+                stableAudioSource.volume = 1f;
+                stableAudioSource.pitch = 1f;
+            }
+
+            StartCoroutine(AutoExit(3.0f));
         }
     }
 
-    public void OnFocus() { } // Şimdilik boş kalsın
+    public void OnFocus() { }
 
-    public void OnLoseFocus() { } // Şimdilik boş kalsın
+    public void OnLoseFocus() { }
 
     public void AssignPassword(string pw)
     {
         assignedPassword = pw;
-        // Başlangıçta ekranda "NO SIGNAL" veya boşluk yazsın
         if (screenText != null)
             screenText.text = "NO SIGNAL";
     }
@@ -367,7 +489,6 @@ public class InteractableOscilloscope : MonoBehaviour, IInteractable, IForceExit
             StartCoroutine(ExitMachineView());
     }
 
-    // --- IFORCEEXITABLE ---
     public void ForceExit()
     {
         if (isInteracting)

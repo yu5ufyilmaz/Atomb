@@ -88,12 +88,9 @@ public class InteractableTuringMachine : MonoBehaviour, IInteractable, IForceExi
     private float symbolStepAngle;
     private float numberStepAngle;
 
-    // -----------------------------------------------------------------------------------
-    // YENİ AYARLAR BURADA
-    // -----------------------------------------------------------------------------------
     [Header("🔧 HARF (WORD) AYARLARI")]
     [Tooltip("İŞARETLE: D tuşu A -> B yapar. İŞARETLEME: A -> Z yapar.")]
-    public bool useForwardLetterOrder = true; // <-- SENİN İSTEDİĞİN AYAR (A -> B)
+    public bool useForwardLetterOrder = true;
 
     [Tooltip("Harf sırasını değiştirince Kol ters dönerse bunu işaretle.")]
     public bool invertWordLeverRotation = false;
@@ -120,21 +117,27 @@ public class InteractableTuringMachine : MonoBehaviour, IInteractable, IForceExi
     [SerializeField]
     private Material greenMaterial;
 
+    [Header("🔊 SES EFEKTLERİ")]
     [SerializeField]
     private AudioSource audioSource;
 
+    [Tooltip("Çark döndürme sesi (Tık)")]
     [SerializeField]
     private AudioClip wheelClickSound;
 
+    [Tooltip("Doğru şifre sesi (Başarı)")]
     [SerializeField]
     private AudioClip successSound;
 
+    [Tooltip("Yanlış şifre sesi (Hata)")]
     [SerializeField]
     private AudioClip failSound;
 
+    [Tooltip("Makineye oturma sesi")]
     [SerializeField]
     private AudioClip accessSound;
 
+    [Tooltip("Makineden kalkma sesi (Bitirme)")]
     [SerializeField]
     private AudioClip exitSound;
 
@@ -271,7 +274,6 @@ public class InteractableTuringMachine : MonoBehaviour, IInteractable, IForceExi
 
     public string GetInteractionPrompt() => isInteracting ? "" : "[Sol Tık] Turing Makinesi";
 
-    // ... (Kamera ve Giriş/Çıkış kodları standart devam ediyor) ...
     private IEnumerator EnterMachineView()
     {
         isInteracting = true;
@@ -285,7 +287,9 @@ public class InteractableTuringMachine : MonoBehaviour, IInteractable, IForceExi
         if (playerAnimator)
             playerAnimator.SetTrigger(interactAnimTrigger);
 
+        // SES: Makineye oturma sesi
         PlaySound(accessSound);
+
         if (cinemachineBrain)
             cinemachineBrain.enabled = false;
 
@@ -336,7 +340,10 @@ public class InteractableTuringMachine : MonoBehaviour, IInteractable, IForceExi
         isInteracting = false;
         if (GameManager.Instance != null)
             GameManager.Instance.activeInteraction = null;
+
+        // SES: Makineden kalkma sesi
         PlaySound(exitSound);
+
         ClearAllHighlights();
         TogglePlayerModel(true);
         if (cinemachineTarget != null)
@@ -445,15 +452,13 @@ public class InteractableTuringMachine : MonoBehaviour, IInteractable, IForceExi
 
     private void RotateActiveWheel(int d)
     {
+        // SES: Döndürme (Click) sesi
         PlaySound(wheelClickSound);
 
         switch (currentGroup)
         {
-            case 0: // HARF GRUBU (A -> B Ayarı Eklendi)
+            case 0: // HARF GRUBU
                 int cW = wordChars.Length;
-
-                // --- DEĞİŞİKLİK BURADA ---
-                // Eğer "useForwardLetterOrder" seçiliyse +d (A->B), değilse -d (A->Z)
                 int direction = useForwardLetterOrder ? d : -d;
 
                 wordWheelIndices[currentWordIndex] =
@@ -466,12 +471,9 @@ public class InteractableTuringMachine : MonoBehaviour, IInteractable, IForceExi
                         rotationAxis
                     );
 
-                // Kol (Lever) Yönetimi
                 if (currentWordIndex < wordLeverModels.Length && wordLeverModels[currentWordIndex])
                 {
-                    // Eğer harf sırasını değiştirdiğimiz için kol ters çalışırsa, bu ayarla düzeltebiliriz.
                     float leverDirectionMult = invertWordLeverRotation ? -1f : 1f;
-
                     wordLeverTargets[currentWordIndex] =
                         wordLeverInitialRots[currentWordIndex]
                         * Quaternion.AngleAxis(
@@ -526,7 +528,6 @@ public class InteractableTuringMachine : MonoBehaviour, IInteractable, IForceExi
         }
     }
 
-    // --- BÜYÜLÜ FONKSİYON ---
     private int GetCorrectSymbolIndex()
     {
         int total = symbolChars.Length;
@@ -567,22 +568,21 @@ public class InteractableTuringMachine : MonoBehaviour, IInteractable, IForceExi
             $"{numberChars[numberWheelIndices[0]]}{numberChars[numberWheelIndices[1]]}{numberChars[numberWheelIndices[2]]}";
 
         string inputPassword = $"{wordPart}_{symbolPart}_{numberPart}";
-        Debug.Log(
-            $"GİRİLEN ŞİFRE: '{inputPassword}' (Görsel Adım: {symbolVisualStep} -> Kod İndeksi: {finalSymbolIndex})"
-        );
+        Debug.Log($"GİRİLEN ŞİFRE: '{inputPassword}'");
 
         if (PasswordManager.Instance.ValidatePassword(inputPassword))
         {
+            // SES: Başarı
             PlaySound(successSound);
             UpdateIndicators(PasswordManager.Instance.GetValidatedPasswordCount());
         }
         else
         {
+            // SES: Hata
             PlaySound(failSound);
         }
     }
 
-    // --- Diğer standart fonksiyonlar ---
     private void UpdateIndicators(int c)
     {
         if (indicatorRenderers == null)
@@ -682,9 +682,9 @@ public class InteractableTuringMachine : MonoBehaviour, IInteractable, IForceExi
             );
     }
 
-    public void OnFocus() { } // Şimdilik boş kalsın
+    public void OnFocus() { }
 
-    public void OnLoseFocus() { } // Şimdilik boş kalsın
+    public void OnLoseFocus() { }
 
     private void PlaySound(AudioClip c)
     {

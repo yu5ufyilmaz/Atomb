@@ -1,12 +1,12 @@
-using TMPro; // TextMeshPro için
+using TMPro;
 using UnityEngine;
 
 public interface IInteractable
 {
     void Interact();
     string GetInteractionPrompt();
-    void OnFocus(); // Üzerine bakınca çalışır
-    void OnLoseFocus(); // Bakışı çekince çalışır
+    void OnFocus();
+    void OnLoseFocus();
 }
 
 public class PlayerInteraction : MonoBehaviour
@@ -58,7 +58,15 @@ public class PlayerInteraction : MonoBehaviour
 
         if (Physics.Raycast(ray, out RaycastHit hit, interactionDistance, interactionLayer))
         {
+            // --- DÜZELTME BURADA ---
+            // Önce çarptığı objede ara, bulamazsan PARENT'ına bak.
             IInteractable newInteractable = hit.collider.GetComponent<IInteractable>();
+
+            if (newInteractable == null)
+            {
+                newInteractable = hit.collider.GetComponentInParent<IInteractable>();
+            }
+            // -----------------------
 
             // Eğer yeni bir objeye bakıyorsak
             if (newInteractable != null)

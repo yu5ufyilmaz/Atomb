@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class InteractablePressureValve : MonoBehaviour, IInteractable, IForceExitable
 {
-    // ... (Değişkenler aynı) ...
     [Header("Components")]
     [SerializeField]
     private Transform valveHandleModel;
@@ -40,6 +39,32 @@ public class InteractablePressureValve : MonoBehaviour, IInteractable, IForceExi
     [Tooltip("Sadece Saat Yönünde mi dönsün?")]
     [SerializeField]
     private bool onlyClockwise = true;
+
+    // --- YENİ SES AYARLARI ---
+    [Header("🔊 Audio Settings")]
+    [Tooltip("Vana dönüş sesi için AudioSource")]
+    [SerializeField]
+    private AudioSource audioSource;
+
+    [Tooltip("Sürekli çalacak dönme sesi (Loop)")]
+    [SerializeField]
+    private AudioClip turnLoopSound;
+
+    [Tooltip("Sesin açılma/kapanma hızı")]
+    [SerializeField]
+    private float fadeSpeed = 5f;
+
+    // Pitch değişimi (Hız hissi için opsiyonel)
+    [SerializeField]
+    private float minPitch = 0.9f;
+
+    [SerializeField]
+    private float maxPitch = 1.1f;
+
+    private bool isTurning = false; // O karede dönüyor mu?
+
+    // -------------------------
+
     private UnityEngine.CharacterController playerPhysicsController;
     private MonoBehaviour playerInputScript;
     private bool isInteracting = false;
@@ -67,6 +92,14 @@ public class InteractablePressureValve : MonoBehaviour, IInteractable, IForceExi
             mainCamera = Camera.main.transform;
             cinemachineBrain = mainCamera.GetComponent<CinemachineBrain>();
         }
+
+        // Ses Kaynağını Hazırla
+        if (audioSource != null)
+        {
+            audioSource.loop = true;
+            audioSource.volume = 0f;
+            audioSource.clip = turnLoopSound;
+        }
     }
 
     public void Interact()
@@ -82,10 +115,8 @@ public class InteractablePressureValve : MonoBehaviour, IInteractable, IForceExi
     {
         isInteracting = true;
 
-        // --- GM KAYIT ---
         if (GameManager.Instance != null)
             GameManager.Instance.activeInteraction = this;
-        // ----------------
 
         Vector2 mousePos = Input.mousePosition;
         Vector2 direction = mousePos - screenCenter;
@@ -141,11 +172,10 @@ public class InteractablePressureValve : MonoBehaviour, IInteractable, IForceExi
     private IEnumerator ExitValveMode()
     {
         isInteracting = false;
+        isTurning = false; // Çıkarken sesi kes
 
-        // --- GM KAYIT SİL ---
         if (GameManager.Instance != null)
             GameManager.Instance.activeInteraction = null;
-        // --------------------
 
         TogglePlayerModel(true);
 
@@ -182,9 +212,11 @@ public class InteractablePressureValve : MonoBehaviour, IInteractable, IForceExi
         Cursor.visible = false;
     }
 
-    // ... (Update ve diğerleri aynı) ...
     private void Update()
     {
+        // Ses Yönetimi (Her kare çalışmalı ki fade out düzgün olsun)
+        HandleAudio();
+
         if (!isInteracting)
             return;
         if (Input.GetKeyDown(KeyCode.F) || Input.GetMouseButtonDown(1))
@@ -210,14 +242,22 @@ public class InteractablePressureValve : MonoBehaviour, IInteractable, IForceExi
         Vector2 direction = mousePos - screenCenter;
         float currentAngle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
         float deltaAngle = Mathf.DeltaAngle(lastAngle, currentAngle);
+
         if (onlyClockwise && deltaAngle > 0)
             deltaAngle = 0;
+
+        // --- DÖNÜŞ KONTROLÜ ---
+        // Eğer deltaAngle 0.01'den büyükse dönüyor demektir.
         if (Mathf.Abs(deltaAngle) > 0.01f)
         {
+            isTurning = true;
+
             float dampenedDelta = deltaAngle * resistanceMultiplier;
             dampenedDelta = Mathf.Clamp(dampenedDelta, -maxRotationPerFrame, maxRotationPerFrame);
+
             if (valveHandleModel != null)
                 valveHandleModel.Rotate(Vector3.forward, -dampenedDelta, Space.Self);
+
             if (dampenedDelta < 0 && PressureSystemManager.Instance != null)
             {
                 float reduction =
@@ -229,14 +269,50 @@ public class InteractablePressureValve : MonoBehaviour, IInteractable, IForceExi
                     StartCoroutine(ExitValveMode());
             }
         }
+        else
+        {
+            isTurning = false;
+        }
+
         lastAngle = currentAngle;
     }
 
-    public void OnFocus() { } // Şimdilik boş kalsın
+    // --- YENİ SES YÖNETİMİ ---
+    private void HandleAudio()
+    {
+        if (audioSource == null)
+            return;
 
-    public void OnLoseFocus() { } // Şimdilik boş kalsın
+        // Hedef Ses Seviyesi: Dönüyorsa 1, duruyorsa 0
+        // Eğer etkileşimde değilsek (isInteracting false) kesinlikle 0 olmalı.
+        float targetVol = (isInteracting && isTurning) ? 1f : 0f;
 
-    // --- IFORCEEXITABLE ---
+        // Sesi yumuşakça hedefe götür (Fade)
+        audioSource.volume = Mathf.Lerp(audioSource.volume, targetVol, Time.deltaTime * fadeSpeed);
+
+        // Optimizasyon: Ses çok kısıldıysa durdur, açılacaksa oynat
+        if (audioSource.volume > 0.01f)
+        {
+            if (!audioSource.isPlaying)
+                audioSource.Play();
+
+            // Opsiyonel: Rastgele pitch ile mekanik hissi arttır
+            audioSource.pitch = Mathf.Lerp(
+                minPitch,
+                maxPitch,
+                Mathf.PingPong(Time.time * 0.5f, 1f)
+            );
+        }
+        else if (audioSource.isPlaying && targetVol == 0f)
+        {
+            audioSource.Stop();
+        }
+    }
+
+    public void OnFocus() { }
+
+    public void OnLoseFocus() { }
+
     public void ForceExit()
     {
         if (isInteracting)

@@ -47,6 +47,28 @@ namespace StarterAssets
         private float currentStamina;
         private bool isExhausted = false; // Yorgunluk cezası durumu
 
+        // --- [YENİ] SARHOŞLUK SİSTEMİ DEĞİŞKENLERİ ---
+        [Header("😵 Drunk Effect Settings")]
+        [Range(0f, 1f)]
+        public float drunkIntensity = 0f; // 0 = Normal, 1 = Tam Sarhoş
+
+        [Header("Sway (Kamera Sallantısı)")]
+        public float swaySpeed = 0.5f; // Ne kadar hızlı sallansın? (Düşük = Ağır sarhoş)
+        public float swayAmountRoll = 10.0f; // Kafa yan yatma açısı (Z ekseni)
+        public float swayAmountYaw = 10.0f; // Kafa sağa/sola bakma sapması (Y ekseni)
+
+        [Header("Drift (Yürüme Kayması)")]
+        public float driftSpeed = 0.3f; // Kayma yönünün değişme hızı
+        public float driftForce = 1.5f; // Kaymanın şiddeti
+
+        // Hesaplanan anlık değerler (Private)
+        private float drunkTime;
+        private float currentDrunkRoll;
+        private float currentDrunkYaw;
+        private Vector3 currentDrunkDrift;
+
+        // ----------------------------------------------
+
         [Tooltip("How fast the character turns to face movement direction")]
         [Range(0.0f, 0.3f)]
         public float RotationSmoothTime = 0.12f;
@@ -138,6 +160,19 @@ namespace StarterAssets
         private int _animIDFreeFall;
         private int _animIDMotionSpeed;
 
+        [Header("Head Bob System")]
+        [Tooltip("Adım atma hızı (Adım sıklığı). 12-14 arası idealdir.")]
+        public float BobFrequency = 12f;
+
+        [Tooltip("Kafanın YUKARI-AŞAĞI oynama miktarı. (Tok his için düşük tut: 0.05)")]
+        public float BobYAmplitude = 0.05f;
+
+        [Tooltip("Kafanın SAĞA-SOLA oynama miktarı. (Doğallığı bu verir: 0.06)")]
+        public float BobXAmplitude = 0.06f;
+
+        private float _defaultYPos;
+        private float _bobTimer;
+
 #if ENABLE_INPUT_SYSTEM
         private PlayerInput _playerInput;
 #endif
@@ -196,6 +231,9 @@ namespace StarterAssets
             // reset our timeouts on start
             _jumpTimeoutDelta = JumpTimeout;
             _fallTimeoutDelta = FallTimeout;
+            // Rastgelelik için seed belirle
+            if (CinemachineCameraTarget != null)
+                _defaultYPos = CinemachineCameraTarget.transform.localPosition.y;
         }
 
         private void Update()
@@ -205,7 +243,9 @@ namespace StarterAssets
             JumpAndGravity();
             GroundedCheck();
             HandleStamina();
+            CalculateDrunkEffects(); // <--- [YENİ] BURAYA EKLENDİ
             Move();
+            HandleHeadBob(); // <-- YENİ: Bunu buraya ekle!
         }
 
         private void LateUpdate()
@@ -246,12 +286,17 @@ namespace StarterAssets
 
         private void CameraRotation()
         {
+            // Mouse/Gamepad giriş kontrolü
             if (_input.look.sqrMagnitude >= _threshold && !LockCameraPosition)
             {
                 float deltaTimeMultiplier = IsCurrentDeviceMouse ? 1.0f : Time.deltaTime;
 
-                _cinemachineTargetYaw += _input.look.x * deltaTimeMultiplier;
-                _cinemachineTargetPitch += _input.look.y * deltaTimeMultiplier;
+                // Sarhoşken mouse biraz ağırlaşsın
+                float controlLag =
+                    (drunkIntensity > 0.01f) ? Mathf.Lerp(1f, 0.5f, drunkIntensity) : 1f;
+
+                _cinemachineTargetYaw += _input.look.x * deltaTimeMultiplier * controlLag;
+                _cinemachineTargetPitch += _input.look.y * deltaTimeMultiplier * controlLag;
             }
 
             _cinemachineTargetYaw = ClampAngle(
@@ -261,25 +306,28 @@ namespace StarterAssets
             );
             _cinemachineTargetPitch = ClampAngle(_cinemachineTargetPitch, BottomClamp, TopClamp);
 
+            // --- SARHOŞLUK ETKİSİ ---
+            // Sadece kamerayı (kafayı) sallar. Vücuda karışmaz.
+            float addedYaw = (drunkIntensity > 0.01f) ? currentDrunkYaw : 0f;
+            float addedRoll = (drunkIntensity > 0.01f) ? currentDrunkRoll : 0f;
+
             CinemachineCameraTarget.transform.rotation = Quaternion.Euler(
                 _cinemachineTargetPitch + CameraAngleOverride,
-                _cinemachineTargetYaw,
-                0.0f
+                _cinemachineTargetYaw + addedYaw,
+                0.0f + addedRoll
             );
 
-            transform.rotation = Quaternion.Euler(0.0f, _cinemachineTargetYaw, 0.0f);
+            // DÜZELTME: transform.rotation satırı BURADAN TAMAMEN KALDIRILDI.
         }
 
         private void Move()
         {
-            // ARTIK BURADA SADECE HIZI BELİRLİYORUZ
-            // _input.sprint değerini HandleStamina içinde yönettiğimiz için burası sadeleşti.
-
-            // Eğer yorgunsa (isExhausted) veya stamina bittiyse sprint inputu zaten false yapıldı.
+            // 1. Hız Hesaplama (Aynı kalacak)
             float targetSpeed = _input.sprint ? SprintSpeed : MoveSpeed;
-
             if (_input.move == Vector2.zero)
                 targetSpeed = 0.0f;
+            if (drunkIntensity > 0.01f)
+                targetSpeed *= Mathf.Lerp(1f, 0.6f, drunkIntensity);
 
             float currentHorizontalSpeed = new Vector3(
                 _controller.velocity.x,
@@ -314,14 +362,50 @@ namespace StarterAssets
             if (_animationBlend < 0.01f)
                 _animationBlend = 0f;
 
-            Vector3 inputDirection = new Vector3(_input.move.x, 0.0f, _input.move.y).normalized;
-            Vector3 targetDirection = transform.TransformDirection(inputDirection);
+            // ============================================================
+            // DÜZELTME: "Strafe" (Sea of Thieves / Shooter) Tarzı Hareket
+            // ============================================================
 
-            _controller.Move(
-                targetDirection * (_speed * Time.deltaTime)
-                    + new Vector3(0.0f, _verticalVelocity, 0.0f) * Time.deltaTime
+            // A) ROTASYON: Karakteri her zaman KAMERANIN baktığı yöne kilitle.
+            // Eski kodda Input yönüne dönüyorduk, şimdi Kamera Y açısına dönüyoruz.
+            _targetRotation = _mainCamera.transform.eulerAngles.y;
+
+            // Sarhoşluk yalpalamasını rotasyona ekle
+            float rotationWithDrunk = _targetRotation;
+            if (drunkIntensity > 0.01f)
+                rotationWithDrunk += currentDrunkYaw;
+
+            // Karakterin gövdesini kamera açısına yumuşakça döndür
+            float rotation = Mathf.SmoothDampAngle(
+                transform.eulerAngles.y,
+                rotationWithDrunk,
+                ref _rotationVelocity,
+                RotationSmoothTime
             );
+            transform.rotation = Quaternion.Euler(0.0f, rotation, 0.0f);
 
+            // B) HAREKET YÖNÜ: Input'u (WASD) kamera açısına göre ayarla.
+            // W = İleri, S = Geri, A = Sola Adım, D = Sağa Adım
+            Vector3 inputDirection = new Vector3(_input.move.x, 0.0f, _input.move.y).normalized;
+
+            // Input vektörünü, Kameranın Y açısı (TargetRotation) ile çarpıp dünya yönüne çeviriyoruz
+            Vector3 targetDirection =
+                Quaternion.Euler(0.0f, _targetRotation, 0.0f) * inputDirection;
+
+            // 4. Hareketi Uygula
+            Vector3 movement =
+                targetDirection.normalized * (_speed * Time.deltaTime)
+                + new Vector3(0.0f, _verticalVelocity, 0.0f) * Time.deltaTime;
+
+            // Sarhoş kayması
+            if (drunkIntensity > 0.01f)
+            {
+                movement += currentDrunkDrift * Time.deltaTime;
+            }
+
+            _controller.Move(movement);
+
+            // Animasyon Güncelleme
             if (_hasAnimator)
             {
                 _animator.SetFloat(_animIDSpeed, _animationBlend);
@@ -393,6 +477,41 @@ namespace StarterAssets
             }
         }
 
+        // --- [YENİ] SARHOŞLUK HESAPLAMALARI ---
+        private void CalculateDrunkEffects()
+        {
+            // --- DÜZELTME: KESİN SIFIRLAMA ---
+            // Eğer sarhoşluk yoksa (veya çok azsa), tüm değerleri anında sıfırla.
+            // Lerp kullanmıyoruz, direkt kesiyoruz ki "normal" hissetsin.
+            if (drunkIntensity <= 0.01f)
+            {
+                currentDrunkRoll = 0f;
+                currentDrunkYaw = 0f;
+                currentDrunkDrift = Vector3.zero;
+                drunkTime = 0f; // Zamanlayıcıyı da sıfırla
+                return;
+            }
+
+            drunkTime += Time.deltaTime;
+
+            // 1. Kamera Sallantısı
+            float noiseRoll = (Mathf.PerlinNoise(drunkTime * swaySpeed, 0f) - 0.5f) * 2f;
+            float noiseYaw = (Mathf.PerlinNoise(0f, drunkTime * swaySpeed) - 0.5f) * 2f;
+
+            float targetRoll = noiseRoll * swayAmountRoll * drunkIntensity;
+            float targetYaw = noiseYaw * swayAmountYaw * drunkIntensity;
+
+            currentDrunkRoll = Mathf.Lerp(currentDrunkRoll, targetRoll, Time.deltaTime * 1.5f);
+            currentDrunkYaw = Mathf.Lerp(currentDrunkYaw, targetYaw, Time.deltaTime * 1.5f);
+
+            // 2. Yürüme Kayması
+            float driftX = (Mathf.PerlinNoise(drunkTime * driftSpeed, 100f) - 0.5f) * 2f;
+            float driftZ = (Mathf.PerlinNoise(drunkTime * driftSpeed, 200f) - 0.5f) * 2f;
+
+            Vector3 targetDrift = new Vector3(driftX, 0, driftZ) * driftForce * drunkIntensity;
+            currentDrunkDrift = Vector3.Lerp(currentDrunkDrift, targetDrift, Time.deltaTime * 0.5f);
+        }
+
         private void JumpAndGravity()
         {
             if (Grounded)
@@ -461,6 +580,69 @@ namespace StarterAssets
             if (_verticalVelocity < _terminalVelocity)
             {
                 _verticalVelocity += Gravity * Time.deltaTime;
+            }
+        }
+
+        private void HandleHeadBob()
+        {
+            if (!Grounded)
+                return;
+
+            // Hız kontrolü (Yatay hız)
+            float speed = new Vector3(_controller.velocity.x, 0, _controller.velocity.z).magnitude;
+
+            // Karakter hareket ediyor mu?
+            if (_input.move != Vector2.zero && speed > 0.1f)
+            {
+                // Koşuyorsak frekansı artır
+                float freq = _input.sprint ? BobFrequency * 1.3f : BobFrequency;
+
+                _bobTimer += Time.deltaTime * freq;
+
+                // --- DOĞAL YÜRÜME FORMÜLÜ (Lissajous Curve / 8 Çizme) ---
+
+                // 1. Y EKSENİ (Yukarı/Aşağı): Sinüs dalgası (Adım atma)
+                // Mutlak değer (Mathf.Abs) kullanmıyoruz, yumuşak iniş çıkış olsun.
+                float bobYOffset = Mathf.Sin(_bobTimer) * BobYAmplitude;
+
+                // 2. X EKSENİ (Sağa/Sola): Kosinüs dalgası (Ağırlık verme)
+                // Frekansı yarıya bölüyoruz (_bobTimer / 2f).
+                // Çünkü: İki adımda (Sol-Sağ) bir tam tur sağa-sola sallanırız.
+                float bobXOffset = Mathf.Cos(_bobTimer / 2f) * BobXAmplitude;
+
+                // Kameranın pozisyonunu hedef pozisyona doğru yumuşakça (Lerp) kaydır
+                Vector3 currentPos = CinemachineCameraTarget.transform.localPosition;
+
+                Vector3 targetPos = new Vector3(
+                    bobXOffset,
+                    _defaultYPos + bobYOffset,
+                    currentPos.z
+                );
+
+                // Lerp ile geçişi yumuşatıyoruz ki "kütük" gibi titremesin
+                CinemachineCameraTarget.transform.localPosition = Vector3.Lerp(
+                    currentPos,
+                    targetPos,
+                    Time.deltaTime * 15f
+                );
+            }
+            else
+            {
+                // Durduysak zamanlayıcıyı sıfırla (Adım ortasında kalmasın, nötr pozisyona dönsün)
+                _bobTimer = 0;
+
+                Vector3 currentPos = CinemachineCameraTarget.transform.localPosition;
+                Vector3 targetPos = new Vector3(0f, _defaultYPos, currentPos.z);
+
+                // Yavaşça merkeze dön (Reset)
+                if (Vector3.Distance(currentPos, targetPos) > 0.001f)
+                {
+                    CinemachineCameraTarget.transform.localPosition = Vector3.Lerp(
+                        currentPos,
+                        targetPos,
+                        Time.deltaTime * 6f
+                    );
+                }
             }
         }
 
