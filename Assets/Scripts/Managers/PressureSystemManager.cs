@@ -96,6 +96,15 @@ public class PressureSystemManager : MonoBehaviour
 
         HandlePressureEffects();
         HandleHandheldDevice();
+
+        // --- EKLENEN KISIM: Megafon Acil Durum Kontrolü ---
+        if (MegaphoneSystem.Instance != null)
+        {
+            // Basınç değerini ve uyarı eşiğini (örn: 90) gönderiyoruz.
+            // Eğer eşiği geçerse "ACİL DURUM" anonsu çalacak.
+            MegaphoneSystem.Instance.CheckPressureEvent(currentPressure, warningThreshold);
+        }
+        // --------------------------------------------------
     }
 
     private void HandlePressureEffects()

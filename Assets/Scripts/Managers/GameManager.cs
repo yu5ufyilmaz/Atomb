@@ -34,6 +34,24 @@ public class GameManager : MonoBehaviour
         RefreshReferences();
     }
 
+    public bool IsCursorRequired()
+    {
+        // 1. Eğer hiçbir etkileşimde değilsek (FPS modu), fare GİZLİ olmalı.
+        if (activeInteraction == null)
+            return false;
+
+        // 2. Eğer Kitap okuyorsak, fare AÇIK olmalı.
+        if (activeInteraction is InteractableBook)
+            return true;
+
+        // 3. Eğer Vana (Valve) çeviriyorsak, fare AÇIK olmalı.
+        if (activeInteraction is InteractablePressureValve)
+            return true;
+
+        // 4. Diğer makinalarda (Turing, Osiloskop vb.) fare GİZLİ olmalı.
+        return false;
+    }
+
     public void RefreshReferences()
     {
         breakerBox = FindObjectOfType<BreakerBox>();

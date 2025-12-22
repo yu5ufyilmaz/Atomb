@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Text;
 using Cinemachine;
+using StarterAssets; // Karakter scriptlerini garanti bulmak için
 using UnityEngine;
 
 public class InteractableTuringMachine : MonoBehaviour, IInteractable, IForceExitable
@@ -15,25 +16,24 @@ public class InteractableTuringMachine : MonoBehaviour, IInteractable, IForceExi
     [SerializeField]
     private Animator playerAnimator;
 
-    [Header("Head Cam & Animation")]
-    [SerializeField]
-    private string interactAnimTrigger = "SitDown";
+    [Header("⚠️ ÖNEMLİ: Script Referansları")]
+    public MonoBehaviour playerMovementScript;
+    public PlayerInteraction playerInteractionScript;
+
+    [Header("🎥 KAMERA (YENİ SİSTEM)")]
+    [Tooltip("Kameranın gidip duracağı nokta (Boş bir GameObject oluşturup buraya sürükle)")]
+    public Transform fixedCameraTransform;
+    private CinemachineVirtualCamera interactVCam; // Kod otomatik oluşturacak
+
+    [Header("📍 Etkileşim Pozisyonu")]
+    public Transform interactionStandPoint;
+    public float autoWalkSpeed = 2.0f;
+    public float autoRotateSpeed = 5.0f;
 
     [SerializeField]
-    private float animationDuration = 1.5f;
+    private string interactAnimTrigger = "InteractIdle"; // Oturma veya bekleme animasyonu
 
-    [SerializeField]
-    private Transform cameraViewTarget;
-
-    [SerializeField]
-    private Vector3 headOffset = new Vector3(0, 0.1f, 0.15f);
-
-    private Transform mainCamera;
-    private CinemachineBrain cinemachineBrain;
-    private Transform headBone;
-    private Transform cinemachineTarget;
-
-    [Header("Makine Bileşenleri (Çarklar)")]
+    [Header("Makine Bileşenleri")]
     [SerializeField]
     private Transform[] wordWheelModels;
 
@@ -43,7 +43,6 @@ public class InteractableTuringMachine : MonoBehaviour, IInteractable, IForceExi
     [SerializeField]
     private Transform[] numberWheelModels;
 
-    [Header("Makine Bileşenleri (Kollar)")]
     [SerializeField]
     private Transform[] wordLeverModels;
 
@@ -53,7 +52,7 @@ public class InteractableTuringMachine : MonoBehaviour, IInteractable, IForceExi
     [SerializeField]
     private Transform[] numberLeverModels;
 
-    [Header("Rotasyon Ayarları")]
+    [Header("Ayarlar")]
     [SerializeField]
     private Vector3 leverRotationAxis = Vector3.right;
 
@@ -73,41 +72,23 @@ public class InteractableTuringMachine : MonoBehaviour, IInteractable, IForceExi
     [SerializeField]
     private GameObject[] numberWheelHighlights;
 
-    [Header("Data (Otomatik Senkronize)")]
+    [Header("Data")]
     [SerializeField]
     private string wordChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ-";
 
     [SerializeField]
     private string numberChars = "0123456789";
-
-    // Yedek liste
     private string[] symbolChars = { "+", "-", "/", "√", "%", "<=", "=", "<", ">", ".", ",", ">=" };
+    private float wordStepAngle,
+        symbolStepAngle,
+        numberStepAngle;
 
-    // --- OTOMATİK HESAPLANAN AÇILAR ---
-    private float wordStepAngle;
-    private float symbolStepAngle;
-    private float numberStepAngle;
-
-    [Header("🔧 HARF (WORD) AYARLARI")]
-    [Tooltip("İŞARETLE: D tuşu A -> B yapar. İŞARETLEME: A -> Z yapar.")]
     public bool useForwardLetterOrder = true;
-
-    [Tooltip("Harf sırasını değiştirince Kol ters dönerse bunu işaretle.")]
     public bool invertWordLeverRotation = false;
-
-    [Header("🔧 SEMBOL (SYMBOL) AYARLARI")]
-    [Tooltip("Çarkı döndürdüğünde semboller ters sırada geliyorsa bunu işaretle.")]
     public bool isSymbolOrderReversed = true;
-
-    [Tooltip("Ekranda gördüğün sembol ile aşağıdaki Debug yazısı tutmuyorsa bu sayıyı değiştir.")]
     public int symbolVisualOffset = 0;
 
-    [Header("👀 CANLI KONTROL")]
-    [Tooltip("Şu an kodun algıladığı sembol budur. Modeldekiyle aynı olmalı!")]
-    [SerializeField]
-    private string DEBUG_CurrentSymbol = "";
-
-    [Header("Göstergeler & Ses")]
+    [Header("Ses & Görsel")]
     [SerializeField]
     private Renderer[] indicatorRenderers;
 
@@ -117,95 +98,101 @@ public class InteractableTuringMachine : MonoBehaviour, IInteractable, IForceExi
     [SerializeField]
     private Material greenMaterial;
 
-    [Header("🔊 SES EFEKTLERİ")]
     [SerializeField]
     private AudioSource audioSource;
 
-    [Tooltip("Çark döndürme sesi (Tık)")]
     [SerializeField]
     private AudioClip wheelClickSound;
 
-    [Tooltip("Doğru şifre sesi (Başarı)")]
     [SerializeField]
     private AudioClip successSound;
 
-    [Tooltip("Yanlış şifre sesi (Hata)")]
     [SerializeField]
     private AudioClip failSound;
 
-    [Tooltip("Makineye oturma sesi")]
     [SerializeField]
     private AudioClip accessSound;
 
-    [Tooltip("Makineden kalkma sesi (Bitirme)")]
     [SerializeField]
     private AudioClip exitSound;
 
+    // Durum Değişkenleri
     private bool isInteracting = false;
-    private int currentGroup = 0;
+    private bool inMachineMode = false;
+    private bool isExiting = false;
 
-    // İndeksler
+    private int currentGroup = 0;
     private int currentWordIndex = 0;
     private int currentNumberIndex = 0;
-
     private int[] wordWheelIndices;
     private int symbolVisualStep = 0;
     private int[] numberWheelIndices;
 
     // Hedef Rotasyonlar
-    private Quaternion[] wordWheelTargets;
+    private Quaternion[] wordWheelTargets,
+        numberWheelTargets;
     private Quaternion symbolWheelTarget;
-    private Quaternion[] numberWheelTargets;
-
-    // Başlangıç Rotasyonları
-    private Quaternion[] wordWheelInitialRots;
+    private Quaternion[] wordWheelInitialRots,
+        numberWheelInitialRots;
     private Quaternion symbolWheelInitialRot;
-    private Quaternion[] numberWheelInitialRots;
-
-    // Kol Rotasyonları
-    private Quaternion[] wordLeverTargets;
+    private Quaternion[] wordLeverTargets,
+        numberLeverTargets;
     private Quaternion symbolLeverTarget;
-    private Quaternion[] numberLeverTargets;
-    private Quaternion[] wordLeverInitialRots;
+    private Quaternion[] wordLeverInitialRots,
+        numberLeverInitialRots;
     private Quaternion symbolLeverInitialRot;
-    private Quaternion[] numberLeverInitialRots;
 
     private void Start()
     {
-        if (PasswordManager.Instance != null && PasswordManager.Instance.symbols.Length > 0)
-        {
-            symbolChars = PasswordManager.Instance.symbols;
-        }
-
-        wordStepAngle = 360f / wordChars.Length;
-        symbolStepAngle = 360f / symbolChars.Length;
-        numberStepAngle = 360f / numberChars.Length;
-
+        // 1. Karakter Referanslarını Bul
         if (playerController == null)
             playerController = FindObjectOfType<UnityEngine.CharacterController>();
 
         if (playerController != null)
         {
-            playerLookScript =
-                playerController.GetComponent("StarterAssetsInputs") as MonoBehaviour;
-            playerAnimator = playerController.GetComponent<Animator>();
-            if (playerAnimator)
-                headBone = playerAnimator.GetBoneTransform(HumanBodyBones.Head);
-            if (headBone == null)
-                headBone = playerController.transform;
+            GameObject p = playerController.gameObject;
+            playerLookScript = p.GetComponent<StarterAssetsInputs>() as MonoBehaviour;
+            playerAnimator = p.GetComponent<Animator>();
 
-            Transform camRoot = playerController.transform.Find("PlayerCameraRoot");
-            cinemachineTarget = (camRoot != null) ? camRoot : headBone;
+            // Movement script'i garanti bul
+            if (playerMovementScript == null)
+                playerMovementScript = p.GetComponent<StarterAssets.CharacterController>();
+            if (playerMovementScript == null)
+                playerMovementScript = p.GetComponent("ThirdPersonController") as MonoBehaviour;
+
+            if (playerInteractionScript == null)
+                playerInteractionScript = FindObjectOfType<PlayerInteraction>();
         }
 
-        if (Camera.main != null)
+        // 2. Sanal Kamera (VCam) Oluşturma/Bulma
+        if (fixedCameraTransform != null)
         {
-            mainCamera = Camera.main.transform;
-            cinemachineBrain = mainCamera.GetComponent<CinemachineBrain>();
+            interactVCam = fixedCameraTransform.GetComponentInChildren<CinemachineVirtualCamera>();
+            if (interactVCam == null)
+            {
+                // Eğer yoksa kodla oluşturuyoruz
+                GameObject vcamObj = new GameObject("Turing_Interact_VCam");
+                vcamObj.transform.parent = fixedCameraTransform;
+                vcamObj.transform.localPosition = Vector3.zero;
+                vcamObj.transform.localRotation = Quaternion.identity;
+                interactVCam = vcamObj.AddComponent<CinemachineVirtualCamera>();
+                interactVCam.Priority = 0; // Başlangıçta pasif
+            }
         }
+        else
+        {
+            Debug.LogError("TuringMachine: FIXED CAMERA TRANSFORM EKSİK! Lütfen atayın.");
+        }
+
+        // 3. Makine Ayarları
+        if (PasswordManager.Instance != null && PasswordManager.Instance.symbols.Length > 0)
+            symbolChars = PasswordManager.Instance.symbols;
+
+        wordStepAngle = 360f / wordChars.Length;
+        symbolStepAngle = 360f / symbolChars.Length;
+        numberStepAngle = 360f / numberChars.Length;
 
         InitializeWheels();
-        UpdateDebugSymbol();
     }
 
     private void InitializeWheels()
@@ -236,7 +223,6 @@ public class InteractableTuringMachine : MonoBehaviour, IInteractable, IForceExi
                 wordLeverTargets[i] = wordLeverModels[i].localRotation;
             }
         }
-
         for (int i = 0; i < numberWheelModels.Length; i++)
         {
             if (numberWheelModels[i])
@@ -250,7 +236,6 @@ public class InteractableTuringMachine : MonoBehaviour, IInteractable, IForceExi
                 numberLeverTargets[i] = numberLeverModels[i].localRotation;
             }
         }
-
         if (symbolWheelModel)
         {
             symbolWheelInitialRot = symbolWheelModel.localRotation;
@@ -268,130 +253,177 @@ public class InteractableTuringMachine : MonoBehaviour, IInteractable, IForceExi
 
     public void Interact()
     {
-        if (!isInteracting)
-            StartCoroutine(EnterMachineView());
+        if (isInteracting || inMachineMode || isExiting)
+            return;
+        StartCoroutine(MoveToInteractionPoint());
     }
 
-    public string GetInteractionPrompt() => isInteracting ? "" : "[Sol Tık] Turing Makinesi";
-
-    private IEnumerator EnterMachineView()
+    // --- ADIM 1: YÜRÜME ---
+    private IEnumerator MoveToInteractionPoint()
     {
         isInteracting = true;
-        if (GameManager.Instance != null)
-            GameManager.Instance.activeInteraction = this;
+        inMachineMode = false;
 
-        if (playerController)
-            playerController.enabled = false;
         if (playerLookScript)
             playerLookScript.enabled = false;
-        if (playerAnimator)
-            playerAnimator.SetTrigger(interactAnimTrigger);
+        if (playerMovementScript)
+            playerMovementScript.enabled = false;
+        if (playerController)
+            playerController.enabled = true;
 
-        // SES: Makineye oturma sesi
-        PlaySound(accessSound);
-
-        if (cinemachineBrain)
-            cinemachineBrain.enabled = false;
-
-        if (headBone != null)
+        if (interactionStandPoint != null)
         {
-            mainCamera.SetParent(headBone);
+            float timer = 0f;
+            int animIDSpeed = Animator.StringToHash("Speed");
+            int animIDMotionSpeed = Animator.StringToHash("MotionSpeed");
+            int animIDGrounded = Animator.StringToHash("Grounded");
+
+            while (timer < 4.0f)
+            {
+                timer += Time.deltaTime;
+                Vector3 targetPos = interactionStandPoint.position;
+                Vector3 playerPos = playerController.transform.position;
+                playerPos.y = targetPos.y;
+
+                if (Vector3.Distance(playerPos, targetPos) < 0.15f)
+                    break;
+
+                Vector3 dir = (targetPos - playerPos).normalized;
+                if (dir != Vector3.zero)
+                {
+                    playerController.transform.rotation = Quaternion.Slerp(
+                        playerController.transform.rotation,
+                        Quaternion.LookRotation(dir),
+                        Time.deltaTime * autoRotateSpeed
+                    );
+                }
+
+                float speed = autoWalkSpeed;
+                if (playerAnimator)
+                {
+                    playerAnimator.SetBool(animIDGrounded, true);
+                    playerAnimator.SetFloat(animIDSpeed, speed);
+                    playerAnimator.SetFloat(animIDMotionSpeed, 1f);
+                }
+
+                playerController.Move(dir * speed * Time.deltaTime + Vector3.down); // Yerçekimi ekle
+                yield return null;
+            }
+        }
+
+        // Son Oturtma (Snap)
+        if (interactionStandPoint != null)
+        {
             float t = 0f;
-            Vector3 startPos = mainCamera.localPosition;
-            Quaternion startRot = mainCamera.localRotation;
+            Quaternion startRot = playerController.transform.rotation;
+            Vector3 startPos = playerController.transform.position;
             while (t < 0.5f)
             {
                 t += Time.deltaTime;
-                float s = t / 0.5f;
-                mainCamera.localPosition = Vector3.Lerp(startPos, headOffset, s);
-                mainCamera.localRotation = Quaternion.Slerp(startRot, Quaternion.identity, s);
+                playerController.transform.position = Vector3.Lerp(
+                    startPos,
+                    interactionStandPoint.position,
+                    t / 0.5f
+                );
+                playerController.transform.rotation = Quaternion.Slerp(
+                    startRot,
+                    interactionStandPoint.rotation,
+                    t / 0.5f
+                );
+                if (playerAnimator)
+                    playerAnimator.SetFloat("Speed", 0);
                 yield return null;
             }
         }
-        yield return new WaitForSeconds(animationDuration - 0.5f);
-        if (cameraViewTarget != null)
-        {
-            mainCamera.SetParent(null);
-            Vector3 startDockPos = mainCamera.position;
-            Quaternion startDockRot = mainCamera.rotation;
-            float dockTime = 0.8f;
-            float t = 0f;
-            while (t < dockTime)
-            {
-                t += Time.deltaTime;
-                float s = Mathf.SmoothStep(0f, 1f, t / dockTime);
-                mainCamera.position = Vector3.Lerp(startDockPos, cameraViewTarget.position, s);
-                mainCamera.rotation = Quaternion.Slerp(startDockRot, cameraViewTarget.rotation, s);
-                yield return null;
-            }
-            mainCamera.position = cameraViewTarget.position;
-            mainCamera.rotation = cameraViewTarget.rotation;
-        }
-        TogglePlayerModel(false);
-        Cursor.lockState = CursorLockMode.None;
-        Cursor.visible = true;
-        if (PasswordManager.Instance != null)
+
+        StartCoroutine(EnterMachineView());
+    }
+
+    // --- ADIM 2: YUMUŞAK GEÇİŞ (GİRİŞ) ---
+    private IEnumerator EnterMachineView()
+    {
+        if (GameManager.Instance)
+            GameManager.Instance.activeInteraction = this;
+
+        // Kontrolleri dondur
+        if (playerController)
+            playerController.enabled = false;
+        if (playerAnimator)
+            playerAnimator.SetTrigger(interactAnimTrigger);
+
+        PlaySound(accessSound);
+
+        // VCAM AKTİF ET (Blend otomatik başlar)
+        if (interactVCam)
+            interactVCam.Priority = 100; // Ana kameradan yüksek olsun
+
+        // Blend süresini bekle (Varsayılan 1.5 - 2 saniye idealdir)
+        yield return new WaitForSeconds(1.5f);
+
+        inMachineMode = true;
+
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
+        if (playerInteractionScript)
+            playerInteractionScript.ToggleCrosshair(false);
+        if (ControlsUIManager.Instance)
+            ControlsUIManager.Instance.ShowControls("W/S: Grup | A/D: Çevir | Q/E: Harf | F: Kalk");
+        if (PasswordManager.Instance)
             UpdateIndicators(PasswordManager.Instance.GetValidatedPasswordCount());
+
         UpdateActiveWheelHighlight();
     }
 
+    // --- ADIM 3: YUMUŞAK GEÇİŞ (ÇIKIŞ) ---
     private IEnumerator ExitMachineView()
     {
-        isInteracting = false;
-        if (GameManager.Instance != null)
-            GameManager.Instance.activeInteraction = null;
+        if (isExiting)
+            yield break;
+        isExiting = true;
+        inMachineMode = false;
 
-        // SES: Makineden kalkma sesi
         PlaySound(exitSound);
-
         ClearAllHighlights();
-        TogglePlayerModel(true);
-        if (cinemachineTarget != null)
-        {
-            mainCamera.SetParent(null);
-            Vector3 startPos = mainCamera.position;
-            Quaternion startRot = mainCamera.rotation;
-            float undockTime = 0.6f;
-            float t = 0f;
-            while (t < undockTime)
-            {
-                t += Time.deltaTime;
-                float s = Mathf.SmoothStep(0f, 1f, t / undockTime);
-                mainCamera.position = Vector3.Lerp(startPos, cinemachineTarget.position, s);
-                mainCamera.rotation = Quaternion.Slerp(startRot, cinemachineTarget.rotation, s);
-                yield return null;
-            }
-        }
-        if (playerController != null)
-        {
-            Vector3 camForward = mainCamera.forward;
-            camForward.y = 0;
-            if (camForward != Vector3.zero)
-                playerController.transform.rotation = Quaternion.LookRotation(camForward);
-        }
-        if (cinemachineBrain)
-            cinemachineBrain.enabled = true;
+
+        // VCAM PASİF ET (Unity otomatik olarak karakterin arkasına süzer)
+        if (interactVCam)
+            interactVCam.Priority = 0;
+
+        // Blend süresini bekle
+        yield return new WaitForSeconds(1.5f);
+
+        // Kontrolleri Aç
         if (playerController)
             playerController.enabled = true;
         if (playerLookScript)
             playerLookScript.enabled = true;
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
+        if (playerMovementScript)
+            playerMovementScript.enabled = true;
+
+        if (playerInteractionScript)
+            playerInteractionScript.ToggleCrosshair(true);
+        if (ControlsUIManager.Instance)
+            ControlsUIManager.Instance.HideControls();
+        if (GameManager.Instance)
+            GameManager.Instance.activeInteraction = null;
+
+        isInteracting = false;
+        isExiting = false;
     }
 
     private void Update()
     {
-        if (!isInteracting)
+        if (!inMachineMode || isExiting)
             return;
 
-        UpdateDebugSymbol();
-
+        // ÇIKIŞ
         if (Input.GetKeyDown(KeyCode.F))
         {
             StartCoroutine(ExitMachineView());
             return;
         }
 
+        // --- MAKİNE KONTROLLERİ ---
         if (Input.GetKeyDown(KeyCode.W))
         {
             currentGroup = (currentGroup - 1 + 3) % 3;
@@ -428,13 +460,13 @@ public class InteractableTuringMachine : MonoBehaviour, IInteractable, IForceExi
 
         if (rotationInput != 0)
             RotateActiveWheel((int)rotationInput);
-
         if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter))
             CheckPassword();
 
         AnimateWheels();
     }
 
+    // ... Yardımcı Fonksiyonlar (Değişmedi) ...
     private void HandleIndexChange(int d)
     {
         switch (currentGroup)
@@ -452,45 +484,37 @@ public class InteractableTuringMachine : MonoBehaviour, IInteractable, IForceExi
 
     private void RotateActiveWheel(int d)
     {
-        // SES: Döndürme (Click) sesi
         PlaySound(wheelClickSound);
-
         switch (currentGroup)
         {
-            case 0: // HARF GRUBU
+            case 0:
                 int cW = wordChars.Length;
-                int direction = useForwardLetterOrder ? d : -d;
-
+                int dir = useForwardLetterOrder ? d : -d;
                 wordWheelIndices[currentWordIndex] =
-                    (wordWheelIndices[currentWordIndex] + direction + cW) % cW;
-
+                    (wordWheelIndices[currentWordIndex] + dir + cW) % cW;
                 wordWheelTargets[currentWordIndex] =
                     wordWheelInitialRots[currentWordIndex]
                     * Quaternion.AngleAxis(
                         wordStepAngle * wordWheelIndices[currentWordIndex],
                         rotationAxis
                     );
-
                 if (currentWordIndex < wordLeverModels.Length && wordLeverModels[currentWordIndex])
                 {
-                    float leverDirectionMult = invertWordLeverRotation ? -1f : 1f;
+                    float mult = invertWordLeverRotation ? -1f : 1f;
                     wordLeverTargets[currentWordIndex] =
                         wordLeverInitialRots[currentWordIndex]
                         * Quaternion.AngleAxis(
-                            wordStepAngle * wordWheelIndices[currentWordIndex] * leverDirectionMult,
+                            wordStepAngle * wordWheelIndices[currentWordIndex] * mult,
                             leverRotationAxis
                         );
                 }
                 break;
-
-            case 1: // SEMBOL GRUBU
+            case 1:
                 int cS = symbolChars.Length;
                 symbolVisualStep = (symbolVisualStep - d + cS) % cS;
-
                 symbolWheelTarget =
                     symbolWheelInitialRot
                     * Quaternion.AngleAxis(symbolStepAngle * symbolVisualStep, rotationAxis);
-
                 if (symbolLeverModel)
                     symbolLeverTarget =
                         symbolLeverInitialRot
@@ -498,22 +522,17 @@ public class InteractableTuringMachine : MonoBehaviour, IInteractable, IForceExi
                             symbolStepAngle * symbolVisualStep,
                             leverRotationAxis
                         );
-
-                UpdateDebugSymbol();
                 break;
-
-            case 2: // SAYI GRUBU
+            case 2:
                 int cN = numberChars.Length;
                 numberWheelIndices[currentNumberIndex] =
                     (numberWheelIndices[currentNumberIndex] - d + cN) % cN;
-
                 numberWheelTargets[currentNumberIndex] =
                     numberWheelInitialRots[currentNumberIndex]
                     * Quaternion.AngleAxis(
                         numberStepAngle * numberWheelIndices[currentNumberIndex],
                         rotationAxis
                     );
-
                 if (
                     currentNumberIndex < numberLeverModels.Length
                     && numberLeverModels[currentNumberIndex]
@@ -531,24 +550,10 @@ public class InteractableTuringMachine : MonoBehaviour, IInteractable, IForceExi
     private int GetCorrectSymbolIndex()
     {
         int total = symbolChars.Length;
-        int calculatedIndex = symbolVisualStep;
-
+        int idx = symbolVisualStep;
         if (isSymbolOrderReversed)
-        {
-            calculatedIndex = (total - (symbolVisualStep % total)) % total;
-        }
-
-        calculatedIndex = (calculatedIndex + symbolVisualOffset + total) % total;
-        return calculatedIndex;
-    }
-
-    private void UpdateDebugSymbol()
-    {
-        int idx = GetCorrectSymbolIndex();
-        if (idx >= 0 && idx < symbolChars.Length)
-        {
-            DEBUG_CurrentSymbol = symbolChars[idx];
-        }
+            idx = (total - (symbolVisualStep % total)) % total;
+        return (idx + symbolVisualOffset + total) % total;
     }
 
     private void CheckPassword()
@@ -559,30 +564,34 @@ public class InteractableTuringMachine : MonoBehaviour, IInteractable, IForceExi
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < wordWheelIndices.Length; i++)
             sb.Append(wordChars[wordWheelIndices[i]]);
-        string wordPart = sb.ToString();
-
-        int finalSymbolIndex = GetCorrectSymbolIndex();
-        string symbolPart = symbolChars[finalSymbolIndex];
-
-        string numberPart =
+        string wp = sb.ToString();
+        string sp = symbolChars[GetCorrectSymbolIndex()];
+        string np =
             $"{numberChars[numberWheelIndices[0]]}{numberChars[numberWheelIndices[1]]}{numberChars[numberWheelIndices[2]]}";
-
-        string inputPassword = $"{wordPart}_{symbolPart}_{numberPart}";
-        Debug.Log($"GİRİLEN ŞİFRE: '{inputPassword}'");
-
-        if (PasswordManager.Instance.ValidatePassword(inputPassword))
+        string pw = $"{wp}_{sp}_{np}";
+        
+        Debug.Log($"GİRİLEN ŞİFRE: '{pw}'");
+        
+        if (PasswordManager.Instance.ValidatePassword(pw))
         {
-            // SES: Başarı
             PlaySound(successSound);
             UpdateIndicators(PasswordManager.Instance.GetValidatedPasswordCount());
+
+            // --- EKLENEN KISIM: Megafon Sistemi ---
+            if (MegaphoneSystem.Instance != null)
+            {
+                // Eğer bu ilk şifreyse Tutorial biter ("Aferin, sistemler açıldı" vs.)
+                // Değilse sadece "Güzel, devam et" der.
+                MegaphoneSystem.Instance.OnTutorialCompleted(); 
+                MegaphoneSystem.Instance.OnCodeSubmitted();
+            }
+            // -------------------------------------
         }
         else
         {
-            // SES: Hata
             PlaySound(failSound);
         }
     }
-
     private void UpdateIndicators(int c)
     {
         if (indicatorRenderers == null)
@@ -624,15 +633,6 @@ public class InteractableTuringMachine : MonoBehaviour, IInteractable, IForceExi
             foreach (var h in numberWheelHighlights)
                 if (h)
                     h.SetActive(false);
-    }
-
-    private void TogglePlayerModel(bool show)
-    {
-        if (!playerController)
-            return;
-        Renderer[] renderers = playerController.GetComponentsInChildren<Renderer>();
-        foreach (var r in renderers)
-            r.enabled = show;
     }
 
     private void AnimateWheels()
@@ -682,10 +682,6 @@ public class InteractableTuringMachine : MonoBehaviour, IInteractable, IForceExi
             );
     }
 
-    public void OnFocus() { }
-
-    public void OnLoseFocus() { }
-
     private void PlaySound(AudioClip c)
     {
         if (audioSource && c)
@@ -697,4 +693,10 @@ public class InteractableTuringMachine : MonoBehaviour, IInteractable, IForceExi
         if (isInteracting)
             StartCoroutine(ExitMachineView());
     }
+
+    public void OnFocus() { }
+
+    public void OnLoseFocus() { }
+
+    public string GetInteractionPrompt() => isInteracting ? "" : "[Sol Tık] Turing Makinesi";
 }

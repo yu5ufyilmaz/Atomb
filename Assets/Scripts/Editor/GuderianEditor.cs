@@ -10,15 +10,17 @@ public class GuderianEditor : Editor
     bool showBehav = true;
     bool showSpawn = false;
 
+    private void OnEnable()
+    {
+        // Eski 'ambushDoorOffset' referansı buradan kaldırıldı.
+    }
+
     public override void OnInspectorGUI()
     {
-        // Hedef scripti al
         GuderianAI script = (GuderianAI)target;
 
-        // Verileri güncelle (Bu satır çok önemlidir, null hatalarını önler)
         serializedObject.Update();
 
-        // --- BAŞLIK VE DURUM ---
         GUIStyle titleStyle = new GUIStyle(EditorStyles.boldLabel)
         {
             fontSize = 16,
@@ -31,7 +33,6 @@ public class GuderianEditor : Editor
         EditorGUI.LabelField(r, "👹 GUDERIAN AI", titleStyle);
         EditorGUILayout.Space(5);
 
-        // Durum Butonu
         GUI.backgroundColor =
             script.currentState != GuderianAI.GuderianState.Hidden
                 ? new Color(1f, 0.6f, 0.2f)
@@ -55,7 +56,7 @@ public class GuderianEditor : Editor
             EditorGUILayout.PropertyField(serializedObject.FindProperty("jumpscareSound"));
             EditorGUILayout.EndVertical();
         }
-        EditorGUILayout.EndFoldoutHeaderGroup(); // <--- GRUBU KAPAT
+        EditorGUILayout.EndFoldoutHeaderGroup();
 
         // --- 2. GRUP: DAVRANIŞ AYARLARI ---
         showBehav = EditorGUILayout.BeginFoldoutHeaderGroup(showBehav, "🧠 Davranış Ayarları");
@@ -72,9 +73,12 @@ public class GuderianEditor : Editor
             EditorGUILayout.LabelField("Hareket", EditorStyles.boldLabel);
             EditorGUILayout.PropertyField(serializedObject.FindProperty("walkSpeed"));
             EditorGUILayout.PropertyField(serializedObject.FindProperty("lookAtDoorThreshold"));
+
+            // Hata veren 'Pusu' kısmı buradan kaldırıldı çünkü artık RoomManager üzerinden yönetiliyor.
+
             EditorGUILayout.EndVertical();
         }
-        EditorGUILayout.EndFoldoutHeaderGroup(); // <--- GRUBU KAPAT
+        EditorGUILayout.EndFoldoutHeaderGroup();
 
         // --- 3. GRUP: SPAWN AYARLARI ---
         showSpawn = EditorGUILayout.BeginFoldoutHeaderGroup(showSpawn, "📍 Spawn ve Jumpscare");
@@ -89,9 +93,8 @@ public class GuderianEditor : Editor
             EditorGUILayout.PropertyField(serializedObject.FindProperty("spawnYOffset"));
             EditorGUILayout.EndVertical();
         }
-        EditorGUILayout.EndFoldoutHeaderGroup(); // <--- GRUBU KAPAT
+        EditorGUILayout.EndFoldoutHeaderGroup();
 
-        // 3. Değişiklikleri kaydet (Undo sistemi için gerekli)
         serializedObject.ApplyModifiedProperties();
     }
 }

@@ -88,15 +88,37 @@ public class PauseManager : MonoBehaviour
         if (pauseMenuPanel != null)
             pauseMenuPanel.SetActive(false);
 
-        // 4. Mouse'u Kilitle ve Gizle
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
-
-        // 5. Karakterin Kamera Dönüşünü Aç
+        // 4. Inputları geri aç
         if (playerInputs != null)
             playerInputs.cursorInputForLook = true;
 
-        Debug.Log("Oyun Devam Ediyor.");
+        // --- KRİTİK DÜZELTME BURADA ---
+        // Körlemesine fareyi kapatmak yerine, duruma göre karar veriyoruz.
+
+        bool cursorNeeded = false;
+        if (GameManager.Instance != null)
+        {
+            cursorNeeded = GameManager.Instance.IsCursorRequired();
+        }
+
+        if (cursorNeeded)
+        {
+            // Kitapta veya Vanadaysak fare kalsın
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
+
+            // Eğer karakterin kamerasını kilitlemek gerekiyorsa (Kitap okurken kafa dönmesin diye)
+            if (playerInputs != null)
+                playerInputs.cursorInputForLook = false;
+        }
+        else
+        {
+            // Normal oyun veya diğer makinalardaysak fare gitsin
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
+        }
+
+        Debug.Log("Oyun Devam Ediyor. Cursor Durumu: " + (cursorNeeded ? "AÇIK" : "KAPALI"));
     }
 
     public void LoadMainMenu()

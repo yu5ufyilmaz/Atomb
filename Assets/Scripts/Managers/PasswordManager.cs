@@ -2,23 +2,18 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using Random = UnityEngine.Random; // <--- BU SATIRI EKLE VE HATA DÜZELSİN
+using Random = UnityEngine.Random;
 
 public class PasswordManager : MonoBehaviour
 {
     public static PasswordManager Instance;
 
     [Header("Şifre Üretim Ayarları")]
-    [Tooltip("Kelime havuzu (WordPool) scriptable object'ini buraya ata.")]
     [SerializeField]
     private WordPool wordPool;
 
-    // --- GÜNCELLENDİ: Senin verdiğin sıralama ---
     [Header("Sembol Ayarları")]
-    [Tooltip("Turing Makinesindeki sembollerin 3D modeldeki sırasıyla AYNISI olmalı!")]
     public string[] symbols = { "+", "-", "/", "√", "%", "<=", "=", "<", ">", ".", ",", ">=" };
-
-    // Sıralama: 0:+, 1:-, 2:/, 3:√, 4:%, 5:<=, 6:=, 7:<, 8:>, 9:., 10:,, 11:>=
 
     [Header("Makineler")]
     [SerializeField]
@@ -31,6 +26,14 @@ public class PasswordManager : MonoBehaviour
     [SerializeField]
     private List<InteractableBook> allBooksInLevel;
 
+    [Header("Tutorial Ayarları")]
+    public string tutorialPassword = "START_=_001";
+
+    // YENİ: Tutorial notunu buraya sürükleyeceksin
+    public InteractableBook tutorialNoteBook;
+
+    [Header("Oyun Ayarları")]
+    [Tooltip("Kazanmak için gereken RANDOM şifre sayısı (Tutorial hariç)")]
     [SerializeField]
     private int totalPasswordsNeeded = 5;
 
@@ -38,6 +41,7 @@ public class PasswordManager : MonoBehaviour
     private List<string> requiredPasswords = new List<string>();
     private List<string> discoveredClues = new List<string>();
     private List<string> validatedPasswords = new List<string>();
+
     public event Action OnGameReadyToFinish;
 
     private void Awake()
@@ -61,44 +65,59 @@ public class PasswordManager : MonoBehaviour
 
         Debug.Log("PasswordManager: Yeni oyun başlatılıyor...");
 
-        int machineCount = 2;
+        // --- 1. TUTORIAL NOTU AYARI ---
+        if (tutorialNoteBook != null)
+        {
+            // Şifre çıkabilir özelliğini kodla açıyoruz ki unutulmasın
+            tutorialNoteBook.canContainPassword = true;
+
+            // 0. sayfaya (veya ilk uygun lokasyona) şifreyi bas
+            tutorialNoteBook.AssignPassword(tutorialPassword, 0);
+
+            Debug.Log($"[Tutorial] Not Hazır. Şifre: {tutorialPassword}");
+        }
+        else
+        {
+            Debug.LogWarning("UYARI: Tutorial Note Book atanmamış!");
+        }
+        // ------------------------------
+
+        // --- 2. RANDOM ŞİFRELERİN DAĞITIMI ---
+        int machineCount = 2; // Osiloskop + Spektrometre
         int bookCount = totalPasswordsNeeded - machineCount;
 
+        // Tutorial notu hariç diğer uygun kitapları bul
         var eligibleBooks = allBooksInLevel
             .Where(b =>
                 b.canContainPassword
                 && b.bookIdentity != null
                 && b.bookIdentity.possibleLocations.Count > 0
+                && b != tutorialNoteBook // <--- ÖNEMLİ: Tutorial notunu havuza katma
             )
             .ToList();
 
         if (eligibleBooks.Count < bookCount)
         {
-            Debug.LogError(
-                $"Yeterli sayıda uygun kitap yok! Gereken: {bookCount}, Uygun: {eligibleBooks.Count}"
-            );
+            Debug.LogError($"Yeterli kitap yok! Gereken: {bookCount}, Var: {eligibleBooks.Count}");
             return;
         }
 
-        // A) OSİLOSKOP ŞİFRESİ
+        // A) MAKİNELER
         if (oscilloscope != null)
         {
             string pass1 = GenerateRandomPassword();
             oscilloscope.AssignPassword(pass1);
             requiredPasswords.Add(pass1);
-            Debug.Log($"[Şifre 1] Osiloskop: {pass1}");
         }
 
-        // B) SPEKTROMETRE ŞİFRESİ
         if (spectrometer != null)
         {
             string pass2 = GenerateRandomPassword();
             spectrometer.AssignPassword(pass2);
             requiredPasswords.Add(pass2);
-            Debug.Log($"[Şifre 2] Spektrometre: {pass2}");
         }
 
-        // C) KİTAP ŞİFRELERİ
+        // B) KİTAPLAR
         var selectedBooks = eligibleBooks.OrderBy(x => Random.value).Take(bookCount).ToList();
 
         foreach (var book in selectedBooks)
@@ -108,10 +127,10 @@ public class PasswordManager : MonoBehaviour
 
             book.AssignPassword(bookPass, randomLocIndex);
             requiredPasswords.Add(bookPass);
-            Debug.Log($"[Kitap Şifresi] {book.name}: {bookPass}");
+            Debug.Log($"[Oyun Şifresi] {book.name}: {bookPass}");
         }
 
-        Debug.Log($"DAĞITIM TAMAMLANDI! Toplam {requiredPasswords.Count} adet şifre aktif.");
+        Debug.Log($"DAĞITIM TAMAM. {requiredPasswords.Count} Oyun Şifresi + 1 Tutorial Şifresi.");
     }
 
     private string GenerateRandomPassword()
@@ -124,8 +143,13 @@ public class PasswordManager : MonoBehaviour
 
     public void DiscoverClue(string passwordID)
     {
-        if (!requiredPasswords.Contains(passwordID))
+        // Sadece geçerli şifreleri (veya tutorial şifresini) deftere kaydet
+        bool isGamePass = requiredPasswords.Contains(passwordID);
+        bool isTutorialPass = (passwordID == tutorialPassword);
+
+        if (!isGamePass && !isTutorialPass)
             return;
+
         if (discoveredClues.Contains(passwordID))
             return;
 
@@ -133,40 +157,44 @@ public class PasswordManager : MonoBehaviour
 
         if (NotebookUI.Instance != null)
             NotebookUI.Instance.ShowPasswordNotification(passwordID);
-
-        Debug.Log($"YENİ İPUCU KAYDEDİLDİ: {passwordID}");
     }
 
     public bool ValidatePassword(string passwordID)
     {
+        // 1. DURUM: TUTORIAL ŞİFRESİ
+        if (passwordID == tutorialPassword)
+        {
+            Debug.Log("📘 TUTORIAL ŞİFRESİ GİRİLDİ (Sayaca eklenmiyor).");
+            // TRUE döndür ki makine yeşil ışık yaksın ve onay sesi çalsın.
+            // Ama 'validatedPasswords' listesine eklemiyoruz.
+            return true;
+        }
+
+        // 2. DURUM: OYUN ŞİFRESİ
         if (!requiredPasswords.Contains(passwordID))
         {
-            Debug.Log($"❌ YANLIŞ ŞİFRE: '{passwordID}'");
-            return false;
+            return false; // Yanlış
         }
 
         if (validatedPasswords.Contains(passwordID))
         {
-            Debug.Log($"⚠️ ZATEN GİRİLMİŞ: '{passwordID}'");
-            return true;
+            return true; // Zaten girilmiş
         }
 
+        // Yeni doğru şifre
         validatedPasswords.Add(passwordID);
-        Debug.Log(
-            $"✅ DOĞRU ŞİFRE ONAYLANDI: '{passwordID}' ({validatedPasswords.Count}/{totalPasswordsNeeded})"
-        );
+        Debug.Log($"✅ OYUN ŞİFRESİ ONAYLANDI: {validatedPasswords.Count}/{totalPasswordsNeeded}");
 
-        // --- YENİ EKLENEN KISIM: KONTROL ---
+        // KAZANMA KONTROLÜ
         if (validatedPasswords.Count >= totalPasswordsNeeded)
         {
-            Debug.Log("🎉 TÜM ŞİFRELER BULUNDU! FİNAL KAPISI AÇILIYOR...");
-            OnGameReadyToFinish?.Invoke(); // Abone olanlara (Kapıya) haber ver
+            OnGameReadyToFinish?.Invoke();
         }
-        // -----------------------------------
 
         return true;
     }
 
+    // Getter Metotları
     public int GetValidatedPasswordCount() => validatedPasswords.Count;
 
     public int GetTotalRequiredCount() => totalPasswordsNeeded;

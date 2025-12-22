@@ -12,14 +12,40 @@ public class PasswordDataEditor : Editor
     public override void OnInspectorGUI()
     {
         PasswordData data = (PasswordData)target;
+        serializedObject.Update(); // Değişiklikleri yakala
 
-        DrawDefaultInspector(); // Listeyi standart göster
+        // --- 1. Standart Alanlar (Manuel Çizim) ---
+        EditorGUILayout.PropertyField(serializedObject.FindProperty("pageTexture"));
+        EditorGUILayout.PropertyField(serializedObject.FindProperty("totalPages"));
 
+        EditorGUILayout.Space(5);
+
+        // Tutorial Ayarı (Conditional Display)
+        SerializedProperty isTutorialProp = serializedObject.FindProperty("isTutorialData");
+        EditorGUILayout.PropertyField(isTutorialProp);
+
+        if (isTutorialProp.boolValue)
+        {
+            EditorGUI.indentLevel++;
+            EditorGUILayout.HelpBox(
+                "Bu data bir Tutorial kitabıdır. Aşağıdaki şifre sabit olarak atanacaktır.",
+                MessageType.Info
+            );
+            EditorGUILayout.PropertyField(serializedObject.FindProperty("tutorialPasswordID"));
+            EditorGUI.indentLevel--;
+        }
+
+        EditorGUILayout.Space(5);
+        EditorGUILayout.PropertyField(serializedObject.FindProperty("possibleLocations"));
+
+        serializedObject.ApplyModifiedProperties(); // Değişiklikleri kaydet
+
+        // --- 2. Görsel Düzenleyici (Mevcut Kod) ---
         if (data.pageTexture == null)
             return;
 
         EditorGUILayout.Space(10);
-        EditorGUILayout.LabelField("GÖRSEL DÜZENLEYİCİ", EditorStyles.boldLabel);
+        EditorGUILayout.LabelField("GÖRSEL DÜZENLEYİCİ (HOTSPOT)", EditorStyles.boldLabel);
 
         if (data.possibleLocations.Count == 0)
         {
@@ -63,7 +89,7 @@ public class PasswordDataEditor : Editor
         Rect screenRect = UVToScreen(currentEntry.hotspotUV, dispRect);
         Handles.DrawSolidRectangleWithOutline(screenRect, new Color(0, 1, 0, 0.3f), Color.green);
 
-        // --- Mouse ---
+        // --- Mouse Input ---
         HandleInput(dispRect, data, selectedIndex);
     }
 

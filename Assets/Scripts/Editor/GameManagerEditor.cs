@@ -21,11 +21,6 @@ public class GameManagerEditor : Editor
             alignment = TextAnchor.MiddleCenter,
             normal = { textColor = new Color(0.9f, 0.9f, 0.9f) },
         };
-        GUIStyle headerStyle = new GUIStyle(EditorStyles.boldLabel)
-        {
-            fontSize = 13,
-            normal = { textColor = Color.white },
-        };
         GUIStyle subHeaderStyle = new GUIStyle(EditorStyles.boldLabel)
         {
             fontSize = 11,
@@ -47,7 +42,7 @@ public class GameManagerEditor : Editor
         EditorGUILayout.Space(10);
 
         // =================================================================
-        // 1. ELEKTRİK SİSTEMİ (Breaker)
+        // 1. ELEKTRİK SİSTEMİ
         // =================================================================
         showBreakerSection = EditorGUILayout.BeginFoldoutHeaderGroup(
             showBreakerSection,
@@ -59,7 +54,6 @@ public class GameManagerEditor : Editor
             if (gm.breakerBox != null)
             {
                 BreakerBox bb = gm.breakerBox;
-                // BreakerBox editörde her zaman "Kapalı" (IsTripped = false) başlar varsayılan olarak.
                 bool isTripped = Application.isPlaying && bb.IsTripped;
 
                 GUI.backgroundColor = isTripped
@@ -103,7 +97,7 @@ public class GameManagerEditor : Editor
         EditorGUILayout.Space(5);
 
         // =================================================================
-        // 2. BASINÇ SİSTEMİ (VANA)
+        // 2. BASINÇ SİSTEMİ
         // =================================================================
         showPressureSection = EditorGUILayout.BeginFoldoutHeaderGroup(
             showPressureSection,
@@ -115,14 +109,11 @@ public class GameManagerEditor : Editor
             if (gm.pressureManager != null)
             {
                 PressureSystemManager pm = gm.pressureManager;
-
                 if (Application.isPlaying)
                 {
                     float pressure = pm.GetPressure();
-                    float threshold = pm.GetWarningThreshold();
                     bool isCritical = pm.IsWarningActive();
 
-                    // Durum Kutusu
                     GUI.backgroundColor = isCritical
                         ? Color.red
                         : (pressure > 50 ? Color.yellow : Color.green);
@@ -132,41 +123,21 @@ public class GameManagerEditor : Editor
                     GUILayout.Box(status, GUILayout.Height(25), GUILayout.ExpandWidth(true));
                     GUI.backgroundColor = Color.white;
 
-                    // Basınç Barı
-                    Rect r = EditorGUILayout.GetControlRect(false, 25);
-                    EditorGUI.DrawRect(r, new Color(0.1f, 0.1f, 0.1f));
-                    float fillWidth = r.width * (pressure / 100f);
-                    EditorGUI.DrawRect(
-                        new Rect(r.x, r.y, fillWidth, r.height),
+                    DrawBar(
+                        pressure / 100f,
+                        $"Basınç: %{pressure:F1}",
                         Color.Lerp(Color.green, Color.red, pressure / 100f)
                     );
 
-                    // Uyarı Çizgisi (Threshold)
-                    float thresholdX = r.x + (r.width * (threshold / 100f));
-                    EditorGUI.DrawRect(new Rect(thresholdX, r.y, 2, r.height), Color.yellow);
-
-                    EditorGUI.LabelField(
-                        r,
-                        $"Basınç: %{pressure:F1}",
-                        new GUIStyle(EditorStyles.boldLabel)
-                        {
-                            alignment = TextAnchor.MiddleCenter,
-                            normal = { textColor = Color.white },
-                        }
-                    );
-
-                    // Manuel Müdahale (Test İçin)
                     EditorGUILayout.BeginHorizontal();
                     if (GUILayout.Button("Basıncı Düşür (-15)", GUILayout.Height(25)))
                         pm.ReducePressure(15f);
                     if (GUILayout.Button("Basıncı Arttır (+10)", GUILayout.Height(25)))
-                        pm.currentPressure += 10f; // Hile butonu
+                        pm.currentPressure += 10f;
                     EditorGUILayout.EndHorizontal();
                 }
                 else
-                {
                     EditorGUILayout.HelpBox("Veriler oyun başlayınca yüklenir.", MessageType.Info);
-                }
             }
             else
                 EditorGUILayout.HelpBox("PressureSystemManager Yok!", MessageType.Error);
@@ -177,7 +148,7 @@ public class GameManagerEditor : Editor
         EditorGUILayout.Space(5);
 
         // =================================================================
-        // 3. ODA & IŞIK KONTROLÜ (GÜNCELLENDİ)
+        // 3. ODA & IŞIK KONTROLÜ
         // =================================================================
         showLightsSection = EditorGUILayout.BeginFoldoutHeaderGroup(
             showLightsSection,
@@ -191,7 +162,6 @@ public class GameManagerEditor : Editor
                 if (room == null)
                     continue;
                 EditorGUILayout.LabelField($"🏠 {room.roomName}", subHeaderStyle);
-
                 if (room.roomLights.Count > 0)
                 {
                     EditorGUILayout.BeginHorizontal();
@@ -199,11 +169,8 @@ public class GameManagerEditor : Editor
                     {
                         if (light == null)
                             continue;
-
-                        // Editörde de durumu görebilmek için IsOn özelliğini kullanıyoruz
                         bool isOn = light.IsOn;
                         GUI.backgroundColor = isOn ? new Color(0.4f, 1f, 0.4f) : Color.gray;
-
                         if (
                             GUILayout.Button(
                                 $"{light.gameObject.name}\n{(isOn ? "ON" : "OFF")}",
@@ -212,18 +179,13 @@ public class GameManagerEditor : Editor
                             )
                         )
                         {
-                            // OYUN AÇIKSA:
                             if (Application.isPlaying)
-                            {
                                 light.Interact();
-                            }
-                            // OYUN KAPALIYSA (EDİTÖR):
                             else
                             {
-                                // Undo sistemine kaydet (Ctrl+Z ile geri alınabilsin diye)
                                 Undo.RecordObject(light, "Toggle Light");
-                                light.ToggleLightEditor(); // Yeni fonksiyonu çağır
-                                EditorUtility.SetDirty(light); // Değişikliği kaydet
+                                light.ToggleLightEditor();
+                                EditorUtility.SetDirty(light);
                             }
                         }
                         GUI.backgroundColor = Color.white;
@@ -241,7 +203,7 @@ public class GameManagerEditor : Editor
         EditorGUILayout.Space(5);
 
         // =================================================================
-        // 4. BULMACA DURUMU
+        // 4. BULMACA DURUMU (DÜZELTİLDİ)
         // =================================================================
         showPasswordSection = EditorGUILayout.BeginFoldoutHeaderGroup(
             showPasswordSection,
@@ -255,22 +217,42 @@ public class GameManagerEditor : Editor
                 PasswordManager pm = gm.passwordManager;
                 if (Application.isPlaying)
                 {
+                    // --- DÜZELTME 1: "GetFoundCount" (Bulunan) yerine "GetValidatedPasswordCount" (Girilen) ---
+                    // Artık Tutorial şifresi girilse bile bu sayı artmaz, çünkü validatedPasswords listesine eklenmiyor.
                     int total = pm.GetTotalRequiredCount();
-                    int validated = pm.GetFoundCount();
+                    int validated = pm.GetValidatedPasswordCount();
+
                     float progress = (float)validated / Mathf.Max(1, total);
 
-                    DrawBar(progress, $"İlerleme: {validated}/{total}", Color.cyan);
+                    DrawBar(progress, $"Ana Oyun İlerlemesi: {validated}/{total}", Color.cyan);
 
                     EditorGUILayout.Space(5);
-                    EditorGUILayout.LabelField("📝 Bulunan Şifreler:", EditorStyles.boldLabel);
+                    EditorGUILayout.LabelField("📝 Defterdeki İpuçları:", EditorStyles.boldLabel);
+
                     var clues = pm.GetDiscoveredClues();
                     if (clues.Count > 0)
                     {
                         foreach (var clue in clues)
+                        {
+                            // --- DÜZELTME 2: Tutorial Şifresini Listeden Gizle (veya ayrı göster) ---
+                            if (clue == pm.tutorialPassword)
+                            {
+                                // Eğer Tutorial şifresini hiç görmek istemiyorsan 'continue' kullan.
+                                // Görmek ama ayırt etmek istiyorsan bu satırı aç:
+                                // EditorGUILayout.LabelField($"   - {clue} (TUTORIAL)", EditorStyles.miniLabel);
+                                continue;
+                            }
+
                             EditorGUILayout.LabelField($"   - {clue}", EditorStyles.miniLabel);
+                        }
                     }
                     else
-                        EditorGUILayout.LabelField("   (Yok)", EditorStyles.miniLabel);
+                    {
+                        EditorGUILayout.LabelField(
+                            "   (Henüz ipucu bulunamadı)",
+                            EditorStyles.miniLabel
+                        );
+                    }
                 }
                 else
                     EditorGUILayout.HelpBox("Veriler oyun başlayınca yüklenir.", MessageType.Info);

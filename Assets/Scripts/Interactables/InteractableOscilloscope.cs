@@ -1,11 +1,12 @@
 using System.Collections;
 using Cinemachine;
+// StarterAssets namespace'ini ekledim ki scripti tip güvenli bulabilelim
+using StarterAssets;
 using TMPro;
 using UnityEngine;
 
 public class InteractableOscilloscope : MonoBehaviour, IInteractable, IForceExitable
 {
-    // ... (Eski Değişkenler Aynı) ...
     [Header("Player Control")]
     [SerializeField]
     private UnityEngine.CharacterController playerController;
@@ -13,25 +14,29 @@ public class InteractableOscilloscope : MonoBehaviour, IInteractable, IForceExit
     [SerializeField]
     private MonoBehaviour playerLookScript;
 
-    [Header("Head Cam & View Target")]
+    [SerializeField]
+    private Animator playerAnimator;
+
+    [Header("⚠️ ÖNEMLİ: Hareket Scripti (Otomatik Bulunur ama Kontrol Et)")]
+    [Tooltip("Karakterin yürümesini sağlayan ana script.")]
+    public MonoBehaviour playerMovementScript;
+
+    [Header("🎥 KAMERA AYARLARI (MUTLAKA ATANMALI)")]
+    [Tooltip("Etkileşim başladığında kameranın gidip sabitleneceği nokta.")]
+    public Transform fixedCameraTransform;
+
+    [SerializeField]
+    private float cameraTransitionDuration = 1.0f;
+
+    [Header("📍 Etkileşim Pozisyonu")]
+    public Transform interactionStandPoint;
+    public float autoWalkSpeed = 2.0f;
+    public float autoRotateSpeed = 5.0f;
+
     [SerializeField]
     private string interactAnimTrigger = "InspectScope";
 
-    [SerializeField]
-    private float animationDuration = 1.0f;
-
-    [SerializeField]
-    private Transform cameraViewTarget;
-
-    [SerializeField]
-    private Vector3 headOffset = new Vector3(0, 0.1f, 0.15f);
-
-    private Transform mainCamera;
-    private CinemachineBrain cinemachineBrain;
-    private Transform headBone;
-    private Transform cinemachineTarget;
-    private Animator playerAnimator;
-
+    // ... Diğer Değişkenler ...
     [Header("Audio & Settings")]
     [SerializeField]
     private Transform voltsKnob;
@@ -42,21 +47,20 @@ public class InteractableOscilloscope : MonoBehaviour, IInteractable, IForceExit
     [SerializeField]
     private float rotationPerStep = 36f;
 
-    // --- YENİ SES AYARLARI ---
-    [Header("🔊 PROXIMITY AUDIO (Mesafe/Doğruluk Sesi)")]
-    [Tooltip("Net, stabil osiloskop sesi (Doğru ayarda duyulur)")]
     [SerializeField]
     private AudioSource stableAudioSource;
 
-    [Tooltip("Bozuk, cızırtılı ses (Yanlış ayarda duyulur)")]
     [SerializeField]
     private AudioSource staticAudioSource;
 
-    [Tooltip("Pitch değişimi ne kadar etkili olsun?")]
     [SerializeField]
     private float pitchVariation = 0.5f;
 
-    // -------------------------
+    [SerializeField]
+    private WaveformGenerator waveformScript;
+
+    [SerializeField]
+    private TextMeshPro screenText;
 
     [Header("Puzzle Logic")]
     [SerializeField]
@@ -71,40 +75,46 @@ public class InteractableOscilloscope : MonoBehaviour, IInteractable, IForceExit
     [SerializeField]
     private int correctTimeSetting = 5;
 
-    [SerializeField]
-    private WaveformGenerator waveformScript;
-
     private int currentVoltsSetting = 0;
     private int currentTimeSetting = 0;
     private bool isSolved = false;
     private bool isInteracting = false;
+    private bool inMachineMode = false;
+    private bool isExiting = false;
+    private string assignedPassword = "";
     private Quaternion voltsKnobInitialRot;
     private Quaternion timeKnobInitialRot;
-
-    [Header("Password Settings")]
-    [SerializeField]
-    private TextMeshPro screenText;
-    private string assignedPassword = "";
-
-    // SES FADE KONTROLÜ
     private Coroutine audioFadeRoutine;
+
+    private Transform mainCamera;
+    private CinemachineBrain cinemachineBrain;
 
     void Start()
     {
+        // 1. Player Controller Bul
         if (playerController == null)
             playerController = FindObjectOfType<UnityEngine.CharacterController>();
 
+        // 2. Diğer Scriptleri Bul (Özellikle Movement Script)
         if (playerController != null)
         {
             playerLookScript =
-                playerController.GetComponent("StarterAssetsInputs") as MonoBehaviour;
+                playerController.GetComponent<StarterAssetsInputs>() as MonoBehaviour;
             playerAnimator = playerController.GetComponent<Animator>();
-            if (playerAnimator)
-                headBone = playerAnimator.GetBoneTransform(HumanBodyBones.Head);
-            if (headBone == null)
-                headBone = playerController.transform;
-            Transform camRoot = playerController.transform.Find("PlayerCameraRoot");
-            cinemachineTarget = (camRoot != null) ? camRoot : headBone;
+
+            // DÜZELTME BURADA: İsme göre ("ThirdPersonController") aramak yerine
+            // direkt senin yüklediğin "StarterAssets.CharacterController" tipini arıyoruz.
+            // Bu sayede scripti %100 bulur.
+            if (playerMovementScript == null)
+            {
+                playerMovementScript =
+                    playerController.GetComponent<StarterAssets.CharacterController>();
+                // Eğer null dönerse diye log basalım
+                if (playerMovementScript == null)
+                    Debug.LogError(
+                        "Osiloskop: Player Movement Script (StarterAssets.CharacterController) BULUNAMADI! Karakter titreyebilir."
+                    );
+            }
         }
 
         if (Camera.main != null)
@@ -118,7 +128,7 @@ public class InteractableOscilloscope : MonoBehaviour, IInteractable, IForceExit
         if (timeKnob)
             timeKnobInitialRot = timeKnob.localRotation;
 
-        // --- SESLERİ BAŞLAT (AMA KISIK) ---
+        // Audio Başlat
         if (stableAudioSource)
         {
             stableAudioSource.loop = true;
@@ -130,264 +140,241 @@ public class InteractableOscilloscope : MonoBehaviour, IInteractable, IForceExit
             staticAudioSource.volume = 0f;
         }
 
-        currentVoltsSetting = 2; // Rastgele başlangıç
+        currentVoltsSetting = 2;
         currentTimeSetting = 2;
         UpdateKnobVisuals();
     }
 
     public void Interact()
     {
-        if (isInteracting || isSolved)
+        if (isInteracting || isExiting || isSolved)
             return;
-        StartCoroutine(EnterMachineView());
+
+        // Hata ayıklama: Fixed Transform yoksa uyar
+        if (fixedCameraTransform == null)
+        {
+            Debug.LogError("Osiloskop: Fixed Camera Transform ATANMAMIŞ! Kamera geçiş yapamaz.");
+            return;
+        }
+
+        StartCoroutine(MoveToInteractionPoint());
     }
 
     public string GetInteractionPrompt() =>
         isSolved ? "Sinyal Stabil" : (isInteracting ? "" : "[Sol Tık] Sinyali Düzelt");
 
-    private IEnumerator EnterMachineView()
+    private IEnumerator MoveToInteractionPoint()
     {
         isInteracting = true;
+        inMachineMode = false;
+
+        // Karakterin kendi kontrolünü kapat
+        if (playerLookScript)
+            playerLookScript.enabled = false;
+
+        // KRİTİK NOKTA: Hareket scriptini kapatmazsak çatışma çıkar
+        if (playerMovementScript != null)
+            playerMovementScript.enabled = false;
+
+        // Ama CharacterController (fizik/collider) açık kalmalı ki biz hareket ettirebilelim
+        if (playerController)
+            playerController.enabled = true;
+
+        // --- YÜRÜME DÖNGÜSÜ ---
+        if (interactionStandPoint != null)
+        {
+            int animIDSpeed = Animator.StringToHash("Speed");
+            int animIDMotionSpeed = Animator.StringToHash("MotionSpeed");
+            int animIDGrounded = Animator.StringToHash("Grounded");
+
+            float timer = 0f;
+            while (timer < 4.0f) // Max 4 saniye dene
+            {
+                timer += Time.deltaTime;
+                Vector3 playerPos = playerController.transform.position;
+                Vector3 targetPos = interactionStandPoint.position;
+                playerPos.y = targetPos.y = 0; // Yükseklik farkını yoksay
+
+                float distance = Vector3.Distance(playerPos, targetPos);
+                if (distance < 0.1f)
+                    break; // Geldik sayılır
+
+                Vector3 dir = (targetPos - playerPos).normalized;
+                if (dir != Vector3.zero)
+                {
+                    Quaternion lookRot = Quaternion.LookRotation(dir);
+                    playerController.transform.rotation = Quaternion.Slerp(
+                        playerController.transform.rotation,
+                        lookRot,
+                        Time.deltaTime * autoRotateSpeed
+                    );
+                }
+
+                float speed = (distance < 0.5f) ? 0.5f : autoWalkSpeed;
+
+                if (playerAnimator)
+                {
+                    playerAnimator.SetBool(animIDGrounded, true);
+                    playerAnimator.SetFloat(animIDSpeed, speed);
+                    playerAnimator.SetFloat(animIDMotionSpeed, 1f);
+                }
+
+                // Hareketi uygula
+                Vector3 motion = dir * speed;
+                motion.y = -9.81f;
+                playerController.Move(motion * Time.deltaTime);
+
+                yield return null;
+            }
+
+            // Durdur
+            if (playerAnimator)
+            {
+                playerAnimator.SetFloat(animIDSpeed, 0f);
+                playerAnimator.SetFloat(animIDMotionSpeed, 1f);
+            }
+        }
+
+        // --- HİZALAMA (SNAP) ---
+        // Yürüme bitince tam noktaya kaydır ki yamuk durmasın
+        if (interactionStandPoint != null)
+        {
+            float rotTimer = 0f;
+            Quaternion startRot = playerController.transform.rotation;
+            Vector3 startPos = playerController.transform.position;
+
+            while (rotTimer < 0.5f)
+            {
+                rotTimer += Time.deltaTime;
+                float t = rotTimer / 0.5f;
+                // Yumuşak geçiş
+                playerController.transform.position = Vector3.Lerp(
+                    startPos,
+                    interactionStandPoint.position,
+                    t
+                );
+                playerController.transform.rotation = Quaternion.Slerp(
+                    startRot,
+                    interactionStandPoint.rotation,
+                    t
+                );
+                yield return null;
+            }
+        }
+
+        StartCoroutine(EnterMachineView());
+    }
+
+    private IEnumerator EnterMachineView()
+    {
         if (GameManager.Instance != null)
             GameManager.Instance.activeInteraction = this;
 
-        if (playerController)
-            playerController.enabled = false;
-        if (playerLookScript)
-            playerLookScript.enabled = false;
-        if (playerAnimator)
-            playerAnimator.SetTrigger(interactAnimTrigger);
+        // 1. Cinemachine'i Kapat (Kamerayı serbest bırak)
         if (cinemachineBrain)
             cinemachineBrain.enabled = false;
 
-        if (headBone != null)
+        // 2. Oyuncuyu Dondur
+        if (playerController)
+            playerController.enabled = false;
+
+        // 3. Animasyonu Oynat (Örn: Eğilme/Bakma)
+        if (playerAnimator)
+            playerAnimator.SetTrigger(interactAnimTrigger);
+
+        // 4. Kamerayı Yumuşakça Yerine Al
+        if (fixedCameraTransform != null)
         {
-            mainCamera.SetParent(headBone);
+            Vector3 startPos = mainCamera.position;
+            Quaternion startRot = mainCamera.rotation;
             float t = 0f;
-            Vector3 startPos = mainCamera.localPosition;
-            Quaternion startRot = mainCamera.localRotation;
-            while (t < 0.5f)
+
+            while (t < cameraTransitionDuration)
             {
                 t += Time.deltaTime;
-                float s = t / 0.5f;
-                mainCamera.localPosition = Vector3.Lerp(startPos, headOffset, s);
-                mainCamera.localRotation = Quaternion.Slerp(startRot, Quaternion.identity, s);
+                float s = Mathf.SmoothStep(0f, 1f, t / cameraTransitionDuration);
+
+                mainCamera.position = Vector3.Lerp(startPos, fixedCameraTransform.position, s);
+                mainCamera.rotation = Quaternion.Slerp(startRot, fixedCameraTransform.rotation, s);
                 yield return null;
             }
+            // Tam oturt
+            mainCamera.position = fixedCameraTransform.position;
+            mainCamera.rotation = fixedCameraTransform.rotation;
         }
 
-        yield return new WaitForSeconds(animationDuration - 0.5f);
+        // 5. Modu Aktif Et (LateUpdate kamerayı kilitleyecek)
+        inMachineMode = true;
 
-        if (cameraViewTarget != null)
-        {
-            mainCamera.SetParent(null);
-            Vector3 startDockPos = mainCamera.position;
-            Quaternion startDockRot = mainCamera.rotation;
-            float dockTime = 0.8f;
-            float t = 0f;
-            while (t < dockTime)
-            {
-                t += Time.deltaTime;
-                float s = Mathf.SmoothStep(0f, 1f, t / dockTime);
-                mainCamera.position = Vector3.Lerp(startDockPos, cameraViewTarget.position, s);
-                mainCamera.rotation = Quaternion.Slerp(startDockRot, cameraViewTarget.rotation, s);
-                yield return null;
-            }
-            mainCamera.position = cameraViewTarget.position;
-            mainCamera.rotation = cameraViewTarget.rotation;
-        }
+        // UI ve Cursor
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
 
-        TogglePlayerModel(false);
-        Cursor.lockState = CursorLockMode.None;
-        Cursor.visible = true;
+        if (ControlsUIManager.Instance != null)
+            ControlsUIManager.Instance.ShowControls("W/S: Voltaj | A/D: Zaman | F: Kalk");
+        PlayerInteraction playerInt = FindObjectOfType<PlayerInteraction>();
+        if (playerInt != null)
+            playerInt.ToggleCrosshair(false);
 
-        // YENİ: Makineye girince sesleri başlat (Fade In)
+        // Sesleri Aç
         FadeAudio(true, 1.0f);
-        UpdateAudioAndWaveform(); // İlk karışımı yap
-
+        UpdateAudioAndWaveform();
         UpdateKnobVisuals();
     }
 
     private IEnumerator ExitMachineView()
     {
-        isInteracting = false;
-        if (GameManager.Instance != null)
-            GameManager.Instance.activeInteraction = null;
+        if (isExiting)
+            yield break;
+        isExiting = true;
+        inMachineMode = false; // Kamera kilidini kaldır
 
-        // YENİ: Makineden çıkınca sesleri kapat (Fade Out)
         FadeAudio(false, 0.5f);
 
-        TogglePlayerModel(true);
-
-        if (cinemachineTarget != null)
-        {
-            mainCamera.SetParent(null);
-            Vector3 startPos = mainCamera.position;
-            Quaternion startRot = mainCamera.rotation;
-            float undockTime = 0.5f;
-            float t = 0f;
-            while (t < undockTime)
-            {
-                t += Time.deltaTime;
-                float s = Mathf.SmoothStep(0f, 1f, t / undockTime);
-                mainCamera.position = Vector3.Lerp(startPos, cinemachineTarget.position, s);
-                mainCamera.rotation = Quaternion.Slerp(startRot, cinemachineTarget.rotation, s);
-                yield return null;
-            }
-        }
-
-        if (playerController != null)
-        {
-            Vector3 camForward = mainCamera.forward;
-            camForward.y = 0;
-            if (camForward != Vector3.zero)
-                playerController.transform.rotation = Quaternion.LookRotation(camForward);
-        }
-
+        // 1. Cinemachine Brain'i Aç (Otomatik Blend yapsın)
+        // AYAKLARA GİTME SORUNUNU BU ÇÖZER
         if (cinemachineBrain)
+        {
             cinemachineBrain.enabled = true;
-        if (playerController)
+        }
+
+        // Blend süresi kadar bekle (1 saniye ideal)
+        yield return new WaitForSeconds(1.0f);
+
+        // 2. Kontrolleri Geri Ver
+        if (playerController != null)
             playerController.enabled = true;
         if (playerLookScript)
             playerLookScript.enabled = true;
+        if (playerMovementScript != null)
+            playerMovementScript.enabled = true;
+
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
-    }
+        PlayerInteraction playerInt = FindObjectOfType<PlayerInteraction>();
+        if (playerInt != null)
+            playerInt.ToggleCrosshair(true);
+        if (ControlsUIManager.Instance != null)
+            ControlsUIManager.Instance.HideControls();
+        if (GameManager.Instance != null)
+            GameManager.Instance.activeInteraction = null;
 
-    // --- GÜNCELLENMİŞ SES VE GÖRSEL MANTIĞI ---
-    private void UpdateAudioAndWaveform()
-    {
-        // 1. Doğruluk Oranını Hesapla (0.0 = Tamamen Yanlış, 1.0 = Tamamen Doğru)
-        float voltsDiff = Mathf.Abs(currentVoltsSetting - correctVoltsSetting);
-        float timeDiff = Mathf.Abs(currentTimeSetting - correctTimeSetting);
-
-        float maxError = maxVoltsSetting + maxTimeSetting;
-        float currentError = voltsDiff + timeDiff;
-
-        // Doğruluk oranı (1'e ne kadar yakınsa o kadar iyi)
-        float accuracy = 1.0f - (currentError / maxError);
-        accuracy = Mathf.Clamp01(accuracy);
-
-        // --- SES KARIŞTIRMA (CROSSFADE) ---
-        if (audioFadeRoutine == null)
-        {
-            float stableVol = Mathf.Pow(accuracy, 2);
-            float staticVol = 1.0f - accuracy;
-
-            if (stableAudioSource)
-                stableAudioSource.volume = stableVol;
-            if (staticAudioSource)
-                staticAudioSource.volume = staticVol * 0.5f;
-        }
-
-        // Pitch ayarı
-        float targetPitch = 1.0f + ((0.5f - accuracy) * pitchVariation);
-        if (stableAudioSource)
-            stableAudioSource.pitch = isSolved ? 1.0f : targetPitch;
-        if (staticAudioSource)
-            staticAudioSource.pitch = Random.Range(0.8f, 1.2f);
-
-        // --- WAVEFORM GÖRSELİ (YENİLENEN KISIM) ---
-        if (waveformScript)
-        {
-            // Genlik ve Frekans ayarları (Görsel olarak knobların etkisini görelim)
-            float vRatio = (float)currentVoltsSetting / maxVoltsSetting;
-            float tRatio = (float)currentTimeSetting / maxTimeSetting;
-
-            waveformScript.amplitude = Mathf.Lerp(0.2f, 2.5f, vRatio);
-            waveformScript.frequency = Mathf.Lerp(0.5f, 3.0f, tRatio);
-
-            // YENİ: Gürültü (Noise) Kontrolü
-            // Accuracy 0 iken (yanlışken) gürültü 0.8f olsun (çok bozuk)
-            // Accuracy 1 iken (doğruyken) gürültü 0f olsun (tertemiz)
-
-            // Eğer çözüldüyse direkt 0 yap
-            if (isSolved)
-            {
-                waveformScript.noiseAmount = 0f;
-            }
-            else
-            {
-                // Yanlışlık arttıkça bozulma artar
-                waveformScript.noiseAmount = Mathf.Lerp(0.8f, 0f, accuracy);
-            }
-        }
-    }
-
-    // --- GİRİŞ / ÇIKIŞ FADE İŞLEMİ ---
-    private void FadeAudio(bool fadeIn, float duration)
-    {
-        if (audioFadeRoutine != null)
-            StopCoroutine(audioFadeRoutine);
-        audioFadeRoutine = StartCoroutine(FadeAudioRoutine(fadeIn, duration));
-    }
-
-    private IEnumerator FadeAudioRoutine(bool fadeIn, float duration)
-    {
-        float t = 0f;
-        float startStable = stableAudioSource ? stableAudioSource.volume : 0;
-        float startStatic = staticAudioSource ? staticAudioSource.volume : 0;
-
-        // Hedef değerleri UpdateAudioAndWaveform hesaplasın ama biz master volume gibi düşünelim
-        // Basitçe: FadeIn ise sesleri aç (Play), FadeOut ise kapat (Stop)
-
-        if (fadeIn)
-        {
-            if (stableAudioSource && !stableAudioSource.isPlaying)
-                stableAudioSource.Play();
-            if (staticAudioSource && !staticAudioSource.isPlaying)
-                staticAudioSource.Play();
-
-            // İlk değerleri hesapla ki birden patlamasın
-            UpdateAudioAndWaveform();
-        }
-
-        float initialStableTarget = stableAudioSource ? stableAudioSource.volume : 0;
-        float initialStaticTarget = staticAudioSource ? staticAudioSource.volume : 0;
-
-        // Eğer FadeIn ise 0'dan hedefe, FadeOut ise mevcut olandan 0'a
-        while (t < duration)
-        {
-            t += Time.deltaTime;
-            float ratio = t / duration;
-
-            if (fadeIn)
-            {
-                if (stableAudioSource)
-                    stableAudioSource.volume = Mathf.Lerp(0, initialStableTarget, ratio);
-                if (staticAudioSource)
-                    staticAudioSource.volume = Mathf.Lerp(0, initialStaticTarget, ratio);
-            }
-            else // Fade Out
-            {
-                if (stableAudioSource)
-                    stableAudioSource.volume = Mathf.Lerp(startStable, 0, ratio);
-                if (staticAudioSource)
-                    staticAudioSource.volume = Mathf.Lerp(startStatic, 0, ratio);
-            }
-            yield return null;
-        }
-
-        if (!fadeIn)
-        {
-            if (stableAudioSource)
-                stableAudioSource.Stop();
-            if (staticAudioSource)
-                staticAudioSource.Stop();
-        }
-
-        audioFadeRoutine = null;
+        isInteracting = false;
+        isExiting = false;
     }
 
     private void Update()
     {
-        if (!isInteracting)
+        if (!inMachineMode || isExiting)
             return;
+
+        // ÇIKIŞ
         if (Input.GetKeyDown(KeyCode.F))
         {
             StartCoroutine(ExitMachineView());
             return;
         }
+
         if (isSolved)
         {
             if (waveformScript)
@@ -395,6 +382,7 @@ public class InteractableOscilloscope : MonoBehaviour, IInteractable, IForceExit
             return;
         }
 
+        // KONTROLLER
         bool changed = false;
         if (Input.GetKeyDown(KeyCode.W))
         {
@@ -421,18 +409,113 @@ public class InteractableOscilloscope : MonoBehaviour, IInteractable, IForceExit
         if (changed)
         {
             UpdateKnobVisuals();
-            UpdateAudioAndWaveform(); // <-- HER TUŞTA SESİ GÜNCELLE
+            UpdateAudioAndWaveform();
             CheckForSolution();
         }
     }
 
-    private void TogglePlayerModel(bool show)
+    private void LateUpdate()
     {
-        if (!playerController)
-            return;
-        Renderer[] renderers = playerController.GetComponentsInChildren<Renderer>();
-        foreach (var r in renderers)
-            r.enabled = show;
+        // KAMERAYI ÇİVİ GİBİ ÇAK
+        // Eğer makine modundaysak kamera bir milim bile kıpırdayamaz.
+        if (inMachineMode && fixedCameraTransform != null)
+        {
+            mainCamera.position = fixedCameraTransform.position;
+            mainCamera.rotation = fixedCameraTransform.rotation;
+        }
+    }
+
+    // --- YARDIMCI FONKSİYONLAR ---
+    private void UpdateAudioAndWaveform()
+    {
+        float voltsDiff = Mathf.Abs(currentVoltsSetting - correctVoltsSetting);
+        float timeDiff = Mathf.Abs(currentTimeSetting - correctTimeSetting);
+        float maxError = maxVoltsSetting + maxTimeSetting;
+        float currentError = voltsDiff + timeDiff;
+        float accuracy = 1.0f - (currentError / maxError);
+        accuracy = Mathf.Clamp01(accuracy);
+
+        if (audioFadeRoutine == null)
+        {
+            float stableVol = Mathf.Pow(accuracy, 2);
+            float staticVol = 1.0f - accuracy;
+            if (stableAudioSource)
+                stableAudioSource.volume = stableVol;
+            if (staticAudioSource)
+                staticAudioSource.volume = staticVol * 0.5f;
+        }
+
+        float targetPitch = 1.0f + ((0.5f - accuracy) * pitchVariation);
+        if (stableAudioSource)
+            stableAudioSource.pitch = isSolved ? 1.0f : targetPitch;
+        if (staticAudioSource)
+            staticAudioSource.pitch = Random.Range(0.8f, 1.2f);
+
+        if (waveformScript)
+        {
+            float vRatio = (float)currentVoltsSetting / maxVoltsSetting;
+            float tRatio = (float)currentTimeSetting / maxTimeSetting;
+            waveformScript.amplitude = Mathf.Lerp(0.2f, 2.5f, vRatio);
+            waveformScript.frequency = Mathf.Lerp(0.5f, 3.0f, tRatio);
+            if (isSolved)
+                waveformScript.noiseAmount = 0f;
+            else
+                waveformScript.noiseAmount = Mathf.Lerp(0.8f, 0f, accuracy);
+        }
+    }
+
+    private void FadeAudio(bool fadeIn, float duration)
+    {
+        if (audioFadeRoutine != null)
+            StopCoroutine(audioFadeRoutine);
+        audioFadeRoutine = StartCoroutine(FadeAudioRoutine(fadeIn, duration));
+    }
+
+    private IEnumerator FadeAudioRoutine(bool fadeIn, float duration)
+    {
+        float t = 0f;
+        float startStable = stableAudioSource ? stableAudioSource.volume : 0;
+        float startStatic = staticAudioSource ? staticAudioSource.volume : 0;
+        float initialStableTarget = stableAudioSource ? stableAudioSource.volume : 0;
+        float initialStaticTarget = staticAudioSource ? staticAudioSource.volume : 0;
+
+        if (fadeIn)
+        {
+            if (stableAudioSource && !stableAudioSource.isPlaying)
+                stableAudioSource.Play();
+            if (staticAudioSource && !staticAudioSource.isPlaying)
+                staticAudioSource.Play();
+            UpdateAudioAndWaveform();
+        }
+
+        while (t < duration)
+        {
+            t += Time.deltaTime;
+            float ratio = t / duration;
+            if (fadeIn)
+            {
+                if (stableAudioSource)
+                    stableAudioSource.volume = Mathf.Lerp(0, initialStableTarget, ratio);
+                if (staticAudioSource)
+                    staticAudioSource.volume = Mathf.Lerp(0, initialStaticTarget, ratio);
+            }
+            else
+            {
+                if (stableAudioSource)
+                    stableAudioSource.volume = Mathf.Lerp(startStable, 0, ratio);
+                if (staticAudioSource)
+                    staticAudioSource.volume = Mathf.Lerp(startStatic, 0, ratio);
+            }
+            yield return null;
+        }
+        if (!fadeIn)
+        {
+            if (stableAudioSource)
+                stableAudioSource.Stop();
+            if (staticAudioSource)
+                staticAudioSource.Stop();
+        }
+        audioFadeRoutine = null;
     }
 
     private void UpdateKnobVisuals()
@@ -457,8 +540,6 @@ public class InteractableOscilloscope : MonoBehaviour, IInteractable, IForceExit
             }
             if (PasswordManager.Instance != null)
                 PasswordManager.Instance.DiscoverClue(assignedPassword);
-
-            // Çözülünce sadece temiz ses kalsın
             if (staticAudioSource)
                 staticAudioSource.volume = 0;
             if (stableAudioSource)
@@ -466,7 +547,6 @@ public class InteractableOscilloscope : MonoBehaviour, IInteractable, IForceExit
                 stableAudioSource.volume = 1f;
                 stableAudioSource.pitch = 1f;
             }
-
             StartCoroutine(AutoExit(3.0f));
         }
     }
@@ -485,13 +565,13 @@ public class InteractableOscilloscope : MonoBehaviour, IInteractable, IForceExit
     private IEnumerator AutoExit(float delay)
     {
         yield return new WaitForSeconds(delay);
-        if (isInteracting)
+        if (inMachineMode)
             StartCoroutine(ExitMachineView());
     }
 
     public void ForceExit()
     {
-        if (isInteracting)
+        if (inMachineMode)
             StartCoroutine(ExitMachineView());
     }
 }

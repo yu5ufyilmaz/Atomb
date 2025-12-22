@@ -5,9 +5,53 @@ using UnityEditor;
 [CustomEditor(typeof(RoomManager))]
 public class RoomEditor : Editor
 {
+    // Serialized Properties
+    SerializedProperty roomNameProp;
+    SerializedProperty isCorridorProp;
+    SerializedProperty roomLightsProp;
+    SerializedProperty isDangerousProp;
+    SerializedProperty spawnPointsProp;
+    SerializedProperty canGuderianSpawnProp;
+    SerializedProperty roomDoorProp;
+    SerializedProperty doorOutsidePointProp;
+    SerializedProperty doorInsidePointProp;
+    SerializedProperty hidingSpotsProp;
+    SerializedProperty guderianPatrolPointsProp;
+
+    // Pusu Özellikleri
+    SerializedProperty allowAmbushProp;
+    SerializedProperty ambushTimeoutProp;
+    SerializedProperty ambushSpawnPointProp;
+
+    // YENİ: Ses Özelliği
+    SerializedProperty onFirstEnterSoundProp;
+
+    private void OnEnable()
+    {
+        roomNameProp = serializedObject.FindProperty("roomName");
+        isCorridorProp = serializedObject.FindProperty("isCorridor");
+        roomLightsProp = serializedObject.FindProperty("roomLights");
+        isDangerousProp = serializedObject.FindProperty("isDangerous");
+        spawnPointsProp = serializedObject.FindProperty("spawnPoints");
+        canGuderianSpawnProp = serializedObject.FindProperty("canGuderianSpawn");
+        roomDoorProp = serializedObject.FindProperty("roomDoor");
+        doorOutsidePointProp = serializedObject.FindProperty("doorOutsidePoint");
+        doorInsidePointProp = serializedObject.FindProperty("doorInsidePoint");
+        hidingSpotsProp = serializedObject.FindProperty("hidingSpots");
+        guderianPatrolPointsProp = serializedObject.FindProperty("guderianPatrolPoints");
+
+        allowAmbushProp = serializedObject.FindProperty("allowAmbush");
+        ambushTimeoutProp = serializedObject.FindProperty("ambushTimeout");
+        ambushSpawnPointProp = serializedObject.FindProperty("ambushSpawnPoint");
+
+        // YENİ: Ses özelliğini bağla
+        onFirstEnterSoundProp = serializedObject.FindProperty("onFirstEnterSound");
+    }
+
     public override void OnInspectorGUI()
     {
         RoomManager room = (RoomManager)target;
+        serializedObject.Update();
 
         GUIStyle titleStyle = new GUIStyle(GUI.skin.label)
         {
@@ -23,57 +67,55 @@ public class RoomEditor : Editor
         EditorGUI.LabelField(rect, room.roomName.ToUpper(), titleStyle);
         EditorGUILayout.Space(5);
 
-        // --- GENEL AYARLAR ---
+        // --- 1. GENEL ---
         EditorGUILayout.BeginVertical(sectionStyle);
         EditorGUILayout.LabelField("🏠 Genel Ayarlar", EditorStyles.boldLabel);
-        room.roomName = EditorGUILayout.TextField("Oda ID", room.roomName);
-
-        // --- İŞTE EKSİK OLAN KISIM (KORİDOR KUTUCUĞU) ---
+        EditorGUILayout.PropertyField(roomNameProp, new GUIContent("Oda ID"));
         EditorGUILayout.Space(5);
-
-        // Dikkat çeksin diye eğer işaretliyse Sarı yapıyoruz
         GUI.backgroundColor = room.isCorridor ? Color.yellow : Color.white;
-
-        room.isCorridor = EditorGUILayout.Toggle("Bu Bir Koridor Mu?", room.isCorridor);
-
+        EditorGUILayout.PropertyField(isCorridorProp, new GUIContent("Bu Bir Koridor Mu?"));
         if (room.isCorridor)
-        {
-            EditorGUILayout.HelpBox("AdamAI sayacı burada DURAKLAYACAK (Pause).", MessageType.Info);
-        }
-
+            EditorGUILayout.HelpBox("AdamAI sayacı burada DURAKLAYACAK.", MessageType.Info);
         GUI.backgroundColor = Color.white;
-        // -------------------------------------------------
-
         EditorGUILayout.EndVertical();
 
         EditorGUILayout.Space(10);
 
-        // --- IŞIK SİSTEMİ ---
+        // --- 2. SES & ATMOSFER (YENİ EKLENDİ) ---
         EditorGUILayout.BeginVertical(sectionStyle);
-        EditorGUILayout.LabelField("💡 Elektrik & Işıklandırma", EditorStyles.boldLabel);
-        EditorGUILayout.PropertyField(
-            serializedObject.FindProperty("roomLights"),
-            new GUIContent("Oda Işıkları"),
-            true
+        EditorGUILayout.LabelField("🔊 Ses & Atmosfer", EditorStyles.boldLabel);
+        // DialogueEvent drawer'ı sayesinde burada Dropdown ve Clip alanı çıkacak
+        EditorGUILayout.PropertyField(onFirstEnterSoundProp, new GUIContent("İlk Giriş Tanıtımı"));
+        EditorGUILayout.HelpBox(
+            "Oyuncu odaya ilk girdiğinde çalacak ses ve altyazı.",
+            MessageType.None
         );
         EditorGUILayout.EndVertical();
 
         EditorGUILayout.Space(10);
 
-        // --- LEES BÖLÜMÜ ---
+        // --- 3. IŞIK ---
+        EditorGUILayout.BeginVertical(sectionStyle);
+        EditorGUILayout.LabelField("💡 Elektrik & Işıklandırma", EditorStyles.boldLabel);
+        EditorGUILayout.PropertyField(roomLightsProp, new GUIContent("Oda Işıkları"), true);
+        EditorGUILayout.EndVertical();
+
+        EditorGUILayout.Space(10);
+
+        // --- 4. LEES ---
         EditorGUILayout.BeginVertical(sectionStyle);
         EditorGUILayout.LabelField("👻 Lees Yapılandırması", EditorStyles.boldLabel);
-
         Color defaultColor = GUI.backgroundColor;
         GUI.backgroundColor = room.isDangerous
             ? new Color(1f, 0.4f, 0.4f)
             : new Color(0.4f, 1f, 0.4f);
-        string statusText = room.isDangerous ? "DURUM: TEHLİKELİ BÖLGE" : "DURUM: GÜVENLİ BÖLGE";
-
-        if (GUILayout.Button(statusText, GUILayout.Height(30)))
-        {
+        if (
+            GUILayout.Button(
+                room.isDangerous ? "DURUM: TEHLİKELİ BÖLGE" : "DURUM: GÜVENLİ BÖLGE",
+                GUILayout.Height(30)
+            )
+        )
             room.isDangerous = !room.isDangerous;
-        }
         GUI.backgroundColor = defaultColor;
 
         if (room.isDangerous)
@@ -81,26 +123,20 @@ public class RoomEditor : Editor
             EditorGUILayout.Space(5);
             if (GUILayout.Button("📍 Yeni Lees Spawn Noktası Ekle", GUILayout.Height(25)))
                 CreatePoint(room, "Lees_Spawn", "LeesSpawnPointParent", room.spawnPoints);
-
             EditorGUI.indentLevel++;
-            EditorGUILayout.PropertyField(
-                serializedObject.FindProperty("spawnPoints"),
-                new GUIContent("Spawn Noktaları"),
-                true
-            );
+            EditorGUILayout.PropertyField(spawnPointsProp, new GUIContent("Spawn Noktaları"), true);
             EditorGUI.indentLevel--;
         }
         EditorGUILayout.EndVertical();
 
         EditorGUILayout.Space(10);
 
-        // --- GUDERIAN BÖLÜMÜ ---
+        // --- 5. GUDERIAN ---
         EditorGUILayout.BeginVertical(sectionStyle);
         EditorGUILayout.LabelField("👹 Guderian Yapılandırması", EditorStyles.boldLabel);
-
-        room.canGuderianSpawn = EditorGUILayout.Toggle(
-            "Guderian Gelebilir Mi?",
-            room.canGuderianSpawn
+        EditorGUILayout.PropertyField(
+            canGuderianSpawnProp,
+            new GUIContent("Guderian Gelebilir Mi?")
         );
 
         if (room.canGuderianSpawn)
@@ -111,29 +147,23 @@ public class RoomEditor : Editor
             GUI.backgroundColor = defaultColor;
 
             EditorGUILayout.LabelField("1. Giriş Sistemi:", EditorStyles.miniBoldLabel);
-            EditorGUILayout.PropertyField(
-                serializedObject.FindProperty("roomDoor"),
-                new GUIContent("Oda Kapısı")
-            );
+            EditorGUILayout.PropertyField(roomDoorProp, new GUIContent("Oda Kapısı"));
 
             EditorGUILayout.BeginHorizontal();
             if (GUILayout.Button("Dışarı Noktası (Koridor)", GUILayout.Height(25)))
                 CreateSinglePoint(room, "Door_Outside_Point", ref room.doorOutsidePoint);
-
             if (GUILayout.Button("İçeri Noktası (Oda)", GUILayout.Height(25)))
                 CreateSinglePoint(room, "Door_Inside_Point", ref room.doorInsidePoint);
             EditorGUILayout.EndHorizontal();
 
-            EditorGUILayout.PropertyField(serializedObject.FindProperty("doorOutsidePoint"));
-            EditorGUILayout.PropertyField(serializedObject.FindProperty("doorInsidePoint"));
+            EditorGUILayout.PropertyField(doorOutsidePointProp);
+            EditorGUILayout.PropertyField(doorInsidePointProp);
 
             EditorGUILayout.Space(5);
             EditorGUILayout.LabelField("2. Saklanma & Rota:", EditorStyles.miniBoldLabel);
-            EditorGUILayout.PropertyField(serializedObject.FindProperty("hidingSpots"), true);
+            EditorGUILayout.PropertyField(hidingSpotsProp, true);
 
-            EditorGUILayout.Space(10);
-
-            GUI.backgroundColor = new Color(0.4f, 0.7f, 1f);
+            EditorGUILayout.Space(5);
             if (GUILayout.Button("👣 Yeni Devriye Noktası Ekle", GUILayout.Height(25)))
                 CreatePoint(
                     room,
@@ -141,23 +171,47 @@ public class RoomEditor : Editor
                     "GuderianSearchSpot",
                     room.guderianPatrolPoints
                 );
-            GUI.backgroundColor = defaultColor;
-
             EditorGUI.indentLevel++;
             EditorGUILayout.PropertyField(
-                serializedObject.FindProperty("guderianPatrolPoints"),
+                guderianPatrolPointsProp,
                 new GUIContent("Devriye Rota Listesi"),
                 true
             );
             EditorGUI.indentLevel--;
+
+            // --- PUSU SİSTEMİ ---
+            EditorGUILayout.Space(10);
+            EditorGUILayout.LabelField("3. Pusu (Ceza) Sistemi:", EditorStyles.miniBoldLabel);
+            EditorGUILayout.BeginVertical(EditorStyles.helpBox);
+            EditorGUILayout.PropertyField(allowAmbushProp, new GUIContent("Pusu Aktif mi?"));
+
+            if (allowAmbushProp.boolValue)
+            {
+                EditorGUILayout.PropertyField(
+                    ambushTimeoutProp,
+                    new GUIContent("Bekleme Süresi (Sn)")
+                );
+                EditorGUILayout.Space(2);
+
+                EditorGUILayout.BeginHorizontal();
+                EditorGUILayout.PropertyField(ambushSpawnPointProp, new GUIContent("Pusu Konumu"));
+                if (GUILayout.Button("➕ Oluştur", GUILayout.Width(70)))
+                {
+                    CreateSinglePoint(room, "Guderian_Ambush_Spot", ref room.ambushSpawnPoint);
+                }
+                EditorGUILayout.EndHorizontal();
+
+                if (room.ambushSpawnPoint == null)
+                    EditorGUILayout.HelpBox(
+                        "Pusu Konumu yoksa varsayılan kapı önü kullanılır.",
+                        MessageType.Warning
+                    );
+            }
+            EditorGUILayout.EndVertical();
         }
         EditorGUILayout.EndVertical();
 
-        if (GUI.changed)
-        {
-            EditorUtility.SetDirty(room);
-            serializedObject.ApplyModifiedProperties();
-        }
+        serializedObject.ApplyModifiedProperties();
     }
 
     void CreatePoint(
@@ -191,7 +245,6 @@ public class RoomEditor : Editor
             Selection.activeGameObject = targetField.gameObject;
             return;
         }
-
         GameObject newPoint = new GameObject(name);
         newPoint.transform.SetParent(room.transform);
         newPoint.transform.localPosition = new Vector3(0, 0, 2);

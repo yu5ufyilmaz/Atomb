@@ -331,10 +331,20 @@ namespace StarterAssets
 
         private void Move()
         {
-            // 1. Hız Hesaplama (Aynı kalacak)
+            // --- EKLENEN KISIM: Idle (Hareketsizlik) Kontrolü ---
+            // Eğer oyuncu yön tuşlarına basıyorsa (input vector sıfır değilse),
+            // Megafon sistemine "Oyuncu hareket ediyor, fırça atma" diyoruz.
+            if (_input.move != Vector2.zero && MegaphoneSystem.Instance != null)
+            {
+                MegaphoneSystem.Instance.ResetIdleTimer();
+            }
+            // ----------------------------------------------------
+
+            // 1. Hız Hesaplama
             float targetSpeed = _input.sprint ? SprintSpeed : MoveSpeed;
             if (_input.move == Vector2.zero)
                 targetSpeed = 0.0f;
+
             if (drunkIntensity > 0.01f)
                 targetSpeed *= Mathf.Lerp(1f, 0.6f, drunkIntensity);
 
@@ -371,12 +381,7 @@ namespace StarterAssets
             if (_animationBlend < 0.01f)
                 _animationBlend = 0f;
 
-            // ============================================================
-            // DÜZELTME: "Strafe" (Sea of Thieves / Shooter) Tarzı Hareket
-            // ============================================================
-
-            // A) ROTASYON: Karakteri her zaman KAMERANIN baktığı yöne kilitle.
-            // Eski kodda Input yönüne dönüyorduk, şimdi Kamera Y açısına dönüyoruz.
+            // ROTASYON: Karakteri her zaman KAMERANIN baktığı yöne kilitle.
             _targetRotation = _mainCamera.transform.eulerAngles.y;
 
             // Sarhoşluk yalpalamasını rotasyona ekle
@@ -393,15 +398,14 @@ namespace StarterAssets
             );
             transform.rotation = Quaternion.Euler(0.0f, rotation, 0.0f);
 
-            // B) HAREKET YÖNÜ: Input'u (WASD) kamera açısına göre ayarla.
-            // W = İleri, S = Geri, A = Sola Adım, D = Sağa Adım
+            // HAREKET YÖNÜ: Input'u (WASD) kamera açısına göre ayarla.
             Vector3 inputDirection = new Vector3(_input.move.x, 0.0f, _input.move.y).normalized;
 
             // Input vektörünü, Kameranın Y açısı (TargetRotation) ile çarpıp dünya yönüne çeviriyoruz
             Vector3 targetDirection =
                 Quaternion.Euler(0.0f, _targetRotation, 0.0f) * inputDirection;
 
-            // 4. Hareketi Uygula
+            // Hareketi Uygula
             Vector3 movement =
                 targetDirection.normalized * (_speed * Time.deltaTime)
                 + new Vector3(0.0f, _verticalVelocity, 0.0f) * Time.deltaTime;
@@ -420,18 +424,10 @@ namespace StarterAssets
                 _animator.SetFloat(_animIDSpeed, _animationBlend);
                 _animator.SetFloat(_animIDMotionSpeed, inputMagnitude);
 
-                // --- YENİ EKLENECEK KISIM: YÖNLÜ ANİMASYON ---
+                // YÖNLÜ ANİMASYON
                 Vector3 localVelocity = transform.InverseTransformDirection(_controller.velocity);
-
-                // ESKİ HALİ (Sert Geçiş):
-                // _animator.SetFloat(_animIDVelocityX, localVelocity.x);
-                // _animator.SetFloat(_animIDVelocityZ, localVelocity.z);
-
-                // YENİ HALİ (Yumuşak Geçiş - Damping):
-                // 0.15f değeri geçiş süresidir. Daha yumuşak istersen 0.2f veya 0.3f yapabilirsin.
                 _animator.SetFloat(_animIDVelocityX, localVelocity.x, 0.15f, Time.deltaTime);
                 _animator.SetFloat(_animIDVelocityZ, localVelocity.z, 0.15f, Time.deltaTime);
-                // ---------------------------------------------
             }
         }
 

@@ -1,321 +1,325 @@
 using System.Collections;
 using Cinemachine;
+using StarterAssets;
 using UnityEngine;
 
 public class InteractablePressureValve : MonoBehaviour, IInteractable, IForceExitable
 {
+    [Header("Player Control")]
+    [SerializeField]
+    private UnityEngine.CharacterController playerPhysicsController;
+
+    [SerializeField]
+    private MonoBehaviour playerInputScript;
+
+    [SerializeField]
+    private Animator playerAnimator;
+
+    [Header("⚠️ ÖNEMLİ: Hareket Scripti")]
+    public MonoBehaviour playerMovementScript;
+
+    [Header("🎥 KAMERA (YENİ SİSTEM)")]
+    [Tooltip("Kameranın gidip duracağı nokta (Boş bir GameObject oluşturup buraya sürükle)")]
+    public Transform fixedCameraTransform;
+    private CinemachineVirtualCamera interactVCam;
+
+    [Header("Animasyon")]
+    [SerializeField]
+    private string interactAnimTrigger = "TurnValve";
+
+    [Header("📍 Etkileşim Pozisyonu")]
+    public Transform interactionStandPoint;
+    public float autoWalkSpeed = 2.0f;
+    public float autoRotateSpeed = 5.0f;
+
     [Header("Components")]
     [SerializeField]
     private Transform valveHandleModel;
 
-    [Header("Head Cam & View Target")]
-    [SerializeField]
-    private string interactAnimTrigger = "TurnValve";
-
-    [SerializeField]
-    private float animationDuration = 1.0f;
-
-    [SerializeField]
-    private Transform cameraViewTarget;
-
-    [SerializeField]
-    private Vector3 headOffset = new Vector3(0, 0.1f, 0.15f);
-    private Transform mainCamera;
-    private CinemachineBrain cinemachineBrain;
-    private Transform headBone;
-    private Transform cinemachineTarget;
-    private Animator playerAnimator;
-
-    [Header("Valve Feel Settings")]
-    [Tooltip("Vananın ağırlığı. 1.0 tüy gibi, 0.1 çok ağır.")]
+    [Header("Valve Settings")]
     [Range(0.01f, 1.0f)]
     [SerializeField]
     private float resistanceMultiplier = 0.15f;
 
-    [Tooltip("Tek seferde dönebileceği maksimum açı")]
     [SerializeField]
     private float maxRotationPerFrame = 2.0f;
 
-    [Tooltip("Sadece Saat Yönünde mi dönsün?")]
     [SerializeField]
     private bool onlyClockwise = true;
 
-    // --- YENİ SES AYARLARI ---
-    [Header("🔊 Audio Settings")]
-    [Tooltip("Vana dönüş sesi için AudioSource")]
+    [Header("Audio")]
     [SerializeField]
     private AudioSource audioSource;
 
-    [Tooltip("Sürekli çalacak dönme sesi (Loop)")]
     [SerializeField]
     private AudioClip turnLoopSound;
 
-    [Tooltip("Sesin açılma/kapanma hızı")]
     [SerializeField]
     private float fadeSpeed = 5f;
 
-    // Pitch değişimi (Hız hissi için opsiyonel)
-    [SerializeField]
-    private float minPitch = 0.9f;
-
-    [SerializeField]
-    private float maxPitch = 1.1f;
-
-    private bool isTurning = false; // O karede dönüyor mu?
-
-    // -------------------------
-
-    private UnityEngine.CharacterController playerPhysicsController;
-    private MonoBehaviour playerInputScript;
-    private bool isInteracting = false;
+    private bool inValveMode = false;
+    private bool isExiting = false;
+    private bool isTurning = false;
     private Vector2 screenCenter;
     private float lastAngle;
 
     private void Start()
     {
         screenCenter = new Vector2(Screen.width / 2, Screen.height / 2);
-        playerPhysicsController = FindObjectOfType<UnityEngine.CharacterController>();
-        if (playerPhysicsController)
+
+        // 1. Scriptleri Bul
+        if (playerPhysicsController == null)
+            playerPhysicsController = FindObjectOfType<UnityEngine.CharacterController>();
+
+        if (playerPhysicsController != null)
         {
             GameObject p = playerPhysicsController.gameObject;
-            playerInputScript = p.GetComponent("StarterAssetsInputs") as MonoBehaviour;
+            playerInputScript = p.GetComponent<StarterAssetsInputs>() as MonoBehaviour;
             playerAnimator = p.GetComponent<Animator>();
-            if (playerAnimator)
-                headBone = playerAnimator.GetBoneTransform(HumanBodyBones.Head);
-            if (headBone == null)
-                headBone = p.transform;
-            Transform camRoot = p.transform.Find("PlayerCameraRoot");
-            cinemachineTarget = (camRoot != null) ? camRoot : headBone;
-        }
-        if (Camera.main != null)
-        {
-            mainCamera = Camera.main.transform;
-            cinemachineBrain = mainCamera.GetComponent<CinemachineBrain>();
+            if (playerMovementScript == null)
+                playerMovementScript = p.GetComponent<StarterAssets.CharacterController>();
+            if (playerMovementScript == null)
+                playerMovementScript = p.GetComponent("ThirdPersonController") as MonoBehaviour;
         }
 
-        // Ses Kaynağını Hazırla
         if (audioSource != null)
         {
             audioSource.loop = true;
             audioSource.volume = 0f;
             audioSource.clip = turnLoopSound;
         }
+
+        // 2. VCAM Oluştur
+        if (fixedCameraTransform != null)
+        {
+            interactVCam = fixedCameraTransform.GetComponentInChildren<CinemachineVirtualCamera>();
+            if (interactVCam == null)
+            {
+                GameObject vcamObj = new GameObject("Valve_VCam");
+                vcamObj.transform.parent = fixedCameraTransform;
+                vcamObj.transform.localPosition = Vector3.zero;
+                vcamObj.transform.localRotation = Quaternion.identity;
+                interactVCam = vcamObj.AddComponent<CinemachineVirtualCamera>();
+                interactVCam.Priority = 0;
+            }
+        }
+        else
+            Debug.LogError("PressureValve: FIXED CAMERA TRANSFORM EKSİK!");
     }
 
     public void Interact()
     {
-        if (isInteracting)
+        if (inValveMode || isExiting)
             return;
-        StartCoroutine(EnterValveMode());
+        StartCoroutine(MoveToInteractionPoint());
     }
 
-    public string GetInteractionPrompt() => isInteracting ? "" : "[Sol Tık] Basınç Vanası";
-
-    private IEnumerator EnterValveMode()
+    private IEnumerator MoveToInteractionPoint()
     {
-        isInteracting = true;
-
-        if (GameManager.Instance != null)
-            GameManager.Instance.activeInteraction = this;
-
-        Vector2 mousePos = Input.mousePosition;
-        Vector2 direction = mousePos - screenCenter;
-        lastAngle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
-        if (playerPhysicsController)
-            playerPhysicsController.enabled = false;
+        // Yürüme
         if (playerInputScript)
             playerInputScript.enabled = false;
-        if (playerAnimator)
-            playerAnimator.SetTrigger(interactAnimTrigger);
-        if (cinemachineBrain)
-            cinemachineBrain.enabled = false;
+        if (playerMovementScript)
+            playerMovementScript.enabled = false;
+        if (playerPhysicsController)
+            playerPhysicsController.enabled = true;
 
-        if (headBone != null)
+        if (interactionStandPoint != null)
         {
-            mainCamera.SetParent(headBone);
+            float timer = 0f;
+            while (timer < 4.0f)
+            {
+                timer += Time.deltaTime;
+                Vector3 targetPos = interactionStandPoint.position;
+                Vector3 playerPos = playerPhysicsController.transform.position;
+                playerPos.y = targetPos.y;
+
+                if (Vector3.Distance(playerPos, targetPos) < 0.15f)
+                    break;
+
+                Vector3 dir = (targetPos - playerPos).normalized;
+                if (dir != Vector3.zero)
+                    playerPhysicsController.transform.rotation = Quaternion.Slerp(
+                        playerPhysicsController.transform.rotation,
+                        Quaternion.LookRotation(dir),
+                        Time.deltaTime * autoRotateSpeed
+                    );
+
+                Vector3 move = dir * autoWalkSpeed;
+                move.y = -9.81f;
+                playerPhysicsController.Move(move * Time.deltaTime);
+
+                if (playerAnimator)
+                {
+                    playerAnimator.SetFloat("Speed", autoWalkSpeed);
+                    playerAnimator.SetBool("Grounded", true);
+                }
+                yield return null;
+            }
+        }
+
+        // Snap
+        if (interactionStandPoint != null)
+        {
             float t = 0f;
-            Vector3 startPos = mainCamera.localPosition;
-            Quaternion startRot = mainCamera.localRotation;
+            Quaternion startRot = playerPhysicsController.transform.rotation;
+            Vector3 startPos = playerPhysicsController.transform.position;
             while (t < 0.5f)
             {
                 t += Time.deltaTime;
-                float s = t / 0.5f;
-                mainCamera.localPosition = Vector3.Lerp(startPos, new Vector3(0, 0.1f, 0.15f), s);
-                mainCamera.localRotation = Quaternion.Slerp(startRot, Quaternion.identity, s);
+                playerPhysicsController.transform.position = Vector3.Lerp(
+                    startPos,
+                    interactionStandPoint.position,
+                    t / 0.5f
+                );
+                playerPhysicsController.transform.rotation = Quaternion.Slerp(
+                    startRot,
+                    interactionStandPoint.rotation,
+                    t / 0.5f
+                );
+                if (playerAnimator)
+                    playerAnimator.SetFloat("Speed", 0);
                 yield return null;
             }
         }
-        yield return new WaitForSeconds(animationDuration - 0.5f);
-        if (cameraViewTarget != null)
-        {
-            mainCamera.SetParent(null);
-            Vector3 startDockPos = mainCamera.position;
-            Quaternion startDockRot = mainCamera.rotation;
-            float dockTime = 0.8f;
-            float t = 0f;
-            while (t < dockTime)
-            {
-                t += Time.deltaTime;
-                float s = Mathf.SmoothStep(0f, 1f, t / dockTime);
-                mainCamera.position = Vector3.Lerp(startDockPos, cameraViewTarget.position, s);
-                mainCamera.rotation = Quaternion.Slerp(startDockRot, cameraViewTarget.rotation, s);
-                yield return null;
-            }
-            mainCamera.position = cameraViewTarget.position;
-            mainCamera.rotation = cameraViewTarget.rotation;
-        }
-        TogglePlayerModel(false);
-        Cursor.lockState = CursorLockMode.None;
+
+        StartCoroutine(EnterValveMode());
+    }
+
+    private IEnumerator EnterValveMode()
+    {
+        if (GameManager.Instance)
+            GameManager.Instance.activeInteraction = this;
+
+        // Mouse pozisyonu hazırla
+        Vector2 mousePos = Input.mousePosition;
+        Vector2 dir = mousePos - screenCenter;
+        lastAngle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
+
+        // Kontrolleri kapat
+        if (playerPhysicsController)
+            playerPhysicsController.enabled = false;
+        if (playerAnimator)
+            playerAnimator.SetTrigger(interactAnimTrigger);
+
+        // GEÇİŞ (Blend)
+        if (interactVCam)
+            interactVCam.Priority = 100;
+        yield return new WaitForSeconds(1.5f);
+
+        inValveMode = true;
+        Cursor.lockState = CursorLockMode.None; // Mouse lazım
         Cursor.visible = true;
+
+        if (ControlsUIManager.Instance)
+            ControlsUIManager.Instance.ShowControls("Mouse: Çevir | F: Çık");
     }
 
     private IEnumerator ExitValveMode()
     {
-        isInteracting = false;
-        isTurning = false; // Çıkarken sesi kes
+        if (isExiting)
+            yield break;
+        isExiting = true;
+        inValveMode = false;
+        isTurning = false;
 
-        if (GameManager.Instance != null)
-            GameManager.Instance.activeInteraction = null;
+        // ÇIKIŞ (Blend)
+        if (interactVCam)
+            interactVCam.Priority = 0;
+        yield return new WaitForSeconds(1.5f);
 
-        TogglePlayerModel(true);
-
-        if (cinemachineTarget != null)
-        {
-            mainCamera.SetParent(null);
-            Vector3 startPos = mainCamera.position;
-            Quaternion startRot = mainCamera.rotation;
-            float undockTime = 0.5f;
-            float t = 0f;
-            while (t < undockTime)
-            {
-                t += Time.deltaTime;
-                float s = Mathf.SmoothStep(0f, 1f, t / undockTime);
-                mainCamera.position = Vector3.Lerp(startPos, cinemachineTarget.position, s);
-                mainCamera.rotation = Quaternion.Slerp(startRot, cinemachineTarget.rotation, s);
-                yield return null;
-            }
-        }
-        if (playerPhysicsController != null)
-        {
-            Vector3 camForward = mainCamera.forward;
-            camForward.y = 0;
-            if (camForward != Vector3.zero)
-                playerPhysicsController.transform.rotation = Quaternion.LookRotation(camForward);
-        }
-        if (cinemachineBrain)
-            cinemachineBrain.enabled = true;
+        // Kontrolleri aç
         if (playerPhysicsController)
             playerPhysicsController.enabled = true;
         if (playerInputScript)
             playerInputScript.enabled = true;
+        if (playerMovementScript)
+            playerMovementScript.enabled = true;
+
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
+
+        if (ControlsUIManager.Instance)
+            ControlsUIManager.Instance.HideControls();
+        if (GameManager.Instance)
+            GameManager.Instance.activeInteraction = null;
+
+        isExiting = false;
     }
 
     private void Update()
     {
-        // Ses Yönetimi (Her kare çalışmalı ki fade out düzgün olsun)
         HandleAudio();
-
-        if (!isInteracting)
+        if (!inValveMode || isExiting)
             return;
+
         if (Input.GetKeyDown(KeyCode.F) || Input.GetMouseButtonDown(1))
         {
             StartCoroutine(ExitValveMode());
             return;
         }
-        HandleCircularMotion();
-    }
 
-    private void TogglePlayerModel(bool show)
-    {
-        if (!playerPhysicsController)
-            return;
-        Renderer[] renderers = playerPhysicsController.GetComponentsInChildren<Renderer>();
-        foreach (var r in renderers)
-            r.enabled = show;
+        HandleCircularMotion();
     }
 
     private void HandleCircularMotion()
     {
         Vector2 mousePos = Input.mousePosition;
-        Vector2 direction = mousePos - screenCenter;
-        float currentAngle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
-        float deltaAngle = Mathf.DeltaAngle(lastAngle, currentAngle);
+        Vector2 dir = mousePos - screenCenter;
+        float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
+        float delta = Mathf.DeltaAngle(lastAngle, angle);
 
-        if (onlyClockwise && deltaAngle > 0)
-            deltaAngle = 0;
+        if (onlyClockwise && delta > 0)
+            delta = 0;
 
-        // --- DÖNÜŞ KONTROLÜ ---
-        // Eğer deltaAngle 0.01'den büyükse dönüyor demektir.
-        if (Mathf.Abs(deltaAngle) > 0.01f)
+        if (Mathf.Abs(delta) > 0.01f)
         {
             isTurning = true;
+            float rot = Mathf.Clamp(
+                delta * resistanceMultiplier,
+                -maxRotationPerFrame,
+                maxRotationPerFrame
+            );
+            if (valveHandleModel)
+                valveHandleModel.Rotate(Vector3.forward, -rot, Space.Self);
 
-            float dampenedDelta = deltaAngle * resistanceMultiplier;
-            dampenedDelta = Mathf.Clamp(dampenedDelta, -maxRotationPerFrame, maxRotationPerFrame);
-
-            if (valveHandleModel != null)
-                valveHandleModel.Rotate(Vector3.forward, -dampenedDelta, Space.Self);
-
-            if (dampenedDelta < 0 && PressureSystemManager.Instance != null)
+            if (rot < 0 && PressureSystemManager.Instance)
             {
-                float reduction =
+                PressureSystemManager.Instance.ReducePressure(
                     PressureSystemManager.Instance.pressureDecreaseRate
-                    * Time.deltaTime
-                    * Mathf.Abs(dampenedDelta);
-                PressureSystemManager.Instance.ReducePressure(reduction);
-                if (PressureSystemManager.Instance.GetPressure() <= 0f)
+                        * Time.deltaTime
+                        * Mathf.Abs(rot)
+                );
+                if (PressureSystemManager.Instance.GetPressure() <= 0)
                     StartCoroutine(ExitValveMode());
             }
         }
         else
-        {
             isTurning = false;
-        }
-
-        lastAngle = currentAngle;
+        lastAngle = angle;
     }
 
-    // --- YENİ SES YÖNETİMİ ---
     private void HandleAudio()
     {
-        if (audioSource == null)
+        if (!audioSource)
             return;
-
-        // Hedef Ses Seviyesi: Dönüyorsa 1, duruyorsa 0
-        // Eğer etkileşimde değilsek (isInteracting false) kesinlikle 0 olmalı.
-        float targetVol = (isInteracting && isTurning) ? 1f : 0f;
-
-        // Sesi yumuşakça hedefe götür (Fade)
-        audioSource.volume = Mathf.Lerp(audioSource.volume, targetVol, Time.deltaTime * fadeSpeed);
-
-        // Optimizasyon: Ses çok kısıldıysa durdur, açılacaksa oynat
-        if (audioSource.volume > 0.01f)
-        {
-            if (!audioSource.isPlaying)
-                audioSource.Play();
-
-            // Opsiyonel: Rastgele pitch ile mekanik hissi arttır
-            audioSource.pitch = Mathf.Lerp(
-                minPitch,
-                maxPitch,
-                Mathf.PingPong(Time.time * 0.5f, 1f)
-            );
-        }
-        else if (audioSource.isPlaying && targetVol == 0f)
-        {
+        float target = (inValveMode && isTurning) ? 1f : 0f;
+        audioSource.volume = Mathf.Lerp(audioSource.volume, target, Time.deltaTime * fadeSpeed);
+        if (audioSource.volume > 0.01f && !audioSource.isPlaying)
+            audioSource.Play();
+        else if (audioSource.volume <= 0.01f && audioSource.isPlaying)
             audioSource.Stop();
-        }
+    }
+
+    public void ForceExit()
+    {
+        if (inValveMode)
+            StartCoroutine(ExitValveMode());
     }
 
     public void OnFocus() { }
 
     public void OnLoseFocus() { }
 
-    public void ForceExit()
-    {
-        if (isInteracting)
-            StartCoroutine(ExitValveMode());
-    }
+    public string GetInteractionPrompt() => inValveMode ? "" : "[Sol Tık] Basınç Vanası";
 }

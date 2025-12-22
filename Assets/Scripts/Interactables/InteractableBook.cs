@@ -320,6 +320,16 @@ public class InteractableBook : MonoBehaviour, IInteractable, IForceExitable
         if (NotebookUI.Instance != null)
             NotebookUI.Instance.ShowPasswordNotification(passwordID);
 
+        // --- EKLENEN KISIM: Megafon Sistemi Tetikleyicisi ---
+        if (MegaphoneSystem.Instance != null)
+        {
+
+            MegaphoneSystem.Instance.OnNotePickedUp();
+
+            MegaphoneSystem.Instance.ResetIdleTimer();
+        }
+        // -----------------------------------------------------
+
         StartCoroutine(CloseBook());
     }
 
@@ -341,7 +351,8 @@ public class InteractableBook : MonoBehaviour, IInteractable, IForceExitable
     {
         isAnimating = true;
         isOpen = true;
-
+        if (ControlsUIManager.Instance != null)
+            ControlsUIManager.Instance.ShowControls("A / D: Sayfa Çevir  |  F: Kapat");
         if (outlineScript != null)
             outlineScript.enabled = false;
 
@@ -407,7 +418,8 @@ public class InteractableBook : MonoBehaviour, IInteractable, IForceExitable
     {
         isAnimating = true;
         isOpen = false;
-
+        if (ControlsUIManager.Instance != null)
+            ControlsUIManager.Instance.HideControls();
         if (GameManager.Instance != null)
             GameManager.Instance.activeInteraction = null;
 

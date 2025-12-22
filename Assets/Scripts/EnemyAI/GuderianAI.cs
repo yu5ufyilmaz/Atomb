@@ -17,6 +17,7 @@ public class GuderianAI : MonoBehaviour
         Exiting,
         Jumpscare,
         RhythmGame,
+        Ambush,
     }
 
     public GuderianState currentState = GuderianState.Hidden;
@@ -34,7 +35,6 @@ public class GuderianAI : MonoBehaviour
 
     [SerializeField]
     private float currentSpawnChance;
-
     private RoomManager playerCurrentRoom;
 
     [Header("Davranış Ayarları")]
@@ -49,7 +49,6 @@ public class GuderianAI : MonoBehaviour
     [Header("Jumpscare Ayarları")]
     public float jumpscareDistance = 1.0f;
     public float lookAtDoorThreshold = 60f;
-    public float standoffKillDistance = 2.0f;
     public float spawnYOffset = 0f;
 
     [Header("Görsellik & Ses")]
@@ -74,7 +73,6 @@ public class GuderianAI : MonoBehaviour
     [SerializeField]
     private AudioClip searchHumSound;
 
-    // --- DEBUG ---
     [HideInInspector]
     public string debugStatus;
 
@@ -93,8 +91,6 @@ public class GuderianAI : MonoBehaviour
     private RoomManager activeRoom;
     private float currentSearchTimer;
     private float calculatedSearchDuration;
-
-    // Ses Kontrolü
     private Coroutine audioFadeRoutine;
 
     private void Awake()
@@ -136,16 +132,13 @@ public class GuderianAI : MonoBehaviour
 
             if (!CheckIfPlayerHidden())
             {
-                Debug.Log("Guderian: Oyuncu erken çıktı! Yakala.");
                 StopAllCoroutines();
                 TriggerPositionedJumpscare(JumpscareType.InFrontOfPlayer);
                 return;
             }
 
             if (currentSearchTimer <= 0)
-            {
                 StartCoroutine(ExitSequence());
-            }
         }
     }
 
@@ -160,6 +153,59 @@ public class GuderianAI : MonoBehaviour
         if (playerCurrentRoom == room)
             playerCurrentRoom = null;
     }
+
+    // --- GÜNCELLENEN PUSU (AMBUSH) SİSTEMİ ---
+
+    public void SetupAmbush(RoomManager room)
+    {
+        if (currentState != GuderianState.Hidden || !GlobalEnemyManager.Instance.CanAttack())
+            return;
+
+        Debug.Log($"GUDERIAN: {room.roomName} PUSU kuruyor!");
+        GlobalEnemyManager.Instance.RegisterAttackStart();
+
+        activeRoom = room;
+        currentState = GuderianState.Ambush;
+        debugStatus = "PUSUDA (Manuel Konum)";
+
+        // 1. Önce Manuel Noktaya Bak
+        if (room.ambushSpawnPoint != null)
+        {
+            transform.position = room.ambushSpawnPoint.position;
+            transform.rotation = room.ambushSpawnPoint.rotation; // Yönünü de ayarla
+        }
+        // 2. Yoksa Eski Usül Kapı İçine Bak
+        else if (room.doorInsidePoint != null)
+        {
+            transform.position = room.doorInsidePoint.position;
+            if (room.doorOutsidePoint != null)
+                transform.LookAt(
+                    new Vector3(
+                        room.doorOutsidePoint.position.x,
+                        transform.position.y,
+                        room.doorOutsidePoint.position.z
+                    )
+                );
+        }
+
+        guderianModel.SetActive(false);
+    }
+
+    public void TriggerAmbushExecute()
+    {
+        if (currentState != GuderianState.Ambush)
+            return;
+
+        guderianModel.SetActive(true);
+        TriggerPositionedJumpscare(JumpscareType.InFrontOfPlayer);
+    }
+
+    public bool IsCampingPlayerInRoom(RoomManager room)
+    {
+        return (activeRoom == room && currentState == GuderianState.Ambush);
+    }
+
+    // ----------------------------------------
 
     private void AttemptSpawn()
     {
@@ -180,13 +226,9 @@ public class GuderianAI : MonoBehaviour
 
     public void TrySpawnGuderian(RoomManager room)
     {
-        if (currentState != GuderianState.Hidden)
-            return;
-        if (!GlobalEnemyManager.Instance.CanAttack())
+        if (currentState != GuderianState.Hidden || !GlobalEnemyManager.Instance.CanAttack())
             return;
         if (!room.canGuderianSpawn || room.roomDoor == null)
-            return;
-        if (room.doorOutsidePoint == null || room.doorInsidePoint == null)
             return;
 
         activeRoom = room;
@@ -197,56 +239,40 @@ public class GuderianAI : MonoBehaviour
     private IEnumerator AttackSequence()
     {
         InteractableDoor door = activeRoom.roomDoor;
-        Transform player = GameObject.FindGameObjectWithTag("Player").transform;
 
-        // --- ADIM 0: KAPI AÇIKSA ---
         if (door.isOpen)
         {
             currentState = GuderianState.Approaching;
             debugStatus = "Kapı AÇIK! Yaklaşıyor...";
             SetPositionWithOffset(activeRoom.doorOutsidePoint.position, false);
             guderianModel.SetActive(false);
-
-            for (int i = 0; i < 5; i++)
-            {
-                if (footstepSounds.Length > 0)
-                    PlaySoundAtDoor(footstepSounds[Random.Range(0, footstepSounds.Length)]);
-                yield return new WaitForSeconds(footstepInterval);
-            }
+            yield return new WaitForSeconds(footstepInterval * 5); // Basitleştirilmiş bekleme
             TriggerPositionedJumpscare(JumpscareType.AtDoor);
             yield break;
         }
 
-        // --- ADIM 1: YAKLAŞMA ---
         currentState = GuderianState.Approaching;
-        debugStatus = "Adım Sesleri Geliyor...";
+        debugStatus = "Adım Sesleri...";
         SetPositionWithOffset(activeRoom.doorOutsidePoint.position, false);
         guderianModel.SetActive(false);
 
+        // Adım sesleri döngüsü
         for (int i = 0; i < 5; i++)
         {
             if (footstepSounds.Length > 0)
                 PlaySoundAtDoor(footstepSounds[Random.Range(0, footstepSounds.Length)]);
-            debugApproachProgress = (float)(i + 1) / 5;
-
-            float waitTimer = 0f;
-            while (waitTimer < footstepInterval)
+            yield return new WaitForSeconds(footstepInterval);
+            if (door.isOpen)
             {
-                waitTimer += Time.deltaTime;
-                if (door.isOpen)
-                {
-                    TriggerPositionedJumpscare(JumpscareType.AtDoor);
-                    yield break;
-                }
-                yield return null;
+                TriggerPositionedJumpscare(JumpscareType.AtDoor);
+                yield break;
             }
         }
 
-        // --- ADIM 2: ZORLAMA ---
         currentState = GuderianState.Breaching;
         bool isDoorLocked = door.IsLocked();
         float breachTime = isDoorLocked ? lockedDoorBreachTime : closedDoorBreachTime;
-        debugStatus = isDoorLocked ? "Kapı KİLİTLİ (Kırıyor)..." : "Kapı KAPALI (Açıyor)...";
+        debugStatus = isDoorLocked ? "Kırıyor..." : "Açıyor...";
         PlaySoundAtDoor(doorHandleSound);
 
         float breachTimer = 0f;
@@ -262,7 +288,6 @@ public class GuderianAI : MonoBehaviour
             yield return null;
         }
 
-        // --- ADIM 3: KARAR ---
         if (isDoorLocked)
             door.SetLocked(false);
 
@@ -283,7 +308,6 @@ public class GuderianAI : MonoBehaviour
             }
         }
 
-        // --- ADIM 4: GİRİŞ ---
         currentState = GuderianState.Entering;
         debugStatus = "İçeri Giriyor...";
         if (!door.isOpen)
@@ -312,8 +336,6 @@ public class GuderianAI : MonoBehaviour
         calculatedSearchDuration = baseSearchDuration + (activeLights * timePerLight);
         currentSearchTimer = calculatedSearchDuration;
         debugStatus = $"Arıyor... ({activeLights} Işık)";
-
-        // YENİ: Arama sesini yumuşakça başlat (Fade In)
         FadeAudio(searchHumSound, 1.0f, true);
 
         while (currentState == GuderianState.Searching)
@@ -332,47 +354,28 @@ public class GuderianAI : MonoBehaviour
     private IEnumerator ExitSequence()
     {
         currentState = GuderianState.Exiting;
-        debugStatus = "Odadan Çıkıyor...";
-
-        // --- DÜZELTME BAŞLANGICI ---
-        // Eğer bir oda tanımlıysa kapıdan çık, yoksa direkt yok ol.
-        if (
-            activeRoom != null
-            && activeRoom.doorInsidePoint != null
-            && activeRoom.doorOutsidePoint != null
-        )
+        debugStatus = "Çıkıyor...";
+        if (activeRoom != null && activeRoom.doorInsidePoint != null)
         {
             yield return StartCoroutine(MoveToTarget(activeRoom.doorInsidePoint.position));
-            yield return StartCoroutine(MoveToTarget(activeRoom.doorOutsidePoint.position));
-
+            if (activeRoom.doorOutsidePoint != null)
+                yield return StartCoroutine(MoveToTarget(activeRoom.doorOutsidePoint.position));
             if (activeRoom.roomDoor != null && activeRoom.roomDoor.isOpen)
                 activeRoom.roomDoor.SetOpen(false);
         }
         else
-        {
-            // Oda yoksa 1 saniye bekle ve kaybol (Editör testleri için)
             yield return new WaitForSeconds(1.0f);
-        }
-        // --- DÜZELTME BİTİŞİ ---
 
         guderianModel.SetActive(false);
-
-        // YENİ: Çıkarken sesi yavaşça kapat (Fade Out) - 2 saniye
         FadeAudio(null, 2.0f, false);
-
         currentState = GuderianState.Hidden;
         debugStatus = "Gitti.";
-
         if (GlobalEnemyManager.Instance != null)
             GlobalEnemyManager.Instance.RegisterAttackEnd();
-
         cooldownTimer = minTimeBetweenAttacks;
-
-        // Odayı temizle ki bir sonraki sefere temiz başlasın
         activeRoom = null;
     }
 
-    // --- YENİ SES SİSTEMİ (Hard Cut Önleyici) ---
     private void FadeAudio(AudioClip clip, float duration, bool fadeIn)
     {
         if (audioSource == null)
@@ -387,7 +390,6 @@ public class GuderianAI : MonoBehaviour
         float targetVol = fadeIn ? 1f : 0f;
         float startVol = audioSource.volume;
         float t = 0f;
-
         if (fadeIn)
         {
             audioSource.clip = clip;
@@ -395,20 +397,16 @@ public class GuderianAI : MonoBehaviour
             if (!audioSource.isPlaying)
                 audioSource.Play();
         }
-
         while (t < duration)
         {
             t += Time.deltaTime;
             audioSource.volume = Mathf.Lerp(startVol, targetVol, t / duration);
             yield return null;
         }
-
         audioSource.volume = targetVol;
         if (!fadeIn)
             audioSource.Stop();
     }
-
-    // ---------------------------------------------
 
     private enum JumpscareType
     {
@@ -422,8 +420,6 @@ public class GuderianAI : MonoBehaviour
         currentState = GuderianState.Jumpscare;
         debugStatus = "JUMPSCARE!";
         StopAllCoroutines();
-
-        // Jumpscare anında sesi hemen kes ve patlat
         if (audioFadeRoutine != null)
             StopCoroutine(audioFadeRoutine);
         if (audioSource)
@@ -436,27 +432,19 @@ public class GuderianAI : MonoBehaviour
         Transform player = GameObject.FindGameObjectWithTag("Player").transform;
         bool shouldPlayAnim = false;
 
-        // --- DÜZELTME BAŞLANGICI ---
-        // Eğer bir oda yoksa (Editörden basıldıysa), varsayılan olarak oyuncunun dibinde doğsun.
         if (activeRoom == null)
         {
-            // Odaya bağlı olmayan acil durum pozisyonu
-            Vector3 emergencyPos = player.position + (player.forward * 1.0f);
-            SetPositionWithOffset(emergencyPos, true);
+            SetPositionWithOffset(player.position + (player.forward * 1.0f), true);
             LookAtTargetFlat(player);
-            shouldPlayAnim = false;
-            // Tip ne olursa olsun, oda yoksa oyuncunun önüne ışınla ve çık.
         }
         else
         {
-            // Oda varsa eski mantık çalışsın
             switch (type)
             {
                 case JumpscareType.AtDoor:
                     if (activeRoom.doorOutsidePoint != null)
                         SetPositionWithOffset(activeRoom.doorOutsidePoint.position, false);
                     LookAtTargetFlat(player);
-                    shouldPlayAnim = false;
                     break;
                 case JumpscareType.BehindPlayer:
                     Vector3 behindPos = player.position - (player.forward * jumpscareDistance);
@@ -468,22 +456,18 @@ public class GuderianAI : MonoBehaviour
                     shouldPlayAnim = true;
                     break;
                 case JumpscareType.InFrontOfPlayer:
-                    if (activeRoom.doorInsidePoint != null)
-                        SetPositionWithOffset(activeRoom.doorInsidePoint.position, true);
+                    // Eğer Pusu modundaysak ve özel bir noktamız varsa oradan hareket ettirmeyelim (Zaten oradadır)
+                    // Ancak modele göre yönünü oyuncuya çevirmemiz gerekebilir.
                     LookAtTargetFlat(player);
-                    shouldPlayAnim = false;
                     break;
             }
         }
-        // --- DÜZELTME BİTİŞİ ---
 
         guderianModel.SetActive(true);
-        Debug.LogError($"GUDERIAN YAKALADI! Tip: {type}");
-
         if (JumpscareManager.Instance != null)
             JumpscareManager.Instance.StartJumpscare(transform, shouldPlayAnim);
         else
-            StartCoroutine(ExitSequence()); // ExitSequence'da da hata almamak için orayı da düzelteceğiz.
+            StartCoroutine(ExitSequence());
     }
 
     private void SetPositionWithOffset(Vector3 targetPos, bool useSpawnOffset = true)
@@ -515,7 +499,6 @@ public class GuderianAI : MonoBehaviour
         float timeout = 10f;
         float currentTimer = 0f;
         Vector3 targetFlat = new Vector3(target.x, transform.position.y, target.z);
-
         while (
             Vector3.Distance(
                 new Vector3(transform.position.x, transform.position.y, transform.position.z),
@@ -555,22 +538,16 @@ public class GuderianAI : MonoBehaviour
         return false;
     }
 
-    public void TriggerJumpscare()
-    {
-        TriggerPositionedJumpscare(JumpscareType.InFrontOfPlayer);
-    }
+    public void TriggerJumpscare() => TriggerPositionedJumpscare(JumpscareType.InFrontOfPlayer);
 
-    public bool IsCampingPlayer(InteractableHidingSpot spot)
-    {
-        return (currentState == GuderianState.Searching && activeRoom != null);
-    }
+    public bool IsCampingPlayer(InteractableHidingSpot spot) =>
+        (currentState == GuderianState.Searching && activeRoom != null);
 
     public void TriggerLockerJumpscare(Transform lockerExitPoint)
     {
         currentState = GuderianState.Jumpscare;
         StopAllCoroutines();
         GameObject player = GameObject.FindGameObjectWithTag("Player");
-
         if (lockerExitPoint != null)
         {
             Vector3 finalPos = lockerExitPoint.position;
@@ -578,36 +555,28 @@ public class GuderianAI : MonoBehaviour
             transform.position = finalPos;
             transform.LookAt(finalPos - lockerExitPoint.forward);
         }
-
         if (player != null)
-        {
-            Vector3 lookTarget = new Vector3(
-                transform.position.x,
-                player.transform.position.y,
-                transform.position.z
+            player.transform.LookAt(
+                new Vector3(transform.position.x, player.transform.position.y, transform.position.z)
             );
-            player.transform.LookAt(lookTarget);
-        }
-
         guderianModel.SetActive(true);
         if (audioSource)
         {
-            if (audioFadeRoutine != null)
-                StopCoroutine(audioFadeRoutine);
+            audioSource.Stop();
             audioSource.volume = 1f;
             audioSource.PlayOneShot(jumpscareSound);
         }
-
         if (JumpscareManager.Instance != null)
             JumpscareManager.Instance.StartJumpscare(transform, false);
     }
 
     public void ForceLeave()
     {
-        if (currentState == GuderianState.Hidden)
-            return;
-        StopAllCoroutines();
-        StartCoroutine(ExitSequence());
+        if (currentState != GuderianState.Hidden)
+        {
+            StopAllCoroutines();
+            StartCoroutine(ExitSequence());
+        }
     }
 
     public float GetCurrentChance() => currentSpawnChance;
@@ -620,16 +589,13 @@ public class GuderianAI : MonoBehaviour
     {
         if (clip == null)
             return;
-        if (activeRoom != null && activeRoom.roomDoor != null)
-        {
-            AudioSource doorSource = activeRoom.roomDoor.DoorAudioSource;
-            if (doorSource != null)
-            {
-                doorSource.PlayOneShot(clip);
-                return;
-            }
-        }
-        if (audioSource)
+        if (
+            activeRoom != null
+            && activeRoom.roomDoor != null
+            && activeRoom.roomDoor.DoorAudioSource != null
+        )
+            activeRoom.roomDoor.DoorAudioSource.PlayOneShot(clip);
+        else if (audioSource)
             audioSource.PlayOneShot(clip);
     }
 }
