@@ -27,7 +27,7 @@ public class PasswordManager : MonoBehaviour
     private List<InteractableBook> allBooksInLevel;
 
     [Header("Tutorial Ayarları")]
-    public string tutorialPassword = "START_=_001";
+    public string tutorialPassword = "AAAAAAAA_+_999";
 
     // YENİ: Tutorial notunu buraya sürükleyeceksin
     public InteractableBook tutorialNoteBook;

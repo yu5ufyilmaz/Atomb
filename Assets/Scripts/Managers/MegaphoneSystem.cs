@@ -97,16 +97,8 @@ public class MegaphoneSystem : MonoBehaviour
         // 2. ALTYAZIYI GÖSTER (GlobalSubtitleManager Varsa)
         if (GlobalSubtitleManager.Instance != null)
         {
-            // Eğer clip varsa süresini al, yoksa varsayılan 3 saniye ver
-            float duration = (clip != null) ? clip.length : 3f;
-            GlobalSubtitleManager.Instance.Show(subtitleID, duration);
-        }
-        else
-        {
-            // Eğer GlobalManager yoksa ama eski usul Text varsa (Yedek)
-            Debug.LogWarning(
-                "MegaphoneSystem: GlobalSubtitleManager bulunamadı, altyazı gösterilemiyor."
-            );
+            // Değişiklik: Artık süre (duration) göndermiyoruz. Manager kendi veritabanından alacak.
+            GlobalSubtitleManager.Instance.Show(subtitleID);
         }
     }
 

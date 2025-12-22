@@ -15,7 +15,7 @@ MonoBehaviour:
   pageTexture: {fileID: 2800000, guid: 7bdf0b00ba874480e90b3d2987e6dd9b, type: 3}
   totalPages: 8
   isTutorialData: 1
-  tutorialPasswordID: STARTTTT_=_001
+  tutorialPasswordID: AAAAAAAA_+_999
   possibleLocations:
   - note: tut
     pageIndex: 0

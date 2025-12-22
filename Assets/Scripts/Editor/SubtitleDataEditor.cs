@@ -10,103 +10,203 @@ public class SubtitleDataEditor : Editor
     private string searchText = "";
     private Vector2 scrollPos;
 
+    // Hangi entry'nin detaylarının açık olduğunu takip etmek için
+    private static int expandedIndex = -1;
+
     public override void OnInspectorGUI()
     {
-        SubtitleData data = (SubtitleData)target;
+        // ScriptableObject verisini "SerializedObject" olarak ele alıyoruz
+        // Bu sayede Undo/Redo (CTRL+Z) çalışır ve "Dirty" işaretleme otomatik yapılır.
+        serializedObject.Update();
+
+        SerializedProperty entriesProp = serializedObject.FindProperty("entries");
 
         GUIStyle titleStyle = new GUIStyle(EditorStyles.boldLabel)
         {
             fontSize = 16,
             alignment = TextAnchor.MiddleCenter,
         };
-        GUIStyle boxStyle = new GUIStyle(EditorStyles.helpBox)
+        GUIStyle headerStyle = new GUIStyle(EditorStyles.foldoutHeader)
         {
-            padding = new RectOffset(10, 10, 10, 10),
+            fontStyle = FontStyle.Bold,
+            fontSize = 12,
         };
 
         EditorGUILayout.Space(10);
-        EditorGUILayout.LabelField("🌍 GLOBAL ALTYAZI MERKEZİ", titleStyle);
+        EditorGUILayout.LabelField("🌍 GELİŞMİŞ ALTYAZI MERKEZİ", titleStyle);
         EditorGUILayout.Space(10);
 
         // ARAMA
         EditorGUILayout.BeginHorizontal(EditorStyles.toolbar);
         searchText = EditorGUILayout.TextField(searchText, EditorStyles.toolbarSearchField);
-        if (GUILayout.Button("Temizle", EditorStyles.toolbarButton, GUILayout.Width(50)))
+        if (GUILayout.Button("X", EditorStyles.toolbarButton, GUILayout.Width(25)))
             searchText = "";
         EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.Space(5);
 
         // LİSTELEME
-        scrollPos = EditorGUILayout.BeginScrollView(scrollPos, GUILayout.Height(400));
+        scrollPos = EditorGUILayout.BeginScrollView(scrollPos, GUILayout.Height(600));
 
-        for (int i = 0; i < data.entries.Count; i++)
+        for (int i = 0; i < entriesProp.arraySize; i++)
         {
-            SubtitleEntry entry = data.entries[i];
+            SerializedProperty entry = entriesProp.GetArrayElementAtIndex(i);
+            SerializedProperty idProp = entry.FindPropertyRelative("id");
+            SerializedProperty noteProp = entry.FindPropertyRelative("note");
 
+            string idVal = idProp.stringValue;
+
+            // Arama Filtresi
             if (
-                !string.IsNullOrEmpty(searchText)
-                && !entry.id.ToLower().Contains(searchText.ToLower())
+                !string.IsNullOrEmpty(searchText) && !idVal.ToLower().Contains(searchText.ToLower())
             )
                 continue;
 
-            EditorGUILayout.BeginVertical(boxStyle);
+            EditorGUILayout.BeginVertical(EditorStyles.helpBox);
 
+            // Başlık Çubuğu
             EditorGUILayout.BeginHorizontal();
-            EditorGUILayout.LabelField($"🔑 {entry.id}", EditorStyles.boldLabel);
-            if (GUILayout.Button("Sil", GUILayout.Width(50)))
+
+            bool isExpanded = (expandedIndex == i);
+            string arrow = isExpanded ? "▼" : "▶";
+            string displayName = string.IsNullOrEmpty(idVal) ? "[İsimsiz]" : idVal;
+
+            if (
+                GUILayout.Button($"{arrow} {displayName}", EditorStyles.label, GUILayout.Height(24))
+            )
             {
-                data.entries.RemoveAt(i);
-                EditorUtility.SetDirty(data);
-                return;
+                expandedIndex = isExpanded ? -1 : i;
+            }
+
+            if (GUILayout.Button("Sil", GUILayout.Width(40)))
+            {
+                entriesProp.DeleteArrayElementAtIndex(i);
+                break; // Listeyi bozduğumuz için döngüden çık
             }
             EditorGUILayout.EndHorizontal();
 
-            entry.id = EditorGUILayout.TextField("ID (Kod)", entry.id);
-            entry.note = EditorGUILayout.TextField("Not", entry.note);
-            entry.duration = EditorGUILayout.FloatField("Süre (Ses Yoksa)", entry.duration);
+            // Detay Görünümü
+            if (expandedIndex == i)
+            {
+                EditorGUI.indentLevel++;
+                EditorGUILayout.Space(5);
 
-            EditorGUILayout.Space(5);
-            EditorGUILayout.LabelField("Çeviriler:", EditorStyles.miniBoldLabel);
+                EditorGUILayout.PropertyField(idProp, new GUIContent("ID (Kod)"));
+                EditorGUILayout.PropertyField(noteProp, new GUIContent("Not"));
 
-            // Diller
-            DrawLanguageField("TR 🇹🇷", ref entry.textTR);
-            DrawLanguageField("EN 🇬🇧", ref entry.textEN);
-            DrawLanguageField("DE 🇩🇪", ref entry.textDE);
+                EditorGUILayout.Space(10);
+                EditorGUILayout.LabelField(
+                    "🗣️ Konuşma Parçaları (Segmentler)",
+                    EditorStyles.boldLabel
+                );
+
+                SerializedProperty segmentsProp = entry.FindPropertyRelative("segments");
+
+                // Segment Ekleme Butonu
+                if (GUILayout.Button("+ Yeni Cümle Ekle"))
+                {
+                    segmentsProp.InsertArrayElementAtIndex(segmentsProp.arraySize);
+                    SerializedProperty newSeg = segmentsProp.GetArrayElementAtIndex(
+                        segmentsProp.arraySize - 1
+                    );
+                    newSeg.FindPropertyRelative("startTime").floatValue = 0f;
+                    newSeg.FindPropertyRelative("duration").floatValue = 2f;
+                    newSeg.FindPropertyRelative("textTR").stringValue = "";
+                }
+
+                // Segmentleri Listele
+                for (int j = 0; j < segmentsProp.arraySize; j++)
+                {
+                    SerializedProperty segment = segmentsProp.GetArrayElementAtIndex(j);
+                    DrawSegment(segment, j, segmentsProp);
+                }
+
+                EditorGUI.indentLevel--;
+                EditorGUILayout.Space(10);
+            }
 
             EditorGUILayout.EndVertical();
-            EditorGUILayout.Space(5);
         }
 
         EditorGUILayout.EndScrollView();
 
-        // BUTONLAR
         EditorGUILayout.Space(10);
-        if (GUILayout.Button("➕ Yeni Altyazı Ekle", GUILayout.Height(40)))
+
+        // YENİ KAYIT BUTONU
+        if (GUILayout.Button("➕ Yeni Diyalog Oluştur", GUILayout.Height(40)))
         {
-            data.entries.Add(new SubtitleEntry { id = "new_entry_" + data.entries.Count });
-            EditorUtility.SetDirty(data);
+            entriesProp.InsertArrayElementAtIndex(entriesProp.arraySize);
+            SerializedProperty newEntry = entriesProp.GetArrayElementAtIndex(
+                entriesProp.arraySize - 1
+            );
+            newEntry.FindPropertyRelative("id").stringValue =
+                "new_dialogue_" + entriesProp.arraySize;
+            expandedIndex = entriesProp.arraySize - 1; // Yeni açılanı genişlet
         }
 
         EditorGUILayout.Space(5);
 
-        // KOD OLUŞTURUCU BUTONU
+        // KOD OLUŞTURUCU
         GUI.backgroundColor = new Color(0.6f, 1f, 0.6f);
-        if (GUILayout.Button("🚀 KODLARI OLUŞTUR (SubtitleIDs.cs)", GUILayout.Height(40)))
+        if (GUILayout.Button("🚀 KODLARI GÜNCELLE (SubtitleIDs.cs)", GUILayout.Height(30)))
         {
-            GenerateCode(data);
+            GenerateCode((SubtitleData)target);
         }
         GUI.backgroundColor = Color.white;
 
-        if (GUI.changed)
-            EditorUtility.SetDirty(data);
+        // Değişiklikleri kaydet
+        serializedObject.ApplyModifiedProperties();
     }
 
-    private void DrawLanguageField(string label, ref string text)
+    private void DrawSegment(SerializedProperty segment, int index, SerializedProperty listProp)
+    {
+        EditorGUILayout.BeginVertical(EditorStyles.helpBox);
+
+        EditorGUILayout.BeginHorizontal();
+        EditorGUILayout.LabelField(
+            $"#{index + 1}",
+            EditorStyles.miniBoldLabel,
+            GUILayout.Width(30)
+        );
+        if (GUILayout.Button("X", GUILayout.Width(20)))
+        {
+            listProp.DeleteArrayElementAtIndex(index);
+            return;
+        }
+        EditorGUILayout.EndHorizontal();
+
+        // Zamanlama Ayarları
+        EditorGUILayout.BeginHorizontal();
+        SerializedProperty startProp = segment.FindPropertyRelative("startTime");
+        SerializedProperty durProp = segment.FindPropertyRelative("duration");
+
+        EditorGUILayout.LabelField("Başlangıç (sn):", GUILayout.Width(90));
+        startProp.floatValue = EditorGUILayout.FloatField(
+            startProp.floatValue,
+            GUILayout.Width(50)
+        );
+
+        GUILayout.Space(20);
+
+        EditorGUILayout.LabelField("Süre (sn):", GUILayout.Width(60));
+        durProp.floatValue = EditorGUILayout.FloatField(durProp.floatValue, GUILayout.Width(50));
+        EditorGUILayout.EndHorizontal();
+
+        EditorGUILayout.Space(2);
+
+        // Diller
+        DrawLanguageArea("TR 🇹🇷", segment.FindPropertyRelative("textTR"));
+        DrawLanguageArea("EN 🇬🇧", segment.FindPropertyRelative("textEN"));
+        DrawLanguageArea("DE 🇩🇪", segment.FindPropertyRelative("textDE"));
+
+        EditorGUILayout.EndVertical();
+    }
+
+    private void DrawLanguageArea(string label, SerializedProperty textProp)
     {
         EditorGUILayout.BeginHorizontal();
-        EditorGUILayout.LabelField(label, GUILayout.Width(40));
-        text = EditorGUILayout.TextArea(text, GUILayout.Height(40));
+        EditorGUILayout.LabelField(label, GUILayout.Width(50));
+        textProp.stringValue = EditorGUILayout.TextArea(textProp.stringValue, GUILayout.Height(35));
         EditorGUILayout.EndHorizontal();
     }
 
@@ -115,15 +215,13 @@ public class SubtitleDataEditor : Editor
         string path = "Assets/Scripts/Generated";
         if (!Directory.Exists(path))
             Directory.CreateDirectory(path);
-
         string filePath = path + "/SubtitleIDs.cs";
 
         using (StreamWriter writer = new StreamWriter(filePath))
         {
-            writer.WriteLine("// BU DOSYA OTOMATİK OLUŞTURULDU. ELLE DEĞİŞTİRME!");
+            writer.WriteLine("// BU DOSYA OTOMATİK OLUŞTURULDU.");
             writer.WriteLine("public static class SubtitleIDs");
             writer.WriteLine("{");
-
             foreach (var entry in data.entries)
             {
                 if (string.IsNullOrEmpty(entry.id))
@@ -132,13 +230,12 @@ public class SubtitleDataEditor : Editor
                 varName = Regex.Replace(varName, @"[^a-zA-Z0-9_]", "");
                 if (char.IsDigit(varName[0]))
                     varName = "_" + varName;
-
                 writer.WriteLine($"    public const string {varName} = \"{entry.id}\";");
             }
             writer.WriteLine("}");
         }
         AssetDatabase.Refresh();
-        Debug.Log($"✅ Kodlar başarıyla güncellendi: {filePath}");
+        Debug.Log("✅ ID'ler güncellendi.");
     }
 }
 #endif

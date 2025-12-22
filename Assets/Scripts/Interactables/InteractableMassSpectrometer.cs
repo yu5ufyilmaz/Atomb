@@ -1,6 +1,6 @@
 using System.Collections;
 using Cinemachine;
-using StarterAssets; // Scripti garanti bulmak için gerekli
+using StarterAssets; // Karakter kontrolcüsü için gerekli
 using TMPro;
 using UnityEngine;
 
@@ -47,8 +47,7 @@ public class InteractableMassSpectrometer : MonoBehaviour, IInteractable, IForce
     [SerializeField]
     private Transform acceleratorRing;
 
-    [SerializeField]
-    private Transform mainLever;
+    // NOT: mainLever referansı kaldırıldı çünkü artık harici bir script (RemotePowerLever) kullanılıyor.
 
     [SerializeField]
     private GameObject ionBeamObj;
@@ -91,8 +90,7 @@ public class InteractableMassSpectrometer : MonoBehaviour, IInteractable, IForce
     [SerializeField]
     private AudioSource loopAudioSource;
 
-    [SerializeField]
-    private AudioClip leverSound;
+    // leverSound kaldırıldı (artık kol scriptinde çalacak)
 
     [SerializeField]
     private AudioClip grindSound;
@@ -112,20 +110,32 @@ public class InteractableMassSpectrometer : MonoBehaviour, IInteractable, IForce
     private Transform mainCamera;
     private CinemachineBrain cinemachineBrain;
 
+    // Durum Değişkenleri (Property olarak tanımlandı ki Editor scripti okuyabilsin)
+    public bool IsPoweredOn { get; private set; } = false;
+    public bool IsBroken { get; private set; } = false;
+    public bool IsSolved { get; private set; } = false;
+
     private bool isInteracting = false;
     private bool inMachineMode = false;
     private bool isExiting = false;
-    private bool isPoweredOn = false;
-    private bool isBroken = false;
-    private bool isSolved = false;
+
     private float currentGrindTimer = 0f;
     private float currentCooldown = 0f;
-    private Quaternion leverStartRot;
-    private Quaternion leverEndRot;
     private float currentRingAngleValue = 0f;
     private string assignedPassword = "";
 
     private void Start()
+    {
+        InitializeComponents();
+
+        // Puzzle başlangıç ayarları
+        float randomOffset = Random.Range(-40f, 40f);
+        currentRingAngleValue = ringTargetAngle + 180f + randomOffset;
+        UpdateRingRotation();
+        ResetMachineVisuals();
+    }
+
+    private void InitializeComponents()
     {
         // 1. Controller'ı Bul
         if (playerPhysicsController == null)
@@ -138,14 +148,12 @@ public class InteractableMassSpectrometer : MonoBehaviour, IInteractable, IForce
             playerInputScript = p.GetComponent<StarterAssetsInputs>() as MonoBehaviour;
             playerAnimator = p.GetComponent<Animator>();
 
-            // StarterAssets.CharacterController tipinde ara (En güvenli yol)
+            // StarterAssets.CharacterController tipinde ara
             if (playerMovementScript == null)
             {
                 playerMovementScript = p.GetComponent<StarterAssets.CharacterController>();
                 if (playerMovementScript == null)
-                    Debug.LogError(
-                        "MassSpectrometer: Player Movement Script BULUNAMADI! Karakter hareket etmeye devam edebilir."
-                    );
+                    Debug.LogError("MassSpectrometer: Player Movement Script BULUNAMADI!");
             }
         }
 
@@ -154,24 +162,37 @@ public class InteractableMassSpectrometer : MonoBehaviour, IInteractable, IForce
             mainCamera = Camera.main.transform;
             cinemachineBrain = mainCamera.GetComponent<CinemachineBrain>();
         }
+    }
 
-        if (mainLever != null)
+    // --- HARİCİ KONTROL (RemotePowerLever veya Editor Tarafından Çağrılır) ---
+    public void SetPower(bool state)
+    {
+        if (IsSolved || IsBroken)
+            return; // Zaten çözülmüşse veya bozuksa müdahale etme
+
+        IsPoweredOn = state;
+
+        if (IsPoweredOn)
         {
-            leverStartRot = mainLever.localRotation;
-            leverEndRot = leverStartRot * Quaternion.Euler(45, 0, 0);
+            if (screenText)
+            {
+                screenText.color = Color.yellow;
+                screenText.text = "SYSTEM READY\nWAITING INPUT";
+            }
+            // İstersen burada makineden "Power On" sesi gelebilir
         }
-
-        float randomOffset = Random.Range(-40f, 40f);
-        currentRingAngleValue = ringTargetAngle + 180f + randomOffset;
-        UpdateRingRotation();
-        ResetMachineVisuals();
+        else
+        {
+            ResetMachineVisuals();
+        }
     }
 
     public void Interact()
     {
-        if (isInteracting || isExiting || isSolved)
+        if (isInteracting || isExiting || IsSolved)
             return;
-        if (isBroken)
+
+        if (IsBroken)
         {
             if (audioSource)
                 audioSource.PlayOneShot(overheatSound);
@@ -181,15 +202,19 @@ public class InteractableMassSpectrometer : MonoBehaviour, IInteractable, IForce
         // Hata Kontrolü
         if (fixedCameraTransform == null)
         {
-            Debug.LogError(
-                "MassSpectrometer: Fixed Camera Transform ATANMAMIŞ! Lütfen Inspector'dan atayın."
-            );
+            Debug.LogError("MassSpectrometer: Fixed Camera Transform ATANMAMIŞ!");
             return;
         }
 
-        if (!isPoweredOn)
+        // --- GÜÇ KONTROLÜ ---
+        if (!IsPoweredOn)
         {
-            StartCoroutine(PullLeverSequence());
+            // Güç yoksa sadece uyarı ver ve işlemi iptal et
+            if (screenText != null)
+            {
+                screenText.color = Color.red;
+                screenText.text = "POWER REQUIRED\nCHECK MAIN LEVER";
+            }
             return;
         }
 
@@ -202,13 +227,13 @@ public class InteractableMassSpectrometer : MonoBehaviour, IInteractable, IForce
         isInteracting = true;
         inMachineMode = false;
 
-        // Input'u ve Hareket Scriptini Kapat (Çakışmayı önle)
+        // Input'u ve Hareket Scriptini Kapat
         if (playerInputScript)
             playerInputScript.enabled = false;
         if (playerMovementScript != null)
             playerMovementScript.enabled = false;
 
-        // CharacterController açık kalsın (Move fonksiyonu için lazım)
+        // CharacterController açık kalsın
         if (playerPhysicsController)
             playerPhysicsController.enabled = true;
 
@@ -220,7 +245,6 @@ public class InteractableMassSpectrometer : MonoBehaviour, IInteractable, IForce
             int animIDMotionSpeed = Animator.StringToHash("MotionSpeed");
             int animIDGrounded = Animator.StringToHash("Grounded");
 
-            // Yürüme Döngüsü
             while (timer < timeOut)
             {
                 timer += Time.deltaTime;
@@ -299,19 +323,13 @@ public class InteractableMassSpectrometer : MonoBehaviour, IInteractable, IForce
         if (GameManager.Instance != null)
             GameManager.Instance.activeInteraction = this;
 
-        // 1. Cinemachine Kapat
         if (cinemachineBrain)
             cinemachineBrain.enabled = false;
-
-        // 2. Oyuncuyu Dondur
         if (playerPhysicsController)
             playerPhysicsController.enabled = false;
-
-        // 3. Animasyon
         if (playerAnimator)
             playerAnimator.SetTrigger(interactAnimTrigger);
 
-        // 4. Kamerayı Taşı
         if (fixedCameraTransform != null)
         {
             Vector3 startPos = mainCamera.position;
@@ -329,13 +347,14 @@ public class InteractableMassSpectrometer : MonoBehaviour, IInteractable, IForce
             mainCamera.rotation = fixedCameraTransform.rotation;
         }
 
-        inMachineMode = true; // LateUpdate kilidini aç
+        inMachineMode = true;
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
 
         PlayerInteraction playerInt = FindObjectOfType<PlayerInteraction>();
         if (playerInt != null)
             playerInt.ToggleCrosshair(false);
+
         if (ControlsUIManager.Instance != null)
             ControlsUIManager.Instance.ShowControls(
                 "A/D: Halkayı Çevir (Mıknatıs Yeşilken) | F: Kalk"
@@ -351,15 +370,11 @@ public class InteractableMassSpectrometer : MonoBehaviour, IInteractable, IForce
         inMachineMode = false;
         ResetPenalty();
 
-        // 1. Cinemachine'i Aç (Otomatik Blend Yapsın)
         if (cinemachineBrain)
-        {
             cinemachineBrain.enabled = true;
-        }
 
-        yield return new WaitForSeconds(1.0f); // Blend süresi
+        yield return new WaitForSeconds(1.0f);
 
-        // 2. Kontrolleri Geri Ver
         if (playerPhysicsController != null)
             playerPhysicsController.enabled = true;
         if (playerInputScript)
@@ -369,9 +384,11 @@ public class InteractableMassSpectrometer : MonoBehaviour, IInteractable, IForce
 
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
+
         PlayerInteraction playerInt = FindObjectOfType<PlayerInteraction>();
         if (playerInt != null)
             playerInt.ToggleCrosshair(true);
+
         if (ControlsUIManager.Instance != null)
             ControlsUIManager.Instance.HideControls();
 
@@ -385,20 +402,21 @@ public class InteractableMassSpectrometer : MonoBehaviour, IInteractable, IForce
     private void Update()
     {
         // Kırılma / Soğuma Mantığı
-        if (isBroken)
+        if (IsBroken)
         {
             currentCooldown -= Time.deltaTime;
             if (screenText != null)
                 screenText.text = $"OVERHEATED\nWAIT: {currentCooldown:F1}s";
             if (currentCooldown <= 0)
             {
-                isBroken = false;
+                // Bozulma bitti ama güç kapalı olarak başlasın ki tekrar kolu çekmek gereksin mi?
+                // Genelde makine soğuyunca tekrar hazır olur ama gücü kesmek daha mantıklı.
+                // Burada otomatik reset atıyoruz:
                 ResetMachineVisuals();
             }
             return;
         }
 
-        // Makine Modunda Değilsek Çık
         if (!inMachineMode || isExiting)
             return;
 
@@ -409,7 +427,7 @@ public class InteractableMassSpectrometer : MonoBehaviour, IInteractable, IForce
             return;
         }
 
-        // --- PUZZLE MANTIĞI (Aynı Kaldı) ---
+        // --- PUZZLE MANTIĞI ---
         float mouseX = Input.GetAxis("Mouse X");
         if (magnetPivot != null)
             magnetPivot.Rotate(Vector3.forward * mouseX * magnetRotateSpeed * -1);
@@ -457,15 +475,18 @@ public class InteractableMassSpectrometer : MonoBehaviour, IInteractable, IForce
                     StartCoroutine(SuccessSequence());
             }
             else
+            {
                 ApplyPenaltyLogic();
+            }
         }
         else
+        {
             ResetPenalty();
+        }
     }
 
     private void LateUpdate()
     {
-        // KAMERAYI KİLİTLE
         if (inMachineMode && fixedCameraTransform != null)
         {
             mainCamera.position = fixedCameraTransform.position;
@@ -473,7 +494,7 @@ public class InteractableMassSpectrometer : MonoBehaviour, IInteractable, IForce
         }
     }
 
-    // --- YARDIMCI FONKSİYONLAR (Aynı) ---
+    // --- YARDIMCI FONKSİYONLAR ---
     private void ApplyPenaltyLogic()
     {
         currentGrindTimer += Time.deltaTime;
@@ -484,6 +505,7 @@ public class InteractableMassSpectrometer : MonoBehaviour, IInteractable, IForce
         }
         float shake = Random.Range(-0.03f, 0.03f);
         magnetPivot.localPosition = new Vector3(shake, shake, 0);
+
         if (currentGrindTimer > maxGrindTime)
             StartCoroutine(TriggerBreakdown());
     }
@@ -499,33 +521,39 @@ public class InteractableMassSpectrometer : MonoBehaviour, IInteractable, IForce
 
     private IEnumerator TriggerBreakdown()
     {
-        isBroken = true;
+        IsBroken = true;
         currentCooldown = cooldownDuration;
         if (audioSource)
             audioSource.PlayOneShot(breakSound);
         if (overheatSmoke)
             overheatSmoke.SetActive(true);
+
         if (screenText)
         {
             screenText.color = Color.red;
             screenText.text = "SYSTEM FAILURE\nCRITICAL ERROR";
         }
+
+        IsPoweredOn = false; // Güç kesildi
         yield return StartCoroutine(ExitMachineView());
     }
 
     private IEnumerator SuccessSequence()
     {
-        isSolved = true;
+        IsSolved = true;
         ResetPenalty();
         if (audioSource)
             audioSource.PlayOneShot(successSound);
+
         if (screenText)
         {
             screenText.color = Color.cyan;
             screenText.text = $"CALIBRATION COMPLETE\nCODE: {assignedPassword}";
         }
+
         if (PasswordManager.Instance != null)
             PasswordManager.Instance.DiscoverClue(assignedPassword);
+
         if (ionBeamObj)
         {
             ionBeamObj.SetActive(true);
@@ -535,6 +563,7 @@ public class InteractableMassSpectrometer : MonoBehaviour, IInteractable, IForce
                 loopAudioSource.Play();
             }
         }
+
         yield return new WaitForSeconds(4.0f);
         StartCoroutine(ExitMachineView());
     }
@@ -550,10 +579,11 @@ public class InteractableMassSpectrometer : MonoBehaviour, IInteractable, IForce
             ionBeamObj.SetActive(false);
         if (overheatSmoke != null)
             overheatSmoke.SetActive(false);
-        if (mainLever != null)
-            mainLever.localRotation = leverStartRot;
-        isPoweredOn = false;
-        isSolved = false;
+
+        IsPoweredOn = false;
+        IsBroken = false;
+        // IsSolved = false; // Çözüldüyse sıfırlama, kalıcı olsun.
+
         currentGrindTimer = 0f;
         if (magnetPivot != null)
             magnetPivot.localPosition = Vector3.zero;
@@ -567,12 +597,12 @@ public class InteractableMassSpectrometer : MonoBehaviour, IInteractable, IForce
 
     public string GetInteractionPrompt()
     {
-        if (isBroken)
+        if (IsBroken)
             return $"Sistem Soğuyor... ({currentCooldown:F0}s)";
-        if (isSolved)
+        if (IsSolved)
             return "Kalibrasyon Tamamlandı";
-        if (!isPoweredOn)
-            return "[Sol Tık] Güç Kolunu Çek";
+        if (!IsPoweredOn)
+            return "Güç Yok - Ana Şalteri Bul";
         return isInteracting ? "" : "[Sol Tık] Analiz Ekranı";
     }
 
@@ -583,25 +613,6 @@ public class InteractableMassSpectrometer : MonoBehaviour, IInteractable, IForce
     public void AssignPassword(string pw)
     {
         assignedPassword = pw;
-    }
-
-    private IEnumerator PullLeverSequence()
-    {
-        float t = 0f;
-        while (t < 1f)
-        {
-            t += Time.deltaTime * 2f;
-            mainLever.localRotation = Quaternion.Slerp(leverStartRot, leverEndRot, t);
-            yield return null;
-        }
-        if (audioSource)
-            audioSource.PlayOneShot(leverSound);
-        isPoweredOn = true;
-        if (screenText)
-        {
-            screenText.color = Color.yellow;
-            screenText.text = "SYSTEM READY\nWAITING INPUT";
-        }
     }
 
     public void ForceExit()

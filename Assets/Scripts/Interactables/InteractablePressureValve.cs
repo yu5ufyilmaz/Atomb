@@ -36,6 +36,22 @@ public class InteractablePressureValve : MonoBehaviour, IInteractable, IForceExi
     [SerializeField]
     private Transform valveHandleModel;
 
+    // --- YENİ EKLENEN KISIM: İbre (Gauge) Ayarları ---
+    [Header("📊 GÖSTERGE (GAUGE) AYARLARI")]
+    [Tooltip("Dönecek olan ibre objesi (Needle)")]
+    public Transform gaugeNeedle;
+
+    [Tooltip("Basınç %0 iken ibrenin açısı (Örn: -135)")]
+    public float gaugeMinAngle = -135f;
+
+    [Tooltip("Basınç %100 iken ibrenin açısı (Örn: 135)")]
+    public float gaugeMaxAngle = 135f;
+
+    [Tooltip("İbrenin döneceği eksen (X, Y veya Z'yi 1 yap)")]
+    public Vector3 gaugeRotationAxis = new Vector3(0, 0, 1); // Varsayılan Z
+
+    // --------------------------------------------------
+
     [Header("Valve Settings")]
     [Range(0.01f, 1.0f)]
     [SerializeField]
@@ -249,7 +265,11 @@ public class InteractablePressureValve : MonoBehaviour, IInteractable, IForceExi
 
     private void Update()
     {
+        // 1. Ses ve Gösterge her zaman güncellensin (Oyuncu etkileşimde olmasa bile ibre dönsün)
         HandleAudio();
+        UpdateGauge(); // <--- YENİ EKLENEN METOD ÇAĞRISI
+
+        // 2. Etkileşim kontrolü
         if (!inValveMode || isExiting)
             return;
 
@@ -261,6 +281,35 @@ public class InteractablePressureValve : MonoBehaviour, IInteractable, IForceExi
 
         HandleCircularMotion();
     }
+
+    // --- YENİ EKLENEN FONKSİYON: Gösterge Güncelleme ---
+    private void UpdateGauge()
+    {
+        // İbre veya Manager yoksa işlem yapma
+        if (gaugeNeedle == null || PressureSystemManager.Instance == null)
+            return;
+
+        // Anlık basıncı al
+        float currentP = PressureSystemManager.Instance.currentPressure;
+
+        // 0-1 arasına normalize et (Basınç 100 üzerinden varsayıldı)
+        float normalizedP = Mathf.Clamp01(currentP / 100f);
+
+        // Hedef açıyı hesapla (Min'den Max'a doğru)
+        float targetAngle = Mathf.Lerp(gaugeMinAngle, gaugeMaxAngle, normalizedP);
+
+        // Quaternion hesapla (Belirlenen eksende)
+        Quaternion targetRot = Quaternion.Euler(gaugeRotationAxis * targetAngle);
+
+        // Yumuşakça döndür
+        gaugeNeedle.localRotation = Quaternion.Slerp(
+            gaugeNeedle.localRotation,
+            targetRot,
+            Time.deltaTime * 5f
+        );
+    }
+
+    // ----------------------------------------------------
 
     private void HandleCircularMotion()
     {

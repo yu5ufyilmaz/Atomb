@@ -9,13 +9,21 @@ public enum GameLanguage
 }
 
 [System.Serializable]
-public class SubtitleEntry
+public class SubtitleSegment
 {
-    public string id;
-    public string note;
+    [Tooltip("Ses başladıktan kaç saniye sonra bu yazı görünsün?")]
+    public float startTime = 0f;
+
+    [Tooltip("Bu yazı ekranda kaç saniye kalsın?")]
     public float duration = 3f;
+
+    [TextArea(2, 5)]
     public string textTR;
+
+    [TextArea(2, 5)]
     public string textEN;
+
+    [TextArea(2, 5)]
     public string textDE;
 
     public string GetText(GameLanguage lang)
@@ -32,6 +40,16 @@ public class SubtitleEntry
                 return textEN;
         }
     }
+}
+
+[System.Serializable]
+public class SubtitleEntry
+{
+    public string id; // Çağırmak için kullanacağın ID (örn: Intro_Speech)
+    public string note; // Kendine not (örn: Asansördeki konuşma)
+
+    // Tek bir ses klibi içindeki cümle parçacıkları
+    public List<SubtitleSegment> segments = new List<SubtitleSegment>();
 }
 
 [CreateAssetMenu(fileName = "NewSubtitleDatabase", menuName = "Senzora/Subtitle Database")]
