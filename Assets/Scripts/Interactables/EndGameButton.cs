@@ -1,18 +1,28 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine.Video; // <--- VİDEO İÇİN GEREKLİ KÜTÜPHANE
+using UnityEngine.Video;
 
 public class EndGameButton : MonoBehaviour, IInteractable
 {
+    [Header("Player Settings")]
+    [Tooltip("Karakterin Ana Objesi")]
+    public GameObject player;
+
+    [Tooltip("Karakterin Hareket Scripti (Örn: FirstPersonController)")]
+    public MonoBehaviour playerMovementScript;
+
+    [Tooltip("Karakterin Kamera/Mouse Scripti (Varsa buraya at, yoksa boş kalabilir)")]
+    public MonoBehaviour playerLookScript;
+
     [Header("Bitiş Ayarları")]
     [Tooltip("Kameranın kilitleneceği ekran noktası")]
     [SerializeField]
     private Transform screenViewTarget;
 
-    [Tooltip("Final videosunun olduğu Video Player bileşeni (Ekran objesi)")]
+    [Tooltip("Final videosunun olduğu Video Player bileşeni")]
     [SerializeField]
-    private VideoPlayer finalVideoPlayer; // <--- YENİ REFERANS
+    private VideoPlayer finalVideoPlayer;
 
     [Tooltip("Credits sahnesinin tam adı")]
     [SerializeField]
@@ -25,20 +35,12 @@ public class EndGameButton : MonoBehaviour, IInteractable
     private bool isTriggered = false;
     private Transform mainCamera;
 
-    // Oyuncu bileşenleri
-    private UnityEngine.CharacterController playerController;
-    private MonoBehaviour playerInput;
-
     private void Start()
     {
         if (Camera.main != null)
             mainCamera = Camera.main.transform;
 
-        playerController = FindObjectOfType<UnityEngine.CharacterController>();
-        if (playerController != null)
-            playerInput = playerController.GetComponent("StarterAssetsInputs") as MonoBehaviour;
-
-        // Videoyu önceden hazırla ki takılmadan başlasın
+        // Videoyu önceden hazırla
         if (finalVideoPlayer != null)
         {
             finalVideoPlayer.Prepare();
@@ -57,29 +59,53 @@ public class EndGameButton : MonoBehaviour, IInteractable
         return isTriggered ? "" : "[Sol Tık] Sistemi Başlat";
     }
 
-    public void OnFocus() { } // Şimdilik boş kalsın
+    public void OnFocus() { }
 
-    public void OnLoseFocus() { } // Şimdilik boş kalsın
+    public void OnLoseFocus() { }
 
     private IEnumerator EndingSequence()
     {
         isTriggered = true;
 
-        // 1. Oyuncuyu Dondur & UI Kapat
-        if (playerController)
-            playerController.enabled = false;
-        if (playerInput)
-            playerInput.enabled = false;
+        // -----------------------------------------------------------
+        // ADIM 1: OYUNCUYU TAMAMEN DEVRE DIŞI BIRAK (FIX)
+        // -----------------------------------------------------------
 
+        // 1. Hareket Scriptini Kapat
+        if (playerMovementScript != null)
+            playerMovementScript.enabled = false;
+
+        // 2. Mouse Look Scriptini Kapat (Dönmeyi engelleyen asıl kısım)
+        if (playerLookScript != null)
+            playerLookScript.enabled = false;
+
+        // 3. Unity Character Controller'ı Kapat (Fizik çakışmasını önler)
+        if (player != null)
+        {
+            var cc = player.GetComponent<UnityEngine.CharacterController>();
+            if (cc != null)
+                cc.enabled = false;
+
+            // Eğer Rigidbody varsa onu da dondur
+            var rb = player.GetComponent<Rigidbody>();
+            if (rb != null)
+                rb.isKinematic = true;
+        }
+
+        // Fareyi kilitle ve gizle (Video izlenirken fare görünmesin)
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
 
-        // 2. Kamerayı Ekrana Taşı
+        // -----------------------------------------------------------
+        // ADIM 2: KAMERAYI EKRANA TAŞI
+        // -----------------------------------------------------------
         if (screenViewTarget != null && mainCamera != null)
         {
-            // Cinemachine varsa kapat
-            var brain = mainCamera.GetComponent<Cinemachine.CinemachineBrain>();
-            if (brain)
+            // Cinemachine Brain varsa kapat (Kamerayı serbest bırakmak için şart)
+            var brain = mainCamera.GetComponent("CinemachineBrain") as MonoBehaviour;
+            // Not: Cinemachine namespace hatası almamak için string ile çağırdım,
+            // projenin başında "using Cinemachine;" varsa direkt tipi yazabilirsin.
+            if (brain != null)
                 brain.enabled = false;
 
             Vector3 startPos = mainCamera.position;
@@ -102,28 +128,29 @@ public class EndGameButton : MonoBehaviour, IInteractable
             }
         }
 
-        // 3. Videoyu Oynat ve Bitmesini Bekle
+        // -----------------------------------------------------------
+        // ADIM 3: VİDEOYU OYNAT
+        // -----------------------------------------------------------
         if (finalVideoPlayer != null)
         {
             Debug.Log("Final videosu başlatılıyor...");
             finalVideoPlayer.Play();
 
-            // Video süresi kadar bekle (Saniye cinsinden)
-            // .length özelliği videonun toplam saniyesini verir
+            // Video uzunluğu kadar bekle
             yield return new WaitForSeconds((float)finalVideoPlayer.length);
         }
         else
         {
-            Debug.LogWarning("Video Player atanmamış! Varsayılan olarak 5 saniye bekleniyor.");
+            Debug.LogWarning("Video Player atanmamış! 5 sn bekleniyor.");
             yield return new WaitForSeconds(5.0f);
         }
 
-        // 4. Credits Sahnesine Geç
-        Debug.Log("Video bitti. Credits yükleniyor...");
-
+        // -----------------------------------------------------------
+        // ADIM 4: SAHNE GEÇİŞİ
+        // -----------------------------------------------------------
+        Debug.Log("Credits yükleniyor...");
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
-
         SceneManager.LoadScene(creditsSceneName);
     }
 }
