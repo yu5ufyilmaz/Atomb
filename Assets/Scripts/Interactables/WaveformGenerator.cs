@@ -6,67 +6,89 @@ public class WaveformGenerator : MonoBehaviour
     private LineRenderer lineRenderer;
 
     [Header("Wave Settings")]
-    [Tooltip("Dalga üzerindeki nokta sayısı (LineRenderer'daki Size ile aynı olmalı)")]
-    [SerializeField]
-    private int pointCount = 100;
+    [SerializeField] private int pointCount = 100;
+    [SerializeField] private float waveWidth = 10f;
+    [SerializeField] private float animationSpeed = 2f; // Biraz hızlandırdım
 
-    [Tooltip("Dalganın ekranın solundan sağına ne kadar genişleyeceği")]
-    [SerializeField]
-    private float waveWidth = 10f;
+    [Header("CRT Feel")]
+    [Tooltip("Ekran bombesi")]
+    [SerializeField] private float curveDepth = 0.5f; 
+    [Tooltip("Çizginin uçları ekrana yapışık mı yoksa havada mı?")]
+    [SerializeField] private bool lockEdges = true;
+    [Tooltip("Analog titreşim miktarı")]
+    [SerializeField] private float microJitter = 0.02f;
 
-    [Tooltip("Dalganın yatayda ne kadar hızlı kayacağı (animasyon)")]
-    [SerializeField]
-    private float animationSpeed = 1f;
+    // Dışarıdan kontrol edilenler
+    [HideInInspector] public float amplitude = 1.0f;
+    [HideInInspector] public float frequency = 1.0f;
+    [HideInInspector] public float noiseAmount = 0f;
 
-    // --- DEĞİŞKENLER ---
-    // Bu değerler DIŞARIDAN (InteractableOscilloscope'tan) kontrol edilecek
-    [HideInInspector]
-    public float amplitude = 1.0f; // Genlik (Yükseklik)
-
-    [HideInInspector]
-    public float frequency = 1.0f; // Sıklık
-
-    // YENİ: Gürültü Miktarı (0 = Pürüzsüz, 0.5+ = Çok Bozuk)
-    [HideInInspector]
-    public float noiseAmount = 0f;
-
-    private float xOffset = 0f; // Animasyon için kaydırma miktarı
+    private float xOffset = 0f;
+    // Renk geçişi (Gradient) için
+    private Gradient baseGradient;
 
     void Awake()
     {
         lineRenderer = GetComponent<LineRenderer>();
         lineRenderer.positionCount = pointCount;
+        lineRenderer.useWorldSpace = false;
+        
+        // Başlangıç gradientini yedekle
+        baseGradient = lineRenderer.colorGradient;
     }
 
     void Update()
     {
         DrawWave();
+        SimulatePhosphorFade();
     }
 
     void DrawWave()
     {
-        // Animasyon için X ekseninde kaydır
         xOffset += Time.deltaTime * animationSpeed;
+        float startX = -waveWidth / 2f;
 
         for (int i = 0; i < pointCount; i++)
         {
-            // X pozisyonunu hesapla (0'dan waveWidth'e kadar)
-            float x = (float)i / (pointCount - 1) * waveWidth;
+            float t = (float)i / (pointCount - 1);
+            float x = startX + (t * waveWidth);
 
-            // Temel Sinüs Dalgası
-            float sineValue = Mathf.Sin((x * frequency) + xOffset);
+            // Sinyal Hesabı
+            float sinePhase = (t * waveWidth * frequency) + xOffset;
+            float sineValue = Mathf.Sin(sinePhase);
+            
+            // Gürültü + Mikro Titreşim (Analog hissi için sürekli titrer)
+            float totalNoise = Random.Range(-noiseAmount, noiseAmount) + Random.Range(-microJitter, microJitter);
+            float y = amplitude * (sineValue + totalNoise);
 
-            // YENİ: Gürültü Ekleme (Random Jitter)
-            // Her nokta için rastgele ufak bir sapma ekliyoruz.
-            // noiseAmount ne kadar büyükse, sapma o kadar çılgın olur.
-            float noise = Random.Range(-noiseAmount, noiseAmount);
+            // Kavis Hesabı (Bombeli Ekran)
+            // Kenarlarda 0, ortada 1 olan bir eğri (Sinüs yayı)
+            float bulge = Mathf.Sin(t * Mathf.PI);
+            float z = -bulge * curveDepth;
 
-            // Son Y Değeri: Genlik * (Sinüs + Gürültü)
-            // Gürültüyü genliğe eklemiyoruz, sinüsün üstüne bindiriyoruz ki dalga formu bozulsun.
-            float y = amplitude * (sineValue + noise);
+            // Kenarları maskeleme (Ekranın dışına taşmasın diye kenarlarda Y'yi sıfırlıyoruz)
+            if (lockEdges)
+            {
+                // Kenarlara yaklaştıkça dalgayı sönümler (Vignette etkisi gibi)
+                float edgeMask = 1f - Mathf.Pow(2f * (t - 0.5f), 4f); // Kenarlarda sertçe düşer
+                y *= Mathf.Clamp01(edgeMask);
+            }
 
-            // LineRenderer'a noktayı ata
-            lineRenderer.SetPosition(i, new Vector3(x, y, 0));
+            lineRenderer.SetPosition(i, new Vector3(x, y, z));
+        }
+    }
+
+    // Ekrandaki o hafif yanıp sönme (Flicker) efekti
+    void SimulatePhosphorFade()
+    {
+        if (Random.value > 0.9f) // Arada bir pırpır etsin
+        {
+            float dimFactor = Random.Range(0.8f, 1.0f);
+            lineRenderer.widthMultiplier = 0.05f * dimFactor; // Kalınlıkla oyna
+        }
+        else
+        {
+             lineRenderer.widthMultiplier = 0.05f; // Standart kalınlık (bunu inspector'dan da alabilirsin)
         }
     }
 }
