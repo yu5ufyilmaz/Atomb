@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: TestKitap_BookPages
+  m_Name: TestKitap_BookPages 1
   m_Shader: {fileID: -6465566751694194690, guid: ced5b39064e78194189d05cac8264230, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
@@ -212,8 +212,8 @@ Material:
     - _PPDPrimitiveLength: 1
     - _PPDPrimitiveWidth: 1
     - _PageCount: 8
-    - _PageIndexL: 0
-    - _PageIndexR: 1
+    - _PageIndexL: 6
+    - _PageIndexR: 7
     - _PerPixelSorting: 0
     - _RayTracing: 0
     - _ReceivesSSR: 1

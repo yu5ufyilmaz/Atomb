@@ -18,7 +18,7 @@ MonoBehaviour:
     segments:
     - startTime: 0
       duration: 3
-      textTR: "Evet buras\u0131da G\xF6rd\xFC\u011F\xFCn \xFCzere kimya labarotuvar\u0131"
+      textTR: "Evet buras\u0131 da G\xF6rd\xFC\u011F\xFCn \xFCzere kimya labarotuvar\u0131"
       textEN: 
       textDE: 
     - startTime: 3
