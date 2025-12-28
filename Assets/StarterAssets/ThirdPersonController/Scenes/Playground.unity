@@ -908,6 +908,10 @@ MonoBehaviour:
   ionBeamObj: {fileID: 784719295}
   screenText: {fileID: 888693869}
   overheatSmoke: {fileID: 0}
+  interactAnimTrigger: InspectMachine
+  animationDuration: 1
+  cameraViewTarget: {fileID: 1714064006}
+  headOffset: {x: 0, y: 0.1, z: 0.15}
   safeZoneAngle: 0
   safeZoneTolerance: 12
   ringTargetAngle: 90
@@ -924,8 +928,6 @@ MonoBehaviour:
   successSound: {fileID: 0}
   overheatSound: {fileID: 0}
   beamHumSound: {fileID: 0}
-  cameraViewTarget: {fileID: 1714064006}
-  cameraMoveDuration: 0.5
 --- !u!65 &210862873
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -4308,8 +4310,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerController: {fileID: 2023056408}
   playerLookScript: {fileID: 2023056403}
+  interactAnimTrigger: SitDown
+  animationDuration: 1
   cameraViewTarget: {fileID: 0}
-  cameraMoveDuration: 0.5
+  headOffset: {x: 0, y: 0.1, z: 0.15}
   audioSource: {fileID: 872631188}
   voltsKnob: {fileID: 0}
   timeKnob: {fileID: 0}
@@ -4318,12 +4322,11 @@ MonoBehaviour:
   maxTimeSetting: 10
   correctVoltsSetting: 3
   correctTimeSetting: 5
+  waveformScript: {fileID: 944185729}
   minPitch: 0.5
   maxPitch: 2
   minVolume: 0.2
   maxVolume: 1
-  waveformScript: {fileID: 944185729}
-  visualLerpSpeed: 5
 --- !u!23 &872631185
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -7029,9 +7032,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   valveHandleModel: {fileID: 577287221}
+  interactAnimTrigger: TurnValve
+  animationDuration: 1
   cameraViewTarget: {fileID: 1221487283}
-  cameraMoveDuration: 0.8
-  rotationSpeedMultiplier: 5
+  headOffset: {x: 0, y: 0.1, z: 0.15}
+  resistanceMultiplier: 0.15
+  maxRotationPerFrame: 2
+  onlyClockwise: 1
 --- !u!65 &1406705566
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -12972,8 +12979,10 @@ MonoBehaviour:
   playerController: {fileID: 2023056408}
   playerLookScript: {fileID: 2023056403}
   playerAnimator: {fileID: 2023056414}
+  interactAnimTrigger: SitDown
+  animationDuration: 1.5
   cameraViewTarget: {fileID: 1953663600}
-  cameraMoveDuration: 0.5
+  headOffset: {x: 0, y: 0.1, z: 0.15}
   wordWheelModels:
   - {fileID: 453943887554711764}
   - {fileID: 4494134333440413162}

@@ -196,7 +196,26 @@ MonoBehaviour:
       - rid: 3891620853575581697
       - rid: 3891620853575581698
     m_RuntimeSettings:
-      m_List: []
+      m_List:
+      - rid: 8556427327610290176
+      - rid: 8556427327610290180
+      - rid: 2432910940504588288
+      - rid: 2432910940504588289
+      - rid: 2432910940504588290
+      - rid: 2432910940504588291
+      - rid: 2432910940504588293
+      - rid: 2432910940504588294
+      - rid: 2432910940504588295
+      - rid: 2432910940504588298
+      - rid: 2432910940504588299
+      - rid: 2432910940504588300
+      - rid: 2432910940504588302
+      - rid: 2432910940504588305
+      - rid: 2432910940504588306
+      - rid: 2432910940504588308
+      - rid: 2432910940504588309
+      - rid: 2432910940504588310
+      - rid: 2432910940504588311
   renderingLayerNames:
   - Light Layer default
   - Light Layer 1
@@ -241,6 +260,8 @@ MonoBehaviour:
   references:
     version: 2
     RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
     - rid: 2432910940504588288
       type: {class: RenderingPathFrameSettings, ns: UnityEngine.Rendering.HighDefinition, asm: Unity.RenderPipelines.HighDefinition.Runtime}
       data:

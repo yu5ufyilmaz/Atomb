@@ -1,0 +1,160 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 609984c0f9ea9c94bb267b2f044e0140, type: 3}
+  m_Name: MainSubtitles
+  m_EditorClassIdentifier: 
+  entries:
+  - id: chemistry_lab_entrance
+    note: "Kimya lab\u0131na ilk giri\u015F"
+    segments:
+    - startTime: 0
+      duration: 3
+      textTR: "Evet buras\u0131 da G\xF6rd\xFC\u011F\xFCn \xFCzere kimya labarotuvar\u0131"
+      textEN: 
+      textDE: 
+    - startTime: 3
+      duration: 5
+      textTR: "Evet biliyorum biraz s\u0131k\u0131c\u0131 ama ramo gay"
+      textEN: 
+      textDE: 
+  - id: tutorial_intro
+    note: "Kimya lab\u0131na ilk giri\u015F"
+    segments:
+    - startTime: 0
+      duration: 3
+      textTR: "Kalk aya\u011Fa Doktor. Uyuyacak vaktimiz yok."
+      textEN: 
+      textDE: 
+    - startTime: 3.5
+      duration: 4
+      textTR: "D\u0131\u015Far\u0131daki sava\u015F bizi beklemiyor. Proje bug\xFCn
+        bitmeli."
+      textEN: 
+      textDE: 
+    - startTime: 8
+      duration: 3
+      textTR: "\u015Eimdi toparln masan\u0131n \xFCst\xFCnde \xF6rnek bir form\xFCl
+        var."
+      textEN: 
+      textDE: 
+  - id: tutorial_nag_pickup
+    note: 
+    segments:
+    - startTime: 0
+      duration: 3
+      textTR: "O rapora bak\u0131p duracak m\u0131s\u0131n Johan?\n"
+      textEN: 
+      textDE: 
+    - startTime: 3.5
+      duration: 3.5
+      textTR: "Onu yerden al. \u0130\xE7indeki veriler hayat\u0131ndan daha de\u011Ferli.\n"
+      textEN: 
+      textDE: 
+  - id: tutorial_unlock
+    note: 
+    segments:
+    - startTime: 0
+      duration: 2.5
+      textTR: "G\xFCzel. \u015Eimdi odaklan."
+      textEN: 
+      textDE: 
+    - startTime: 3
+      duration: 4.5
+      textTR: O koddaki parametreleri Turing Makinesi'ne gir. Hemen.
+      textEN: 
+      textDE: 
+    - startTime: 8
+      duration: 3
+      textTR: Beni bekletme Doktor.
+      textEN: 
+      textDE: 
+  - id: tutorial_nag_input
+    note: 
+    segments:
+    - startTime: 0
+      duration: 3
+      textTR: "Neden duraksad\u0131n? Emirlerimi sorgulama."
+      textEN: 
+      textDE: 
+    - startTime: 3.5
+      duration: 3.5
+      textTR: "Kodu makineye gir. Bu bir rica de\u011Fil."
+      textEN: 
+      textDE: 
+  - id: pressure_emergency
+    note: 
+    segments:
+    - startTime: 0
+      duration: 3
+      textTR: "Doktor! Bas\u0131n\xE7 g\xF6stergelerine bak!"
+      textEN: 
+      textDE: 
+    - startTime: 3.5
+      duration: 4
+      textTR: "Sistemi dengelemezsen aylar s\xFCren eme\u011Fimiz havaya u\xE7acak!"
+      textEN: 
+      textDE: 
+    - startTime: 8
+      duration: 2.5
+      textTR: "Vanalar\u0131 \xE7evir! \u015E\u0130MD\u0130!"
+      textEN: 
+      textDE: 
+  - id: idle_holding_code
+    note: 
+    segments:
+    - startTime: 0
+      duration: 3.5
+      textTR: "Elindeki o \u015Fifreyi s\xFCs diye vermedim sana."
+      textEN: 
+      textDE: 
+    - startTime: 4
+      duration: 3
+      textTR: "G\xF6revini yap Johan. Kap\u0131y\u0131 a\xE7."
+      textEN: 
+      textDE: 
+  - id: idle_move_warning
+    note: 
+    segments:
+    - startTime: 0
+      duration: 3
+      textTR: "Ne o? Korkudan fel\xE7 mi oldun?"
+      textEN: 
+      textDE: 
+    - startTime: 3.5
+      duration: 4.5
+      textTR: "Hareket et! Sava\u015F alan\u0131ndaki askerler durmuyor, sen de duramazs\u0131n."
+      textEN: 
+      textDE: 
+  - id: lights_warning
+    note: 
+    segments:
+    - startTime: 0
+      duration: 3
+      textTR: "I\u015F\u0131klar\u0131 kapa lan"
+      textEN: 
+      textDE: 
+  - id: final_gate_open
+    note: 
+    segments:
+    - startTime: 0
+      duration: 3
+      textTR: "Aferin t\xFCm \u015Fifreleri \xE7z\xF6d\xFCn"
+      textEN: 
+      textDE: 
+  - id: final_gate_locked
+    note: 
+    segments:
+    - startTime: 0
+      duration: 3
+      textTR: "Olum kilitli la i\u015Fte"
+      textEN: 
+      textDE: 

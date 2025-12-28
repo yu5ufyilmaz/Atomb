@@ -6,16 +6,17 @@ TagManager:
   tags:
   - CinemachineTarget
   - TuringMachine
+  - Enemy
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - Player
   - Water
   - UI
   - Interactable
-  - 
-  - 
+  - Enemy
+  - Wall
   - 
   - 
   - 
