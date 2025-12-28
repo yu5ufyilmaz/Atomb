@@ -1,26 +1,48 @@
-using UnityEngine;
 using System.Collections;
+using UnityEngine;
 
 public class InteractableDoor : MonoBehaviour, IInteractable
 {
     [Header("Door Settings")]
-    [SerializeField] private Animator doorAnimator;
-    [SerializeField] private float animationDuration = 1.0f; // Animasyon süresi
-    
+    [SerializeField]
+    private Animator doorAnimator;
+
+    [SerializeField]
+    private float animationDuration = 1.0f;
+
     [Header("Door State")]
-    [SerializeField] private bool isOpen = false;
-    [SerializeField] private bool isLocked = false;
-    private bool isAnimating = false; // Animasyon oynarken etkileşimi engelle
-    
-    [Header("Audio")]
-    [SerializeField] private AudioClip doorOpenSound;
-    [SerializeField] private AudioClip doorCloseSound;
-    [SerializeField] private AudioClip lockedSound;
-    [SerializeField] private AudioSource audioSource;
-    
+    public bool isOpen = false;
+
+    [SerializeField]
+    private bool isLocked = false;
+    private bool isAnimating = false;
+
+    [Header("Audio Settings")]
+    [SerializeField]
+    private AudioSource audioSource;
+
+    [Tooltip("Kapı açılırken çalacak ses")]
+    public AudioClip openSound;
+
+    [Tooltip("Kapı kapanırken çalacak ses")]
+    public AudioClip closeSound;
+
+    [Tooltip("Kapı kilitlenirken çıkan ses (Anahtar sesi vb.)")]
+    public AudioClip lockSound;
+
+    [Tooltip("Kapı kilidi açılırken çıkan ses")]
+    public AudioClip unlockSound;
+
+    [Tooltip("Kilitli kapıyı açmaya çalışınca çıkan ses (Zorlama/Rattle)")]
+    public AudioClip lockedTryOpenSound;
+
+    // GuderianAI gibi dışarıdan erişmek isteyenler için
+    public AudioSource DoorAudioSource => audioSource;
+
     [Header("Character Controller")]
-    [SerializeField] private UnityEngine.CharacterController playerController; // Oyuncunun CharacterController'ı
-    
+    [SerializeField]
+    private UnityEngine.CharacterController playerController;
+
     private static readonly int OpenTrigger = Animator.StringToHash("Open");
     private static readonly int CloseTrigger = Animator.StringToHash("Close");
     private static readonly int IsOpenBool = Animator.StringToHash("IsOpen");
@@ -28,43 +50,32 @@ public class InteractableDoor : MonoBehaviour, IInteractable
     private void Start()
     {
         if (doorAnimator == null)
-        {
             doorAnimator = GetComponent<Animator>();
-            if (doorAnimator == null)
-            {
-                Debug.LogError("Door'a Animator bileşeni atanmamış!", this);
-            }
-        }
-        
+
         if (doorAnimator != null)
-        {
             doorAnimator.SetBool(IsOpenBool, isOpen);
-        }
-        
-        // Eğer player controller atanmadıysa, sahnede bul
+
         if (playerController == null)
-        {
             playerController = FindObjectOfType<UnityEngine.CharacterController>();
-            if (playerController == null)
-            {
-                Debug.LogWarning("CharacterController bulunamadı! Inspector'dan manuel olarak atayın.");
-            }
-        }
     }
 
     public void Interact()
     {
-        // Animasyon oynarken etkileşimi engelle
         if (isAnimating)
             return;
-            
+
         if (isLocked)
         {
-            PlayLockedSound();
-            Debug.Log("Kapı kilitli!");
+            // KİLİTLİ KAPIYI ZORLAMA SESİ
+            PlaySound(lockedTryOpenSound);
+            Debug.Log("Kapı kilitli! (Zorlama sesi çaldı)");
+
+            // Opsiyonel: Kilitli kapı animasyonu (hafif sallanma) eklenebilir
+            if (doorAnimator != null)
+                doorAnimator.SetTrigger("Locked");
             return;
         }
-        
+
         StartCoroutine(ToggleDoorWithController());
     }
 
@@ -72,10 +83,8 @@ public class InteractableDoor : MonoBehaviour, IInteractable
     {
         if (isLocked)
             return "[E] Kilitli";
-        
         if (isAnimating)
-            return ""; // Animasyon sırasında prompt gösterme
-        
+            return "";
         return isOpen ? "[E] Kapıyı Kapat" : "[E] Kapıyı Aç";
     }
 
@@ -83,38 +92,42 @@ public class InteractableDoor : MonoBehaviour, IInteractable
     {
         isAnimating = true;
         isOpen = !isOpen;
-        
-        // CharacterController'ı pasif yap
+
         if (playerController != null)
-        {
             playerController.enabled = false;
-        }
-        
-        // Kapı animasyonunu başlat
+
         if (doorAnimator != null)
         {
             doorAnimator.SetTrigger(isOpen ? OpenTrigger : CloseTrigger);
             doorAnimator.SetBool(IsOpenBool, isOpen);
         }
-        
-        PlayDoorSound();
-        
-        // Animasyon süresince bekle
+
+        // AÇMA / KAPAMA SESİ
+        PlaySound(isOpen ? openSound : closeSound);
+
         yield return new WaitForSeconds(animationDuration);
-        
-        // CharacterController'ı tekrar aktif yap
+
         if (playerController != null)
-        {
             playerController.enabled = true;
-        }
-        
+
         isAnimating = false;
     }
-    
+
+    // --- DIŞARIDAN KONTROL (KİLİT SİSTEMİ İÇİN) ---
+
     public void SetLocked(bool locked)
     {
+        // Durum değişti mi kontrol et (Gereksiz ses çalmamak için)
+        if (isLocked == locked)
+            return;
+
         isLocked = locked;
-        
+
+        // KİLİTLEME / KİLİT AÇMA SESİ
+        // Bu fonksiyonu InteractableDoorLock.cs veya GameManager çağıracak
+        PlaySound(isLocked ? lockSound : unlockSound);
+
+        // Eğer kilitlendiyse ve kapı açıksa, kapıyı kapat
         if (isLocked && isOpen)
         {
             isOpen = false;
@@ -122,42 +135,32 @@ public class InteractableDoor : MonoBehaviour, IInteractable
             {
                 doorAnimator.SetTrigger(CloseTrigger);
                 doorAnimator.SetBool(IsOpenBool, false);
+                PlaySound(closeSound); // Kapanma sesi de çalsın
             }
         }
     }
 
-    public bool IsLocked()
+    public void SetOpen(bool openState)
     {
-        return isLocked;
-    }
-
-    private void PlayDoorSound()
-    {
-        if (audioSource != null)
+        isOpen = openState;
+        if (doorAnimator != null)
         {
-            AudioClip soundToPlay = isOpen ? doorOpenSound : doorCloseSound;
-            if (soundToPlay != null)
-            {
-                audioSource.PlayOneShot(soundToPlay);
-            }
+            doorAnimator.SetBool(IsOpenBool, isOpen);
+            doorAnimator.SetTrigger(isOpen ? OpenTrigger : CloseTrigger);
         }
     }
 
-    private void PlayLockedSound()
+    public bool IsLocked() => isLocked;
+
+    private void PlaySound(AudioClip clip)
     {
-        if (audioSource != null && lockedSound != null)
+        if (audioSource != null && clip != null)
         {
-            audioSource.PlayOneShot(lockedSound);
+            audioSource.PlayOneShot(clip);
         }
     }
-    
-    public void OnDoorOpenComplete()
-    {
-        Debug.Log("Kapı tamamen açıldı");
-    }
-    
-    public void OnDoorCloseComplete()
-    {
-        Debug.Log("Kapı tamamen kapandı");
-    }
+
+    public void OnFocus() { }
+
+    public void OnLoseFocus() { }
 }

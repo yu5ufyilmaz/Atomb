@@ -1,6 +1,7 @@
-﻿ using UnityEngine;
-#if ENABLE_INPUT_SYSTEM 
+﻿using UnityEngine;
+#if ENABLE_INPUT_SYSTEM
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
 #endif
 
 /* Note: animations are called via the controller for both the character and capsule using animator null checks
@@ -9,7 +10,7 @@ using UnityEngine.InputSystem;
 namespace StarterAssets
 {
     [RequireComponent(typeof(UnityEngine.CharacterController))]
-#if ENABLE_INPUT_SYSTEM 
+#if ENABLE_INPUT_SYSTEM
     [RequireComponent(typeof(PlayerInput))]
 #endif
     public class CharacterController : MonoBehaviour
@@ -21,6 +22,53 @@ namespace StarterAssets
         [Tooltip("Sprint speed of the character in m/s")]
         public float SprintSpeed = 5.335f;
 
+        // --- STAMINA AYARLARI (YENİ EKLENEN KISIM) ---
+        [Header("Stamina System")]
+        [Tooltip("Maksimum Stamina")]
+        public float maxStamina = 100f;
+
+        [Tooltip("Koşarken saniyede ne kadar azalsın?")]
+        public float staminaDrainRate = 15f;
+
+        [Tooltip("Dururken/Yürürken saniyede ne kadar dolsun?")]
+        public float staminaRegenRate = 10f;
+
+        [Tooltip(
+            "Stamina tamamen biterse, tekrar koşabilmek için dolması gereken oran (0.75 = %75)"
+        )]
+        [Range(0f, 1f)]
+        public float exhaustionThreshold = 0.75f;
+
+        [Header("Stamina UI")]
+        public Slider staminaSlider; // Editörden sürükle
+        public Image staminaFillImage; // Barın rengini değiştirmek istersen (Opsiyonel)
+
+        // Private Stamina Değişkenleri
+        private float currentStamina;
+        private bool isExhausted = false; // Yorgunluk cezası durumu
+
+        // --- [YENİ] SARHOŞLUK SİSTEMİ DEĞİŞKENLERİ ---
+        [Header("😵 Drunk Effect Settings")]
+        [Range(0f, 1f)]
+        public float drunkIntensity = 0f; // 0 = Normal, 1 = Tam Sarhoş
+
+        [Header("Sway (Kamera Sallantısı)")]
+        public float swaySpeed = 0.5f; // Ne kadar hızlı sallansın? (Düşük = Ağır sarhoş)
+        public float swayAmountRoll = 10.0f; // Kafa yan yatma açısı (Z ekseni)
+        public float swayAmountYaw = 10.0f; // Kafa sağa/sola bakma sapması (Y ekseni)
+
+        [Header("Drift (Yürüme Kayması)")]
+        public float driftSpeed = 0.3f; // Kayma yönünün değişme hızı
+        public float driftForce = 1.5f; // Kaymanın şiddeti
+
+        // Hesaplanan anlık değerler (Private)
+        private float drunkTime;
+        private float currentDrunkRoll;
+        private float currentDrunkYaw;
+        private Vector3 currentDrunkDrift;
+
+        // ----------------------------------------------
+
         [Tooltip("How fast the character turns to face movement direction")]
         [Range(0.0f, 0.3f)]
         public float RotationSmoothTime = 0.12f;
@@ -30,7 +78,9 @@ namespace StarterAssets
 
         public AudioClip LandingAudioClip;
         public AudioClip[] FootstepAudioClips;
-        [Range(0, 1)] public float FootstepAudioVolume = 0.5f;
+
+        [Range(0, 1)]
+        public float FootstepAudioVolume = 0.5f;
 
         [Space(10)]
         [Tooltip("The height the player can jump")]
@@ -40,27 +90,37 @@ namespace StarterAssets
         public float Gravity = -15.0f;
 
         [Space(10)]
-        [Tooltip("Time required to pass before being able to jump again. Set to 0f to instantly jump again")]
+        [Tooltip(
+            "Time required to pass before being able to jump again. Set to 0f to instantly jump again"
+        )]
         public float JumpTimeout = 0.50f;
 
-        [Tooltip("Time required to pass before entering the fall state. Useful for walking down stairs")]
+        [Tooltip(
+            "Time required to pass before entering the fall state. Useful for walking down stairs"
+        )]
         public float FallTimeout = 0.15f;
 
         [Header("Player Grounded")]
-        [Tooltip("If the character is grounded or not. Not part of the CharacterController built in grounded check")]
+        [Tooltip(
+            "If the character is grounded or not. Not part of the CharacterController built in grounded check"
+        )]
         public bool Grounded = true;
 
         [Tooltip("Useful for rough ground")]
         public float GroundedOffset = -0.14f;
 
-        [Tooltip("The radius of the grounded check. Should match the radius of the CharacterController")]
+        [Tooltip(
+            "The radius of the grounded check. Should match the radius of the CharacterController"
+        )]
         public float GroundedRadius = 0.28f;
 
         [Tooltip("What layers the character uses as ground")]
         public LayerMask GroundLayers;
 
         [Header("Cinemachine")]
-        [Tooltip("The follow target set in the Cinemachine Virtual Camera that the camera will follow")]
+        [Tooltip(
+            "The follow target set in the Cinemachine Virtual Camera that the camera will follow"
+        )]
         public GameObject CinemachineCameraTarget;
 
         [Tooltip("How far in degrees can you move the camera up")]
@@ -69,7 +129,9 @@ namespace StarterAssets
         [Tooltip("How far in degrees can you move the camera down")]
         public float BottomClamp = -30.0f;
 
-        [Tooltip("Additional degress to override the camera. Useful for fine tuning camera position when locked")]
+        [Tooltip(
+            "Additional degress to override the camera. Useful for fine tuning camera position when locked"
+        )]
         public float CameraAngleOverride = 0.0f;
 
         [Tooltip("For locking the camera position on all axis")]
@@ -98,7 +160,24 @@ namespace StarterAssets
         private int _animIDFreeFall;
         private int _animIDMotionSpeed;
 
-#if ENABLE_INPUT_SYSTEM 
+        // Mevcut ID'lerin yanına ekle
+        private int _animIDVelocityX;
+        private int _animIDVelocityZ;
+
+        [Header("Head Bob System")]
+        [Tooltip("Adım atma hızı (Adım sıklığı). 12-14 arası idealdir.")]
+        public float BobFrequency = 12f;
+
+        [Tooltip("Kafanın YUKARI-AŞAĞI oynama miktarı. (Tok his için düşük tut: 0.05)")]
+        public float BobYAmplitude = 0.05f;
+
+        [Tooltip("Kafanın SAĞA-SOLA oynama miktarı. (Doğallığı bu verir: 0.06)")]
+        public float BobXAmplitude = 0.06f;
+
+        private float _defaultYPos;
+        private float _bobTimer;
+
+#if ENABLE_INPUT_SYSTEM
         private PlayerInput _playerInput;
 #endif
         private Animator _animator;
@@ -117,11 +196,10 @@ namespace StarterAssets
 #if ENABLE_INPUT_SYSTEM
                 return _playerInput.currentControlScheme == "KeyboardMouse";
 #else
-				return false;
+                return false;
 #endif
             }
         }
-
 
         private void Awake()
         {
@@ -135,21 +213,31 @@ namespace StarterAssets
         private void Start()
         {
             _cinemachineTargetYaw = CinemachineCameraTarget.transform.rotation.eulerAngles.y;
-            
+
             _hasAnimator = TryGetComponent(out _animator);
             _controller = GetComponent<UnityEngine.CharacterController>();
             _input = GetComponent<StarterAssetsInputs>();
-#if ENABLE_INPUT_SYSTEM 
+#if ENABLE_INPUT_SYSTEM
             _playerInput = GetComponent<PlayerInput>();
 #else
-			Debug.LogError( "Starter Assets package is missing dependencies. Please use Tools/Starter Assets/Reinstall Dependencies to fix it");
+            Debug.LogError(
+                "Starter Assets package is missing dependencies. Please use Tools/Starter Assets/Reinstall Dependencies to fix it"
+            );
 #endif
-
+            currentStamina = maxStamina;
+            if (staminaSlider != null)
+            {
+                staminaSlider.maxValue = maxStamina;
+                staminaSlider.value = currentStamina;
+            }
             AssignAnimationIDs();
 
             // reset our timeouts on start
             _jumpTimeoutDelta = JumpTimeout;
             _fallTimeoutDelta = FallTimeout;
+            // Rastgelelik için seed belirle
+            if (CinemachineCameraTarget != null)
+                _defaultYPos = CinemachineCameraTarget.transform.localPosition.y;
         }
 
         private void Update()
@@ -158,7 +246,10 @@ namespace StarterAssets
 
             JumpAndGravity();
             GroundedCheck();
+            HandleStamina();
+            CalculateDrunkEffects(); // <--- [YENİ] BURAYA EKLENDİ
             Move();
+            HandleHeadBob(); // <-- YENİ: Bunu buraya ekle!
         }
 
         private void LateUpdate()
@@ -173,15 +264,27 @@ namespace StarterAssets
             _animIDJump = Animator.StringToHash("Jump");
             _animIDFreeFall = Animator.StringToHash("FreeFall");
             _animIDMotionSpeed = Animator.StringToHash("MotionSpeed");
+
+            // --- YENİ EKLENECEK KISIM ---
+            _animIDVelocityX = Animator.StringToHash("VelocityX");
+            _animIDVelocityZ = Animator.StringToHash("VelocityZ");
+            // ----------------------------
         }
 
         private void GroundedCheck()
         {
             // set sphere position, with offset
-            Vector3 spherePosition = new Vector3(transform.position.x, transform.position.y - GroundedOffset,
-                transform.position.z);
-            Grounded = Physics.CheckSphere(spherePosition, GroundedRadius, GroundLayers,
-                QueryTriggerInteraction.Ignore);
+            Vector3 spherePosition = new Vector3(
+                transform.position.x,
+                transform.position.y - GroundedOffset,
+                transform.position.z
+            );
+            Grounded = Physics.CheckSphere(
+                spherePosition,
+                GroundedRadius,
+                GroundLayers,
+                QueryTriggerInteraction.Ignore
+            );
 
             // update animator if using character
             if (_hasAnimator)
@@ -192,39 +295,77 @@ namespace StarterAssets
 
         private void CameraRotation()
         {
+            // Mouse/Gamepad giriş kontrolü
             if (_input.look.sqrMagnitude >= _threshold && !LockCameraPosition)
             {
                 float deltaTimeMultiplier = IsCurrentDeviceMouse ? 1.0f : Time.deltaTime;
 
-                _cinemachineTargetYaw += _input.look.x * deltaTimeMultiplier;
-                _cinemachineTargetPitch += _input.look.y * deltaTimeMultiplier;
+                // Sarhoşken mouse biraz ağırlaşsın
+                float controlLag =
+                    (drunkIntensity > 0.01f) ? Mathf.Lerp(1f, 0.5f, drunkIntensity) : 1f;
+
+                _cinemachineTargetYaw += _input.look.x * deltaTimeMultiplier * controlLag;
+                _cinemachineTargetPitch += _input.look.y * deltaTimeMultiplier * controlLag;
             }
 
-            _cinemachineTargetYaw = ClampAngle(_cinemachineTargetYaw, float.MinValue, float.MaxValue);
-            _cinemachineTargetPitch = ClampAngle(_cinemachineTargetPitch, BottomClamp, TopClamp);
-            
-            CinemachineCameraTarget.transform.rotation = Quaternion.Euler(
-                _cinemachineTargetPitch + CameraAngleOverride, 
-                _cinemachineTargetYaw, 
-                0.0f
+            _cinemachineTargetYaw = ClampAngle(
+                _cinemachineTargetYaw,
+                float.MinValue,
+                float.MaxValue
             );
-            
-            transform.rotation = Quaternion.Euler(0.0f, _cinemachineTargetYaw, 0.0f);
+            _cinemachineTargetPitch = ClampAngle(_cinemachineTargetPitch, BottomClamp, TopClamp);
+
+            // --- SARHOŞLUK ETKİSİ ---
+            // Sadece kamerayı (kafayı) sallar. Vücuda karışmaz.
+            float addedYaw = (drunkIntensity > 0.01f) ? currentDrunkYaw : 0f;
+            float addedRoll = (drunkIntensity > 0.01f) ? currentDrunkRoll : 0f;
+
+            CinemachineCameraTarget.transform.rotation = Quaternion.Euler(
+                _cinemachineTargetPitch + CameraAngleOverride,
+                _cinemachineTargetYaw + addedYaw,
+                0.0f + addedRoll
+            );
+
+            // DÜZELTME: transform.rotation satırı BURADAN TAMAMEN KALDIRILDI.
         }
 
         private void Move()
         {
+            // --- EKLENEN KISIM: Idle (Hareketsizlik) Kontrolü ---
+            // Eğer oyuncu yön tuşlarına basıyorsa (input vector sıfır değilse),
+            // Megafon sistemine "Oyuncu hareket ediyor, fırça atma" diyoruz.
+            if (_input.move != Vector2.zero && MegaphoneSystem.Instance != null)
+            {
+                MegaphoneSystem.Instance.ResetIdleTimer();
+            }
+            // ----------------------------------------------------
+
+            // 1. Hız Hesaplama
             float targetSpeed = _input.sprint ? SprintSpeed : MoveSpeed;
+            if (_input.move == Vector2.zero)
+                targetSpeed = 0.0f;
 
-            if (_input.move == Vector2.zero) targetSpeed = 0.0f;
+            if (drunkIntensity > 0.01f)
+                targetSpeed *= Mathf.Lerp(1f, 0.6f, drunkIntensity);
 
-            float currentHorizontalSpeed = new Vector3(_controller.velocity.x, 0.0f, _controller.velocity.z).magnitude;
+            float currentHorizontalSpeed = new Vector3(
+                _controller.velocity.x,
+                0.0f,
+                _controller.velocity.z
+            ).magnitude;
             float speedOffset = 0.1f;
             float inputMagnitude = _input.analogMovement ? _input.move.magnitude : 1f;
 
-            if (currentHorizontalSpeed < targetSpeed - speedOffset || currentHorizontalSpeed > targetSpeed + speedOffset)
+            if (
+                currentHorizontalSpeed < targetSpeed - speedOffset
+                || currentHorizontalSpeed > targetSpeed + speedOffset
+            )
             {
-                _speed = Mathf.Lerp(currentHorizontalSpeed, targetSpeed * inputMagnitude, Time.deltaTime * SpeedChangeRate);
+                _speed = Mathf.Lerp(
+                    currentHorizontalSpeed,
+                    targetSpeed * inputMagnitude,
+                    Time.deltaTime * SpeedChangeRate
+                );
                 _speed = Mathf.Round(_speed * 1000f) / 1000f;
             }
             else
@@ -232,56 +373,199 @@ namespace StarterAssets
                 _speed = targetSpeed;
             }
 
-            _animationBlend = Mathf.Lerp(_animationBlend, targetSpeed, Time.deltaTime * SpeedChangeRate);
-            if (_animationBlend < 0.01f) _animationBlend = 0f;
+            _animationBlend = Mathf.Lerp(
+                _animationBlend,
+                targetSpeed,
+                Time.deltaTime * SpeedChangeRate
+            );
+            if (_animationBlend < 0.01f)
+                _animationBlend = 0f;
 
-            // First Person için hareket yönü kameraya göre
+            // ROTASYON: Karakteri her zaman KAMERANIN baktığı yöne kilitle.
+            _targetRotation = _mainCamera.transform.eulerAngles.y;
+
+            // Sarhoşluk yalpalamasını rotasyona ekle
+            float rotationWithDrunk = _targetRotation;
+            if (drunkIntensity > 0.01f)
+                rotationWithDrunk += currentDrunkYaw;
+
+            // Karakterin gövdesini kamera açısına yumuşakça döndür
+            float rotation = Mathf.SmoothDampAngle(
+                transform.eulerAngles.y,
+                rotationWithDrunk,
+                ref _rotationVelocity,
+                RotationSmoothTime
+            );
+            transform.rotation = Quaternion.Euler(0.0f, rotation, 0.0f);
+
+            // HAREKET YÖNÜ: Input'u (WASD) kamera açısına göre ayarla.
             Vector3 inputDirection = new Vector3(_input.move.x, 0.0f, _input.move.y).normalized;
-            Vector3 targetDirection = transform.TransformDirection(inputDirection);
 
-            // Hareketi uygula
-            _controller.Move(targetDirection * (_speed * Time.deltaTime) + new Vector3(0.0f, _verticalVelocity, 0.0f) * Time.deltaTime);
+            // Input vektörünü, Kameranın Y açısı (TargetRotation) ile çarpıp dünya yönüne çeviriyoruz
+            Vector3 targetDirection =
+                Quaternion.Euler(0.0f, _targetRotation, 0.0f) * inputDirection;
 
+            // Hareketi Uygula
+            Vector3 movement =
+                targetDirection.normalized * (_speed * Time.deltaTime)
+                + new Vector3(0.0f, _verticalVelocity, 0.0f) * Time.deltaTime;
+
+            // Sarhoş kayması
+            if (drunkIntensity > 0.01f)
+            {
+                movement += currentDrunkDrift * Time.deltaTime;
+            }
+
+            _controller.Move(movement);
+
+            // Animasyon Güncelleme
             if (_hasAnimator)
             {
                 _animator.SetFloat(_animIDSpeed, _animationBlend);
                 _animator.SetFloat(_animIDMotionSpeed, inputMagnitude);
+
+                // YÖNLÜ ANİMASYON
+                Vector3 localVelocity = transform.InverseTransformDirection(_controller.velocity);
+                _animator.SetFloat(_animIDVelocityX, localVelocity.x, 0.15f, Time.deltaTime);
+                _animator.SetFloat(_animIDVelocityZ, localVelocity.z, 0.15f, Time.deltaTime);
             }
         }
+
+        // --- YENİ FONKSİYON: Stamina Yönetimi ---
+        private void HandleStamina()
+        {
+            // Oyuncu hareket ediyor mu? (Hareket etmiyorsa koşamaz)
+            bool isMoving = _input.move != Vector2.zero;
+            bool wantsToSprint = _input.sprint;
+
+            // DURUM 1: Koşmaya Çalışıyor
+            if (isMoving && wantsToSprint && !isExhausted)
+            {
+                if (currentStamina > 0)
+                {
+                    // Staminayı azalt
+                    currentStamina -= staminaDrainRate * Time.deltaTime;
+
+                    // Biterse yorgunluk moduna gir
+                    if (currentStamina <= 0)
+                    {
+                        currentStamina = 0;
+                        isExhausted = true; // CEZA BAŞLADI
+                        _input.sprint = false; // Otomatik yürüme moduna al
+                    }
+                }
+            }
+            // DURUM 2: Dinleniyor (Yürüyor veya Duruyor)
+            else
+            {
+                if (currentStamina < maxStamina)
+                {
+                    // Staminayı doldur
+                    currentStamina += staminaRegenRate * Time.deltaTime;
+                    if (currentStamina > maxStamina)
+                        currentStamina = maxStamina;
+                }
+
+                // Yorgunluk Cezası Kontrolü
+                if (isExhausted)
+                {
+                    // İstenen sınıra (%75) geldi mi?
+                    if (currentStamina >= maxStamina * exhaustionThreshold)
+                    {
+                        isExhausted = false; // CEZA BİTTİ, tekrar koşabilir
+                    }
+                    else
+                    {
+                        // Hala cezalı, sprint girdisini engelle
+                        _input.sprint = false;
+                    }
+                }
+            }
+
+            // UI Güncelleme
+            if (staminaSlider != null)
+            {
+                staminaSlider.value = currentStamina;
+            }
+
+            // Opsiyonel: Yorgunken bar Kırmızı, normalken Beyaz olsun
+            if (staminaFillImage != null)
+            {
+                staminaFillImage.color = isExhausted ? Color.red : Color.white;
+            }
+        }
+
+        // --- [YENİ] SARHOŞLUK HESAPLAMALARI ---
+        private void CalculateDrunkEffects()
+        {
+            // --- DÜZELTME: KESİN SIFIRLAMA ---
+            // Eğer sarhoşluk yoksa (veya çok azsa), tüm değerleri anında sıfırla.
+            // Lerp kullanmıyoruz, direkt kesiyoruz ki "normal" hissetsin.
+            if (drunkIntensity <= 0.01f)
+            {
+                currentDrunkRoll = 0f;
+                currentDrunkYaw = 0f;
+                currentDrunkDrift = Vector3.zero;
+                drunkTime = 0f; // Zamanlayıcıyı da sıfırla
+                return;
+            }
+
+            drunkTime += Time.deltaTime;
+
+            // 1. Kamera Sallantısı
+            float noiseRoll = (Mathf.PerlinNoise(drunkTime * swaySpeed, 0f) - 0.5f) * 2f;
+            float noiseYaw = (Mathf.PerlinNoise(0f, drunkTime * swaySpeed) - 0.5f) * 2f;
+
+            float targetRoll = noiseRoll * swayAmountRoll * drunkIntensity;
+            float targetYaw = noiseYaw * swayAmountYaw * drunkIntensity;
+
+            currentDrunkRoll = Mathf.Lerp(currentDrunkRoll, targetRoll, Time.deltaTime * 1.5f);
+            currentDrunkYaw = Mathf.Lerp(currentDrunkYaw, targetYaw, Time.deltaTime * 1.5f);
+
+            // 2. Yürüme Kayması
+            float driftX = (Mathf.PerlinNoise(drunkTime * driftSpeed, 100f) - 0.5f) * 2f;
+            float driftZ = (Mathf.PerlinNoise(drunkTime * driftSpeed, 200f) - 0.5f) * 2f;
+
+            Vector3 targetDrift = new Vector3(driftX, 0, driftZ) * driftForce * drunkIntensity;
+            currentDrunkDrift = Vector3.Lerp(currentDrunkDrift, targetDrift, Time.deltaTime * 0.5f);
+        }
+
         private void JumpAndGravity()
         {
             if (Grounded)
             {
-                // reset the fall timeout timer
+                // Düşme zaman aşımını sıfırla
                 _fallTimeoutDelta = FallTimeout;
 
-                // update animator if using character
+                // Animatörü güncelle
                 if (_hasAnimator)
                 {
                     _animator.SetBool(_animIDJump, false);
                     _animator.SetBool(_animIDFreeFall, false);
                 }
 
-                // stop our velocity dropping infinitely when grounded
+                // Yerdeyken hızın sonsuza kadar düşmesini engelle
                 if (_verticalVelocity < 0.0f)
                 {
                     _verticalVelocity = -2f;
                 }
 
-                // Jump
+                // --- DEĞİŞİKLİK BURADA ---
+                // Zıplama kodunu tamamen sildik/yorum satırına aldık.
+                // Artık Space'e bassan da zıplamayacak.
+
+                /* // Jump
                 if (_input.jump && _jumpTimeoutDelta <= 0.0f)
                 {
-                    // the square root of H * -2 * G = how much velocity needed to reach desired height
                     _verticalVelocity = Mathf.Sqrt(JumpHeight * -2f * Gravity);
-
-                    // update animator if using character
                     if (_hasAnimator)
                     {
                         _animator.SetBool(_animIDJump, true);
                     }
                 }
+                */
 
-                // jump timeout
+                // Zıplama zaman aşımı
                 if (_jumpTimeoutDelta >= 0.0f)
                 {
                     _jumpTimeoutDelta -= Time.deltaTime;
@@ -289,38 +573,103 @@ namespace StarterAssets
             }
             else
             {
-                // reset the jump timeout timer
+                // Havadaysak zıplama zaman aşımını sıfırla
                 _jumpTimeoutDelta = JumpTimeout;
 
-                // fall timeout
+                // Düşme zaman aşımı
                 if (_fallTimeoutDelta >= 0.0f)
                 {
                     _fallTimeoutDelta -= Time.deltaTime;
                 }
                 else
                 {
-                    // update animator if using character
+                    // Düşme animasyonu
                     if (_hasAnimator)
                     {
                         _animator.SetBool(_animIDFreeFall, true);
                     }
                 }
 
-                // if we are not grounded, do not jump
+                // Havadaysak zıplama girdisini iptal et
                 _input.jump = false;
             }
 
-            // apply gravity over time if under terminal (multiply by delta time twice to linearly speed up over time)
+            // Yerçekimini uygula (Terminal hıza kadar)
             if (_verticalVelocity < _terminalVelocity)
             {
                 _verticalVelocity += Gravity * Time.deltaTime;
             }
         }
 
+        private void HandleHeadBob()
+        {
+            if (!Grounded)
+                return;
+
+            // Hız kontrolü (Yatay hız)
+            float speed = new Vector3(_controller.velocity.x, 0, _controller.velocity.z).magnitude;
+
+            // Karakter hareket ediyor mu?
+            if (_input.move != Vector2.zero && speed > 0.1f)
+            {
+                // Koşuyorsak frekansı artır
+                float freq = _input.sprint ? BobFrequency * 1.3f : BobFrequency;
+
+                _bobTimer += Time.deltaTime * freq;
+
+                // --- DOĞAL YÜRÜME FORMÜLÜ (Lissajous Curve / 8 Çizme) ---
+
+                // 1. Y EKSENİ (Yukarı/Aşağı): Sinüs dalgası (Adım atma)
+                // Mutlak değer (Mathf.Abs) kullanmıyoruz, yumuşak iniş çıkış olsun.
+                float bobYOffset = Mathf.Sin(_bobTimer) * BobYAmplitude;
+
+                // 2. X EKSENİ (Sağa/Sola): Kosinüs dalgası (Ağırlık verme)
+                // Frekansı yarıya bölüyoruz (_bobTimer / 2f).
+                // Çünkü: İki adımda (Sol-Sağ) bir tam tur sağa-sola sallanırız.
+                float bobXOffset = Mathf.Cos(_bobTimer / 2f) * BobXAmplitude;
+
+                // Kameranın pozisyonunu hedef pozisyona doğru yumuşakça (Lerp) kaydır
+                Vector3 currentPos = CinemachineCameraTarget.transform.localPosition;
+
+                Vector3 targetPos = new Vector3(
+                    bobXOffset,
+                    _defaultYPos + bobYOffset,
+                    currentPos.z
+                );
+
+                // Lerp ile geçişi yumuşatıyoruz ki "kütük" gibi titremesin
+                CinemachineCameraTarget.transform.localPosition = Vector3.Lerp(
+                    currentPos,
+                    targetPos,
+                    Time.deltaTime * 15f
+                );
+            }
+            else
+            {
+                // Durduysak zamanlayıcıyı sıfırla (Adım ortasında kalmasın, nötr pozisyona dönsün)
+                _bobTimer = 0;
+
+                Vector3 currentPos = CinemachineCameraTarget.transform.localPosition;
+                Vector3 targetPos = new Vector3(0f, _defaultYPos, currentPos.z);
+
+                // Yavaşça merkeze dön (Reset)
+                if (Vector3.Distance(currentPos, targetPos) > 0.001f)
+                {
+                    CinemachineCameraTarget.transform.localPosition = Vector3.Lerp(
+                        currentPos,
+                        targetPos,
+                        Time.deltaTime * 6f
+                    );
+                }
+            }
+        }
+
         private static float ClampAngle(float lfAngle, float lfMin, float lfMax)
         {
-            if (lfAngle < -360f) lfAngle += 360f;
-            if (lfAngle > 360f) lfAngle -= 360f;
+            if (lfAngle < -360f)
+                lfAngle += 360f;
+            if (lfAngle > 360f)
+                lfAngle -= 360f;
             return Mathf.Clamp(lfAngle, lfMin, lfMax);
         }
 
@@ -329,13 +678,20 @@ namespace StarterAssets
             Color transparentGreen = new Color(0.0f, 1.0f, 0.0f, 0.35f);
             Color transparentRed = new Color(1.0f, 0.0f, 0.0f, 0.35f);
 
-            if (Grounded) Gizmos.color = transparentGreen;
-            else Gizmos.color = transparentRed;
+            if (Grounded)
+                Gizmos.color = transparentGreen;
+            else
+                Gizmos.color = transparentRed;
 
             // when selected, draw a gizmo in the position of, and matching radius of, the grounded collider
             Gizmos.DrawSphere(
-                new Vector3(transform.position.x, transform.position.y - GroundedOffset, transform.position.z),
-                GroundedRadius);
+                new Vector3(
+                    transform.position.x,
+                    transform.position.y - GroundedOffset,
+                    transform.position.z
+                ),
+                GroundedRadius
+            );
         }
 
         private void OnFootstep(AnimationEvent animationEvent)
@@ -345,7 +701,11 @@ namespace StarterAssets
                 if (FootstepAudioClips.Length > 0)
                 {
                     var index = Random.Range(0, FootstepAudioClips.Length);
-                    AudioSource.PlayClipAtPoint(FootstepAudioClips[index], transform.TransformPoint(_controller.center), FootstepAudioVolume);
+                    AudioSource.PlayClipAtPoint(
+                        FootstepAudioClips[index],
+                        transform.TransformPoint(_controller.center),
+                        FootstepAudioVolume
+                    );
                 }
             }
         }
@@ -354,7 +714,40 @@ namespace StarterAssets
         {
             if (animationEvent.animatorClipInfo.weight > 0.5f)
             {
-                AudioSource.PlayClipAtPoint(LandingAudioClip, transform.TransformPoint(_controller.center), FootstepAudioVolume);
+                AudioSource.PlayClipAtPoint(
+                    LandingAudioClip,
+                    transform.TransformPoint(_controller.center),
+                    FootstepAudioVolume
+                );
+            }
+        }
+
+        // --- DIŞARIDAN STAMINA DOLDURMA (Kitap Okurken vb.) ---
+        public void ExternalStaminaRegen(float deltaTime)
+        {
+            // Eğer stamina zaten doluysa işlem yapma
+            if (currentStamina >= maxStamina)
+                return;
+
+            // Staminayı artır
+            currentStamina += staminaRegenRate * deltaTime;
+            if (currentStamina > maxStamina)
+                currentStamina = maxStamina;
+
+            // Yorgunluk cezasını (Exhausted) kontrol et
+            if (isExhausted && currentStamina >= maxStamina * exhaustionThreshold)
+            {
+                isExhausted = false;
+            }
+
+            // UI Güncelle (Script kapalı olduğu için Update'te güncellenmez, elle yapıyoruz)
+            if (staminaSlider != null)
+            {
+                staminaSlider.value = currentStamina;
+            }
+            if (staminaFillImage != null)
+            {
+                staminaFillImage.color = isExhausted ? Color.red : Color.white;
             }
         }
     }

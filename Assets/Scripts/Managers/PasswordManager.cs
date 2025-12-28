@@ -1,34 +1,55 @@
-using UnityEngine;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class PasswordManager : MonoBehaviour
 {
     public static PasswordManager Instance;
-    
-    [Header("Tüm Olası Şifre Verileri")]
-    [SerializeField] private List<PasswordData> allPossiblePasswordData; 
-    
-    [Header("Sahnedeki Potansiyel Şifreli Kitaplar")]
-    [SerializeField] private List<InteractableBook> allPasswordBooksInLevel;
 
-    [Header("Mevcut Oyun Durumu")]
-    [Tooltip("Turing makinesindeki gösterge (ışık) sayısı ile aynı olmalı.")]
-    [SerializeField] private int requiredPasswordCount = 5; // 5 göstergeniz var
-    
-    // Oyuncunun bu oyunda bulması gereken şifre ID'leri
-    private List<string> requiredPasswords = new List<string>(); 
-    
-    // Oyuncunun kitaplardan "keşfettiği" (not defterine giden) şifreler
+    [Header("Şifre Üretim Ayarları")]
+    [SerializeField]
+    private WordPool wordPool;
+
+    [Header("Sembol Ayarları")]
+    public string[] symbols = { "+", "-", "/", "√", "%", "<=", "=", "<", ">", ".", ",", ">=" };
+
+    [Header("Makineler")]
+    [SerializeField]
+    private InteractableOscilloscope oscilloscope;
+
+    [SerializeField]
+    private InteractableMassSpectrometer spectrometer;
+
+    [Header("Kitaplar")]
+    [SerializeField]
+    private List<InteractableBook> allBooksInLevel;
+
+    [Header("Tutorial Ayarları")]
+    public string tutorialPassword = "AAAAAAAA_+_999";
+
+    // YENİ: Tutorial notunu buraya sürükleyeceksin
+    public InteractableBook tutorialNoteBook;
+
+    [Header("Oyun Ayarları")]
+    [Tooltip("Kazanmak için gereken RANDOM şifre sayısı (Tutorial hariç)")]
+    [SerializeField]
+    private int totalPasswordsNeeded = 5;
+
+    // Takip Listeleri
+    private List<string> requiredPasswords = new List<string>();
     private List<string> discoveredClues = new List<string>();
-    
-    // Oyuncunun makineye "doğru girdiği" (ışıkları yakan) şifreler
     private List<string> validatedPasswords = new List<string>();
+
+    public event Action OnGameReadyToFinish;
 
     private void Awake()
     {
-        if (Instance == null) Instance = this;
-        else Destroy(gameObject);
+        if (Instance == null)
+            Instance = this;
+        else
+            Destroy(gameObject);
     }
 
     private void Start()
@@ -42,78 +63,146 @@ public class PasswordManager : MonoBehaviour
         validatedPasswords.Clear();
         requiredPasswords.Clear();
 
-        foreach (var book in allPasswordBooksInLevel)
+        Debug.Log("PasswordManager: Yeni oyun başlatılıyor...");
+
+        // --- 1. TUTORIAL NOTU AYARI ---
+        if (tutorialNoteBook != null)
         {
-            book.ClearPassword();
+            // Şifre çıkabilir özelliğini kodla açıyoruz ki unutulmasın
+            tutorialNoteBook.canContainPassword = true;
+
+            // 0. sayfaya (veya ilk uygun lokasyona) şifreyi bas
+            tutorialNoteBook.AssignPassword(tutorialPassword, 0);
+
+            Debug.Log($"[Tutorial] Not Hazır. Şifre: {tutorialPassword}");
+        }
+        else
+        {
+            Debug.LogWarning("UYARI: Tutorial Note Book atanmamış!");
+        }
+        // ------------------------------
+
+        // --- 2. RANDOM ŞİFRELERİN DAĞITIMI ---
+        int machineCount = 2; // Osiloskop + Spektrometre
+        int bookCount = totalPasswordsNeeded - machineCount;
+
+        // Tutorial notu hariç diğer uygun kitapları bul
+        var eligibleBooks = allBooksInLevel
+            .Where(b =>
+                b.canContainPassword
+                && b.bookIdentity != null
+                && b.bookIdentity.possibleLocations.Count > 0
+                && b != tutorialNoteBook // <--- ÖNEMLİ: Tutorial notunu havuza katma
+            )
+            .ToList();
+
+        if (eligibleBooks.Count < bookCount)
+        {
+            Debug.LogError($"Yeterli kitap yok! Gereken: {bookCount}, Var: {eligibleBooks.Count}");
+            return;
         }
 
-        var shuffledPasswordData = allPossiblePasswordData.OrderBy(x => Random.value).ToList();
-        var shuffledBooks = allPasswordBooksInLevel.OrderBy(x => Random.value).ToList();
-
-        for (int i = 0; i < requiredPasswordCount; i++)
+        // A) MAKİNELER
+        if (oscilloscope != null)
         {
-            if (i >= shuffledPasswordData.Count || i >= shuffledBooks.Count)
-            {
-                Debug.LogWarning("Yeterli sayıda kitap veya şifre verisi yok!", this);
-                break;
-            }
-
-            PasswordData dataToAssign = shuffledPasswordData[i];
-            InteractableBook bookToAssign = shuffledBooks[i];
-            
-            bookToAssign.AssignPassword(dataToAssign);
-            requiredPasswords.Add(dataToAssign.passwordID);
+            string pass1 = GenerateRandomPassword();
+            oscilloscope.AssignPassword(pass1);
+            requiredPasswords.Add(pass1);
         }
 
-        Debug.Log($"Yeni oyun başlatıldı. {requiredPasswords.Count} adet şifre atandı.");
+        if (spectrometer != null)
+        {
+            string pass2 = GenerateRandomPassword();
+            spectrometer.AssignPassword(pass2);
+            requiredPasswords.Add(pass2);
+        }
+
+        // B) KİTAPLAR
+        var selectedBooks = eligibleBooks.OrderBy(x => Random.value).Take(bookCount).ToList();
+
+        foreach (var book in selectedBooks)
+        {
+            string bookPass = GenerateRandomPassword();
+            int randomLocIndex = Random.Range(0, book.bookIdentity.possibleLocations.Count);
+
+            book.AssignPassword(bookPass, randomLocIndex);
+            requiredPasswords.Add(bookPass);
+            Debug.Log($"[Oyun Şifresi] {book.name}: {bookPass}");
+        }
+
+        Debug.Log($"DAĞITIM TAMAM. {requiredPasswords.Count} Oyun Şifresi + 1 Tutorial Şifresi.");
     }
 
-    // 1. Kitap bu fonksiyonu çağırır (Not defterine ekler)
+    private string GenerateRandomPassword()
+    {
+        string w = (wordPool != null) ? wordPool.GetRandomWord() : "NULL";
+        string s = symbols[Random.Range(0, symbols.Length)];
+        string n = Random.Range(0, 1000).ToString("D3");
+        return $"{w}_{s}_{n}";
+    }
+
     public void DiscoverClue(string passwordID)
     {
-        // Sadece "gerekli" ve "daha önce keşfedilmemiş" ise ekle
-        if (requiredPasswords.Contains(passwordID) && !discoveredClues.Contains(passwordID))
-        {
-            discoveredClues.Add(passwordID);
-            Debug.Log($"İpucu keşfedildi: {passwordID}");
-            
-            // Not defterine bildirim gönder
-            if (NotebookUI.Instance != null)
-            {
-                NotebookUI.Instance.ShowPasswordNotification(passwordID);
-            }
-        }
+        // Sadece geçerli şifreleri (veya tutorial şifresini) deftere kaydet
+        bool isGamePass = requiredPasswords.Contains(passwordID);
+        bool isTutorialPass = (passwordID == tutorialPassword);
+
+        if (!isGamePass && !isTutorialPass)
+            return;
+
+        if (discoveredClues.Contains(passwordID))
+            return;
+
+        discoveredClues.Add(passwordID);
+
+        if (NotebookUI.Instance != null)
+            NotebookUI.Instance.ShowPasswordNotification(passwordID);
     }
 
-    // 2. Turing Makinesi bu fonksiyonu çağırır (Işıkları yakar)
     public bool ValidatePassword(string passwordID)
     {
-        // Sadece "gerekli" ve "daha önce doğrulanmamış" ise ekle
-        if (requiredPasswords.Contains(passwordID) && !validatedPasswords.Contains(passwordID))
+        // 1. DURUM: TUTORIAL ŞİFRESİ
+        if (passwordID == tutorialPassword)
         {
-            validatedPasswords.Add(passwordID);
-            Debug.Log($"Şifre DOĞRULANDI: {passwordID}");
-            return true; // Başarılı (yeni doğrulandı)
+            Debug.Log("📘 TUTORIAL ŞİFRESİ GİRİLDİ (Sayaca eklenmiyor).");
+            // TRUE döndür ki makine yeşil ışık yaksın ve onay sesi çalsın.
+            // Ama 'validatedPasswords' listesine eklemiyoruz.
+            return true;
         }
-        
-        // Ya yanlış ya da zaten doğrulanmış
-        return false; // Başarısız
+
+        // 2. DURUM: OYUN ŞİFRESİ
+        if (!requiredPasswords.Contains(passwordID))
+        {
+            return false; // Yanlış
+        }
+
+        if (validatedPasswords.Contains(passwordID))
+        {
+            return true; // Zaten girilmiş
+        }
+
+        // Yeni doğru şifre
+        validatedPasswords.Add(passwordID);
+        Debug.Log($"✅ OYUN ŞİFRESİ ONAYLANDI: {validatedPasswords.Count}/{totalPasswordsNeeded}");
+
+        // KAZANMA KONTROLÜ
+        if (validatedPasswords.Count >= totalPasswordsNeeded)
+        {
+            OnGameReadyToFinish?.Invoke();
+        }
+
+        return true;
     }
 
-    // Not defteri bu listeyi kullanır
-    public List<string> GetDiscoveredClues()
-    {
-        return discoveredClues;
-    }
-    
-    // Turing makinesi bu sayıyı kullanır
-    public int GetValidatedPasswordCount()
-    {
-        return validatedPasswords.Count;
-    }
-    
-    public bool HasFoundAllRequiredPasswords()
-    {
-        return validatedPasswords.Count == requiredPasswords.Count;
-    }
+    // Getter Metotları
+    public int GetValidatedPasswordCount() => validatedPasswords.Count;
+
+    public int GetTotalRequiredCount() => totalPasswordsNeeded;
+
+    public int GetFoundCount() => discoveredClues.Count;
+
+    public List<string> GetDiscoveredClues() => discoveredClues;
+
+    public bool HasFoundAllRequiredPasswords() =>
+        validatedPasswords.Count == requiredPasswords.Count;
 }
