@@ -1,5 +1,9 @@
 fileFormatVersion: 2
+<<<<<<<< HEAD:Assets/Models/Revisyons/revizemodeller.fbx.meta
 guid: 788b7f7984d2f43f898db11715f0b322
+========
+guid: d1e0e485db4f65342943c70e327d0155
+>>>>>>>> origin/lastMain:Assets/Models/Characters/Lees/Material/maincharacter.fbx.meta
 ModelImporter:
   serializedVersion: 22200
   internalIDToNameTable: []
