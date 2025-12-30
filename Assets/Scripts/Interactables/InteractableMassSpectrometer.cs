@@ -25,6 +25,16 @@ public class InteractableMassSpectrometer : MonoBehaviour, IInteractable, IForce
     [Tooltip("Etkileşim başladığında kameranın gidip sabitleneceği nokta.")]
     public Transform fixedCameraTransform;
 
+    [Header("🔧 Model Rotation Settings (YENİ)")]
+    [Tooltip("Mıknatıs hangi eksende dönsün? (Örn: 0,0,1 = Z ekseni, 1,0,0 = X ekseni)")]
+    public Vector3 magnetRotationAxis = Vector3.forward; // Varsayılan Z
+
+    [Tooltip("Halka (Ring) hangi eksende dönsün? (0=X, 1=Y, 2=Z)")]
+    public int ringRotationAxisIndex = 1; // 0:X, 1:Y, 2:Z (Eski kodda Y idi)
+
+    [Tooltip("Halkanın duruş açısı (Model dik ise 0, yatıksa 90 yap)")]
+    public float ringBaseRotation = 0f;
+
     [SerializeField]
     private float cameraTransitionDuration = 1.0f;
 
@@ -123,6 +133,7 @@ public class InteractableMassSpectrometer : MonoBehaviour, IInteractable, IForce
     private float currentCooldown = 0f;
     private float currentRingAngleValue = 0f;
     private string assignedPassword = "";
+    private Vector3 _startMagnetPos;
 
     private void Start()
     {
@@ -131,6 +142,7 @@ public class InteractableMassSpectrometer : MonoBehaviour, IInteractable, IForce
         // Puzzle başlangıç ayarları
         float randomOffset = Random.Range(-40f, 40f);
         currentRingAngleValue = ringTargetAngle + 180f + randomOffset;
+        _startMagnetPos = magnetPivot.localPosition;
         UpdateRingRotation();
         ResetMachineVisuals();
     }
@@ -401,42 +413,60 @@ public class InteractableMassSpectrometer : MonoBehaviour, IInteractable, IForce
 
     private void Update()
     {
-        // Kırılma / Soğuma Mantığı
+        // 1. KIRILMA / SOĞUMA MANTIĞI
         if (IsBroken)
         {
             currentCooldown -= Time.deltaTime;
             if (screenText != null)
                 screenText.text = $"OVERHEATED\nWAIT: {currentCooldown:F1}s";
             if (currentCooldown <= 0)
-            {
-                // Bozulma bitti ama güç kapalı olarak başlasın ki tekrar kolu çekmek gereksin mi?
-                // Genelde makine soğuyunca tekrar hazır olur ama gücü kesmek daha mantıklı.
-                // Burada otomatik reset atıyoruz:
                 ResetMachineVisuals();
-            }
             return;
         }
 
         if (!inMachineMode || isExiting)
             return;
+        if (Time.timeScale == 0f)
+            return; // Oyun durduysa fareyi okuma
 
-        // ÇIKIŞ TUŞU
+        // ÇIKIŞ TUŞU (F)
         if (Input.GetKeyDown(KeyCode.F))
         {
             StartCoroutine(ExitMachineView());
             return;
         }
 
-        // --- PUZZLE MANTIĞI ---
-        float mouseX = Input.GetAxis("Mouse X");
-        if (magnetPivot != null)
-            magnetPivot.Rotate(Vector3.forward * mouseX * magnetRotateSpeed * -1);
+        // Çözüldüyse hareket etmesin
+        if (IsSolved)
+            return;
 
-        float currentMagAngle = magnetPivot.localEulerAngles.z;
+        // ========================================================================
+        // --- 1. MIKNATIS KONTROLÜ (SADECE LOCAL X - KIRMIZI OK) ---
+        // ========================================================================
+
+        float mouseX = Input.GetAxis("Mouse X");
+
+        if (magnetPivot != null)
+        {
+            // KRİTİK NOKTA: Space.Self diyerek "Dünya eksenini boşver, kendine göre dön" diyoruz.
+            // Vector3.right = (1, 0, 0) yani X ekseni.
+            magnetPivot.Rotate(Vector3.right * mouseX * magnetRotateSpeed * -1, Space.Self);
+        }
+
+        // Açı Hesaplama (Sadece X eksenini okuyoruz)
+        // Unity'de açılar 0-360 arasıdır. Okumayı kolaylaştırmak için 180'den büyüğü negatif gösteriyoruz.
+        float rawAngle = magnetPivot.localEulerAngles.x;
+        float currentMagAngle = (rawAngle > 180) ? rawAngle - 360 : rawAngle;
+
+        // Hedef Kontrolü
         float magDiff = Mathf.Abs(Mathf.DeltaAngle(currentMagAngle, safeZoneAngle));
         bool isMagnetSafe = magDiff < safeZoneTolerance;
 
-        float ringDiff = Mathf.Abs(Mathf.DeltaAngle(currentRingAngleValue, ringTargetAngle));
+        // ========================================================================
+        // --- GÖRSEL GERİ BİLDİRİM (UI) ---
+        // ========================================================================
+
+        // Halka Açısı Gösterimi (Görsel)
         float displayRingAngle = currentRingAngleValue % 360;
         if (displayRingAngle < 0)
             displayRingAngle += 360;
@@ -446,23 +476,28 @@ public class InteractableMassSpectrometer : MonoBehaviour, IInteractable, IForce
             if (isMagnetSafe)
             {
                 screenText.color = Color.green;
-                screenText.text =
-                    $"MAGNET STABLE\nRING: {displayRingAngle:F0}° / TARGET: {ringTargetAngle}°";
+                screenText.text = $"MAGNET STABLE\nRING: {displayRingAngle:F0}°";
             }
             else
             {
                 screenText.color = Color.red;
-                float displayMagAngle =
-                    currentMagAngle > 180 ? currentMagAngle - 360 : currentMagAngle;
-                screenText.text = $"MAGNET UNSTABLE ({displayMagAngle:F0}°)\nALIGN MAGNET (0°)";
+                // Ekrana şu anki X açısını yazdırıyoruz ki "Safe Zone Angle"ı ne yapacağını bil.
+                screenText.text = $"MAGNET UNSTABLE ({currentMagAngle:F0}°)\nALIGN RED AXIS";
             }
         }
+
+        // ========================================================================
+        // --- 2. HALKA KONTROLÜ ---
+        // ========================================================================
 
         float ringInput = 0f;
         if (Input.GetKey(KeyCode.D))
             ringInput = 1f;
         if (Input.GetKey(KeyCode.A))
             ringInput = -1f;
+
+        // Halka Hedef Kontrolü
+        float ringDiff = Mathf.Abs(Mathf.DeltaAngle(currentRingAngleValue, ringTargetAngle));
 
         if (ringInput != 0)
         {
@@ -471,6 +506,7 @@ public class InteractableMassSpectrometer : MonoBehaviour, IInteractable, IForce
                 currentRingAngleValue += ringInput * ringRotateSpeed * Time.deltaTime;
                 UpdateRingRotation();
                 ResetPenalty();
+
                 if (ringDiff < ringTolerance)
                     StartCoroutine(SuccessSequence());
             }
@@ -504,7 +540,11 @@ public class InteractableMassSpectrometer : MonoBehaviour, IInteractable, IForce
             loopAudioSource.Play();
         }
         float shake = Random.Range(-0.03f, 0.03f);
-        magnetPivot.localPosition = new Vector3(shake, shake, 0);
+        magnetPivot.localPosition = new Vector3(
+            _startMagnetPos.x + shake,
+            _startMagnetPos.y + shake,
+            _startMagnetPos.z
+        );
 
         if (currentGrindTimer > maxGrindTime)
             StartCoroutine(TriggerBreakdown());
@@ -515,8 +555,7 @@ public class InteractableMassSpectrometer : MonoBehaviour, IInteractable, IForce
         currentGrindTimer = 0f;
         if (loopAudioSource && loopAudioSource.isPlaying)
             loopAudioSource.Stop();
-        if (magnetPivot)
-            magnetPivot.localPosition = Vector3.zero;
+        magnetPivot.localPosition = _startMagnetPos;
     }
 
     private IEnumerator TriggerBreakdown()
@@ -585,14 +624,25 @@ public class InteractableMassSpectrometer : MonoBehaviour, IInteractable, IForce
         // IsSolved = false; // Çözüldüyse sıfırlama, kalıcı olsun.
 
         currentGrindTimer = 0f;
-        if (magnetPivot != null)
-            magnetPivot.localPosition = Vector3.zero;
     }
 
     private void UpdateRingRotation()
     {
         if (acceleratorRing != null)
-            acceleratorRing.localRotation = Quaternion.Euler(90, currentRingAngleValue, 0);
+        {
+            // ringRotationAxisIndex: 0=X, 1=Y, 2=Z
+            // ringBaseRotation: Modelin dik durması için gereken sabit açı (örn: 0 veya 90)
+
+            float x = (ringRotationAxisIndex == 0) ? currentRingAngleValue : ringBaseRotation;
+            float y = (ringRotationAxisIndex == 1) ? currentRingAngleValue : 0;
+            float z = (ringRotationAxisIndex == 2) ? currentRingAngleValue : 0;
+
+            // Eğer Y ekseninde dönüyorsak ve modelin yatıksa (eski koddaki gibi 90 derece lazımsa):
+            if (ringRotationAxisIndex == 1)
+                x = ringBaseRotation;
+
+            acceleratorRing.localRotation = Quaternion.Euler(x, y, z);
+        }
     }
 
     public string GetInteractionPrompt()

@@ -40,8 +40,7 @@ namespace StarterAssets
         public float exhaustionThreshold = 0.75f;
 
         [Header("Stamina UI")]
-        public Slider staminaSlider; // Editörden sürükle
-        public Image staminaFillImage; // Barın rengini değiştirmek istersen (Opsiyonel)
+        public Image staminaCircularImage;
 
         // Private Stamina Değişkenleri
         private float currentStamina;
@@ -225,10 +224,11 @@ namespace StarterAssets
             );
 #endif
             currentStamina = maxStamina;
-            if (staminaSlider != null)
+            if (staminaCircularImage != null)
             {
-                staminaSlider.maxValue = maxStamina;
-                staminaSlider.value = currentStamina;
+                // Slider'da value vardı, Image'de fillAmount var (0 ile 1 arası)
+                staminaCircularImage.fillAmount = currentStamina / maxStamina;
+                staminaCircularImage.color = Color.white;
             }
             AssignAnimationIDs();
 
@@ -482,16 +482,13 @@ namespace StarterAssets
                 }
             }
 
-            // UI Güncelleme
-            if (staminaSlider != null)
+            if (staminaCircularImage != null)
             {
-                staminaSlider.value = currentStamina;
-            }
+                // Slider.value yerine fillAmount kullanıyoruz (0 ile 1 arası değer alır)
+                staminaCircularImage.fillAmount = currentStamina / maxStamina;
 
-            // Opsiyonel: Yorgunken bar Kırmızı, normalken Beyaz olsun
-            if (staminaFillImage != null)
-            {
-                staminaFillImage.color = isExhausted ? Color.red : Color.white;
+                // Yorgunken bar Kırmızı, normalken Beyaz olsun
+                staminaCircularImage.color = isExhausted ? Color.red : Color.white;
             }
         }
 
@@ -723,6 +720,7 @@ namespace StarterAssets
         }
 
         // --- DIŞARIDAN STAMINA DOLDURMA (Kitap Okurken vb.) ---
+        // --- DIŞARIDAN STAMINA DOLDURMA (Kitap Okurken vb.) ---
         public void ExternalStaminaRegen(float deltaTime)
         {
             // Eğer stamina zaten doluysa işlem yapma
@@ -740,14 +738,11 @@ namespace StarterAssets
                 isExhausted = false;
             }
 
-            // UI Güncelle (Script kapalı olduğu için Update'te güncellenmez, elle yapıyoruz)
-            if (staminaSlider != null)
+            // UI Güncelle (YUVARLAK BAR İÇİN YENİ KOD)
+            if (staminaCircularImage != null)
             {
-                staminaSlider.value = currentStamina;
-            }
-            if (staminaFillImage != null)
-            {
-                staminaFillImage.color = isExhausted ? Color.red : Color.white;
+                staminaCircularImage.fillAmount = currentStamina / maxStamina;
+                staminaCircularImage.color = isExhausted ? Color.red : Color.white;
             }
         }
     }
