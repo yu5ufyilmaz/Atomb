@@ -4,7 +4,7 @@ public class ControllableLight : MonoBehaviour, IInteractable
 {
     [Header("Light Settings")]
     [SerializeField]
-    private Light targetLight; // Kontrol edilecek ışık
+    private Light[] targetLight; // Kontrol edilecek ışık
 
     [Tooltip("Oyuncu bu ışığın açık olmasını mı istiyor?")]
     [SerializeField]
@@ -138,7 +138,10 @@ public class ControllableLight : MonoBehaviour, IInteractable
 
         if (targetLight != null)
         {
-            targetLight.enabled = finalState;
+            foreach (Light item in targetLight)
+            {
+                item.enabled = finalState;
+            }
         }
 
         // Düğme materyalini GÜNCEL duruma göre ayarla

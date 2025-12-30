@@ -10236,6 +10236,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 5485670717110028345}
   - {fileID: 543450652772615674}
   - {fileID: 938416271}
   - {fileID: 961026592}
@@ -20473,7 +20474,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 97a7372b5818d0e4597b3e1d9316013e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  targetDoor: {fileID: 6639605331598362737}
+  targetDoor: {fileID: 7306515771390691602}
   startsLocked: 0
   lockedMaterial: {fileID: 0}
   unlockedMaterial: {fileID: 0}
@@ -20976,7 +20977,7 @@ Transform:
   m_GameObject: {fileID: 1467225101}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: -0.7071068, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: -2.43, y: 1, z: 5.356}
+  m_LocalPosition: {x: -2.543, y: 1, z: 5.512}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -42821,7 +42822,6 @@ Transform:
   m_Children:
   - {fileID: 3913972595074905401}
   - {fileID: 4690363631081775068}
-  - {fileID: 5485670717110028345}
   - {fileID: 5301428433796952464}
   - {fileID: 3820791592467677929}
   - {fileID: 6620334101855304684}
@@ -51261,13 +51261,13 @@ Transform:
   m_GameObject: {fileID: 3074952400524667320}
   serializedVersion: 2
   m_LocalRotation: {x: 0.7071068, y: 0.7071067, z: 0.000000053385072, w: 0.000000053385083}
-  m_LocalPosition: {x: 6.687, y: 0.1940519, z: -10.376636}
-  m_LocalScale: {x: 104.3, y: 135, z: 100}
+  m_LocalPosition: {x: 11.747, y: 1.1340519, z: 10.883365}
+  m_LocalScale: {x: 104.3, y: 134.99998, z: 100}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1413967749}
   - {fileID: 4269187366707150370}
-  m_Father: {fileID: 3293878697840323609}
+  m_Father: {fileID: 679974355}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!23 &5487403828032816899
 MeshRenderer:
