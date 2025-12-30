@@ -159,14 +159,15 @@ public class PasswordManager : MonoBehaviour
             NotebookUI.Instance.ShowPasswordNotification(passwordID);
     }
 
+    private bool isTutorialPasswordUsed = false;
+
     public bool ValidatePassword(string passwordID)
     {
         // 1. DURUM: TUTORIAL ŞİFRESİ
         if (passwordID == tutorialPassword)
         {
             Debug.Log("📘 TUTORIAL ŞİFRESİ GİRİLDİ (Sayaca eklenmiyor).");
-            // TRUE döndür ki makine yeşil ışık yaksın ve onay sesi çalsın.
-            // Ama 'validatedPasswords' listesine eklemiyoruz.
+            isTutorialPasswordUsed = true; // <--- YENİ: Bunu true yapıyoruz ki UI bilsin
             return true;
         }
 
@@ -192,6 +193,14 @@ public class PasswordManager : MonoBehaviour
         }
 
         return true;
+    }
+
+    public bool IsPasswordUsed(string passwordID)
+    {
+        if (passwordID == tutorialPassword)
+            return isTutorialPasswordUsed;
+
+        return validatedPasswords.Contains(passwordID);
     }
 
     // Getter Metotları

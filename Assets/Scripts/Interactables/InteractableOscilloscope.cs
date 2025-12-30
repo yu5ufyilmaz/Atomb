@@ -310,8 +310,13 @@ public class InteractableOscilloscope : MonoBehaviour, IInteractable, IForceExit
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
 
+        // --- DEĞİŞEN KISIM BURASI ---
         if (ControlsUIManager.Instance != null)
-            ControlsUIManager.Instance.ShowControls("W/S: Voltaj | A/D: Zaman | F: Kalk");
+        {
+            // Artık string yollamak yerine Enum yolluyoruz.
+            // Bu sayede "massSpectrometerPanel" açılacak.
+            ControlsUIManager.Instance.ShowMachineUI(ControlsUIManager.MachineType.Oscilloscope);
+        }
         PlayerInteraction playerInt = FindObjectOfType<PlayerInteraction>();
         if (playerInt != null)
             playerInt.ToggleCrosshair(false);

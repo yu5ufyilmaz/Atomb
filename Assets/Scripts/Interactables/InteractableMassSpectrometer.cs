@@ -367,10 +367,15 @@ public class InteractableMassSpectrometer : MonoBehaviour, IInteractable, IForce
         if (playerInt != null)
             playerInt.ToggleCrosshair(false);
 
+        // --- DEĞİŞEN KISIM BURASI ---
         if (ControlsUIManager.Instance != null)
-            ControlsUIManager.Instance.ShowControls(
-                "A/D: Halkayı Çevir (Mıknatıs Yeşilken) | F: Kalk"
+        {
+            // Artık string yollamak yerine Enum yolluyoruz.
+            // Bu sayede "massSpectrometerPanel" açılacak.
+            ControlsUIManager.Instance.ShowMachineUI(
+                ControlsUIManager.MachineType.MassSpectrometer
             );
+        }
     }
 
     // --- 3. ADIM: ÇIKIŞ ---

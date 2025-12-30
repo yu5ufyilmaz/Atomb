@@ -323,7 +323,6 @@ public class InteractableBook : MonoBehaviour, IInteractable, IForceExitable
         // --- EKLENEN KISIM: Megafon Sistemi Tetikleyicisi ---
         if (MegaphoneSystem.Instance != null)
         {
-
             MegaphoneSystem.Instance.OnNotePickedUp();
 
             MegaphoneSystem.Instance.ResetIdleTimer();
@@ -351,8 +350,13 @@ public class InteractableBook : MonoBehaviour, IInteractable, IForceExitable
     {
         isAnimating = true;
         isOpen = true;
+        // --- DEĞİŞEN KISIM BURASI ---
         if (ControlsUIManager.Instance != null)
-            ControlsUIManager.Instance.ShowControls("A / D: Sayfa Çevir  |  F: Kapat");
+        {
+            // Artık string yollamak yerine Enum yolluyoruz.
+            // Bu sayede "massSpectrometerPanel" açılacak.
+            ControlsUIManager.Instance.ShowMachineUI(ControlsUIManager.MachineType.Book);
+        }
         if (outlineScript != null)
             outlineScript.enabled = false;
 
