@@ -227,8 +227,12 @@ public class InteractablePressureValve : MonoBehaviour, IInteractable, IForceExi
         Cursor.lockState = CursorLockMode.None; // Mouse lazım
         Cursor.visible = true;
 
-        if (ControlsUIManager.Instance)
-            ControlsUIManager.Instance.ShowControls("Mouse: Çevir | F: Çık");
+        if (ControlsUIManager.Instance != null)
+        {
+            // Artık string yollamak yerine Enum yolluyoruz.
+            // Bu sayede "massSpectrometerPanel" açılacak.
+            ControlsUIManager.Instance.ShowMachineUI(ControlsUIManager.MachineType.PressureValve);
+        }
     }
 
     private IEnumerator ExitValveMode()

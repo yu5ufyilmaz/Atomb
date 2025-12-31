@@ -19,12 +19,28 @@ MonoBehaviour:
     - startTime: 0
       duration: 3
       textTR: "Evet buras\u0131 da G\xF6rd\xFC\u011F\xFCn \xFCzere kimya labarotuvar\u0131"
-      textEN: 
+      textEN: Welcome to the Chemistry Lab...
       textDE: 
     - startTime: 3
       duration: 5
       textTR: "Evet biliyorum biraz s\u0131k\u0131c\u0131 ama ramo gay"
-      textEN: 
+      textEN: Try not to touch anything you can't afford, which is everything.
+      textDE: 
+    - startTime: 8
+      duration: 5
+      textTR: 
+      textEN: ' And this monstrosity? It''s the Mass... Spectro... Spectro-ma-thingy...'
+      textDE: 
+    - startTime: 13
+      duration: 4
+      textTR: 
+      textEN: whatever the hell they call it. It analyzes matter. You analyze the
+        machine.
+      textDE: 
+    - startTime: 17
+      duration: 3
+      textTR: 
+      textEN: Just make it work. Don't bore me with the details.
       textDE: 
   - id: tutorial_intro
     note: "Kimya lab\u0131na ilk giri\u015F"
@@ -151,6 +167,14 @@ MonoBehaviour:
       textEN: 
       textDE: 
   - id: final_gate_locked
+    note: 
+    segments:
+    - startTime: 0
+      duration: 3
+      textTR: "Olum kilitli la i\u015Fte"
+      textEN: 
+      textDE: 
+  - id: particle_room_entrance
     note: 
     segments:
     - startTime: 0

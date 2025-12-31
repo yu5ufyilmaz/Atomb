@@ -16,10 +16,8 @@ public class PlayerInteraction : MonoBehaviour
     public static PlayerInteraction Instance;
 
     [Header("TUTORIAL AYARLARI (Whitelist)")]
-    public bool isTutorialMode = true; // Oyun başında açık olsun
-
-    [Tooltip("Tutorial sırasında SADECE buradaki objelerle etkileşime geçilebilir.")]
-    public List<GameObject> allowedTutorialObjects; // İzinli objeler listesi
+    public bool isTutorialMode = true;
+    public List<GameObject> allowedTutorialObjects;
 
     [Header("Interaction Settings")]
     [SerializeField]
@@ -38,32 +36,31 @@ public class PlayerInteraction : MonoBehaviour
     [SerializeField]
     private TextMeshProUGUI interactionText;
 
-    [Header("Crosshair Settings")]
-    [SerializeField]
-    private Image crosshairImage;
+    [Header("Cursor GameObjects (Sürükle Bırak)")]
+    [Tooltip("Hiçbir şeye bakmazken")]
+    public GameObject defaultCursor;
+
+    [Tooltip("Genel etkileşim (Kitap, Makine, Vana, Açık Kapı vb.)")]
+    public GameObject handCursor;
+
+    [Tooltip("Kilitli Durum (Kilitli Kapı veya Kilit)")]
+    public GameObject lockedCursor;
+
+    [Tooltip("Kilit Açık Durum (Sadece Kilit objesi açıldığında)")]
+    public GameObject unlockedCursor;
+
+    [Tooltip("Işık Açık Sembolü (Lamba Anahtarı Açıkken)")]
+    public GameObject lightOnCursor;
+
+    [Tooltip("Işık Kapalı Sembolü (Lamba Anahtarı Kapalıyken)")]
+    public GameObject lightOffCursor;
 
     [SerializeField]
-    private Sprite defaultIcon;
-
-    [SerializeField]
-    private Sprite handIcon;
-
-    [SerializeField]
-    private Sprite lockIcon;
-
-    [SerializeField]
-    private Sprite unlockIcon;
-
-    [SerializeField]
-    private Sprite eyeIcon;
-
-    [SerializeField]
-    private GameObject crosshairObject;
+    private GameObject crosshairMainObject;
 
     private IInteractable currentInteractable;
     private Camera playerCamera;
 
-    // --- ÖNEMLİ: Instance Hatasını Çözen Kısım ---
     private void Awake()
     {
         if (Instance == null)
@@ -80,8 +77,9 @@ public class PlayerInteraction : MonoBehaviour
 
         if (interactionUI != null)
             interactionUI.SetActive(false);
-        if (crosshairImage != null && defaultIcon != null)
-            crosshairImage.sprite = defaultIcon;
+
+        // Başlangıçta sadece default açık olsun
+        ActivateCursor(defaultCursor);
     }
 
     private void Update()
@@ -99,32 +97,29 @@ public class PlayerInteraction : MonoBehaviour
 
         if (Physics.Raycast(ray, out RaycastHit hit, interactionDistance, interactionLayer))
         {
-            // Önce objeyi bulmaya çalış
+            // IInteractable arayüzünü bul
             IInteractable newInteractable = hit.collider.GetComponent<IInteractable>();
             if (newInteractable == null)
                 newInteractable = hit.collider.GetComponentInParent<IInteractable>();
 
             if (newInteractable != null)
             {
-                // --- WHITELIST KONTROLÜ ---
+                // --- WHITELIST (TUTORIAL) KONTROLÜ ---
                 if (isTutorialMode)
                 {
-                    // IInteractable bir MonoBehaviour (Script) olduğu için onun GameObject'ine ulaşabiliriz.
                     MonoBehaviour interactableScript = newInteractable as MonoBehaviour;
-
-                    if (interactableScript != null)
+                    if (
+                        interactableScript != null
+                        && !allowedTutorialObjects.Contains(interactableScript.gameObject)
+                    )
                     {
-                        // Eğer bu obje İzin Listesinde YOKSA -> Görmezden gel
-                        if (!allowedTutorialObjects.Contains(interactableScript.gameObject))
-                        {
-                            ClearCurrentInteractable();
-                            return;
-                        }
+                        ClearCurrentInteractable();
+                        return;
                     }
                 }
-                // --------------------------
+                // -------------------------------------
 
-                // Eğer buraya geldiyse ya tutorial kapalıdır ya da obje listededir.
+                // Yeni objeye odaklanma durumu
                 if (currentInteractable != newInteractable)
                 {
                     if (currentInteractable != null)
@@ -132,12 +127,17 @@ public class PlayerInteraction : MonoBehaviour
                     currentInteractable = newInteractable;
                     currentInteractable.OnFocus();
                 }
+
                 UpdateUI(true);
-                UpdateCrosshairIcon(newInteractable);
+
+                // İMLEÇ GÜNCELLEME (Buradaki mantık değiştirildi)
+                UpdateCursorVisuals(newInteractable);
+
                 return;
             }
         }
 
+        // Boşa bakıyorsak
         ClearCurrentInteractable();
     }
 
@@ -147,38 +147,96 @@ public class PlayerInteraction : MonoBehaviour
         {
             currentInteractable.OnLoseFocus();
             currentInteractable = null;
-            UpdateUI(false);
-            if (crosshairImage != null)
-                crosshairImage.sprite = defaultIcon;
         }
+
+        UpdateUI(false);
+        ActivateCursor(defaultCursor);
     }
 
-    // Tutorial Bittiğinde MegaphoneSystem Burayı Çağıracak
+    // --- CURSOR MANTIĞI GÜNCELLENDİ ---
+    private void UpdateCursorVisuals(IInteractable interactable)
+    {
+        // 1. ÖZEL DURUM: LAMBA (ControllableLight)
+        if (interactable is ControllableLight lightSwitch)
+        {
+            if (lightSwitch.IsOn)
+                ActivateCursor(lightOnCursor);
+            else
+                ActivateCursor(lightOffCursor);
+            return;
+        }
+
+        // 2. ÖZEL DURUM: KİLİT (InteractableDoorLock - Fiziksel Kilit)
+        if (interactable is InteractableDoorLock doorLock)
+        {
+            // Kilit objesinin kendisine bakıyorsak:
+            // Kilitliyse Kilit Sembolü, Açıksa Açık Kilit Sembolü
+            if (doorLock.targetDoor.IsLocked()) // NOT: InteractableDoorLock scriptinde IsLocked public olmalı
+                ActivateCursor(lockedCursor);
+            else
+                ActivateCursor(unlockedCursor);
+            return;
+        }
+
+        // 3. ÖZEL DURUM: KAPI (InteractableDoor)
+        if (interactable is InteractableDoor door)
+        {
+            // Eğer kapı KİLİTLİ ise -> Kilit Sembolü
+            if (door.IsLocked())
+            {
+                ActivateCursor(lockedCursor);
+            }
+            // Eğer kapı KİLİTLİ DEĞİLSE -> El Sembolü (Açıp kapatmak için)
+            else
+            {
+                ActivateCursor(handCursor);
+            }
+            return;
+        }
+
+        // 4. GENEL DURUM: (Kitap, Vana, Makine, Osiloskop, Şalterler vb.)
+        // Yukarıdaki özel durumlara girmeyen her şey "EL" olur.
+        ActivateCursor(handCursor);
+    }
+
+    // Sadece hedef imleci açıp diğerlerini kapatan fonksiyon
+    private void ActivateCursor(GameObject targetCursor)
+    {
+        if (targetCursor == null)
+            return;
+        if (targetCursor.activeSelf)
+            return; // Zaten açıksa işlem yapma
+
+        // Tümünü kapat
+        if (defaultCursor)
+            defaultCursor.SetActive(false);
+        if (handCursor)
+            handCursor.SetActive(false);
+        if (lockedCursor)
+            lockedCursor.SetActive(false);
+        if (unlockedCursor)
+            unlockedCursor.SetActive(false);
+        if (lightOnCursor)
+            lightOnCursor.SetActive(false);
+        if (lightOffCursor)
+            lightOffCursor.SetActive(false);
+
+        // Hedefi aç
+        targetCursor.SetActive(true);
+    }
+
     public void DisableTutorialMode()
     {
         isTutorialMode = false;
-        Debug.Log("🔓 Tutorial Modu Kapandı. Tüm etkileşimler serbest.");
     }
 
-    // ... (Geri kalan UI ve Crosshair fonksiyonların aynen kalıyor) ...
     public void ToggleCrosshair(bool state)
     {
-        if (crosshairObject != null)
-            crosshairObject.SetActive(state);
-    }
+        if (crosshairMainObject != null)
+            crosshairMainObject.SetActive(state);
 
-    private void UpdateCrosshairIcon(IInteractable interactable)
-    {
-        if (crosshairImage == null)
-            return;
-        if (interactable is InteractableDoor door)
-            crosshairImage.sprite = door.IsLocked() ? lockIcon : unlockIcon;
-        else if (interactable is InteractableDoorLock)
-            crosshairImage.sprite = lockIcon;
-        else if (interactable is InteractableHidingSpot)
-            crosshairImage.sprite = eyeIcon != null ? eyeIcon : handIcon;
-        else
-            crosshairImage.sprite = handIcon;
+        if (state)
+            ActivateCursor(defaultCursor);
     }
 
     private void UpdateUI(bool isActive)

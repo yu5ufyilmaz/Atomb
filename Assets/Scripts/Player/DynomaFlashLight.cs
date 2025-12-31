@@ -1,6 +1,7 @@
 using UnityEngine;
+using UnityEngine.UI; // UI işlemleri için bu kütüphane şart
 
-public class DynamoFlashlight : MonoBehaviour
+public class DynomaFlashLight : MonoBehaviour
 {
     [Header("Bileşenler")]
     [Tooltip("Işık kaynağı (Spotlight)")]
@@ -13,6 +14,11 @@ public class DynamoFlashlight : MonoBehaviour
     [SerializeField]
     private AudioClip crankSound; // Şarj etme sesi (Click-zzzt)
 
+    [Header("UI Ayarları")]
+    [Tooltip("Canvas üzerindeki Energy Bar Image'i buraya sürükle")]
+    [SerializeField]
+    private Image energyBar; // <-- YENİ EKLENEN: Bar referansı
+
     [Header("Enerji Ayarları")]
     [Tooltip("Maksimum enerji kapasitesi")]
     [SerializeField]
@@ -24,11 +30,11 @@ public class DynamoFlashlight : MonoBehaviour
 
     [Tooltip("Her sağ tıkta ne kadar enerji dolsun?")]
     [SerializeField]
-    private float chargePerClick = 20f;
+    private float chargePerClick = 15f; // Biraz düşürdüm, tıklama hissi artsın diye
 
-    [Tooltip("Saniyede ne kadar enerji azalsın? (Yüksek yaparsan çabuk söner)")]
+    [Tooltip("Saniyede ne kadar enerji azalsın?")]
     [SerializeField]
-    private float drainRate = 15f;
+    private float drainRate = 10f;
 
     [Header("Işık Ayarları")]
     [SerializeField]
@@ -42,8 +48,9 @@ public class DynamoFlashlight : MonoBehaviour
         if (targetLight == null)
             targetLight = GetComponent<Light>();
 
-        // Başlangıçta kapalı başlasın
+        // Başlangıç durumunu ayarla
         UpdateLight();
+        UpdateUI();
     }
 
     private void Update()
@@ -51,11 +58,12 @@ public class DynamoFlashlight : MonoBehaviour
         HandleInput();
         HandleDrain();
         UpdateLight();
+        UpdateUI(); // Her karede barı güncelle
     }
 
     private void HandleInput()
     {
-        // Sağ Tık (Bas-Çek Mantığı)
+        // Sağ Tık Basılınca Şarj Et
         if (Input.GetMouseButtonDown(1))
         {
             ChargeFlashlight();
@@ -70,7 +78,7 @@ public class DynamoFlashlight : MonoBehaviour
         // Maksimumu geçmesin
         currentEnergy = Mathf.Clamp(currentEnergy, 0, maxEnergy);
 
-        // Ses çal (Pitch'i rastgele yapalım ki mekanik hissi versin)
+        // Ses çal (Pitch rastgeleliği mekanik his verir)
         if (audioSource && crankSound)
         {
             audioSource.pitch = Random.Range(0.9f, 1.1f);
@@ -85,10 +93,10 @@ public class DynamoFlashlight : MonoBehaviour
         {
             currentEnergy -= drainRate * Time.deltaTime;
         }
-
-        // Eksiye düşmesin
-        if (currentEnergy < 0)
+        else
+        {
             currentEnergy = 0;
+        }
     }
 
     private void UpdateLight()
@@ -105,5 +113,16 @@ public class DynamoFlashlight : MonoBehaviour
 
         // Hiç enerji yoksa ışığı tamamen kapat (Performans için)
         targetLight.enabled = (currentEnergy > 0);
+    }
+
+    // --- YENİ EKLENEN KISIM: UI GÜNCELLEME ---
+    private void UpdateUI()
+    {
+        if (energyBar != null)
+        {
+            // Barın doluluk oranını (fillAmount) mevcut enerjiye eşitle
+            // currentEnergy 50 ise, maxEnergy 100 ise -> 0.5 (Yarım dolu) olur.
+            energyBar.fillAmount = currentEnergy / maxEnergy;
+        }
     }
 }

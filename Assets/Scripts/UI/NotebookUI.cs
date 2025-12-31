@@ -104,7 +104,18 @@ public class NotebookUI : MonoBehaviour
 
         foreach (string pw in passwords)
         {
-            sb.AppendLine(pw.Replace("_", " "));
+            bool isUsed = PasswordManager.Instance.IsPasswordUsed(pw);
+            string displayText = pw;
+
+            if (isUsed)
+            {
+                // Şifre aynen kalıyor, sadece yanına tik geliyor.
+                sb.AppendLine($"{displayText} <color=green>✓</color>");
+            }
+            else
+            {
+                sb.AppendLine(displayText);
+            }
         }
 
         if (passwordListText != null)

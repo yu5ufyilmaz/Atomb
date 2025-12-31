@@ -4,7 +4,7 @@ public class InteractableDoorLock : MonoBehaviour, IInteractable
 {
     [Header("Lock Settings")]
     [SerializeField]
-    private InteractableDoor targetDoor;
+    public InteractableDoor targetDoor;
 
     [SerializeField]
     private bool startsLocked = false;

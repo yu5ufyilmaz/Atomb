@@ -1166,7 +1166,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0458edef058b36c4caa97e8928e028e6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gameSceneName: FurkanL_GameScene
+  gameSceneName: Osman_NewGameScene
   mainMenuPanel: {fileID: 1055916764}
   loadingPanel: {fileID: 730636967}
   loadingSlider: {fileID: 2000179755}

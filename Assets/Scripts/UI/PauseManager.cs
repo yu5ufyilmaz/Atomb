@@ -24,8 +24,9 @@ public class PauseManager : MonoBehaviour
         if (pauseMenuPanel != null)
             pauseMenuPanel.SetActive(false);
 
-        // Oyun başladığında zamanın aktığından emin ol
+        // Oyun başladığında zamanın ve seslerin aktığından emin ol
         Time.timeScale = 1f;
+        AudioListener.pause = false; // <--- GARANTİ OLSUN DİYE EKLENDİ
 
         // Input scriptini otomatik bulmaya çalış
         if (playerInputs == null)
@@ -54,23 +55,26 @@ public class PauseManager : MonoBehaviour
 
         // 2. Zamanı Durdur
         Time.timeScale = 0f;
+        
+        // 3. SESLERİ DURDUR (YENİ EKLENEN KISIM)
+        AudioListener.pause = true; 
 
-        // 3. Paneli Aç
+        // 4. Paneli Aç
         if (pauseMenuPanel != null)
             pauseMenuPanel.SetActive(true);
 
-        // 4. Mouse'u Serbest Bırak ve Görünür Yap
+        // 5. Mouse'u Serbest Bırak ve Görünür Yap
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
 
-        // 5. Karakterin Kamera Dönüşünü Kilitle (StarterAssets için)
+        // 6. Karakterin Kamera Dönüşünü Kilitle (StarterAssets için)
         if (playerInputs != null)
         {
             playerInputs.cursorInputForLook = false;
             playerInputs.look = Vector2.zero; // Mevcut ivmeyi sıfırla
         }
 
-        Debug.Log("Oyun Duraklatıldı.");
+        Debug.Log("Oyun Duraklatıldı (Sesler Kesildi).");
     }
 
     public void ResumeGame()
@@ -84,11 +88,14 @@ public class PauseManager : MonoBehaviour
         // 2. Zamanı Devam Ettir
         Time.timeScale = 1f;
 
-        // 3. Paneli Kapat
+        // 3. SESLERİ GERİ AÇ (YENİ EKLENEN KISIM)
+        AudioListener.pause = false;
+
+        // 4. Paneli Kapat
         if (pauseMenuPanel != null)
             pauseMenuPanel.SetActive(false);
 
-        // 4. Inputları geri aç
+        // 5. Inputları geri aç
         if (playerInputs != null)
             playerInputs.cursorInputForLook = true;
 
@@ -125,6 +132,9 @@ public class PauseManager : MonoBehaviour
     {
         // Sahne değişirken zamanı mutlaka 1 yapmalıyız, yoksa menü donuk başlar!
         Time.timeScale = 1f;
+        
+        // Menüye dönünce sesler geri gelmeli (YENİ EKLENEN KISIM)
+        AudioListener.pause = false; 
 
         if (GameManager.Instance != null)
             GameManager.Instance.isGamePaused = false;

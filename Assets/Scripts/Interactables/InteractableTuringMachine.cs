@@ -366,8 +366,13 @@ public class InteractableTuringMachine : MonoBehaviour, IInteractable, IForceExi
         Cursor.visible = false;
         if (playerInteractionScript)
             playerInteractionScript.ToggleCrosshair(false);
-        if (ControlsUIManager.Instance)
-            ControlsUIManager.Instance.ShowControls("W/S: Grup | A/D: Çevir | Q/E: Harf | F: Kalk");
+        // --- DEĞİŞEN KISIM BURASI ---
+        if (ControlsUIManager.Instance != null)
+        {
+            // Artık string yollamak yerine Enum yolluyoruz.
+            // Bu sayede "massSpectrometerPanel" açılacak.
+            ControlsUIManager.Instance.ShowMachineUI(ControlsUIManager.MachineType.TuringMachine);
+        }
         if (PasswordManager.Instance)
             UpdateIndicators(PasswordManager.Instance.GetValidatedPasswordCount());
 
@@ -569,9 +574,9 @@ public class InteractableTuringMachine : MonoBehaviour, IInteractable, IForceExi
         string np =
             $"{numberChars[numberWheelIndices[0]]}{numberChars[numberWheelIndices[1]]}{numberChars[numberWheelIndices[2]]}";
         string pw = $"{wp}_{sp}_{np}";
-        
+
         Debug.Log($"GİRİLEN ŞİFRE: '{pw}'");
-        
+
         if (PasswordManager.Instance.ValidatePassword(pw))
         {
             PlaySound(successSound);
@@ -582,7 +587,7 @@ public class InteractableTuringMachine : MonoBehaviour, IInteractable, IForceExi
             {
                 // Eğer bu ilk şifreyse Tutorial biter ("Aferin, sistemler açıldı" vs.)
                 // Değilse sadece "Güzel, devam et" der.
-                MegaphoneSystem.Instance.OnTutorialCompleted(); 
+                MegaphoneSystem.Instance.OnTutorialCompleted();
                 MegaphoneSystem.Instance.OnCodeSubmitted();
             }
             // -------------------------------------
@@ -592,6 +597,7 @@ public class InteractableTuringMachine : MonoBehaviour, IInteractable, IForceExi
             PlaySound(failSound);
         }
     }
+
     private void UpdateIndicators(int c)
     {
         if (indicatorRenderers == null)
