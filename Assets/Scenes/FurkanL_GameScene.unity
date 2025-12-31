@@ -201,23 +201,23 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2667835431386152475, guid: dab0f51ed226b404d8e7e248d5283b81, type: 3}
       propertyPath: m_BoundingSphereOverride.w
-      value: 6e-45
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2667835431386152475, guid: dab0f51ed226b404d8e7e248d5283b81, type: 3}
       propertyPath: m_BoundingSphereOverride.x
-      value: 0
+      value: 1.469367e-39
       objectReference: {fileID: 0}
     - target: {fileID: 2667835431386152475, guid: dab0f51ed226b404d8e7e248d5283b81, type: 3}
       propertyPath: m_BoundingSphereOverride.y
-      value: 0
+      value: -2.015625
       objectReference: {fileID: 0}
     - target: {fileID: 2667835431386152475, guid: dab0f51ed226b404d8e7e248d5283b81, type: 3}
       propertyPath: m_BoundingSphereOverride.z
-      value: 3e-45
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2667835431386152475, guid: dab0f51ed226b404d8e7e248d5283b81, type: 3}
       propertyPath: m_UseViewFrustumForShadowCasterCull
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4865603552352465036, guid: dab0f51ed226b404d8e7e248d5283b81, type: 3}
       propertyPath: m_LocalPosition.x
@@ -365,6 +365,22 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowTint.b
+      value: 0.3207547
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowTint.g
+      value: 0.3207547
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowTint.r
+      value: 0.3207547
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_SoftnessScale
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_ShadowNearPlane
       value: 0.3
       objectReference: {fileID: 0}
@@ -390,7 +406,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_UseContactShadow.m_Level
-      value: 0
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowResolution.m_Override
+      value: 8192
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_UpdateShadowOnLightMovement
@@ -398,6 +418,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_UseContactShadow.m_Override
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowResolution.m_UseOverride
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
@@ -418,7 +442,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7548850176812605586, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 17.17
+      value: 16.02
       objectReference: {fileID: 0}
     - target: {fileID: 7548850176812605586, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_LocalPosition.y
@@ -494,23 +518,23 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_BoundingSphereOverride.w
-      value: -2.1902925e+24
+      value: -1.9917827e+30
       objectReference: {fileID: 0}
     - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_BoundingSphereOverride.x
-      value: -2.1902925e+24
+      value: 1.4255072e-36
       objectReference: {fileID: 0}
     - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_BoundingSphereOverride.y
-      value: -2.1902925e+24
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_BoundingSphereOverride.z
-      value: -2.1902925e+24
+      value: 1.6026107e-21
       objectReference: {fileID: 0}
     - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_UseViewFrustumForShadowCasterCull
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -701,6 +725,22 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowTint.b
+      value: 0.3207547
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowTint.g
+      value: 0.3207547
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowTint.r
+      value: 0.3207547
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_SoftnessScale
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_ShadowNearPlane
       value: 0.3
       objectReference: {fileID: 0}
@@ -726,7 +766,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_UseContactShadow.m_Level
-      value: 0
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowResolution.m_Override
+      value: 8192
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_UpdateShadowOnLightMovement
@@ -734,6 +778,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_UseContactShadow.m_Override
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowResolution.m_UseOverride
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
@@ -830,11 +878,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_BoundingSphereOverride.w
-      value: 0
+      value: 133730.31
       objectReference: {fileID: 0}
     - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_BoundingSphereOverride.x
-      value: 9.564461e+20
+      value: 3.35455e-40
       objectReference: {fileID: 0}
     - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_BoundingSphereOverride.y
@@ -842,11 +890,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_BoundingSphereOverride.z
-      value: 0
+      value: 2.856306e+15
       objectReference: {fileID: 0}
     - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_UseViewFrustumForShadowCasterCull
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8500168225018271186, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_LocalPosition.x
@@ -906,7 +954,7 @@ SkinnedMeshRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 67646249}
   m_Enabled: 1
-  m_CastShadows: 1
+  m_CastShadows: 0
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
   m_StaticShadowCaster: 0
@@ -2095,23 +2143,23 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2667835431386152475, guid: dab0f51ed226b404d8e7e248d5283b81, type: 3}
       propertyPath: m_BoundingSphereOverride.w
-      value: 0
+      value: 4.5918e-41
       objectReference: {fileID: 0}
     - target: {fileID: 2667835431386152475, guid: dab0f51ed226b404d8e7e248d5283b81, type: 3}
       propertyPath: m_BoundingSphereOverride.x
-      value: 0
+      value: 1.19e-43
       objectReference: {fileID: 0}
     - target: {fileID: 2667835431386152475, guid: dab0f51ed226b404d8e7e248d5283b81, type: 3}
       propertyPath: m_BoundingSphereOverride.y
-      value: 0
+      value: NaN
       objectReference: {fileID: 0}
     - target: {fileID: 2667835431386152475, guid: dab0f51ed226b404d8e7e248d5283b81, type: 3}
       propertyPath: m_BoundingSphereOverride.z
-      value: 0
+      value: 2.1e-44
       objectReference: {fileID: 0}
     - target: {fileID: 2667835431386152475, guid: dab0f51ed226b404d8e7e248d5283b81, type: 3}
       propertyPath: m_UseViewFrustumForShadowCasterCull
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4865603552352465036, guid: dab0f51ed226b404d8e7e248d5283b81, type: 3}
       propertyPath: m_LocalPosition.x
@@ -2187,6 +2235,22 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowTint.b
+      value: 0.3207547
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowTint.g
+      value: 0.3207547
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowTint.r
+      value: 0.3207547
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_SoftnessScale
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_ShadowNearPlane
       value: 0.3
       objectReference: {fileID: 0}
@@ -2212,7 +2276,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_UseContactShadow.m_Level
-      value: 0
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowResolution.m_Override
+      value: 8192
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_UpdateShadowOnLightMovement
@@ -2220,6 +2288,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_UseContactShadow.m_Override
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowResolution.m_UseOverride
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
@@ -2316,23 +2388,23 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_BoundingSphereOverride.w
-      value: 9.4683073e+24
+      value: 2.720083e+23
       objectReference: {fileID: 0}
     - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_BoundingSphereOverride.x
-      value: -4.73662e-20
+      value: 2.720083e+23
       objectReference: {fileID: 0}
     - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_BoundingSphereOverride.y
-      value: -2.2484495e-37
+      value: 2.720083e+23
       objectReference: {fileID: 0}
     - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_BoundingSphereOverride.z
-      value: -210422600
+      value: 2.720083e+23
       objectReference: {fileID: 0}
     - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_UseViewFrustumForShadowCasterCull
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -2610,6 +2682,22 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowTint.b
+      value: 0.3207547
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowTint.g
+      value: 0.3207547
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowTint.r
+      value: 0.3207547
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_SoftnessScale
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_ShadowNearPlane
       value: 0.3
       objectReference: {fileID: 0}
@@ -2639,7 +2727,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_UseContactShadow.m_Level
-      value: 0
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowResolution.m_Override
+      value: 8192
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_UpdateShadowOnLightMovement
@@ -2647,6 +2739,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_UseContactShadow.m_Override
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowResolution.m_UseOverride
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
@@ -2743,23 +2839,23 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_BoundingSphereOverride.w
-      value: 5.6e-44
+      value: -3.11e-43
       objectReference: {fileID: 0}
     - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_BoundingSphereOverride.x
-      value: 5e-44
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_BoundingSphereOverride.y
-      value: 6.3e-44
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_BoundingSphereOverride.z
-      value: 6.4e-44
+      value: 1.83672e-40
       objectReference: {fileID: 0}
     - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_UseViewFrustumForShadowCasterCull
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -3067,6 +3163,22 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowTint.b
+      value: 0.3207547
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowTint.g
+      value: 0.3207547
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowTint.r
+      value: 0.3207547
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_SoftnessScale
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_ShadowNearPlane
       value: 0.3
       objectReference: {fileID: 0}
@@ -3092,7 +3204,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_UseContactShadow.m_Level
-      value: 0
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowResolution.m_Override
+      value: 8192
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_UpdateShadowOnLightMovement
@@ -3100,6 +3216,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_UseContactShadow.m_Override
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowResolution.m_UseOverride
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
@@ -3196,23 +3316,23 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_BoundingSphereOverride.w
-      value: 0
+      value: 4.5918e-41
       objectReference: {fileID: 0}
     - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_BoundingSphereOverride.x
-      value: 8.4e-44
+      value: 1.19e-43
       objectReference: {fileID: 0}
     - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_BoundingSphereOverride.y
-      value: 0
+      value: NaN
       objectReference: {fileID: 0}
     - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_BoundingSphereOverride.z
-      value: 0
+      value: 2.1e-44
       objectReference: {fileID: 0}
     - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_UseViewFrustumForShadowCasterCull
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -3256,6 +3376,22 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowTint.b
+      value: 0.3207547
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowTint.g
+      value: 0.3207547
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowTint.r
+      value: 0.3207547
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_SoftnessScale
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_ShadowNearPlane
       value: 0.3
       objectReference: {fileID: 0}
@@ -3281,7 +3417,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_UseContactShadow.m_Level
-      value: 0
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowResolution.m_Override
+      value: 8192
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_UpdateShadowOnLightMovement
@@ -3289,6 +3429,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_UseContactShadow.m_Override
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowResolution.m_UseOverride
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
@@ -3309,7 +3453,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7548850176812605586, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 19.57
+      value: 21.03
       objectReference: {fileID: 0}
     - target: {fileID: 7548850176812605586, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_LocalPosition.y
@@ -3385,23 +3529,23 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_BoundingSphereOverride.w
-      value: 1.0890498e+18
+      value: 7.3604004e+22
       objectReference: {fileID: 0}
     - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_BoundingSphereOverride.x
-      value: 0
+      value: 1.3555853e-19
       objectReference: {fileID: 0}
     - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_BoundingSphereOverride.y
-      value: 3e-45
+      value: 1.5423301e+25
       objectReference: {fileID: 0}
     - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_BoundingSphereOverride.z
-      value: 0
+      value: 2.0702148e-19
       objectReference: {fileID: 0}
     - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_UseViewFrustumForShadowCasterCull
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -3831,15 +3975,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2667835431386152475, guid: dab0f51ed226b404d8e7e248d5283b81, type: 3}
       propertyPath: m_BoundingSphereOverride.w
-      value: 0
+      value: 3.9415303e+12
       objectReference: {fileID: 0}
     - target: {fileID: 2667835431386152475, guid: dab0f51ed226b404d8e7e248d5283b81, type: 3}
       propertyPath: m_BoundingSphereOverride.x
-      value: 0
+      value: 2.7883e-41
       objectReference: {fileID: 0}
     - target: {fileID: 2667835431386152475, guid: dab0f51ed226b404d8e7e248d5283b81, type: 3}
       propertyPath: m_BoundingSphereOverride.y
-      value: 0
+      value: 2.524355e-29
       objectReference: {fileID: 0}
     - target: {fileID: 2667835431386152475, guid: dab0f51ed226b404d8e7e248d5283b81, type: 3}
       propertyPath: m_BoundingSphereOverride.z
@@ -3847,7 +3991,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2667835431386152475, guid: dab0f51ed226b404d8e7e248d5283b81, type: 3}
       propertyPath: m_UseViewFrustumForShadowCasterCull
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3896930603400056535, guid: dab0f51ed226b404d8e7e248d5283b81, type: 3}
       propertyPath: m_CastShadows
@@ -4464,6 +4608,22 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowTint.b
+      value: 0.3207547
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowTint.g
+      value: 0.3207547
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowTint.r
+      value: 0.3207547
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_SoftnessScale
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_ShadowNearPlane
       value: 0.3
       objectReference: {fileID: 0}
@@ -4489,7 +4649,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_UseContactShadow.m_Level
-      value: 0
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowResolution.m_Override
+      value: 8192
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_UpdateShadowOnLightMovement
@@ -4497,6 +4661,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_UseContactShadow.m_Override
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowResolution.m_UseOverride
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
@@ -4593,15 +4761,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_BoundingSphereOverride.w
-      value: 0
+      value: 4.3e-44
       objectReference: {fileID: 0}
     - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_BoundingSphereOverride.x
-      value: 0
+      value: 7.13e-43
       objectReference: {fileID: 0}
     - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_BoundingSphereOverride.y
-      value: 0
+      value: 1.11e-43
       objectReference: {fileID: 0}
     - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_BoundingSphereOverride.z
@@ -4609,7 +4777,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_UseViewFrustumForShadowCasterCull
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -4712,6 +4880,22 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowTint.b
+      value: 0.3207547
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowTint.g
+      value: 0.3207547
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowTint.r
+      value: 0.3207547
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_SoftnessScale
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_ShadowNearPlane
       value: 0.3
       objectReference: {fileID: 0}
@@ -4737,7 +4921,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_UseContactShadow.m_Level
-      value: 0
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowResolution.m_Override
+      value: 8192
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_UpdateShadowOnLightMovement
@@ -4745,6 +4933,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_UseContactShadow.m_Override
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowResolution.m_UseOverride
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
@@ -4841,23 +5033,23 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_BoundingSphereOverride.w
-      value: 2.1e-43
+      value: 7.9709e-41
       objectReference: {fileID: 0}
     - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_BoundingSphereOverride.x
-      value: 2.06e-43
+      value: 7.13e-43
       objectReference: {fileID: 0}
     - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_BoundingSphereOverride.y
-      value: 2.07e-43
+      value: -2.5682678
       objectReference: {fileID: 0}
     - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_BoundingSphereOverride.z
-      value: 2.09e-43
+      value: 7.16e-43
       objectReference: {fileID: 0}
     - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_UseViewFrustumForShadowCasterCull
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -6530,6 +6722,22 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowTint.b
+      value: 0.3207547
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowTint.g
+      value: 0.3207547
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowTint.r
+      value: 0.3207547
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_SoftnessScale
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_ShadowNearPlane
       value: 0.3
       objectReference: {fileID: 0}
@@ -6555,7 +6763,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_UseContactShadow.m_Level
-      value: 0
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowResolution.m_Override
+      value: 8192
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_UpdateShadowOnLightMovement
@@ -6563,6 +6775,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_UseContactShadow.m_Override
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowResolution.m_UseOverride
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
@@ -6659,23 +6875,23 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_BoundingSphereOverride.w
-      value: 142.74347
+      value: 5.264977e+22
       objectReference: {fileID: 0}
     - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_BoundingSphereOverride.x
-      value: 8.18e-43
+      value: 2.1866396e+23
       objectReference: {fileID: 0}
     - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_BoundingSphereOverride.y
-      value: 8.288796e+12
+      value: 1.3162101e+22
       objectReference: {fileID: 0}
     - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_BoundingSphereOverride.z
-      value: 8.17e-43
+      value: 0.00000021160079
       objectReference: {fileID: 0}
     - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_UseViewFrustumForShadowCasterCull
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -6777,6 +6993,22 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowTint.b
+      value: 0.3207547
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowTint.g
+      value: 0.3207547
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowTint.r
+      value: 0.3207547
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_SoftnessScale
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_ShadowNearPlane
       value: 0.3
       objectReference: {fileID: 0}
@@ -6802,7 +7034,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_UseContactShadow.m_Level
-      value: 0
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowResolution.m_Override
+      value: 8192
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_UpdateShadowOnLightMovement
@@ -6910,23 +7146,23 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_BoundingSphereOverride.w
-      value: 1.72e-43
+      value: 1.578803e-19
       objectReference: {fileID: 0}
     - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_BoundingSphereOverride.x
-      value: 0
+      value: 1.3563128e-19
       objectReference: {fileID: 0}
     - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_BoundingSphereOverride.y
-      value: 4.5425636e+17
+      value: 3574.8203
       objectReference: {fileID: 0}
     - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_BoundingSphereOverride.z
-      value: 8.17e-43
+      value: 1.0947093e+27
       objectReference: {fileID: 0}
     - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_UseViewFrustumForShadowCasterCull
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -7566,6 +7802,22 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowTint.b
+      value: 0.3207547
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowTint.g
+      value: 0.3207547
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowTint.r
+      value: 0.3207547
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_SoftnessScale
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_ShadowNearPlane
       value: 0.3
       objectReference: {fileID: 0}
@@ -7595,7 +7847,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_UseContactShadow.m_Level
-      value: 0
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowResolution.m_Override
+      value: 8192
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_UpdateShadowOnLightMovement
@@ -7603,6 +7859,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_UseContactShadow.m_Override
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowResolution.m_UseOverride
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
@@ -7699,23 +7959,23 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_BoundingSphereOverride.w
-      value: 0
+      value: 6.2e-44
       objectReference: {fileID: 0}
     - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_BoundingSphereOverride.x
-      value: 0
+      value: 7.13e-43
       objectReference: {fileID: 0}
     - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_BoundingSphereOverride.y
-      value: 0
+      value: 1.3e-43
       objectReference: {fileID: 0}
     - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_BoundingSphereOverride.z
-      value: 2.283e-42
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_UseViewFrustumForShadowCasterCull
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -7812,6 +8072,22 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowTint.b
+      value: 0.3207547
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowTint.g
+      value: 0.3207547
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowTint.r
+      value: 0.3207547
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_SoftnessScale
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_ShadowNearPlane
       value: 0.3
       objectReference: {fileID: 0}
@@ -7841,7 +8117,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_UseContactShadow.m_Level
-      value: 0
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowResolution.m_Override
+      value: 8192
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_UpdateShadowOnLightMovement
@@ -7849,6 +8129,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_UseContactShadow.m_Override
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowResolution.m_UseOverride
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
@@ -7877,7 +8161,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7548850176812605586, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 2.79
+      value: 1.54
       objectReference: {fileID: 0}
     - target: {fileID: 7548850176812605586, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_LocalRotation.w
@@ -7945,11 +8229,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_BoundingSphereOverride.w
-      value: 0
+      value: 3.43e-43
       objectReference: {fileID: 0}
     - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_BoundingSphereOverride.x
-      value: 0.0078125
+      value: 2.5251e-41
       objectReference: {fileID: 0}
     - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_BoundingSphereOverride.y
@@ -7961,7 +8245,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_UseViewFrustumForShadowCasterCull
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -7993,6 +8277,22 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowTint.b
+      value: 0.3207547
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowTint.g
+      value: 0.3207547
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowTint.r
+      value: 0.3207547
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_SoftnessScale
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_ShadowNearPlane
       value: 0.3
       objectReference: {fileID: 0}
@@ -8018,7 +8318,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_UseContactShadow.m_Level
-      value: 0
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowResolution.m_Override
+      value: 8192
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_UpdateShadowOnLightMovement
@@ -8026,6 +8330,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_UseContactShadow.m_Override
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowResolution.m_UseOverride
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
@@ -8054,7 +8362,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7548850176812605586, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -2.6
+      value: -2.44
       objectReference: {fileID: 0}
     - target: {fileID: 7548850176812605586, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_LocalRotation.w
@@ -8122,23 +8430,23 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_BoundingSphereOverride.w
-      value: 0
+      value: 1.17646184e+27
       objectReference: {fileID: 0}
     - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_BoundingSphereOverride.x
-      value: 68905.625
+      value: 7.13e-43
       objectReference: {fileID: 0}
     - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_BoundingSphereOverride.y
-      value: 0
+      value: -1.0107774e+30
       objectReference: {fileID: 0}
     - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_BoundingSphereOverride.z
-      value: 0
+      value: 7.13e-43
       objectReference: {fileID: 0}
     - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_UseViewFrustumForShadowCasterCull
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -8583,23 +8891,23 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2667835431386152475, guid: dab0f51ed226b404d8e7e248d5283b81, type: 3}
       propertyPath: m_BoundingSphereOverride.w
-      value: 0
+      value: 7.3341654e+34
       objectReference: {fileID: 0}
     - target: {fileID: 2667835431386152475, guid: dab0f51ed226b404d8e7e248d5283b81, type: 3}
       propertyPath: m_BoundingSphereOverride.x
-      value: 0
+      value: 1.7966559e+18
       objectReference: {fileID: 0}
     - target: {fileID: 2667835431386152475, guid: dab0f51ed226b404d8e7e248d5283b81, type: 3}
       propertyPath: m_BoundingSphereOverride.y
-      value: 0
+      value: 7.903257e+31
       objectReference: {fileID: 0}
     - target: {fileID: 2667835431386152475, guid: dab0f51ed226b404d8e7e248d5283b81, type: 3}
       propertyPath: m_BoundingSphereOverride.z
-      value: 0
+      value: 0.0000032700711
       objectReference: {fileID: 0}
     - target: {fileID: 2667835431386152475, guid: dab0f51ed226b404d8e7e248d5283b81, type: 3}
       propertyPath: m_UseViewFrustumForShadowCasterCull
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3896930603400056535, guid: dab0f51ed226b404d8e7e248d5283b81, type: 3}
       propertyPath: m_CastShadows
@@ -8687,6 +8995,22 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowTint.b
+      value: 0.3207547
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowTint.g
+      value: 0.3207547
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowTint.r
+      value: 0.3207547
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_SoftnessScale
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_ShadowNearPlane
       value: 0.3
       objectReference: {fileID: 0}
@@ -8712,7 +9036,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_UseContactShadow.m_Level
-      value: 0
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowResolution.m_Override
+      value: 8192
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_UpdateShadowOnLightMovement
@@ -8720,6 +9048,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_UseContactShadow.m_Override
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowResolution.m_UseOverride
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
@@ -8824,7 +9156,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_BoundingSphereOverride.y
-      value: 0
+      value: NaN
       objectReference: {fileID: 0}
     - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_BoundingSphereOverride.z
@@ -8832,7 +9164,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_UseViewFrustumForShadowCasterCull
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -9531,6 +9863,22 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowTint.b
+      value: 0.3207547
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowTint.g
+      value: 0.3207547
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowTint.r
+      value: 0.3207547
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_SoftnessScale
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_ShadowNearPlane
       value: 0.3
       objectReference: {fileID: 0}
@@ -9560,7 +9908,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_UseContactShadow.m_Level
-      value: 0
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowResolution.m_Override
+      value: 8192
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_UpdateShadowOnLightMovement
@@ -9568,6 +9920,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_UseContactShadow.m_Override
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowResolution.m_UseOverride
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
@@ -9664,23 +10020,23 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_BoundingSphereOverride.w
-      value: 1.1480317e+17
+      value: 1.3563128e-19
       objectReference: {fileID: 0}
     - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_BoundingSphereOverride.x
-      value: 8.17e-43
+      value: 6.709472e+22
       objectReference: {fileID: 0}
     - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_BoundingSphereOverride.y
-      value: 2.558291e+18
+      value: 2.2107346e+32
       objectReference: {fileID: 0}
     - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_BoundingSphereOverride.z
-      value: 8.17e-43
+      value: 7.9316175e+34
       objectReference: {fileID: 0}
     - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_UseViewFrustumForShadowCasterCull
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -10460,23 +10816,23 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2667835431386152475, guid: dab0f51ed226b404d8e7e248d5283b81, type: 3}
       propertyPath: m_BoundingSphereOverride.w
-      value: 9.2e-44
+      value: 7.80602e-40
       objectReference: {fileID: 0}
     - target: {fileID: 2667835431386152475, guid: dab0f51ed226b404d8e7e248d5283b81, type: 3}
       propertyPath: m_BoundingSphereOverride.x
-      value: 8.8e-44
+      value: 9.1835e-41
       objectReference: {fileID: 0}
     - target: {fileID: 2667835431386152475, guid: dab0f51ed226b404d8e7e248d5283b81, type: 3}
       propertyPath: m_BoundingSphereOverride.y
-      value: 9e-44
+      value: 5.1134018e-37
       objectReference: {fileID: 0}
     - target: {fileID: 2667835431386152475, guid: dab0f51ed226b404d8e7e248d5283b81, type: 3}
       propertyPath: m_BoundingSphereOverride.z
-      value: 9.1e-44
+      value: 9.78048e-39
       objectReference: {fileID: 0}
     - target: {fileID: 2667835431386152475, guid: dab0f51ed226b404d8e7e248d5283b81, type: 3}
       propertyPath: m_UseViewFrustumForShadowCasterCull
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4865603552352465036, guid: dab0f51ed226b404d8e7e248d5283b81, type: 3}
       propertyPath: m_LocalPosition.x
@@ -10733,6 +11089,22 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowTint.b
+      value: 0.3207547
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowTint.g
+      value: 0.3207547
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowTint.r
+      value: 0.3207547
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_SoftnessScale
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_ShadowNearPlane
       value: 0.3
       objectReference: {fileID: 0}
@@ -10762,7 +11134,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_UseContactShadow.m_Level
-      value: 0
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowResolution.m_Override
+      value: 8192
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_UpdateShadowOnLightMovement
@@ -10770,6 +11146,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_UseContactShadow.m_Override
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowResolution.m_UseOverride
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
@@ -10866,23 +11246,23 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_BoundingSphereOverride.w
-      value: 8e-45
+      value: 1.7657412e+22
       objectReference: {fileID: 0}
     - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_BoundingSphereOverride.x
-      value: 2.1e-44
+      value: 3.097271e+27
       objectReference: {fileID: 0}
     - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_BoundingSphereOverride.y
-      value: 2.2e-44
+      value: 1.8169361e+31
       objectReference: {fileID: 0}
     - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_BoundingSphereOverride.z
-      value: 2.4e-44
+      value: 1.8004451e+25
       objectReference: {fileID: 0}
     - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_UseViewFrustumForShadowCasterCull
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -11095,6 +11475,22 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowTint.b
+      value: 0.3207547
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowTint.g
+      value: 0.3207547
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowTint.r
+      value: 0.3207547
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_SoftnessScale
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_ShadowNearPlane
       value: 0.3
       objectReference: {fileID: 0}
@@ -11120,7 +11516,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_UseContactShadow.m_Level
-      value: 0
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowResolution.m_Override
+      value: 8192
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_UpdateShadowOnLightMovement
@@ -11128,6 +11528,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_UseContactShadow.m_Override
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowResolution.m_UseOverride
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
@@ -11224,15 +11628,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_BoundingSphereOverride.w
-      value: 0
+      value: 4.3e-44
       objectReference: {fileID: 0}
     - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_BoundingSphereOverride.x
-      value: 8.17e-43
+      value: 7.13e-43
       objectReference: {fileID: 0}
     - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_BoundingSphereOverride.y
-      value: 0
+      value: 1.16e-43
       objectReference: {fileID: 0}
     - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_BoundingSphereOverride.z
@@ -11240,7 +11644,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_UseViewFrustumForShadowCasterCull
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -11808,6 +12212,22 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowTint.b
+      value: 0.3207547
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowTint.g
+      value: 0.3207547
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowTint.r
+      value: 0.3207547
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_SoftnessScale
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_ShadowNearPlane
       value: 0.3
       objectReference: {fileID: 0}
@@ -11837,7 +12257,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_UseContactShadow.m_Level
-      value: 0
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowResolution.m_Override
+      value: 8192
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_UpdateShadowOnLightMovement
@@ -11845,6 +12269,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_UseContactShadow.m_Override
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowResolution.m_UseOverride
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
@@ -11941,15 +12369,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_BoundingSphereOverride.w
-      value: 0
+      value: 4.3e-44
       objectReference: {fileID: 0}
     - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_BoundingSphereOverride.x
-      value: 8.17e-43
+      value: 7.13e-43
       objectReference: {fileID: 0}
     - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_BoundingSphereOverride.y
-      value: 9.1837e-41
+      value: 1.12e-43
       objectReference: {fileID: 0}
     - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_BoundingSphereOverride.z
@@ -11957,7 +12385,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_UseViewFrustumForShadowCasterCull
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -12409,6 +12837,22 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowTint.b
+      value: 0.3207547
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowTint.g
+      value: 0.3207547
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowTint.r
+      value: 0.3207547
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_SoftnessScale
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_ShadowNearPlane
       value: 0.3
       objectReference: {fileID: 0}
@@ -12434,7 +12878,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_UseContactShadow.m_Level
-      value: 0
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowResolution.m_Override
+      value: 8192
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_UpdateShadowOnLightMovement
@@ -12442,6 +12890,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_UseContactShadow.m_Override
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowResolution.m_UseOverride
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
@@ -12550,15 +13002,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_BoundingSphereOverride.w
-      value: 7.1637693e-19
+      value: 4.3e-44
       objectReference: {fileID: 0}
     - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_BoundingSphereOverride.x
-      value: 0
+      value: 7.13e-43
       objectReference: {fileID: 0}
     - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_BoundingSphereOverride.y
-      value: 0
+      value: 1.22e-43
       objectReference: {fileID: 0}
     - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_BoundingSphereOverride.z
@@ -12566,7 +13018,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_UseViewFrustumForShadowCasterCull
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -12611,6 +13063,11 @@ Transform:
   - {fileID: 1801715816}
   m_Father: {fileID: 8926979288026625387}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!23 &701548803 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 8046498000313907031, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+  m_PrefabInstance: {fileID: 1693628678}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &708505154
 GameObject:
   m_ObjectHideFlags: 0
@@ -14342,6 +14799,22 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowTint.b
+      value: 0.3207547
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowTint.g
+      value: 0.3207547
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowTint.r
+      value: 0.3207547
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_SoftnessScale
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_ShadowNearPlane
       value: 0.3
       objectReference: {fileID: 0}
@@ -14371,7 +14844,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_UseContactShadow.m_Level
-      value: 0
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowResolution.m_Override
+      value: 8192
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_UpdateShadowOnLightMovement
@@ -14379,6 +14856,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_UseContactShadow.m_Override
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowResolution.m_UseOverride
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
@@ -14475,15 +14956,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_BoundingSphereOverride.w
-      value: 5.8002537e+18
+      value: 9.84e-43
       objectReference: {fileID: 0}
     - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_BoundingSphereOverride.x
-      value: 8.21e-43
+      value: 1e-45
       objectReference: {fileID: 0}
     - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_BoundingSphereOverride.y
-      value: 4.53e-43
+      value: 6e-45
       objectReference: {fileID: 0}
     - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_BoundingSphereOverride.z
@@ -14491,7 +14972,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_UseViewFrustumForShadowCasterCull
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -14523,6 +15004,22 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowTint.b
+      value: 0.3207547
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowTint.g
+      value: 0.3207547
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowTint.r
+      value: 0.3207547
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_SoftnessScale
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_ShadowNearPlane
       value: 0.3
       objectReference: {fileID: 0}
@@ -14548,7 +15045,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_UseContactShadow.m_Level
-      value: 0
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowResolution.m_Override
+      value: 8192
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_UpdateShadowOnLightMovement
@@ -14556,6 +15057,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_UseContactShadow.m_Override
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowResolution.m_UseOverride
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
@@ -14652,23 +15157,23 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_BoundingSphereOverride.w
-      value: 1.8062683e+28
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_BoundingSphereOverride.x
-      value: 168195800
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_BoundingSphereOverride.y
-      value: 1.6931923e+22
+      value: 4.29e-43
       objectReference: {fileID: 0}
     - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_BoundingSphereOverride.z
-      value: 1.10230594e+24
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_UseViewFrustumForShadowCasterCull
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -14700,6 +15205,22 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowTint.b
+      value: 0.3207547
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowTint.g
+      value: 0.3207547
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowTint.r
+      value: 0.3207547
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_SoftnessScale
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_ShadowNearPlane
       value: 0.3
       objectReference: {fileID: 0}
@@ -14725,7 +15246,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_UseContactShadow.m_Level
-      value: 0
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowResolution.m_Override
+      value: 8192
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_UpdateShadowOnLightMovement
@@ -14733,6 +15258,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_UseContactShadow.m_Override
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowResolution.m_UseOverride
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
@@ -14829,23 +15358,23 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_BoundingSphereOverride.w
-      value: 0.009345794
+      value: 7.3983547e+31
       objectReference: {fileID: 0}
     - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_BoundingSphereOverride.x
-      value: 1e-45
+      value: 7.144696e+31
       objectReference: {fileID: 0}
     - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_BoundingSphereOverride.y
-      value: 0
+      value: 1.8890782e+31
       objectReference: {fileID: 0}
     - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_BoundingSphereOverride.z
-      value: 0
+      value: 1.499385e+10
       objectReference: {fileID: 0}
     - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_UseViewFrustumForShadowCasterCull
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -16683,6 +17212,22 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowTint.b
+      value: 0.3207547
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowTint.g
+      value: 0.3207547
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowTint.r
+      value: 0.3207547
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_SoftnessScale
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_ShadowNearPlane
       value: 0.3
       objectReference: {fileID: 0}
@@ -16708,7 +17253,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_UseContactShadow.m_Level
-      value: 0
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowResolution.m_Override
+      value: 8192
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_UpdateShadowOnLightMovement
@@ -16716,6 +17265,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_UseContactShadow.m_Override
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowResolution.m_UseOverride
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
@@ -16788,15 +17341,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_BoundingSphereOverride.w
-      value: 0
+      value: 4.3e-44
       objectReference: {fileID: 0}
     - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_BoundingSphereOverride.x
-      value: 0
+      value: 7.13e-43
       objectReference: {fileID: 0}
     - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_BoundingSphereOverride.y
-      value: 0
+      value: 1.1e-43
       objectReference: {fileID: 0}
     - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_BoundingSphereOverride.z
@@ -16804,7 +17357,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_UseViewFrustumForShadowCasterCull
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -18673,6 +19226,22 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowTint.b
+      value: 0.3207547
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowTint.g
+      value: 0.3207547
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowTint.r
+      value: 0.3207547
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_SoftnessScale
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_ShadowNearPlane
       value: 0.3
       objectReference: {fileID: 0}
@@ -18698,7 +19267,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_UseContactShadow.m_Level
-      value: 0
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowResolution.m_Override
+      value: 8192
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_UpdateShadowOnLightMovement
@@ -18706,6 +19279,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_UseContactShadow.m_Override
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowResolution.m_UseOverride
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
@@ -18802,11 +19379,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_BoundingSphereOverride.w
-      value: 0
+      value: 1e-45
       objectReference: {fileID: 0}
     - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_BoundingSphereOverride.x
-      value: 0
+      value: 2.964e-41
       objectReference: {fileID: 0}
     - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_BoundingSphereOverride.y
@@ -18818,7 +19395,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_UseViewFrustumForShadowCasterCull
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -19239,6 +19816,22 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowTint.b
+      value: 0.3207547
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowTint.g
+      value: 0.3207547
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowTint.r
+      value: 0.3207547
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_SoftnessScale
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_ShadowNearPlane
       value: 0.3
       objectReference: {fileID: 0}
@@ -19264,7 +19857,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_UseContactShadow.m_Level
-      value: 0
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowResolution.m_Override
+      value: 8192
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_UpdateShadowOnLightMovement
@@ -19272,6 +19869,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_UseContactShadow.m_Override
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowResolution.m_UseOverride
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
@@ -19304,7 +19905,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7548850176812605586, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 7.46
+      value: 9.61
       objectReference: {fileID: 0}
     - target: {fileID: 7548850176812605586, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_LocalRotation.w
@@ -19372,23 +19973,23 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_BoundingSphereOverride.w
-      value: 0
+      value: 4.3e-44
       objectReference: {fileID: 0}
     - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_BoundingSphereOverride.x
-      value: 8.17e-43
+      value: 7.13e-43
       objectReference: {fileID: 0}
     - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_BoundingSphereOverride.y
-      value: 9.1837e-41
+      value: 1.28e-43
       objectReference: {fileID: 0}
     - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_BoundingSphereOverride.z
-      value: -1.5832967e+14
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_UseViewFrustumForShadowCasterCull
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -21050,15 +21651,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2667835431386152475, guid: dab0f51ed226b404d8e7e248d5283b81, type: 3}
       propertyPath: m_BoundingSphereOverride.w
-      value: 1.4697649e+15
+      value: 1.3563128e-19
       objectReference: {fileID: 0}
     - target: {fileID: 2667835431386152475, guid: dab0f51ed226b404d8e7e248d5283b81, type: 3}
       propertyPath: m_BoundingSphereOverride.x
-      value: 0
+      value: 2.749e-41
       objectReference: {fileID: 0}
     - target: {fileID: 2667835431386152475, guid: dab0f51ed226b404d8e7e248d5283b81, type: 3}
       propertyPath: m_BoundingSphereOverride.y
-      value: 0
+      value: 2.524355e-29
       objectReference: {fileID: 0}
     - target: {fileID: 2667835431386152475, guid: dab0f51ed226b404d8e7e248d5283b81, type: 3}
       propertyPath: m_BoundingSphereOverride.z
@@ -21066,7 +21667,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2667835431386152475, guid: dab0f51ed226b404d8e7e248d5283b81, type: 3}
       propertyPath: m_UseViewFrustumForShadowCasterCull
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4865603552352465036, guid: dab0f51ed226b404d8e7e248d5283b81, type: 3}
       propertyPath: m_LocalPosition.x
@@ -23256,6 +23857,22 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowTint.b
+      value: 0.3207547
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowTint.g
+      value: 0.3207547
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowTint.r
+      value: 0.3207547
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_SoftnessScale
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_ShadowNearPlane
       value: 0.3
       objectReference: {fileID: 0}
@@ -23285,7 +23902,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_UseContactShadow.m_Level
-      value: 0
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowResolution.m_Override
+      value: 8192
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_UpdateShadowOnLightMovement
@@ -23293,6 +23914,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_UseContactShadow.m_Override
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowResolution.m_UseOverride
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
@@ -25464,6 +26089,211 @@ Material:
     - _UVMappingMaskEmissive: {r: 1, g: 0, b: 0, a: 0}
   m_BuildTextureStacks: []
   m_AllowLocking: 1
+--- !u!1001 &1592447428
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_IESSpot
+      value: 
+      objectReference: {fileID: 451883346217600177, guid: c6eb889c7220763438b67079c7e37879, type: 3}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_IESPoint
+      value: 
+      objectReference: {fileID: 3883328704701382318, guid: c6eb889c7220763438b67079c7e37879, type: 3}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShapeRadius
+      value: 0.05
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_PenumbraTint
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowTint.b
+      value: 0.3207547
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowTint.g
+      value: 0.3207547
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowTint.r
+      value: 0.3207547
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_SoftnessScale
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowNearPlane
+      value: 0.3
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_LinkShadowLayers
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowUpdateMode
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_SpotIESCutoffPercent
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_AlwaysDrawDynamicShadows
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowResolution.m_Level
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_UseContactShadow.m_Level
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowResolution.m_Override
+      value: 8192
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_UpdateShadowOnLightMovement
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_UseContactShadow.m_Override
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowResolution.m_UseOverride
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_UseContactShadow.m_UseOverride
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4105877466196517156, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4105877466196517156, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7172324977897585192, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_Name
+      value: lambdeneme (37)
+      objectReference: {fileID: 0}
+    - target: {fileID: 7172324977897585192, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7548850176812605586, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 7.49
+      objectReference: {fileID: 0}
+    - target: {fileID: 7548850176812605586, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 4.09
+      objectReference: {fileID: 0}
+    - target: {fileID: 7548850176812605586, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 5.57
+      objectReference: {fileID: 0}
+    - target: {fileID: 7548850176812605586, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7548850176812605586, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7548850176812605586, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7548850176812605586, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7548850176812605586, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7548850176812605586, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7548850176812605586, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_Type
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_Range
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_Cookie
+      value: 
+      objectReference: {fileID: 451883346217600177, guid: c6eb889c7220763438b67079c7e37879, type: 3}
+    - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_Intensity
+      value: 1209.4211
+      objectReference: {fileID: 0}
+    - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_SpotAngle
+      value: 140
+      objectReference: {fileID: 0}
+    - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_Lightmapping
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowRadius
+      value: 0.05
+      objectReference: {fileID: 0}
+    - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_Shadows.m_Type
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_BounceIntensity
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_BoundingSphereOverride.w
+      value: -2.8756265e+29
+      objectReference: {fileID: 0}
+    - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_BoundingSphereOverride.x
+      value: 2.6873e-41
+      objectReference: {fileID: 0}
+    - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_BoundingSphereOverride.y
+      value: 2.524355e-29
+      objectReference: {fileID: 0}
+    - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_BoundingSphereOverride.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_UseViewFrustumForShadowCasterCull
+      value: 1
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
 --- !u!1 &1615095833
 GameObject:
   m_ObjectHideFlags: 0
@@ -27003,6 +27833,22 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowTint.b
+      value: 0.3207547
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowTint.g
+      value: 0.3207547
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowTint.r
+      value: 0.3207547
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_SoftnessScale
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_ShadowNearPlane
       value: 0.3
       objectReference: {fileID: 0}
@@ -27028,7 +27874,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_UseContactShadow.m_Level
-      value: 0
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowResolution.m_Override
+      value: 8192
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_UpdateShadowOnLightMovement
@@ -27036,6 +27886,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_UseContactShadow.m_Override
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowResolution.m_UseOverride
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
@@ -27056,7 +27910,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7548850176812605586, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 13.44
+      value: 13.04
       objectReference: {fileID: 0}
     - target: {fileID: 7548850176812605586, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_LocalPosition.y
@@ -27132,28 +27986,31 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_BoundingSphereOverride.w
-      value: NaN
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_BoundingSphereOverride.x
-      value: 306259.72
+      value: 3.34e-43
       objectReference: {fileID: 0}
     - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_BoundingSphereOverride.y
-      value: 3.3346195e+25
+      value: 6e-45
       objectReference: {fileID: 0}
     - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_BoundingSphereOverride.z
-      value: 9.232121e+15
+      value: 2.1e-44
       objectReference: {fileID: 0}
     - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_UseViewFrustumForShadowCasterCull
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 4105877466196517156, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2145658690}
   m_SourcePrefab: {fileID: 100100000, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
 --- !u!1 &1697229764
 GameObject:
@@ -28062,6 +28919,22 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowTint.b
+      value: 0.3207547
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowTint.g
+      value: 0.3207547
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowTint.r
+      value: 0.3207547
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_SoftnessScale
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_ShadowNearPlane
       value: 0.3
       objectReference: {fileID: 0}
@@ -28091,7 +28964,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_UseContactShadow.m_Level
-      value: 0
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowResolution.m_Override
+      value: 8192
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_UpdateShadowOnLightMovement
@@ -28099,6 +28976,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_UseContactShadow.m_Override
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowResolution.m_UseOverride
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
@@ -28119,7 +29000,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7548850176812605586, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -2.58
+      value: -2.124
       objectReference: {fileID: 0}
     - target: {fileID: 7548850176812605586, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_LocalPosition.y
@@ -28195,23 +29076,23 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_BoundingSphereOverride.w
-      value: -6.516277e+35
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_BoundingSphereOverride.x
-      value: -6.51633e+35
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_BoundingSphereOverride.y
-      value: -6.51633e+35
+      value: 1e-45
       objectReference: {fileID: 0}
     - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_BoundingSphereOverride.z
-      value: 5.0706005e+33
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_UseViewFrustumForShadowCasterCull
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -28243,6 +29124,22 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowTint.b
+      value: 0.3207547
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowTint.g
+      value: 0.3207547
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowTint.r
+      value: 0.3207547
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_SoftnessScale
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_ShadowNearPlane
       value: 0.3
       objectReference: {fileID: 0}
@@ -28268,7 +29165,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_UseContactShadow.m_Level
-      value: 0
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowResolution.m_Override
+      value: 8192
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_UpdateShadowOnLightMovement
@@ -28276,6 +29177,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_UseContactShadow.m_Override
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowResolution.m_UseOverride
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
@@ -28372,23 +29277,23 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_BoundingSphereOverride.w
-      value: -9.2212036e+11
+      value: 1.0077427e+27
       objectReference: {fileID: 0}
     - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_BoundingSphereOverride.x
-      value: -6.6456305e+35
+      value: 1.3555853e-19
       objectReference: {fileID: 0}
     - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_BoundingSphereOverride.y
-      value: NaN
+      value: 4.1528323e+21
       objectReference: {fileID: 0}
     - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_BoundingSphereOverride.z
-      value: -6.6456305e+35
+      value: 2.7953567e+20
       objectReference: {fileID: 0}
     - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_UseViewFrustumForShadowCasterCull
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -29883,6 +30788,22 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowTint.b
+      value: 0.3207547
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowTint.g
+      value: 0.3207547
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowTint.r
+      value: 0.3207547
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_SoftnessScale
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_ShadowNearPlane
       value: 0.3
       objectReference: {fileID: 0}
@@ -29908,7 +30829,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_UseContactShadow.m_Level
-      value: 0
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowResolution.m_Override
+      value: 8192
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_UpdateShadowOnLightMovement
@@ -29916,6 +30841,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_UseContactShadow.m_Override
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowResolution.m_UseOverride
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
@@ -30012,7 +30941,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_BoundingSphereOverride.w
-      value: 1.058148e+18
+      value: -2.2115e+29
       objectReference: {fileID: 0}
     - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_BoundingSphereOverride.x
@@ -30024,11 +30953,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_BoundingSphereOverride.z
-      value: 0
+      value: 3.67343e-40
       objectReference: {fileID: 0}
     - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_UseViewFrustumForShadowCasterCull
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -30247,6 +31176,22 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowTint.b
+      value: 0.3207547
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowTint.g
+      value: 0.3207547
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowTint.r
+      value: 0.3207547
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_SoftnessScale
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_ShadowNearPlane
       value: 0.3
       objectReference: {fileID: 0}
@@ -30272,7 +31217,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_UseContactShadow.m_Level
-      value: 0
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowResolution.m_Override
+      value: 8192
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_UpdateShadowOnLightMovement
@@ -30280,6 +31229,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_UseContactShadow.m_Override
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowResolution.m_UseOverride
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
@@ -30376,15 +31329,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_BoundingSphereOverride.w
-      value: 0
+      value: 4.3e-44
       objectReference: {fileID: 0}
     - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_BoundingSphereOverride.x
-      value: -2.9502629e+38
+      value: 7.13e-43
       objectReference: {fileID: 0}
     - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_BoundingSphereOverride.y
-      value: 0
+      value: 1.16e-43
       objectReference: {fileID: 0}
     - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_BoundingSphereOverride.z
@@ -30392,7 +31345,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_UseViewFrustumForShadowCasterCull
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -31871,6 +32824,22 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowTint.b
+      value: 0.3207547
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowTint.g
+      value: 0.3207547
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowTint.r
+      value: 0.3207547
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_SoftnessScale
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_ShadowNearPlane
       value: 0.3
       objectReference: {fileID: 0}
@@ -31896,7 +32865,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_UseContactShadow.m_Level
-      value: 0
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowResolution.m_Override
+      value: 8192
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_UpdateShadowOnLightMovement
@@ -31904,6 +32877,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_UseContactShadow.m_Override
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowResolution.m_UseOverride
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
@@ -32000,15 +32977,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_BoundingSphereOverride.w
-      value: 7.1637693e-19
+      value: 4.3e-44
       objectReference: {fileID: 0}
     - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_BoundingSphereOverride.x
-      value: 0
+      value: 7.13e-43
       objectReference: {fileID: 0}
     - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_BoundingSphereOverride.y
-      value: 0
+      value: 1.16e-43
       objectReference: {fileID: 0}
     - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_BoundingSphereOverride.z
@@ -32016,7 +32993,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_UseViewFrustumForShadowCasterCull
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -32291,6 +33268,22 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowTint.b
+      value: 0.3207547
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowTint.g
+      value: 0.3207547
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowTint.r
+      value: 0.3207547
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_SoftnessScale
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_ShadowNearPlane
       value: 0.3
       objectReference: {fileID: 0}
@@ -32316,7 +33309,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_UseContactShadow.m_Level
-      value: 0
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowResolution.m_Override
+      value: 8192
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_UpdateShadowOnLightMovement
@@ -32324,6 +33321,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_UseContactShadow.m_Override
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+      propertyPath: m_ShadowResolution.m_UseOverride
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
@@ -32420,15 +33421,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_BoundingSphereOverride.w
-      value: 0
+      value: 4.3e-44
       objectReference: {fileID: 0}
     - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_BoundingSphereOverride.x
-      value: 0
+      value: 7.13e-43
       objectReference: {fileID: 0}
     - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_BoundingSphereOverride.y
-      value: 1.932e-42
+      value: 1.12e-43
       objectReference: {fileID: 0}
     - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_BoundingSphereOverride.z
@@ -32436,7 +33437,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
       propertyPath: m_UseViewFrustumForShadowCasterCull
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -32514,6 +33515,30 @@ SphereCollider:
   serializedVersion: 3
   m_Radius: 0.0012487251
   m_Center: {x: 0.00023827418, y: 0.0077737877, z: -0.00010122254}
+--- !u!1 &2145658686 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4105877466196517156, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
+  m_PrefabInstance: {fileID: 1693628678}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &2145658690
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2145658686}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 102500beab4bda54c809590301d0019c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _lightData: {fileID: 0}
+  minIntensity: 0
+  maxIntensity: 1000
+  minDelay: 0.05
+  maxDelay: 0.7
+  targetRenderer: {fileID: 701548803}
+  _targetMaterial: {fileID: 0}
 --- !u!1 &9171099834887258
 GameObject:
   m_ObjectHideFlags: 0
@@ -35083,7 +36108,7 @@ MeshRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3210173823969778657}
   m_Enabled: 1
-  m_CastShadows: 1
+  m_CastShadows: 0
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
   m_StaticShadowCaster: 0
@@ -36987,7 +38012,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d84ee166229295e409c9c4611d3f1452, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isTutorialMode: 1
+  isTutorialMode: 0
   allowedTutorialObjects:
   - {fileID: 1342168771}
   - {fileID: 433840398}
@@ -57828,23 +58853,23 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2667835431386152475, guid: dab0f51ed226b404d8e7e248d5283b81, type: 3}
       propertyPath: m_BoundingSphereOverride.w
-      value: -3.207093e-31
+      value: 1.3555853e-19
       objectReference: {fileID: 0}
     - target: {fileID: 2667835431386152475, guid: dab0f51ed226b404d8e7e248d5283b81, type: 3}
       propertyPath: m_BoundingSphereOverride.x
-      value: 2.7375447e+19
+      value: 1.3555853e-19
       objectReference: {fileID: 0}
     - target: {fileID: 2667835431386152475, guid: dab0f51ed226b404d8e7e248d5283b81, type: 3}
       propertyPath: m_BoundingSphereOverride.y
-      value: 2.467485e+38
+      value: 2.7454022e+20
       objectReference: {fileID: 0}
     - target: {fileID: 2667835431386152475, guid: dab0f51ed226b404d8e7e248d5283b81, type: 3}
       propertyPath: m_BoundingSphereOverride.z
-      value: -4.5842916e-36
+      value: 1.5788372e-19
       objectReference: {fileID: 0}
     - target: {fileID: 2667835431386152475, guid: dab0f51ed226b404d8e7e248d5283b81, type: 3}
       propertyPath: m_UseViewFrustumForShadowCasterCull
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3896930603400056535, guid: dab0f51ed226b404d8e7e248d5283b81, type: 3}
       propertyPath: m_CastShadows
@@ -70032,6 +71057,7 @@ SceneRoots:
   - {fileID: 611499802}
   - {fileID: 393515836}
   - {fileID: 1175747019}
+  - {fileID: 1592447428}
   - {fileID: 344583164}
   - {fileID: 458426869}
   - {fileID: 1806373827}
