@@ -384,14 +384,45 @@ public class InteractableMassSpectrometer : MonoBehaviour, IInteractable, IForce
         if (isExiting)
             yield break;
         isExiting = true;
-        inMachineMode = false;
+        inMachineMode = false; // 1. LateUpdate'deki kitlemeyi kaldır
         ResetPenalty();
 
+        // Önce UI'ı ve etkileşimi temizleyelim
+        if (ControlsUIManager.Instance != null)
+            ControlsUIManager.Instance.HideControls();
+
+        if (GameManager.Instance != null)
+            GameManager.Instance.activeInteraction = null;
+
+        // --- YUMUŞAK GEÇİŞ BAŞLANGICI ---
+        // Kamerayı makineden oyuncunun kafasına (cameraViewTarget) doğru kaydırıyoruz
+        if (mainCamera != null && cameraViewTarget != null)
+        {
+            float t = 0f;
+            Vector3 startPos = mainCamera.position;
+            Quaternion startRot = mainCamera.rotation;
+
+            // cameraTransitionDuration süresi boyunca (default 1 saniye)
+            while (t < cameraTransitionDuration)
+            {
+                t += Time.deltaTime;
+                // SmoothStep formülü: Daha doğal bir hızlanma/yavaşlama sağlar
+                float s = t / cameraTransitionDuration;
+                s = s * s * (3f - 2f * s);
+
+                mainCamera.position = Vector3.Lerp(startPos, cameraViewTarget.position, s);
+                mainCamera.rotation = Quaternion.Slerp(startRot, cameraViewTarget.rotation, s);
+                yield return null;
+            }
+        }
+        // --- YUMUŞAK GEÇİŞ BİTİŞİ ---
+
+        // 2. Kamera yerine oturdu, şimdi Cinemachine'i açabiliriz
+        // (Artık tak diye atlama yapmaz çünkü zaten oradayız)
         if (cinemachineBrain)
             cinemachineBrain.enabled = true;
 
-        yield return new WaitForSeconds(1.0f);
-
+        // 3. Oyuncu kontrollerini geri aç
         if (playerPhysicsController != null)
             playerPhysicsController.enabled = true;
         if (playerInputScript)
@@ -405,12 +436,6 @@ public class InteractableMassSpectrometer : MonoBehaviour, IInteractable, IForce
         PlayerInteraction playerInt = FindObjectOfType<PlayerInteraction>();
         if (playerInt != null)
             playerInt.ToggleCrosshair(true);
-
-        if (ControlsUIManager.Instance != null)
-            ControlsUIManager.Instance.HideControls();
-
-        if (GameManager.Instance != null)
-            GameManager.Instance.activeInteraction = null;
 
         isInteracting = false;
         isExiting = false;

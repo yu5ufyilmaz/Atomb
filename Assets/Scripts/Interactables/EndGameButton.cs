@@ -6,31 +6,27 @@ using UnityEngine.Video;
 public class EndGameButton : MonoBehaviour, IInteractable
 {
     [Header("Player Settings")]
-    [Tooltip("Karakterin Ana Objesi")]
     public GameObject player;
-
-    [Tooltip("Karakterin Hareket Scripti (Örn: FirstPersonController)")]
     public MonoBehaviour playerMovementScript;
-
-    [Tooltip("Karakterin Kamera/Mouse Scripti (Varsa buraya at, yoksa boş kalabilir)")]
     public MonoBehaviour playerLookScript;
 
     [Header("Bitiş Ayarları")]
-    [Tooltip("Kameranın kilitleneceği ekran noktası")]
+    [Tooltip("Kameranın kilitleneceği nokta (Mavi ok ekrana baksın!)")]
     [SerializeField]
     private Transform screenViewTarget;
 
-    [Tooltip("Final videosunun olduğu Video Player bileşeni")]
     [SerializeField]
     private VideoPlayer finalVideoPlayer;
 
-    [Tooltip("Credits sahnesinin tam adı")]
     [SerializeField]
     private string creditsSceneName = "CreditsScene";
 
-    [Header("Kamera Geçişi")]
+    [Header("Oturma Animasyonu")]
     [SerializeField]
-    private float moveDuration = 1.0f;
+    private float sitDuration = 2.0f;
+
+    [SerializeField]
+    private AnimationCurve sitCurve = AnimationCurve.EaseInOut(0, 0, 1, 1);
 
     private bool isTriggered = false;
     private Transform mainCamera;
@@ -40,11 +36,8 @@ public class EndGameButton : MonoBehaviour, IInteractable
         if (Camera.main != null)
             mainCamera = Camera.main.transform;
 
-        // Videoyu önceden hazırla
         if (finalVideoPlayer != null)
-        {
             finalVideoPlayer.Prepare();
-        }
     }
 
     public void Interact()
@@ -67,88 +60,90 @@ public class EndGameButton : MonoBehaviour, IInteractable
     {
         isTriggered = true;
 
-        // -----------------------------------------------------------
-        // ADIM 1: OYUNCUYU TAMAMEN DEVRE DIŞI BIRAK (FIX)
-        // -----------------------------------------------------------
-
-        // 1. Hareket Scriptini Kapat
-        if (playerMovementScript != null)
-            playerMovementScript.enabled = false;
-
-        // 2. Mouse Look Scriptini Kapat (Dönmeyi engelleyen asıl kısım)
-        if (playerLookScript != null)
-            playerLookScript.enabled = false;
-
-        // 3. Unity Character Controller'ı Kapat (Fizik çakışmasını önler)
-        if (player != null)
-        {
-            var cc = player.GetComponent<UnityEngine.CharacterController>();
-            if (cc != null)
-                cc.enabled = false;
-
-            // Eğer Rigidbody varsa onu da dondur
-            var rb = player.GetComponent<Rigidbody>();
-            if (rb != null)
-                rb.isKinematic = true;
-        }
-
-        // Fareyi kilitle ve gizle (Video izlenirken fare görünmesin)
+        // 1. TÜM KONTROLLERİ KAPAT
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
 
-        // -----------------------------------------------------------
-        // ADIM 2: KAMERAYI EKRANA TAŞI
-        // -----------------------------------------------------------
-        if (screenViewTarget != null && mainCamera != null)
+        if (playerMovementScript != null)
+            playerMovementScript.enabled = false;
+        if (playerLookScript != null)
+            playerLookScript.enabled = false;
+
+        if (player != null)
         {
-            // Cinemachine Brain varsa kapat (Kamerayı serbest bırakmak için şart)
+            var rbs = player.GetComponentsInChildren<Rigidbody>();
+            foreach (var rb in rbs)
+                rb.isKinematic = true; // Fiziksel düşmeyi engelle
+
+            var ccs = player.GetComponentsInChildren<UnityEngine.CharacterController>();
+            foreach (var cc in ccs)
+                cc.enabled = false; // Çarpışmayı engelle
+        }
+
+        if (mainCamera != null)
+        {
             var brain = mainCamera.GetComponent("CinemachineBrain") as MonoBehaviour;
-            // Not: Cinemachine namespace hatası almamak için string ile çağırdım,
-            // projenin başında "using Cinemachine;" varsa direkt tipi yazabilirsin.
             if (brain != null)
                 brain.enabled = false;
+        }
 
+        // --- 2. KAMERAYI OYUNCUDAN KOPAR (FIX) ---
+        // Kamerayı oyuncunun hiyerarşisinden çıkarıyoruz.
+        // Böylece oyuncu dönse bile kamera dönmez.
+        if (mainCamera != null)
+        {
+            mainCamera.SetParent(null);
+        }
+
+        // --- 3. OTURMA HAREKETİ ---
+        if (screenViewTarget != null && mainCamera != null)
+        {
             Vector3 startPos = mainCamera.position;
             Quaternion startRot = mainCamera.rotation;
-            float t = 0f;
 
-            while (t < 1f)
+            float timer = 0f;
+
+            while (timer < sitDuration)
             {
-                t += Time.deltaTime / moveDuration;
-                float smoothT = Mathf.SmoothStep(0f, 1f, t);
+                timer += Time.deltaTime;
+                float progress = timer / sitDuration;
+                float curveValue = sitCurve.Evaluate(progress);
 
-                mainCamera.position = Vector3.Lerp(startPos, screenViewTarget.position, smoothT);
+                // Pozisyon
+                mainCamera.position = Vector3.Lerp(startPos, screenViewTarget.position, curveValue);
+
+                // Rotasyon (BASİTLEŞTİRİLDİ)
+                // "LookRotation" kullanmıyoruz. Direkt hedefin rotasyonuna yumuşak geçiş yapıyoruz.
+                // Böylece sonda "küt" diye atlama yapmaz.
                 mainCamera.rotation = Quaternion.Slerp(
                     startRot,
                     screenViewTarget.rotation,
-                    smoothT
+                    curveValue
                 );
 
                 yield return null;
             }
+
+            // Garanti olsun diye tam oturt ve HEDEFE BAĞLA
+            mainCamera.position = screenViewTarget.position;
+            mainCamera.rotation = screenViewTarget.rotation;
+
+            // Kamerayı artık hedef objenin çocuğu yapıyoruz. Obje nereye bakıyorsa oraya bakar.
+            mainCamera.SetParent(screenViewTarget);
         }
 
-        // -----------------------------------------------------------
-        // ADIM 3: VİDEOYU OYNAT
-        // -----------------------------------------------------------
+        // --- 4. VİDEO ---
         if (finalVideoPlayer != null)
         {
-            Debug.Log("Final videosu başlatılıyor...");
             finalVideoPlayer.Play();
-
-            // Video uzunluğu kadar bekle
             yield return new WaitForSeconds((float)finalVideoPlayer.length);
         }
         else
         {
-            Debug.LogWarning("Video Player atanmamış! 5 sn bekleniyor.");
             yield return new WaitForSeconds(5.0f);
         }
 
-        // -----------------------------------------------------------
-        // ADIM 4: SAHNE GEÇİŞİ
-        // -----------------------------------------------------------
-        Debug.Log("Credits yükleniyor...");
+        // --- 5. BİTİŞ ---
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
         SceneManager.LoadScene(creditsSceneName);

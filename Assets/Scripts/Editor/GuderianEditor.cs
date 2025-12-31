@@ -1,26 +1,21 @@
 #if UNITY_EDITOR
 using UnityEngine;
 using UnityEditor;
+using UnityEngine.AI; // NavMesh Agent tipini tanımak için
 
 [CustomEditor(typeof(GuderianAI))]
 public class GuderianEditor : Editor
 {
-    // Katlanabilir menülerin durumları
     bool showVisuals = true;
     bool showBehav = true;
     bool showSpawn = false;
 
-    private void OnEnable()
-    {
-        // Eski 'ambushDoorOffset' referansı buradan kaldırıldı.
-    }
-
     public override void OnInspectorGUI()
     {
         GuderianAI script = (GuderianAI)target;
-
         serializedObject.Update();
 
+        // --- BAŞLIK ---
         GUIStyle titleStyle = new GUIStyle(EditorStyles.boldLabel)
         {
             fontSize = 16,
@@ -33,22 +28,44 @@ public class GuderianEditor : Editor
         EditorGUI.LabelField(r, "👹 GUDERIAN AI", titleStyle);
         EditorGUILayout.Space(5);
 
-        GUI.backgroundColor =
-            script.currentState != GuderianAI.GuderianState.Hidden
-                ? new Color(1f, 0.6f, 0.2f)
-                : Color.gray;
-        if (GUILayout.Button($"DURUM: {script.currentState}", GUILayout.Height(25))) { }
+        // --- DURUM GÖSTERGESİ ---
+        Color stateColor = Color.gray;
+        if (script.currentState == GuderianAI.GuderianState.Searching)
+            stateColor = Color.red;
+        else if (script.currentState != GuderianAI.GuderianState.Hidden)
+            stateColor = new Color(1f, 0.6f, 0.2f);
+
+        GUI.backgroundColor = stateColor;
+        GUILayout.Button(
+            $"DURUM: {script.currentState}\n({script.debugStatus})",
+            GUILayout.Height(30)
+        );
         GUI.backgroundColor = Color.white;
         EditorGUILayout.Space(5);
 
-        // --- 1. GRUP: SES & GÖRSEL ---
-        showVisuals = EditorGUILayout.BeginFoldoutHeaderGroup(showVisuals, "🎬 Görsel ve Sesler");
+        // --- 1. GRUP: REFERANSLAR & GÖRSEL ---
+        showVisuals = EditorGUILayout.BeginFoldoutHeaderGroup(
+            showVisuals,
+            "🎬 Referanslar ve Görsel"
+        );
         if (showVisuals)
         {
             EditorGUILayout.BeginVertical(EditorStyles.helpBox);
+
+            EditorGUILayout.LabelField("NavMesh & Model", EditorStyles.boldLabel);
+            EditorGUILayout.PropertyField(serializedObject.FindProperty("agent"));
+            if (script.agent == null)
+            {
+                EditorGUILayout.HelpBox(
+                    "NavMeshAgent atanmadı! AI hareket edemez.",
+                    MessageType.Error
+                );
+            }
             EditorGUILayout.PropertyField(serializedObject.FindProperty("guderianModel"));
+
+            EditorGUILayout.Space(5);
+            EditorGUILayout.LabelField("Sesler", EditorStyles.boldLabel);
             EditorGUILayout.PropertyField(serializedObject.FindProperty("audioSource"));
-            EditorGUILayout.Space(2);
             EditorGUILayout.PropertyField(serializedObject.FindProperty("footstepSounds"));
             EditorGUILayout.PropertyField(serializedObject.FindProperty("doorHandleSound"));
             EditorGUILayout.PropertyField(serializedObject.FindProperty("doorOpenSound"));
@@ -63,7 +80,7 @@ public class GuderianEditor : Editor
         if (showBehav)
         {
             EditorGUILayout.BeginVertical(EditorStyles.helpBox);
-            EditorGUILayout.LabelField("Süreler", EditorStyles.boldLabel);
+            EditorGUILayout.LabelField("Süreler & Kırılma", EditorStyles.boldLabel);
             EditorGUILayout.PropertyField(serializedObject.FindProperty("baseSearchDuration"));
             EditorGUILayout.PropertyField(serializedObject.FindProperty("timePerLight"));
             EditorGUILayout.PropertyField(serializedObject.FindProperty("closedDoorBreachTime"));
@@ -73,10 +90,15 @@ public class GuderianEditor : Editor
             EditorGUILayout.LabelField("Hareket", EditorStyles.boldLabel);
             EditorGUILayout.PropertyField(serializedObject.FindProperty("walkSpeed"));
             EditorGUILayout.PropertyField(serializedObject.FindProperty("lookAtDoorThreshold"));
-
-            // Hata veren 'Pusu' kısmı buradan kaldırıldı çünkü artık RoomManager üzerinden yönetiliyor.
-
             EditorGUILayout.EndVertical();
+
+            // Progress Barlar (Oyun Çalışırken)
+            if (Application.isPlaying && script.currentState != GuderianAI.GuderianState.Hidden)
+            {
+                EditorGUILayout.Space(5);
+                DrawBar(script.debugBreachProgress, "Kapı Kırma", Color.yellow);
+                DrawBar(script.debugSearchProgress, "Arama Süresi", Color.red);
+            }
         }
         EditorGUILayout.EndFoldoutHeaderGroup();
 
@@ -91,11 +113,35 @@ public class GuderianEditor : Editor
             EditorGUILayout.Space(5);
             EditorGUILayout.PropertyField(serializedObject.FindProperty("jumpscareDistance"));
             EditorGUILayout.PropertyField(serializedObject.FindProperty("spawnYOffset"));
+
+            EditorGUILayout.Space(5);
+            EditorGUILayout.LabelField($"Spawn Şansı: {script.GetCurrentChance()}%");
+            EditorGUILayout.LabelField(
+                $"Sonraki Kontrol: {script.GetTimeUntilNextSpawnCheck():F1}s"
+            );
             EditorGUILayout.EndVertical();
         }
         EditorGUILayout.EndFoldoutHeaderGroup();
 
         serializedObject.ApplyModifiedProperties();
+    }
+
+    void DrawBar(float val, string name, Color c)
+    {
+        if (val <= 0)
+            return;
+        Rect r = EditorGUILayout.GetControlRect(false, 18);
+        EditorGUI.DrawRect(r, new Color(0.1f, 0.1f, 0.1f));
+        EditorGUI.DrawRect(new Rect(r.x, r.y, r.width * Mathf.Clamp01(val), r.height), c);
+        EditorGUI.LabelField(
+            r,
+            $"{name}: {val * 100:F0}%",
+            new GUIStyle(EditorStyles.boldLabel)
+            {
+                normal = { textColor = Color.black },
+                alignment = TextAnchor.MiddleCenter,
+            }
+        );
     }
 }
 #endif
