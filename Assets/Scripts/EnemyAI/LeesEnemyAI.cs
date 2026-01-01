@@ -1,6 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
-using StarterAssets; // Input erişimi için gerekli
+using StarterAssets;
 using UnityEngine;
 
 public class LeesEnemyAI : MonoBehaviour
@@ -21,14 +21,13 @@ public class LeesEnemyAI : MonoBehaviour
     private static readonly int JumpscareTrigger = Animator.StringToHash("Jumpscare");
 
     [Header("Görüş Ayarları")]
-    public LayerMask obstacleMask; // Eski maske (Spawn için kullanılabilir)
+    public LayerMask obstacleMask;
     public Transform eyesPosition;
 
     [Tooltip("0.0 = Tam ekran, 0.2 = Ekranın kenarlarından %20'lik kısım güvenli")]
     [Range(0f, 0.4f)]
-    public float screenEdgeBuffer = 0.1f; // Dead Zone ayarı
+    public float screenEdgeBuffer = 0.1f;
 
-    // PERFORMANS İÇİN CACHED LAYERMASK
     private int visionLayerMask;
 
     [Header("Oda ve Şans Sistemi")]
@@ -47,35 +46,25 @@ public class LeesEnemyAI : MonoBehaviour
     public float maxIgnoranceTime = 30f;
     public float maxReactionTime = 3.0f;
     public float survivalWaitTime = 15f;
+    public float movementTolerance = 0.5f;
+    public float movementGraceTime = 0.5f;
 
-    [Tooltip(
-        "Oyuncu hareket etmemesi gerekirken hareket ederse, hızı bu değeri geçerse tetiklenir."
-    )]
-    public float movementTolerance = 0.5f; // Bunu 0.1'den 0.5'e çıkaralım, biraz esnek olsun.
-
-    [Tooltip(
-        "Arkasını döndüğünde yanlışlıkla hareket ederse, ölmeden önce tanınan süre (Refleks payı)."
-    )]
-    public float movementGraceTime = 0.5f; // YENİ: Yarım saniye hata payı
-
-    // Bu değişkeni de private alanlara ekle (HandleActiveLogic içinde kullanacağız)
     private float currentMovementGraceTimer = 0f;
 
     [Header("Ses Efektleri")]
     public AudioSource audioSource;
-
-    [Tooltip("Sesin açılma/kapanma süresi (Saniye)")]
     public float audioFadeDuration = 2.0f;
-
-    [Tooltip("Oyuncu Leesi gördüğünde çalacak gerilim sesi (Loop olmalı)")]
     public AudioClip stareSound;
-
-    [Tooltip("Saldırı anında çalacak ses")]
     public AudioClip jumpscareSound;
 
     [Header("Jumpscare Ayarları")]
     public float jumpscareDistance = 1.2f;
     public float jumpscareYOffset = -0.5f;
+
+    // --- YENİ EKLENEN KISIM ---
+    public JumpscareProfile leesJumpscareProfile;
+
+    // ---------------------------
 
     [Header("Spawn Sıklığı")]
     public float spawnCooldownAfterDespawn = 20f;
@@ -103,7 +92,6 @@ public class LeesEnemyAI : MonoBehaviour
     [HideInInspector]
     public bool debugHasBeenSpotted;
 
-    // Sayaçlar
     private float currentIgnoranceTimer;
     private float currentReactionTimer;
     private float currentSurvivalTimer;
@@ -112,15 +100,12 @@ public class LeesEnemyAI : MonoBehaviour
     private bool hasTurnedAway = false;
     private Vector3 lastPlayerPos;
 
-    // Ses Kontrolü İçin Coroutine
     private Coroutine audioFadeRoutine;
 
     [Header("Referanslar")]
     public Transform playerTransform;
     public Camera playerCamera;
     private UnityEngine.CharacterController targetCharacterController;
-
-    // Input kontrolü
     private StarterAssetsInputs playerInputs;
 
     private void Awake()
@@ -154,9 +139,6 @@ public class LeesEnemyAI : MonoBehaviour
             audioSource.volume = 0f;
         }
 
-        // --- OPTİMİZASYON ---
-        // LayerMask'i burada bir kere hesaplıyoruz. Update'de tekrar tekrar hesaplamayacak.
-        // Player, UI, IgnoreRaycast ve TransparentFX HARİÇ her şeyi görecek.
         visionLayerMask = ~LayerMask.GetMask("Player", "UI", "IgnoreRaycast", "TransparentFX");
 
         DespawnLees();
@@ -171,7 +153,6 @@ public class LeesEnemyAI : MonoBehaviour
         if (currentCooldownTimer > 0)
         {
             currentCooldownTimer -= Time.deltaTime;
-
 #if UNITY_EDITOR
             debugCooldownTimer = currentCooldownTimer;
 #endif
@@ -188,12 +169,10 @@ public class LeesEnemyAI : MonoBehaviour
             HandleActiveLogic();
         }
 
-        // --- SADECE EDITORDE ÇALIŞACAK KISIM (Kasma Engelleme) ---
 #if UNITY_EDITOR
         debugReactionTimer = currentReactionTimer;
         debugSurvivalTimer = currentSurvivalTimer;
         debugIgnoranceTimer = currentIgnoranceTimer;
-        // Sadece debug açıksa Raycast at, yoksa atma.
         if (showDebugLogs)
             debugIsVisible = CheckIfVisible();
         debugHasBeenSpotted = hasBeenSpotted;
@@ -202,7 +181,6 @@ public class LeesEnemyAI : MonoBehaviour
 
     private void HandleActiveLogic()
     {
-        // Oyuncunun anlık hızı
         float playerSpeed =
             Vector3.Distance(playerTransform.position, lastPlayerPos) / Time.deltaTime;
         lastPlayerPos = playerTransform.position;
@@ -216,12 +194,11 @@ public class LeesEnemyAI : MonoBehaviour
         bool isPlayerControllable = (
             targetCharacterController != null && targetCharacterController.enabled
         );
-        bool logicVisible = CheckIfVisible(); // Optimize edilmiş görüş kontrolü
+        bool logicVisible = CheckIfVisible();
 
         if (!isPlayerControllable && !hasBeenSpotted)
             logicVisible = false;
 
-        // --- HENÜZ FARK EDİLMEDİ (A) ---
         if (!hasBeenSpotted)
         {
             if (logicVisible)
@@ -229,7 +206,6 @@ public class LeesEnemyAI : MonoBehaviour
                 hasBeenSpotted = true;
                 hasTurnedAway = false;
                 currentReactionTimer = 0f;
-                // İlk görüşte hareket timer'ını sıfırla
                 currentMovementGraceTimer = 0f;
 
                 if (audioSource && stareSound)
@@ -244,10 +220,9 @@ public class LeesEnemyAI : MonoBehaviour
                     TriggerDeath("Scenario A: Süre doldu (Ignorance)");
             }
         }
-        // --- FARK EDİLDİKTEN SONRA (C ve D) ---
         else
         {
-            if (logicVisible) // Hala bakıyor (Scenario C)
+            if (logicVisible)
             {
                 if (hasTurnedAway)
                 {
@@ -260,19 +235,14 @@ public class LeesEnemyAI : MonoBehaviour
                 if (currentReactionTimer >= maxReactionTime)
                     TriggerDeath("Scenario C: Çok uzun süre baktın!");
             }
-            else // Arkasını döndü (Survival - Scenario D)
+            else
             {
                 hasTurnedAway = true;
-
-                // Oyuncu tuşlara basıyor mu?
                 bool isInputting = (playerInputs != null && playerInputs.move != Vector2.zero);
 
-                // KURAL: Tuşa basıyor VE hızı toleransı geçiyorsa tehlike başlar.
                 if (isInputting && playerSpeed > movementTolerance)
                 {
-                    // Hemen öldürme! Sayacı başlat.
                     currentMovementGraceTimer += Time.deltaTime;
-
                     if (currentMovementGraceTimer >= movementGraceTime)
                     {
                         TriggerDeath(
@@ -282,9 +252,7 @@ public class LeesEnemyAI : MonoBehaviour
                 }
                 else
                 {
-                    // Eğer durursa veya yavaşlarsa sayacı sıfırla (Affet)
-                    currentMovementGraceTimer = 0f; // Veya yavaşça azalt: Mathf.Max(0, currentMovementGraceTimer - Time.deltaTime);
-
+                    currentMovementGraceTimer = 0f;
                     currentSurvivalTimer += Time.deltaTime;
                     currentReactionTimer = Mathf.Max(0, currentReactionTimer - Time.deltaTime);
 
@@ -298,22 +266,17 @@ public class LeesEnemyAI : MonoBehaviour
         }
     }
 
-    // --- KRİTİK DÜZELTME: GÖRÜŞ KONTROLÜ ---
     private bool CheckIfVisible()
     {
         if (playerCamera == null)
             return false;
 
-        // Hedef nokta
         Vector3 targetPoint =
             (eyesPosition != null) ? eyesPosition.position : transform.position + Vector3.up * 1.5f;
-
-        // 1. EKRAN KONTROLÜ (Viewport) - Ucuz işlem
         Vector3 viewportPoint = playerCamera.WorldToViewportPoint(targetPoint);
         if (viewportPoint.z <= 0)
-            return false; // Arkamızda
+            return false;
 
-        // Dead Zone (Kenar payı)
         if (
             viewportPoint.x < screenEdgeBuffer
             || viewportPoint.x > (1f - screenEdgeBuffer)
@@ -322,17 +285,11 @@ public class LeesEnemyAI : MonoBehaviour
         )
             return false;
 
-        // 2. RAYCAST (OPTİMİZE EDİLMİŞ)
-
-        // Origin'i kameranın 0.3 birim önüne aldık (Kendi kafamıza çarpmaması için)
         Vector3 origin = playerCamera.transform.position + playerCamera.transform.forward * 0.3f;
         Vector3 direction = targetPoint - origin;
         float distance = direction.magnitude;
-
         RaycastHit hit;
 
-        // 'visionLayerMask' kullanıyoruz (GetMask yok, performans dostu)
-        // 'QueryTriggerInteraction.Collide' kullanıyoruz (Trigger olsa bile çarpar, içinden geçmez)
         if (
             Physics.Raycast(
                 origin,
@@ -344,10 +301,8 @@ public class LeesEnemyAI : MonoBehaviour
             )
         )
         {
-            // Çarptığımız şey Lees mi?
             if (hit.transform == transform || hit.transform.IsChildOf(transform))
             {
-                // SADECE EDITORDE ÇİZGİ ÇİZ (Build'de kasmaması için)
 #if UNITY_EDITOR
                 if (showDebugLogs)
                     Debug.DrawLine(origin, hit.point, Color.green);
@@ -356,7 +311,6 @@ public class LeesEnemyAI : MonoBehaviour
             }
             else
             {
-                // Duvara veya başka bir şeye çarptı
 #if UNITY_EDITOR
                 if (showDebugLogs)
                     Debug.DrawLine(origin, hit.point, Color.red);
@@ -364,8 +318,6 @@ public class LeesEnemyAI : MonoBehaviour
                 return false;
             }
         }
-
-        // Hiçbir şeye çarpmadıysa (Boşluğa gittiyse) -> Görmüyoruz
         return false;
     }
 
@@ -421,11 +373,10 @@ public class LeesEnemyAI : MonoBehaviour
         if (leesAnimator != null)
             leesAnimator.SetTrigger(JumpscareTrigger);
 
-        float animDuration = 3.5f;
         if (spawnBehind)
-            StartCoroutine(ExecuteBehindJumpscare(animDuration));
+            StartCoroutine(ExecuteBehindJumpscare());
         else
-            StartCoroutine(ExecuteSmartJumpscare(animDuration));
+            StartCoroutine(ExecuteSmartJumpscare());
     }
 
     private void StartFadeAudio(AudioClip clip, bool fadeIn)
@@ -461,37 +412,42 @@ public class LeesEnemyAI : MonoBehaviour
             audioSource.Stop();
     }
 
-    private IEnumerator ExecuteBehindJumpscare(float duration)
+    // --- JUMPSCARE GÜNCELLEMELERİ ---
+    private IEnumerator ExecuteBehindJumpscare()
     {
         currentState = LeesState.Jumpscare;
         ShowModel(true);
         if (JumpscareManager.Instance != null)
         {
+            // Yeni Profil sistemini kullanıyor
             JumpscareManager.Instance.StartJumpscare(
                 transform,
+                leesJumpscareProfile,
                 true,
-                duration,
                 JumpscareStyle.ForcedBehind
             );
         }
         yield return null;
     }
 
-    private IEnumerator ExecuteSmartJumpscare(float duration)
+    private IEnumerator ExecuteSmartJumpscare()
     {
         currentState = LeesState.Jumpscare;
         ShowModel(true);
         if (JumpscareManager.Instance != null)
         {
+            // Yeni Profil sistemini kullanıyor
             JumpscareManager.Instance.StartJumpscare(
                 transform,
+                leesJumpscareProfile,
                 true,
-                duration,
                 JumpscareStyle.SmartDisplacement
             );
         }
         yield return null;
     }
+
+    // -------------------------------
 
     private void CheckSpawnLogic()
     {
@@ -561,7 +517,6 @@ public class LeesEnemyAI : MonoBehaviour
             return null;
 
         List<Transform> shuffledPoints = new List<Transform>(currentRoom.spawnPoints);
-        // Fisher-Yates Shuffle
         for (int i = 0; i < shuffledPoints.Count; i++)
         {
             Transform temp = shuffledPoints[i];
@@ -572,7 +527,6 @@ public class LeesEnemyAI : MonoBehaviour
 
         foreach (Transform point in shuffledPoints)
         {
-            // Burada basit bir kontrol yapıyoruz spawn için
             if (!IsPositionVisibleToPlayer(point.position))
                 return point;
         }
@@ -599,7 +553,6 @@ public class LeesEnemyAI : MonoBehaviour
         Vector3 direction = position - playerCamera.transform.position;
         float distance = direction.magnitude;
 
-        // Spawn kontrolü için obstacleMask kullanıyoruz (Basit duvar kontrolü)
         if (Physics.Raycast(playerCamera.transform.position, direction, distance, obstacleMask))
             return false;
 
@@ -625,10 +578,7 @@ public class LeesEnemyAI : MonoBehaviour
             c.enabled = show;
     }
 
-    public void EnterRoom(RoomManager room)
-    {
-        currentRoom = room;
-    }
+    public void EnterRoom(RoomManager room) => currentRoom = room;
 
     public void ExitRoom(RoomManager room)
     {
@@ -636,14 +586,12 @@ public class LeesEnemyAI : MonoBehaviour
             currentRoom = null;
     }
 
-    public float GetCurrentSpawnChance()
-    {
-        return (currentRoom != null && currentRoom.isDangerous)
+    public float GetCurrentSpawnChance() =>
+        (currentRoom != null && currentRoom.isDangerous)
             ? Mathf.Clamp(
                 baseSpawnChance + (timeSpentInCurrentRoom * chanceIncreasePerSecond),
                 0f,
                 90f
             )
             : 0f;
-    }
 }

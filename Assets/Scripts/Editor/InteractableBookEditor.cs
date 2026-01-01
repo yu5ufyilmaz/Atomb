@@ -50,14 +50,44 @@ public class InteractableBookEditor : Editor
         EditorGUILayout.EndFoldoutHeaderGroup();
         EditorGUILayout.Space(2);
 
-        // --- 2. HIGHLIGHT (YENİ HDRP AYARLARI) ---
+        // --- 2. HIGHLIGHT & OUTLINE AYARLARI ---
         showHighlight = EditorGUILayout.BeginFoldoutHeaderGroup(
             showHighlight,
-            "✨ Vurgu (Highlight) Ayarları"
+            "✨ Vurgu (Highlight / Outline) Ayarları"
         );
         if (showHighlight)
         {
             EditorGUILayout.BeginVertical(EditorStyles.helpBox);
+
+            // --- YENİ EKLENEN KISIM: OUTLINE CONTROLLER ---
+            SerializedProperty outlineProp = serializedObject.FindProperty("outlineController");
+            EditorGUILayout.PropertyField(outlineProp, new GUIContent("HDRP Outline Scripti"));
+
+            if (outlineProp.objectReferenceValue != null)
+            {
+                // Eğer Outline atanmışsa kullanıcıyı bilgilendir
+                GUI.backgroundColor = new Color(0.8f, 1f, 0.8f); // Hafif yeşil arka plan
+                EditorGUILayout.HelpBox(
+                    "✅ Outline Scripti algılandı! Eski 'Emission' (Parlama) sistemi yerine Outline kullanılacak.",
+                    MessageType.Info
+                );
+                GUI.backgroundColor = Color.white;
+            }
+            else
+            {
+                // Atanmamışsa uyarı verilebilir veya boş bırakılabilir
+                EditorGUILayout.HelpBox(
+                    "Outline Scripti boşsa, aşağıdaki Parlama (Emission) ayarları kullanılır.",
+                    MessageType.None
+                );
+            }
+
+            EditorGUILayout.Space(5);
+            EditorGUILayout.LabelField(
+                "Yedek Sistem (Emission/Parlama)",
+                EditorStyles.miniBoldLabel
+            );
+            // ----------------------------------------------
 
             SerializedProperty colorProp = serializedObject.FindProperty("highlightColor");
             SerializedProperty intensityProp = serializedObject.FindProperty("emissionIntensity");

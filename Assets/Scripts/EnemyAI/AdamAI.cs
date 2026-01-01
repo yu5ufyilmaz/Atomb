@@ -7,7 +7,7 @@ public class AdamAI : MonoBehaviour
 
     [Header("DEBUG - ANLIK DURUM")]
     [Tooltip("Adam şu an oyuncuyu hangi odada görüyor?")]
-    public string currentDetectedRoom = "YOK (Koridor/Boşluk)"; // <-- BURAYA BAKACAKSIN
+    public string currentDetectedRoom = "YOK (Koridor/Boşluk)";
 
     [Header("Zamanlama Ayarları")]
     public float timeToFirstWarning = 15f;
@@ -27,7 +27,9 @@ public class AdamAI : MonoBehaviour
     [SerializeField]
     private AudioClip killSound;
 
-    [Header("Jumpscare")]
+    [Header("Jumpscare & Animasyon")]
+    public Animator animator; // Animasyon kontrolcüsü
+
     [SerializeField]
     private GameObject adamModel;
 
@@ -46,6 +48,10 @@ public class AdamAI : MonoBehaviour
 
     [HideInInspector]
     public float debugTotalTimeNeeded;
+    public JumpscareProfile adamJumpscareProfile; // <-- YENİ
+
+    // Animasyon Hash
+    private int _animIDAttack;
 
     private void Awake()
     {
@@ -53,6 +59,8 @@ public class AdamAI : MonoBehaviour
             Instance = this;
         if (adamModel)
             adamModel.SetActive(false);
+
+        _animIDAttack = Animator.StringToHash("Attack");
     }
 
     private void Start()
@@ -182,14 +190,22 @@ public class AdamAI : MonoBehaviour
             Vector3 behindPos = player.position - (player.forward * jumpScareDistance);
             transform.position = new Vector3(behindPos.x, player.position.y, behindPos.z);
             transform.LookAt(player.position);
+
             if (adamModel)
+            {
                 adamModel.SetActive(true);
+                // Animasyon Tetiklemesi
+                if (animator != null)
+                {
+                    animator.SetTrigger(_animIDAttack);
+                }
+            }
         }
 
         if (audioSource)
             audioSource.PlayOneShot(killSound);
         if (JumpscareManager.Instance != null)
-            JumpscareManager.Instance.StartJumpscare(transform, true);
+            JumpscareManager.Instance.StartJumpscare(transform, adamJumpscareProfile, true);
     }
 
     private void PlaySound(AudioClip clip)

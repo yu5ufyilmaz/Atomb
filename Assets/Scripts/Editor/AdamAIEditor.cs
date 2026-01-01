@@ -87,7 +87,21 @@ public class AdamAIEditor : Editor
             );
             EditorGUILayout.Space(5);
             EditorGUILayout.PropertyField(serializedObject.FindProperty("adamModel"));
+
+            // --- YENİ EKLENEN KISIM ---
+            EditorGUILayout.PropertyField(
+                serializedObject.FindProperty("animator"),
+                new GUIContent("Animator Controller")
+            );
+            // ---------------------------
+
             EditorGUILayout.PropertyField(serializedObject.FindProperty("jumpScareDistance"));
+            EditorGUILayout.Space(10);
+            EditorGUILayout.LabelField("Kişisel Jumpscare Ayarları", EditorStyles.boldLabel);
+            EditorGUILayout.PropertyField(
+                serializedObject.FindProperty("adamJumpscareProfile"),
+                true
+            ); // <-- YENİ EKLENDİ
             EditorGUILayout.EndVertical();
         }
         EditorGUILayout.EndFoldoutHeaderGroup();

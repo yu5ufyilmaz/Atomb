@@ -2,16 +2,15 @@ using System.Collections;
 using Cinemachine;
 using StarterAssets;
 using UnityEngine;
-using UnityEngine.Rendering; // <-- Volume için gerekli
-using UnityEngine.Rendering.HighDefinition; // <-- HDRP efektleri için gerekli
+using UnityEngine.Rendering;
+using UnityEngine.Rendering.HighDefinition;
 using UnityEngine.SceneManagement;
 
-// TİPLERİ BURADA TANIMLIYORUZ
 public enum JumpscareStyle
 {
-    Direct, // Klasik: Anında veya çok hızlı yüze bakma (Adam, Guderian Kapı)
-    SmartDisplacement, // Lees Özel: Sağ/Sol kontrolü ve yavaş dönüş (Halüsinasyon)
-    ForcedBehind, // Senaryo B: Zorla arkaya çevirme (Kapıdan kaçarken)
+    Direct,
+    SmartDisplacement,
+    ForcedBehind,
 }
 
 public class JumpscareManager : MonoBehaviour
@@ -35,7 +34,6 @@ public class JumpscareManager : MonoBehaviour
     private Transform headBone;
 
     [Header("Volume (Post-Process)")]
-    [Tooltip("Sahnendeki Global Volume'ü buraya sürükle")]
     [SerializeField]
     private Volume globalVolume;
 
@@ -46,42 +44,19 @@ public class JumpscareManager : MonoBehaviour
     private FilmGrain m_FilmGrain;
     private ColorAdjustments m_ColorAdjustments;
 
-    [Header("Jumpscare Hissi (The Juice)")]
-    [Tooltip("Sarsıntının şiddeti")]
+    [Header("Varsayılan Ayarlar (Yedek)")]
     [SerializeField]
-    private float shakeIntensity = 0.5f;
-
-    [Tooltip("Sarsıntının hızı")]
-    [SerializeField]
-    private float shakeFrequency = 20f;
-
-    [Tooltip("Kameranın eğilme açısı (Dutch Angle)")]
-    [SerializeField]
-    private float tiltAngle = 10f;
-
-    [Tooltip("Jumpscare anında gidilecek FOV değeri")]
-    [SerializeField]
-    private float targetFOV = 40f;
+    private JumpscareProfile defaultProfile; // Eğer düşmanda ayar yoksa bunu kullanır
 
     [Header("Dönüş Ayarları")]
-    [Tooltip("Lees tarzı yavaş dönüş hızı")]
     [SerializeField]
     private float slowTurnSpeed = 3.5f;
 
-    [Tooltip("Adam/Guderian tarzı hızlı dönüş hızı")]
     [SerializeField]
     private float fastTurnSpeed = 15.0f;
 
     [SerializeField]
     private LayerMask obstacleLayers;
-
-    [Tooltip("Duvar kontrolü için ışın mesafesi")]
-    [SerializeField]
-    private float obstacleCheckDistance = 1.0f;
-
-    [Header("Ayarlar")]
-    [SerializeField]
-    private float defaultScareDuration = 2.5f;
 
     [SerializeField]
     private Vector3 eyeOffset = new Vector3(0, 0.1f, 0.15f);
@@ -90,10 +65,6 @@ public class JumpscareManager : MonoBehaviour
     private int _animIDPanicRight;
     private int _animIDPanicLeft;
     private int _animIDPanicBack;
-    private int _animIDSpeed;
-    private int _animIDMotionSpeed;
-
-    private float originalFOV;
 
     private void Awake()
     {
@@ -105,13 +76,11 @@ public class JumpscareManager : MonoBehaviour
         _animIDPanicRight = Animator.StringToHash("PanicTurnRight");
         _animIDPanicLeft = Animator.StringToHash("PanicTurnLeft");
         _animIDPanicBack = Animator.StringToHash("PanicTurnBack");
-        _animIDSpeed = Animator.StringToHash("Speed");
-        _animIDMotionSpeed = Animator.StringToHash("MotionSpeed");
     }
 
     private void Start()
     {
-        // 1. Oyuncu Referanslarını Bul
+        // Oyuncu Referanslarını Bul
         GameObject player = GameObject.FindGameObjectWithTag("Player");
         if (player)
         {
@@ -132,10 +101,6 @@ public class JumpscareManager : MonoBehaviour
         }
         if (mainCamera == null)
             mainCamera = Camera.main;
-        if (mainCamera != null)
-            originalFOV = mainCamera.fieldOfView;
-
-        // 2. Volume Referanslarını Al (Yoksa Bul)
         if (globalVolume == null)
             globalVolume = FindObjectOfType<Volume>();
 
@@ -149,25 +114,38 @@ public class JumpscareManager : MonoBehaviour
         }
     }
 
+    // ARTIK BURASI SENİN İSTEDİĞİN GİBİ PROFİL ALIYOR
     public void StartJumpscare(
         Transform enemy,
+        JumpscareProfile profile,
         bool playTurnAnim = true,
-        float customDuration = 0f,
         JumpscareStyle style = JumpscareStyle.Direct
     )
     {
-        float duration = customDuration > 0 ? customDuration : defaultScareDuration; // defaultScareDuration tanımlı olmalı
-        StartCoroutine(JumpscareRoutine(enemy, playTurnAnim, duration, style));
+        // Eğer profil gönderilmediyse varsayılanı kullan
+        JumpscareProfile activeProfile = profile != null ? profile : defaultProfile;
+
+        // Eğer varsayılan da yoksa geçici bir tane oluştur (Hata vermemesi için)
+        if (activeProfile == null)
+        {
+            activeProfile = new JumpscareProfile();
+            activeProfile.duration = 2.5f;
+            activeProfile.enemyEyeHeightOffset = 1.3f;
+            activeProfile.shakeIntensity = 0.5f;
+            activeProfile.shakeFrequency = 20f;
+        }
+
+        StartCoroutine(JumpscareRoutine(enemy, activeProfile, playTurnAnim, style));
     }
 
     private IEnumerator JumpscareRoutine(
         Transform enemy,
+        JumpscareProfile settings,
         bool playTurnAnim,
-        float duration,
         JumpscareStyle style
     )
     {
-        // 1. KONTROLLERİ VE KAMERAYI KAPAT
+        // 1. KONTROLLERİ KAPAT
         if (playerInput)
         {
             playerInput.cursorInputForLook = false;
@@ -183,14 +161,13 @@ public class JumpscareManager : MonoBehaviour
                 brain.enabled = false;
         }
 
-        // Kamerayı kafaya sabitle
         if (headBone != null)
         {
             mainCamera.transform.SetParent(headBone);
             mainCamera.transform.localPosition = eyeOffset;
         }
 
-        // 2. POZİSYON VE HEDEF BELİRLEME
+        // 2. POZİSYON VE DÖNÜŞ HIZI
         Vector3 targetPos = enemy.position;
         float currentTurnSpeed = fastTurnSpeed;
 
@@ -199,7 +176,6 @@ public class JumpscareManager : MonoBehaviour
             case JumpscareStyle.Direct:
                 currentTurnSpeed = fastTurnSpeed;
                 break;
-
             case JumpscareStyle.SmartDisplacement:
                 targetPos = GetSmartJumpscarePosition(playerController.transform, 1.2f);
                 targetPos.y = playerController.transform.position.y;
@@ -207,7 +183,6 @@ public class JumpscareManager : MonoBehaviour
                 enemy.LookAt(playerController.transform.position);
                 currentTurnSpeed = slowTurnSpeed;
                 break;
-
             case JumpscareStyle.ForcedBehind:
                 Vector3 backDir = -playerController.transform.forward;
                 targetPos = playerController.transform.position + (backDir * 1.2f);
@@ -218,7 +193,7 @@ public class JumpscareManager : MonoBehaviour
                 break;
         }
 
-        // 3. ANİMASYON TETİKLEME
+        // 3. ANİMASYON
         if (playTurnAnim && playerAnimator != null)
         {
             Vector3 dirToTarget = (enemy.position - playerController.transform.position).normalized;
@@ -227,7 +202,6 @@ public class JumpscareManager : MonoBehaviour
                 dirToTarget,
                 Vector3.up
             );
-
             if (Mathf.Abs(angle) > 135f)
                 playerAnimator.SetTrigger(_animIDPanicBack);
             else if (angle > 0)
@@ -236,109 +210,87 @@ public class JumpscareManager : MonoBehaviour
                 playerAnimator.SetTrigger(_animIDPanicLeft);
         }
 
-        // 4. DÖNGÜ (DÜZELTİLMİŞ KISIM)
+        // 4. DÖNGÜ (AYARLAR ARTIK SETTINGS'DEN GELİYOR)
         float timer = 0f;
-
-        // Kamera dönüşü başlamadan önce beklenecek süre (saniye)
-        // Animasyonun biraz ilerlemesine izin verir.
         float rotationDelay = 0.35f;
 
-        while (timer < duration)
+        while (timer < settings.duration)
         {
             timer += Time.deltaTime;
-            float progress = timer / duration;
+            float progress = timer / settings.duration;
 
-            // Düşmanın kafasına bakmak için hedef rotasyon
-            Vector3 enemyHeadPos = enemy.position + (Vector3.up * 1.6f);
+            // Profildeki EyeHeightOffset'i kullanıyoruz
+            Vector3 enemyHeadPos = enemy.position + (Vector3.up * settings.enemyEyeHeightOffset);
             Quaternion targetRot = Quaternion.LookRotation(
                 enemyHeadPos - mainCamera.transform.position
             );
 
-            // GECİKMELİ DÖNÜŞ KONTROLÜ
             if (timer > rotationDelay)
             {
-                // Belirlenen süre geçtiyse kamerayı düşmana çevir
                 mainCamera.transform.rotation = Quaternion.Slerp(
                     mainCamera.transform.rotation,
                     targetRot,
                     Time.deltaTime * currentTurnSpeed
                 );
             }
-            // else: Süre dolmadıysa kamera karakterin kafasına bağlı olarak doğal açısında kalsın.
 
-            // Titreşim (Shake) her zaman aktif olabilir
+            // Profildeki Shake ayarlarını kullanıyoruz
             float shake =
-                (Mathf.PerlinNoise(Time.time * shakeFrequency, 0f) - 0.5f) * shakeIntensity;
-            mainCamera.transform.Rotate(new Vector3(shake, shake * 0.5f, 0));
+                (Mathf.PerlinNoise(Time.time * settings.shakeFrequency, 0f) - 0.5f)
+                * settings.shakeIntensity;
 
-            ApplyJumpscareEffects(progress);
+            // Profildeki Tilt (Eğilme) açısını kullanıyoruz
+            float currentTilt = Mathf.Lerp(0, settings.tiltAngle, progress);
 
+            mainCamera.transform.Rotate(new Vector3(shake, shake * 0.5f, currentTilt));
+
+            ApplyJumpscareEffects(progress); // Efektleri uygula
             yield return null;
         }
 
-        // BİTİŞ
+        // --- SON DOKUNUŞ: EFEKTLERİ KİLİTLE ---
+        // Döngü bittiğinde efektleri %100'e (maksimum bozukluğa) sabitliyoruz.
+        // Böylece Death UI açılıp zaman durduğunda ekran bozuk kalır.
+        ApplyJumpscareEffects(1.0f);
+        // --------------------------------------
+
         if (DeathUIManager.Instance != null)
             DeathUIManager.Instance.ShowDeathScreen();
         else
             SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 
-    // Bu fonksiyon, sağımız/solumuz dolu mu diye bakar ve düşmanı koymak için EN MÜSAİT yeri seçer.
-    // YARDIMCI: Akıllı Pozisyon Bulucu (Lees için)
     private Vector3 GetSmartJumpscarePosition(Transform player, float distance)
     {
         Vector3 origin = player.position + Vector3.up * 1.5f;
         bool hitRight = Physics.Raycast(origin, player.right, 1.0f, obstacleLayers);
         bool hitLeft = Physics.Raycast(origin, -player.right, 1.0f, obstacleLayers);
-
         if (!hitRight)
-            return player.position + (player.right * distance); // Sağ boşsa sağa
+            return player.position + (player.right * distance);
         else if (!hitLeft)
-            return player.position + (-player.right * distance); // Sol boşsa sola
+            return player.position + (-player.right * distance);
         else
-            return player.position + (-player.forward * distance); // İkisi de doluysa arkaya
+            return player.position + (-player.forward * distance);
     }
 
     private void ApplyJumpscareEffects(float progress)
     {
-        // Efektlerin şiddetini zamanla artır (Lerp)
-        // progress: 0.0 (Başlangıç) -> 1.0 (Son)
-
-        // 1. VIGNETTE (Kenar Kararması)
         if (m_Vignette != null)
         {
-            // Normalden 0.65 şiddetine çıksın
             m_Vignette.intensity.Override(Mathf.Lerp(0f, 0.65f, progress));
             m_Vignette.smoothness.Override(Mathf.Lerp(0.2f, 1f, progress));
         }
-
-        // 2. CHROMATIC ABERRATION (Renk Ayrışması)
         if (m_Aberration != null)
-        {
-            // Çok şiddetli bozulma (1.0 max)
             m_Aberration.intensity.Override(Mathf.Lerp(0f, 1f, progress));
-        }
-
-        // 3. LENS DISTORTION (Bükülme)
         if (m_LensDistortion != null)
         {
-            // Hafif içe göçme etkisi (-0.4)
             m_LensDistortion.intensity.Override(Mathf.Lerp(0f, -0.4f, progress));
             m_LensDistortion.scale.Override(Mathf.Lerp(1f, 0.9f, progress));
         }
-
-        // 4. FILM GRAIN (Kumlanma/Gürültü)
         if (m_FilmGrain != null)
-        {
             m_FilmGrain.intensity.Override(Mathf.Lerp(0f, 1f, progress));
-        }
-
-        // 5. SATURATION (Renk Solması - Opsiyonel)
         if (m_ColorAdjustments != null)
-        {
-            // Renkler %50 azalsın
             m_ColorAdjustments.saturation.Override(Mathf.Lerp(0f, -50f, progress));
-        }
     }
 
     private Transform RecursiveFindChild(Transform parent, string childName)
