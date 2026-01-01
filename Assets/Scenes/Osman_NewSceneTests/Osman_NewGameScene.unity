@@ -418,6 +418,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   roomName: ParticleAccelerator_Room
   isCorridor: 0
+  roomSpeakerTransform: {fileID: 2028613052}
   onFirstEnterSound:
     clip: {fileID: 8300000, guid: 897f817c82d48c54fbf943c11418e8cc, type: 3}
     subtitleID: 
@@ -1023,20 +1024,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speakerSource: {fileID: 88059970}
-  introClip: {fileID: 8300000, guid: 15ee8dc2e2587804e80a412943e65da6, type: 3}
-  nagPickupClip: {fileID: 8300000, guid: 8e69f05c81bdb624e9d8ad6b3554f61e, type: 3}
-  nagInputClip: {fileID: 8300000, guid: 03ede6ca8f211d04ab43acc11dc2a0f7, type: 3}
-  machineUnlockClip: {fileID: 8300000, guid: 97806e1f11a53924fbc781e2aaa68844, type: 3}
-  pressureEmergencyClip: {fileID: 0}
-  pressureRoomIntroClip: {fileID: 0}
-  idleCorridorClip: {fileID: 8300000, guid: cb85a96ddca67bf4b895ff8c3511a930, type: 3}
-  idlePuzzleClip: {fileID: 0}
-  holdingCodeClip: {fileID: 0}
-  lightsWarningClip: {fileID: 8300000, guid: cc6c4b0ae4bb67b479f9137b72e89e7a, type: 3}
-  denyExitClip: {fileID: 0}
-  finalSpeechClip: {fileID: 8300000, guid: f8309a0e63e8eec4b94863d34b2ffa04, type: 3}
-  nagFinalClip: {fileID: 0}
-  idleThreshold: 30
+  startGameClip: {fileID: 8300000, guid: 15ee8dc2e2587804e80a412943e65da6, type: 3}
+  startGameSubtitleID: start_game
+  startGameDelay: 3
+  notepadPickupClip: {fileID: 8300000, guid: 8e69f05c81bdb624e9d8ad6b3554f61e, type: 3}
+  notepadPickupSubtitleID: first_notepad
+  firstMistakeClip: {fileID: 8300000, guid: 03ede6ca8f211d04ab43acc11dc2a0f7, type: 3}
+  firstMistakeSubtitleID: first_mistake
+  tutorialSolvedClip: {fileID: 8300000, guid: 97806e1f11a53924fbc781e2aaa68844, type: 3}
+  tutorialSolvedSubtitleID: tutorial_solved
+  pressureWarningClip: {fileID: 8300000, guid: cb85a96ddca67bf4b895ff8c3511a930, type: 3}
+  pressureWarningSubtitleID: pressure_warning
+  breakerTripClip: {fileID: 8300000, guid: cc6c4b0ae4bb67b479f9137b72e89e7a, type: 3}
+  breakerTripSubtitleID: breaker_trip
+  finalCodeClip: {fileID: 8300000, guid: f8309a0e63e8eec4b94863d34b2ffa04, type: 3}
+  finalCodeSubtitleID: final_code
 --- !u!82 &88059970
 AudioSource:
   m_ObjectHideFlags: 0
@@ -4774,6 +4776,8 @@ MonoBehaviour:
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
   canContainPassword: 1
+  highlightColor: {r: 0.2, g: 0.2, b: 0.1, a: 0.53333336}
+  emissionIntensity: 1
   isOpen: 0
   isAnimating: 0
   currentPage: 0
@@ -4787,9 +4791,6 @@ MonoBehaviour:
     width: 0.2
     height: 0.2
   hasPasswordBeenFound: 0
-  outlineColor: {r: 1, g: 1, b: 0, a: 1}
-  outlineWidth: 5
-  bookCollider: {fileID: 0}
 --- !u!114 &285976799
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -11580,6 +11581,92 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 711265895}
   m_CullTransparentMesh: 1
+--- !u!1 &711816439
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 711816440}
+  - component: {fileID: 711816442}
+  - component: {fileID: 711816441}
+  m_Layer: 0
+  m_Name: SM_CameraAndMegaphone (1)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &711816440
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 711816439}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0.7071068, y: -0, z: -0, w: 0.7071067}
+  m_LocalPosition: {x: 15.261, y: 2.899, z: 16.04}
+  m_LocalScale: {x: 0.01, y: 0.009999997, z: 0.009999997}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 920711968}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!23 &711816441
+MeshRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 711816439}
+  m_Enabled: 1
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 9096561696663141450, guid: ca61e8b4f36ca104c8a854c236c24c38, type: 3}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
+--- !u!33 &711816442
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 711816439}
+  m_Mesh: {fileID: -467163519371910017, guid: ca61e8b4f36ca104c8a854c236c24c38, type: 3}
 --- !u!4 &719761528 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7548850176812605586, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
@@ -14723,6 +14810,7 @@ Transform:
   - {fileID: 1974323832}
   - {fileID: 8926979288026625387}
   - {fileID: 2013219018}
+  - {fileID: 711816440}
   m_Father: {fileID: 1373385264}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &926566842
@@ -15096,6 +15184,8 @@ MonoBehaviour:
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: 725e301b34f00429ca9064b7d0eaa616, type: 2}
   canContainPassword: 1
+  highlightColor: {r: 0.2, g: 0.2, b: 0.1, a: 1}
+  emissionIntensity: 10
   isOpen: 0
   isAnimating: 0
   currentPage: 0
@@ -15109,9 +15199,6 @@ MonoBehaviour:
     width: 0
     height: 0
   hasPasswordBeenFound: 0
-  outlineColor: {r: 1, g: 1, b: 0, a: 1}
-  outlineWidth: 5
-  bookCollider: {fileID: 0}
 --- !u!1 &939139315
 GameObject:
   m_ObjectHideFlags: 19
@@ -17066,6 +17153,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   roomName: Fuse_Room
   isCorridor: 0
+  roomSpeakerTransform: {fileID: 0}
   onFirstEnterSound:
     clip: {fileID: 0}
     subtitleID: 
@@ -19008,6 +19096,8 @@ MonoBehaviour:
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
   canContainPassword: 1
+  highlightColor: {r: 0.8396226, g: 0.80364424, b: 0.7247686, a: 0.039215688}
+  emissionIntensity: 1
   isOpen: 0
   isAnimating: 0
   currentPage: 0
@@ -19021,9 +19111,6 @@ MonoBehaviour:
     width: 0.2
     height: 0.2
   hasPasswordBeenFound: 0
-  outlineColor: {r: 1, g: 1, b: 0, a: 1}
-  outlineWidth: 5
-  bookCollider: {fileID: 0}
 --- !u!1 &1201733588
 GameObject:
   m_ObjectHideFlags: 0
@@ -19095,6 +19182,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   roomName: Office_Room
   isCorridor: 0
+  roomSpeakerTransform: {fileID: 3422726467468631029}
   onFirstEnterSound:
     clip: {fileID: 0}
     subtitleID: 
@@ -19323,6 +19411,8 @@ MonoBehaviour:
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
   canContainPassword: 1
+  highlightColor: {r: 0.2, g: 0.2, b: 0.1, a: 0.53333336}
+  emissionIntensity: 1
   isOpen: 0
   isAnimating: 0
   currentPage: 0
@@ -19336,9 +19426,6 @@ MonoBehaviour:
     width: 0.2
     height: 0.2
   hasPasswordBeenFound: 0
-  outlineColor: {r: 1, g: 1, b: 0, a: 1}
-  outlineWidth: 5
-  bookCollider: {fileID: 0}
 --- !u!114 &1212067468
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -20582,6 +20669,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   roomName: Chemistry_Lab
   isCorridor: 0
+  roomSpeakerTransform: {fileID: 711816440}
   onFirstEnterSound:
     clip: {fileID: 8300000, guid: d584952350fb8764fbd6e26bdfe2630f, type: 3}
     subtitleID: chemistry_lab_entrance
@@ -20992,6 +21080,8 @@ MonoBehaviour:
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
   canContainPassword: 1
+  highlightColor: {r: 0.2, g: 0.2, b: 0.1, a: 0.53333336}
+  emissionIntensity: 1
   isOpen: 0
   isAnimating: 0
   currentPage: 0
@@ -21005,9 +21095,6 @@ MonoBehaviour:
     width: 0.2
     height: 0.2
   hasPasswordBeenFound: 0
-  outlineColor: {r: 1, g: 1, b: 0, a: 1}
-  outlineWidth: 5
-  bookCollider: {fileID: 0}
 --- !u!114 &1322135891
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -21155,6 +21242,7 @@ Transform:
   - {fileID: 12212591}
   - {fileID: 601288412}
   - {fileID: 1643206507}
+  - {fileID: 2028613052}
   m_Father: {fileID: 24122837}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1327619676
@@ -21189,6 +21277,7 @@ Transform:
   - {fileID: 2114283753834967213}
   - {fileID: 906046683}
   - {fileID: 284345829}
+  - {fileID: 1798334977}
   - {fileID: 1373385264}
   - {fileID: 379256200}
   - {fileID: 24122837}
@@ -21321,6 +21410,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   roomName: Corridor
   isCorridor: 1
+  roomSpeakerTransform: {fileID: 0}
   onFirstEnterSound:
     clip: {fileID: 0}
     subtitleID: 
@@ -21513,6 +21603,8 @@ MonoBehaviour:
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: 51515ebaa232ea446892709aafa79e1c, type: 2}
   canContainPassword: 0
+  highlightColor: {r: 0.2, g: 0.2, b: 0.1, a: 0.53333336}
+  emissionIntensity: 1
   isOpen: 0
   isAnimating: 0
   currentPage: 0
@@ -21526,9 +21618,6 @@ MonoBehaviour:
     width: 0.2
     height: 0.2
   hasPasswordBeenFound: 0
-  outlineColor: {r: 1, g: 1, b: 0, a: 1}
-  outlineWidth: 5
-  bookCollider: {fileID: 0}
 --- !u!114 &1342168776
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -27229,6 +27318,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   roomName: Valve_Room
   isCorridor: 0
+  roomSpeakerTransform: {fileID: 1798334977}
   onFirstEnterSound:
     clip: {fileID: 8300000, guid: ac9b279d7ce20874d82e1eca141c8d2b, type: 3}
     subtitleID: pressure_emergency
@@ -28512,6 +28602,92 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1793654401}
   m_CullTransparentMesh: 1
+--- !u!1 &1798334976
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1798334977}
+  - component: {fileID: 1798334979}
+  - component: {fileID: 1798334978}
+  m_Layer: 0
+  m_Name: SM_CameraAndMegaphone
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1798334977
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1798334976}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0.7071068, y: -0, z: -0, w: 0.7071067}
+  m_LocalPosition: {x: 5.211, y: 3.68, z: -3.331}
+  m_LocalScale: {x: 0.01, y: 0.009999999, z: 0.009999999}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1327619677}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!23 &1798334978
+MeshRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1798334976}
+  m_Enabled: 1
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 9096561696663141450, guid: ca61e8b4f36ca104c8a854c236c24c38, type: 3}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
+--- !u!33 &1798334979
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1798334976}
+  m_Mesh: {fileID: -467163519371910017, guid: ca61e8b4f36ca104c8a854c236c24c38, type: 3}
 --- !u!1 &1801715815
 GameObject:
   m_ObjectHideFlags: 0
@@ -28661,6 +28837,8 @@ MonoBehaviour:
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
   canContainPassword: 1
+  highlightColor: {r: 0.2, g: 0.2, b: 0.1, a: 1}
+  emissionIntensity: 10
   isOpen: 0
   isAnimating: 0
   currentPage: 0
@@ -28674,9 +28852,6 @@ MonoBehaviour:
     width: 0.2
     height: 0.2
   hasPasswordBeenFound: 0
-  outlineColor: {r: 1, g: 1, b: 0, a: 1}
-  outlineWidth: 5
-  bookCollider: {fileID: 0}
 --- !u!1001 &1806373827
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -32325,6 +32500,92 @@ Material:
     - _UVMappingMaskEmissive: {r: 1, g: 0, b: 0, a: 0}
   m_BuildTextureStacks: []
   m_AllowLocking: 1
+--- !u!1 &2028613051
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2028613052}
+  - component: {fileID: 2028613054}
+  - component: {fileID: 2028613053}
+  m_Layer: 0
+  m_Name: SM_CameraAndMegaphone (1)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2028613052
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2028613051}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: -0.7071068, z: 0.7071068, w: 0}
+  m_LocalPosition: {x: 2.77, y: 3.03, z: -5.82}
+  m_LocalScale: {x: 0.01, y: 0.009999997, z: 0.009999997}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1324721620}
+  m_LocalEulerAnglesHint: {x: 90, y: 0, z: 180}
+--- !u!23 &2028613053
+MeshRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2028613051}
+  m_Enabled: 1
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 9096561696663141450, guid: ca61e8b4f36ca104c8a854c236c24c38, type: 3}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
+--- !u!33 &2028613054
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2028613051}
+  m_Mesh: {fileID: -467163519371910017, guid: ca61e8b4f36ca104c8a854c236c24c38, type: 3}
 --- !u!1 &2032837737
 GameObject:
   m_ObjectHideFlags: 0
@@ -34143,6 +34404,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   roomName: Corridor
   isCorridor: 1
+  roomSpeakerTransform: {fileID: 0}
   onFirstEnterSound:
     clip: {fileID: 0}
     subtitleID: 
@@ -35324,7 +35586,7 @@ SkinnedMeshRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
-  m_RayTracingMode: 3
+  m_RayTracingMode: 0
   m_RayTraceProcedural: 0
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1

@@ -198,9 +198,16 @@ public class PressureSystemManager : MonoBehaviour
 
     private void CheckMegaphone()
     {
-        if (MegaphoneSystem.Instance != null)
+        // Eski yöntem yerine yeni mantık:
+        // Eğer basınç, uyarı sınırını (warningThreshold) geçtiyse Megafon'a haber ver.
+        if (currentPressure >= warningThreshold)
         {
-            MegaphoneSystem.Instance.CheckPressureEvent(currentPressure, warningThreshold);
+            if (MegaphoneSystem.Instance != null)
+            {
+                // MegaphoneSystem içindeki "tek seferlik çalma" kontrolü (hasPlayedPressure)
+                // sayesinde bu fonksiyon her kare çalışsa bile ses sadece 1 kere çalar.
+                MegaphoneSystem.Instance.OnPressureThresholdExceeded();
+            }
         }
     }
 

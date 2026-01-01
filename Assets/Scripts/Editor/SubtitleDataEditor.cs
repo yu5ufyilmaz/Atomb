@@ -16,7 +16,6 @@ public class SubtitleDataEditor : Editor
     public override void OnInspectorGUI()
     {
         // ScriptableObject verisini "SerializedObject" olarak ele alıyoruz
-        // Bu sayede Undo/Redo (CTRL+Z) çalışır ve "Dirty" işaretleme otomatik yapılır.
         serializedObject.Update();
 
         SerializedProperty entriesProp = serializedObject.FindProperty("entries");
@@ -26,14 +25,13 @@ public class SubtitleDataEditor : Editor
             fontSize = 16,
             alignment = TextAnchor.MiddleCenter,
         };
-        GUIStyle headerStyle = new GUIStyle(EditorStyles.foldoutHeader)
-        {
-            fontStyle = FontStyle.Bold,
-            fontSize = 12,
-        };
 
         EditorGUILayout.Space(10);
         EditorGUILayout.LabelField("🌍 GELİŞMİŞ ALTYAZI MERKEZİ", titleStyle);
+        EditorGUILayout.HelpBox(
+            "Sıralı Sistem Aktif: Cümleler listedeki sıraya göre, süreleri (Duration) kadar ekranda kalıp değişecektir.",
+            MessageType.Info
+        );
         EditorGUILayout.Space(10);
 
         // ARAMA
@@ -81,7 +79,7 @@ public class SubtitleDataEditor : Editor
             if (GUILayout.Button("Sil", GUILayout.Width(40)))
             {
                 entriesProp.DeleteArrayElementAtIndex(i);
-                break; // Listeyi bozduğumuz için döngüden çık
+                break;
             }
             EditorGUILayout.EndHorizontal();
 
@@ -109,7 +107,8 @@ public class SubtitleDataEditor : Editor
                     SerializedProperty newSeg = segmentsProp.GetArrayElementAtIndex(
                         segmentsProp.arraySize - 1
                     );
-                    newSeg.FindPropertyRelative("startTime").floatValue = 0f;
+
+                    // --- DEĞİŞİKLİK: startTime kaldırıldı ---
                     newSeg.FindPropertyRelative("duration").floatValue = 2f;
                     newSeg.FindPropertyRelative("textTR").stringValue = "";
                 }
@@ -141,7 +140,7 @@ public class SubtitleDataEditor : Editor
             );
             newEntry.FindPropertyRelative("id").stringValue =
                 "new_dialogue_" + entriesProp.arraySize;
-            expandedIndex = entriesProp.arraySize - 1; // Yeni açılanı genişlet
+            expandedIndex = entriesProp.arraySize - 1;
         }
 
         EditorGUILayout.Space(5);
@@ -154,7 +153,6 @@ public class SubtitleDataEditor : Editor
         }
         GUI.backgroundColor = Color.white;
 
-        // Değişiklikleri kaydet
         serializedObject.ApplyModifiedProperties();
     }
 
@@ -175,20 +173,12 @@ public class SubtitleDataEditor : Editor
         }
         EditorGUILayout.EndHorizontal();
 
-        // Zamanlama Ayarları
+        // --- DEĞİŞİKLİK: Sadece Süre (Duration) kaldı ---
         EditorGUILayout.BeginHorizontal();
-        SerializedProperty startProp = segment.FindPropertyRelative("startTime");
         SerializedProperty durProp = segment.FindPropertyRelative("duration");
 
-        EditorGUILayout.LabelField("Başlangıç (sn):", GUILayout.Width(90));
-        startProp.floatValue = EditorGUILayout.FloatField(
-            startProp.floatValue,
-            GUILayout.Width(50)
-        );
-
-        GUILayout.Space(20);
-
-        EditorGUILayout.LabelField("Süre (sn):", GUILayout.Width(60));
+        // Başlangıç (Start Time) alanı SİLİNDİ.
+        EditorGUILayout.LabelField("Ekranda Kalma (sn):", GUILayout.Width(120));
         durProp.floatValue = EditorGUILayout.FloatField(durProp.floatValue, GUILayout.Width(50));
         EditorGUILayout.EndHorizontal();
 

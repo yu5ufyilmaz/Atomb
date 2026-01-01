@@ -440,21 +440,21 @@ public class InteractableTuringMachine : MonoBehaviour, IInteractable, IForceExi
             UpdateActiveWheelHighlight();
         }
 
-        if (Input.GetKeyDown(KeyCode.Q))
+        if (Input.GetKeyDown(KeyCode.A))
         {
             HandleIndexChange(-1);
             UpdateActiveWheelHighlight();
         }
-        else if (Input.GetKeyDown(KeyCode.E))
+        else if (Input.GetKeyDown(KeyCode.D))
         {
             HandleIndexChange(1);
             UpdateActiveWheelHighlight();
         }
 
         float rotationInput = 0f;
-        if (Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.RightArrow))
+        if (Input.GetKeyDown(KeyCode.RightArrow))
             rotationInput = 1f;
-        if (Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.LeftArrow))
+        if (Input.GetKeyDown(KeyCode.LeftArrow))
             rotationInput = -1f;
 
         float scroll = Input.mouseScrollDelta.y;
@@ -581,16 +581,6 @@ public class InteractableTuringMachine : MonoBehaviour, IInteractable, IForceExi
         {
             PlaySound(successSound);
             UpdateIndicators(PasswordManager.Instance.GetValidatedPasswordCount());
-
-            // --- EKLENEN KISIM: Megafon Sistemi ---
-            if (MegaphoneSystem.Instance != null)
-            {
-                // Eğer bu ilk şifreyse Tutorial biter ("Aferin, sistemler açıldı" vs.)
-                // Değilse sadece "Güzel, devam et" der.
-                MegaphoneSystem.Instance.OnTutorialCompleted();
-                MegaphoneSystem.Instance.OnCodeSubmitted();
-            }
-            // -------------------------------------
         }
         else
         {

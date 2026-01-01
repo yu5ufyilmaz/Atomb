@@ -86,14 +86,6 @@ public class ControllableLight : MonoBehaviour, IInteractable
             return;
         }
 
-        // --- EKLENEN KISIM: Idle Sıfırlama ---
-        if (MegaphoneSystem.Instance != null)
-        {
-            // Oyuncu ışıkla oynuyor, demek ki aktif.
-            MegaphoneSystem.Instance.ResetIdleTimer();
-            // İleride buraya "Çok fazla ışık açma" kontrolü de eklenebilir.
-            // MegaphoneSystem.Instance.CheckLightsState(...);
-        }
         // -------------------------------------
 
         // Oyuncunun "isteğini" değiştir

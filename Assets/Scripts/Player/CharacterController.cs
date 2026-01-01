@@ -331,15 +331,6 @@ namespace StarterAssets
 
         private void Move()
         {
-            // --- EKLENEN KISIM: Idle (Hareketsizlik) Kontrolü ---
-            // Eğer oyuncu yön tuşlarına basıyorsa (input vector sıfır değilse),
-            // Megafon sistemine "Oyuncu hareket ediyor, fırça atma" diyoruz.
-            if (_input.move != Vector2.zero && MegaphoneSystem.Instance != null)
-            {
-                MegaphoneSystem.Instance.ResetIdleTimer();
-            }
-            // ----------------------------------------------------
-
             // 1. Hız Hesaplama
             float targetSpeed = _input.sprint ? SprintSpeed : MoveSpeed;
             if (_input.move == Vector2.zero)

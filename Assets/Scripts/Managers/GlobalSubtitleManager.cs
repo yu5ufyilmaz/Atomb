@@ -25,7 +25,6 @@ public class GlobalSubtitleManager : MonoBehaviour
         HideSubtitle();
     }
 
-    // Artık sadece ID veriyoruz, süre vermiyoruz. Süreler veritabanında kayıtlı.
     public void Show(string id)
     {
         if (database == null)
@@ -41,65 +40,34 @@ public class GlobalSubtitleManager : MonoBehaviour
         }
     }
 
+    // YENİ MANTIK: Sıralı Oynatma (Sequential)
     IEnumerator PlaySequenceRoutine(SubtitleEntry entry)
     {
-        // Paneli aç
         if (subtitlePanel != null)
             subtitlePanel.SetActive(true);
-        if (subtitleText != null)
-            subtitleText.text = "";
 
-        float timer = 0f;
-        float sequenceLength = GetTotalDuration(entry);
-
-        // Segmentlerin "Start Time"ına göre sıralandığından emin olalım (opsiyonel ama güvenli)
-        entry.segments.Sort((a, b) => a.startTime.CompareTo(b.startTime));
-
-        while (timer < sequenceLength)
+        foreach (var seg in entry.segments)
         {
-            timer += Time.deltaTime;
+            // 1. Yazıyı Göster
+            if (subtitleText != null)
+                subtitleText.text = seg.GetText(currentLanguage);
 
-            // O anki saniyede hangi segment aktif olmalı?
-            SubtitleSegment currentSegment = null;
-
-            foreach (var seg in entry.segments)
-            {
-                // Eğer zaman, segmentin başlangıcı ile bitişi arasındaysa
-                if (timer >= seg.startTime && timer < (seg.startTime + seg.duration))
-                {
-                    currentSegment = seg;
-                    break;
-                }
-            }
-
-            if (currentSegment != null && subtitleText != null)
-            {
-                subtitleText.text = currentSegment.GetText(currentLanguage);
-            }
-            else if (subtitleText != null)
-            {
-                // Segmentler arası boşluktaysak temizle
-                subtitleText.text = "";
-            }
-
-            yield return null;
+            // 2. Süresi kadar bekle (Otomatik zamanlama)
+            yield return new WaitForSeconds(seg.duration);
         }
 
+        // 3. Hepsi bitince kapat
         HideSubtitle();
     }
 
-    // Diyalogun toplam süresini bulur (En son biten segmentin bitiş zamanı)
-    float GetTotalDuration(SubtitleEntry entry)
+    // Toplam süreyi artık Duration'ları toplayarak buluyoruz
+    public float GetTotalDuration(SubtitleEntry entry)
     {
-        float maxTime = 0f;
+        float total = 0f;
         foreach (var seg in entry.segments)
-        {
-            float endTime = seg.startTime + seg.duration;
-            if (endTime > maxTime)
-                maxTime = endTime;
-        }
-        // Emniyet payı ekle (ses bitiminden hemen sonra kapanmasın diye yarım saniye)
-        return maxTime + 0.5f;
+            total += seg.duration;
+
+        return total + 0.5f; // Emniyet payı
     }
 
     public void HideSubtitle()

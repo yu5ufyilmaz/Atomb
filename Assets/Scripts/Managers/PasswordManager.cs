@@ -167,28 +167,42 @@ public class PasswordManager : MonoBehaviour
         if (passwordID == tutorialPassword)
         {
             Debug.Log("📘 TUTORIAL ŞİFRESİ GİRİLDİ (Sayaca eklenmiyor).");
-            isTutorialPasswordUsed = true; // <--- YENİ: Bunu true yapıyoruz ki UI bilsin
+            isTutorialPasswordUsed = true;
+
+            // [SES ENTEGRASYONU] Tutorial şifresi çözüldü
+            if (MegaphoneSystem.Instance != null)
+                MegaphoneSystem.Instance.OnTutorialSolved();
+
             return true;
         }
 
-        // 2. DURUM: OYUN ŞİFRESİ
+        // 2. DURUM: YANLIŞ ŞİFRE (HATA)
         if (!requiredPasswords.Contains(passwordID))
         {
+            // [SES ENTEGRASYONU] İlk hata yapıldığında çal
+            if (MegaphoneSystem.Instance != null)
+                MegaphoneSystem.Instance.OnFirstMistake();
+
             return false; // Yanlış
         }
 
+        // 3. DURUM: ZATEN GİRİLMİŞ OYUN ŞİFRESİ
         if (validatedPasswords.Contains(passwordID))
         {
             return true; // Zaten girilmiş
         }
 
-        // Yeni doğru şifre
+        // 4. DURUM: YENİ DOĞRU OYUN ŞİFRESİ
         validatedPasswords.Add(passwordID);
         Debug.Log($"✅ OYUN ŞİFRESİ ONAYLANDI: {validatedPasswords.Count}/{totalPasswordsNeeded}");
 
-        // KAZANMA KONTROLÜ
+        // KAZANMA KONTROLÜ (SON ŞİFRE)
         if (validatedPasswords.Count >= totalPasswordsNeeded)
         {
+            // [SES ENTEGRASYONU] Final şifresi girildi, oyun bitiyor
+            if (MegaphoneSystem.Instance != null)
+                MegaphoneSystem.Instance.OnFinalCodeEntered();
+
             OnGameReadyToFinish?.Invoke();
         }
 

@@ -149,8 +149,12 @@ public class BreakerBox : MonoBehaviour, IInteractable
             isTripped = true;
             cycleCount = 0;
 
-            PlaySound(breakerTripSound);
-            StartHandleAnimation(handleDownRotation); // <--- ANİMASYON EKLENDİ (AŞAĞI)
+            PlaySound(breakerTripSound); // Bu lokal 'mekanik' ses (klik sesi)
+            StartHandleAnimation(handleDownRotation);
+
+            // [SES ENTEGRASYONU] Megafon anonsu: "Elektrikler kesildi!"
+            if (MegaphoneSystem.Instance != null)
+                MegaphoneSystem.Instance.OnBreakerTripped();
 
             OnBreakerTripped?.Invoke();
         }
