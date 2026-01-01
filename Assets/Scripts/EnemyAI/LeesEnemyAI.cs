@@ -538,24 +538,34 @@ public class LeesEnemyAI : MonoBehaviour
         if (playerCamera == null)
             return false;
 
-        Vector3 viewportPoint = playerCamera.WorldToViewportPoint(position);
-        bool isInScreen = (
-            viewportPoint.x > 0
-            && viewportPoint.x < 1
-            && viewportPoint.y > 0
-            && viewportPoint.y < 1
-            && viewportPoint.z > 0
-        );
+        // 1. EKRAN KONTROLÜ (Genişletilmiş)
+        // Sadece ekranın içi değil, kenarlardan biraz dışarısını da "görüyor" sayıyoruz (-0.2 ile 1.2 arası).
+        // Böylece kafanı milim çevirince adam dibinde bitmez.
+        Vector3 vp = playerCamera.WorldToViewportPoint(position);
+        bool inScreen = vp.z > 0 && vp.x > -0.2f && vp.x < 1.2f && vp.y > -0.2f && vp.y < 1.2f;
 
-        if (!isInScreen)
+        if (!inScreen)
+            return false; // Ekranda (veya yakınında) değilse -> GÖRÜNMÜYOR (Spawn Olabilir).
+
+        // 2. ENGEL KONTROLÜ (Spawn Noktasından -> Kameraya)
+        // Işını tersten atıyoruz ki karakterin kendisine çarpıp "duvar var" sanmasın.
+        Vector3 dirToCam = playerCamera.transform.position - position;
+        float dist = dirToCam.magnitude;
+
+        // ÖNEMLİ: obstacleMask sadece DUVARLARI içermeli.
+        if (Physics.Raycast(position, dirToCam.normalized, out RaycastHit hit, dist, obstacleMask))
+        {
+            // Işın yolda bir şeye çarptı.
+
+            // Eğer çarptığı şey OYUNCU ise, arada engel yok demektir -> GÖRÜNÜYOR (Spawn OLMA).
+            if (hit.transform.root == transform.root || hit.transform.CompareTag("Player"))
+                return true;
+
+            // Oyuncu değilse (Duvar, Dolap vs.) -> GÖRÜNMÜYOR (Spawn OLABİLİR).
             return false;
+        }
 
-        Vector3 direction = position - playerCamera.transform.position;
-        float distance = direction.magnitude;
-
-        if (Physics.Raycast(playerCamera.transform.position, direction, distance, obstacleMask))
-            return false;
-
+        // Hiçbir şeye çarpmadan kameraya ulaştıysa -> Arası boş -> GÖRÜNÜYOR (Spawn OLMA).
         return true;
     }
 

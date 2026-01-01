@@ -295,12 +295,16 @@ namespace StarterAssets
 
         private void CameraRotation()
         {
+            // 1. TAM KİLİT (Hiç hareket yok)
+            if (_lockCamera)
+                return;
+
             // Mouse/Gamepad giriş kontrolü
-            if (_input.look.sqrMagnitude >= _threshold && !LockCameraPosition)
+            if (_input.look.sqrMagnitude >= _threshold)
             {
                 float deltaTimeMultiplier = IsCurrentDeviceMouse ? 1.0f : Time.deltaTime;
 
-                // Sarhoşken mouse biraz ağırlaşsın
+                // Sarhoşluk kontrolü (Eski kodun)
                 float controlLag =
                     (drunkIntensity > 0.01f) ? Mathf.Lerp(1f, 0.5f, drunkIntensity) : 1f;
 
@@ -308,15 +312,31 @@ namespace StarterAssets
                 _cinemachineTargetPitch += _input.look.y * deltaTimeMultiplier * controlLag;
             }
 
+            // Pitch (Yukarı/Aşağı) Clamp (Eski kodun)
+            _cinemachineTargetPitch = ClampAngle(_cinemachineTargetPitch, BottomClamp, TopClamp);
+
+            // Yaw (Sağ/Sol) Clamp (Eski kodun - Ama aşağıda modifiye edeceğiz)
             _cinemachineTargetYaw = ClampAngle(
                 _cinemachineTargetYaw,
                 float.MinValue,
                 float.MaxValue
             );
-            _cinemachineTargetPitch = ClampAngle(_cinemachineTargetPitch, BottomClamp, TopClamp);
 
-            // --- SARHOŞLUK ETKİSİ ---
-            // Sadece kamerayı (kafayı) sallar. Vücuda karışmaz.
+            // --- 2. YENİ KISIM: KISITLI GÖRÜŞ (BOYUN HAREKETİ) ---
+            if (_restrictRotation)
+            {
+                // Şu anki açı ile Merkez açı arasındaki farkı bul (Mathf.DeltaAngle 360 sarmalını doğru hesaplar)
+                float angleDifference = Mathf.DeltaAngle(_centerYaw, _cinemachineTargetYaw);
+
+                // Farkı limitler arasında tut (-50 ile +50 arası)
+                angleDifference = Mathf.Clamp(angleDifference, -_yawLimit, _yawLimit);
+
+                // Açıyı tekrar hesapla
+                _cinemachineTargetYaw = _centerYaw + angleDifference;
+            }
+            // ----------------------------------------------------
+
+            // Sarhoşluk Etkisi (Mevcut kodların)
             float addedYaw = (drunkIntensity > 0.01f) ? currentDrunkYaw : 0f;
             float addedRoll = (drunkIntensity > 0.01f) ? currentDrunkRoll : 0f;
 
@@ -325,12 +345,27 @@ namespace StarterAssets
                 _cinemachineTargetYaw + addedYaw,
                 0.0f + addedRoll
             );
-
-            // DÜZELTME: transform.rotation satırı BURADAN TAMAMEN KALDIRILDI.
         }
+
+        private bool _isFrozen = false; // Hareket kilitli mi?
+        private bool _lockCamera = false; // Kamera kilitli mi?
 
         private void Move()
         {
+            if (_isFrozen)
+            {
+                _speed = 0f;
+                _animationBlend = 0f;
+
+                if (_hasAnimator)
+                {
+                    _animator.SetFloat(_animIDSpeed, 0f);
+                    _animator.SetFloat(_animIDMotionSpeed, 0f);
+                    _animator.SetFloat(_animIDVelocityX, 0f); // Kaymayı önleyen asıl kahramanlar
+                    _animator.SetFloat(_animIDVelocityZ, 0f);
+                }
+                return; // Hareket hesaplamasını yapmadan fonksiyondan çık
+            }
             // 1. Hız Hesaplama
             float targetSpeed = _input.sprint ? SprintSpeed : MoveSpeed;
             if (_input.move == Vector2.zero)
@@ -586,6 +621,41 @@ namespace StarterAssets
             if (_verticalVelocity < _terminalVelocity)
             {
                 _verticalVelocity += Gravity * Time.deltaTime;
+            }
+        }
+
+        private bool _restrictRotation = false; // Kısıtlı görüş açık mı?
+        private float _centerYaw; // Kilitlendiğimizde baktığımız merkez açı
+        private float _yawLimit = 50f; // Sağa/Sola kaç derece dönebiliriz?
+
+        public void SetFrozen(
+            bool freeze,
+            bool lockCameraInput = false,
+            bool restrictRotation = false
+        )
+        {
+            _isFrozen = freeze;
+            _lockCamera = lockCameraInput;
+            _restrictRotation = restrictRotation;
+
+            if (freeze)
+            {
+                // Inputları sıfırla
+                if (_input != null)
+                {
+                    _input.move = Vector2.zero;
+                    _input.sprint = false;
+                    _input.jump = false;
+                }
+
+                _speed = 0f;
+                _animationBlend = 0f;
+
+                // Eğer kısıtlı görüş istiyorsak, şu an nereye bakıyorsak orayı "MERKEZ" kabul et
+                if (restrictRotation)
+                {
+                    _centerYaw = _cinemachineTargetYaw;
+                }
             }
         }
 

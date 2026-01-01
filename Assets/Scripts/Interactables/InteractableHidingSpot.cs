@@ -76,6 +76,10 @@ public class InteractableHidingSpot : MonoBehaviour, IInteractable, IForceExitab
 
     public bool IsOccupied => isOccupied;
 
+    [Tooltip("Kapı açılırken karakterin ne kadar bekleyeceği (Animasyon süresi kadar yap)")]
+    [SerializeField]
+    private float doorOpenDelay = 1.0f; // <-- BUNU EKLE
+
     private void Start()
     {
         playerController = FindObjectOfType<UnityEngine.CharacterController>();
@@ -163,18 +167,17 @@ public class InteractableHidingSpot : MonoBehaviour, IInteractable, IForceExitab
     }
 
     // --- GİRİŞ SEKANSI ---
+    // --- GİRİŞ SEKANSI ---
     private IEnumerator EnterSequence()
     {
         inTransition = true;
         ToggleControls(false);
 
-        // --- GÜNCELLEME: GameManager'a Kayıt Ol ---
-        // Lees bizi burada bulsun diye kendimizi kaydediyoruz.
+        // GameManager'a Kayıt Ol
         if (GameManager.Instance != null)
             GameManager.Instance.activeInteraction = this;
-        // ------------------------------------------
 
-        // 1. Kapı önüne git, İçeriye (InsidePos) dön
+        // 1. Kapı önüne hizalan
         Quaternion lookInRot = Quaternion.LookRotation(
             insidePosition.position - exitPosition.position
         );
@@ -184,17 +187,28 @@ public class InteractableHidingSpot : MonoBehaviour, IInteractable, IForceExitab
 
         isOccupied = true;
         PlaySound(hideSound);
+
+        // --- DEĞİŞİKLİK BURADA BAŞLIYOR ---
+
+        // A. Kapıyı Aç
         if (propAnimator)
             propAnimator.SetTrigger(propOpenTrigger);
+
         if (playerAnimator)
             playerAnimator.SetTrigger(playerAnimTrigger);
 
-        // 2. İçeri Yürü (Rotasyon: İçeriye kilitli)
+        // B. Kapı açılana kadar BEKLE (Bunu eklemezsen kapının içinden geçer)
+        yield return new WaitForSeconds(doorOpenDelay);
+
+        // -----------------------------------
+
+        // 2. İçeri Yürü
         StartCoroutine(MoveAndLockRotation(insidePosition.position, lookInRot, enterAnimDuration));
 
         // Kamera Kafa Takibi
         if (cinemachineBrain)
             cinemachineBrain.enabled = false;
+
         if (headBone != null)
         {
             mainCamera.SetParent(headBone);
@@ -250,37 +264,43 @@ public class InteractableHidingSpot : MonoBehaviour, IInteractable, IForceExitab
             mainCamera.position = hideCameraPosition.position;
             mainCamera.rotation = hideCameraPosition.rotation;
         }
+
         TogglePlayerModel(false);
+
+        // C. Kapıyı Kapat
         if (propAnimator)
             propAnimator.SetTrigger(propCloseTrigger);
+
         inTransition = false;
     }
 
-    // --- ÇIKIŞ SEKANSI (KİLİTLİ ROTASYON) ---
+    // --- ÇIKIŞ SEKANSI ---
     private IEnumerator ExitSequence()
     {
         inTransition = true;
 
-        // --- GÜNCELLEME: GameManager'dan Kaydı Sil ---
-        // Artık çıkıyoruz, Lees bizi cihazda aramasın.
         if (GameManager.Instance != null)
             GameManager.Instance.activeInteraction = null;
-        // --------------------------------------------
 
+        // --- DEĞİŞİKLİK BURADA ---
+
+        // A. Kapıyı Aç
         if (propAnimator)
             propAnimator.SetTrigger(propOpenTrigger);
-        PlaySound(unhideSound);
-        yield return new WaitForSeconds(0.1f);
 
-        // 1. POZİSYON VE YÖNÜ AYARLA (GÖRÜNMEZKEN)
+        PlaySound(unhideSound);
+
+        // B. Kapı açılana kadar BEKLE
+        yield return new WaitForSeconds(doorOpenDelay);
+
+        // --------------------------
+
+        // 1. POZİSYON VE YÖNÜ AYARLA
         if (insidePosition != null && playerController != null)
         {
             playerController.enabled = false;
-
-            // Konum: Dolap içi
             playerController.transform.position = insidePosition.position;
             playerController.transform.rotation = exitPosition.rotation;
-
             yield return null;
         }
 
@@ -309,21 +329,23 @@ public class InteractableHidingSpot : MonoBehaviour, IInteractable, IForceExitab
             mainCamera.localRotation = Quaternion.identity;
         }
 
-        // 3. ANİMASYON
         if (playerAnimator)
         {
             playerAnimator.ResetTrigger(playerAnimTrigger);
             playerAnimator.SetTrigger(playerAnimTrigger);
         }
 
-        // 4. DIŞARI YÜRÜ (ROTASYON KİLİTLİ)
+        // 4. DIŞARI YÜRÜ
         StartCoroutine(
             MoveAndLockRotation(exitPosition.position, exitPosition.rotation, enterAnimDuration)
         );
 
         yield return new WaitForSeconds(enterAnimDuration);
 
-        // 5. BİTİŞ
+        // 5. BİTİŞ - Kapıyı Kapat
+        if (propAnimator)
+            propAnimator.SetTrigger(propCloseTrigger); // <-- Kapıyı kapatmayı unutma
+
         mainCamera.SetParent(null);
         if (playerController)
             playerController.enabled = true;
@@ -333,9 +355,6 @@ public class InteractableHidingSpot : MonoBehaviour, IInteractable, IForceExitab
         isOccupied = false;
         isPeeking = false;
         inTransition = false;
-
-        if (propAnimator)
-            propAnimator.SetTrigger(propCloseTrigger);
     }
 
     // --- HAREKET ET VE ROTASYONU KİLİTLE ---
