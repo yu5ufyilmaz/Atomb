@@ -43,6 +43,7 @@ public class MegaphoneSystem : MonoBehaviour
     private bool hasPlayedMistake = false;
     private bool hasPlayedPressure = false;
     private bool hasPlayedBreaker = false;
+    private bool hasPlayedTutorial = false;
 
     // Tutorial ve Final zaten doğası gereği tek seferliktir ama yine de kontrol edebiliriz.
 
@@ -136,12 +137,16 @@ public class MegaphoneSystem : MonoBehaviour
         hasPlayedMistake = true;
     }
 
-    // 4. TUTORIAL BİTTİ (PasswordManager.cs veya TutorialManager çağıracak)
     public void OnTutorialSolved()
     {
-        // Bunu her çağrıldığında çalabiliriz veya tek seferlik yapabiliriz.
-        // Genelde bölüm geçişi olduğu için bir kere olur.
+        // EĞER DAHA ÖNCE ÇALDIYSA İŞLEM YAPMA
+        if (hasPlayedTutorial)
+            return;
+
         PlayAudio(tutorialSolvedClip, tutorialSolvedSubtitleID);
+
+        // BİR KERE ÇALDIKTAN SONRA KİLİTLE
+        hasPlayedTutorial = true;
     }
 
     // 5. BASINÇ UYARISI (PressureSystemManager.cs çağıracak)

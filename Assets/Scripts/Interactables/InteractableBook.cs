@@ -101,7 +101,7 @@ public class InteractableBook : MonoBehaviour, IInteractable, IForceExitable
     private Animator playerAnimator;
     private Camera mainCamera;
     private BoxCollider interactionCollider;
-    private Collider bookCollider;
+    public Collider bookCollider;
 
     private Vector3 originalLocalPosition;
     private Quaternion originalLocalRotation;
@@ -156,7 +156,19 @@ public class InteractableBook : MonoBehaviour, IInteractable, IForceExitable
         if (bookSkinnedMeshRenderer != null)
         {
             // 1. Orijinal materyalleri sakla
+            // Unity'de .materials çağırdığında otomatik kopya oluşur.
+            // Bu yüzden "originalMaterials" artık bellekteki YENİ kopyalardır.
             originalMaterials = bookSkinnedMeshRenderer.materials;
+
+            // --- KRİTİK DÜZELTME BAŞLANGICI ---
+            // bookPagesMaterial değişkenimiz Awake'teki eski kopyayı tutuyor olabilir.
+            // Onu, originalMaterials dizisinin içindeki GÜNCEL kopyaya eşitliyoruz.
+            // Böylece kodun geri kalanında SetFloat yaptığımızda, bu dizi içindeki materyal güncellenir.
+            if (bookMaterialIndex >= 0 && bookMaterialIndex < originalMaterials.Length)
+            {
+                bookPagesMaterial = originalMaterials[bookMaterialIndex];
+            }
+            // --- KRİTİK DÜZELTME BİTİŞİ ---
 
             // 2. Highlight materyallerini oluştur
             highlightMaterials = new Material[originalMaterials.Length];
@@ -182,7 +194,7 @@ public class InteractableBook : MonoBehaviour, IInteractable, IForceExitable
                     highlightMaterials[i].SetColor("_EmissionColor", finalEmission);
                 }
 
-                // Global Illumination flag'ini güncelle (Bazen gerekebilir)
+                // Global Illumination flag'ini güncelle
                 highlightMaterials[i].globalIlluminationFlags =
                     MaterialGlobalIlluminationFlags.None;
             }
@@ -228,6 +240,7 @@ public class InteractableBook : MonoBehaviour, IInteractable, IForceExitable
         if (pageFlipObject != null)
             pageFlipObject.SetActive(false);
 
+        // Referansları düzelttikten sonra sayfaları başlatıyoruz ki değerler yeni materyale işlensin.
         InitializePages();
     }
 
@@ -241,6 +254,7 @@ public class InteractableBook : MonoBehaviour, IInteractable, IForceExitable
             bookPagesMaterial.SetFloat("_PageIndexL", pageIndexL);
             bookPagesMaterial.SetFloat("_PageIndexR", pageIndexR);
         }
+
         if (pageTurnMaterial != null)
             pageTurnMaterial.SetFloat("_PageCount", totalPages);
     }
@@ -283,7 +297,7 @@ public class InteractableBook : MonoBehaviour, IInteractable, IForceExitable
             return;
 
         isFocused = false;
-        // Orijinalleri geri yükle
+
         bookSkinnedMeshRenderer.materials = originalMaterials;
     }
 
@@ -306,26 +320,35 @@ public class InteractableBook : MonoBehaviour, IInteractable, IForceExitable
     private IEnumerator OpenBook()
     {
         isAnimating = true;
+
         isOpen = true;
+
+        // --- DEĞİŞEN KISIM BURASI ---
         if (ControlsUIManager.Instance != null)
+        {
             ControlsUIManager.Instance.ShowMachineUI(ControlsUIManager.MachineType.Book);
+        }
+
         if (GameManager.Instance != null)
             GameManager.Instance.activeInteraction = this;
 
         if (interactionCollider != null)
             interactionCollider.enabled = false;
+
         if (playerGameScript != null)
             playerGameScript.enabled = false;
+
         if (playerController != null)
             playerController.enabled = false;
+
         if (playerLookScript != null)
             playerLookScript.enabled = false;
+
         if (playerAnimator != null)
             playerAnimator.enabled = false;
 
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
-
         originalParent = transform.parent;
         originalLocalPosition = transform.localPosition;
         originalLocalRotation = transform.localRotation;
@@ -350,19 +373,22 @@ public class InteractableBook : MonoBehaviour, IInteractable, IForceExitable
             bookAnimator.SetTrigger(OpenTrigger);
             bookAnimator.SetBool(IsOpenBool, true);
         }
+
         PlaySound(bookOpenSound);
+
         yield return new WaitForSeconds(animationDuration);
 
         pageIndexL = 0;
         pageIndexR = 1;
         currentPage = 1;
-        UpdateBookPagesMaterial();
 
+        UpdateBookPagesMaterial();
         if (bookUI != null)
         {
             bookUI.SetActive(true);
             UpdatePageUI();
         }
+
         isAnimating = false;
     }
 
@@ -370,23 +396,30 @@ public class InteractableBook : MonoBehaviour, IInteractable, IForceExitable
     {
         isAnimating = true;
         isOpen = false;
+
+        // UI ve Cursor işlemlerini kapat
         if (ControlsUIManager.Instance != null)
             ControlsUIManager.Instance.HideControls();
         if (GameManager.Instance != null)
             GameManager.Instance.activeInteraction = null;
         if (bookUI != null)
             bookUI.SetActive(false);
+
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
 
+        // Kapanma animasyonu ve ses
         if (bookAnimator != null)
         {
             bookAnimator.SetTrigger(CloseTrigger);
             bookAnimator.SetBool(IsOpenBool, false);
         }
         PlaySound(bookCloseSound);
+
+        // Animasyon süresi kadar bekle
         yield return new WaitForSeconds(animationDuration);
 
+        // Kitabın orijinal yerine dönmesi için hedef hesaplamalar
         Vector3 targetWorldPosition;
         Quaternion targetWorldRotation;
         if (originalParent != null)
@@ -400,6 +433,7 @@ public class InteractableBook : MonoBehaviour, IInteractable, IForceExitable
             targetWorldRotation = originalLocalRotation;
         }
 
+        // Hareket (Lerp) Döngüsü
         float t = 0f;
         Vector3 startWorldPos = transform.position;
         Quaternion startWorldRot = transform.rotation;
@@ -412,18 +446,45 @@ public class InteractableBook : MonoBehaviour, IInteractable, IForceExitable
             transform.rotation = Quaternion.Slerp(startWorldRot, targetWorldRotation, smoothT);
             yield return null;
         }
+
+        // Yerine oturt
         transform.SetParent(originalParent, true);
         transform.localPosition = originalLocalPosition;
         transform.localRotation = originalLocalRotation;
 
+        // --- KONTROLLERİ GERİ AÇMA (DÜZELTİLEN KISIM) ---
+
         if (playerAnimator != null)
             playerAnimator.enabled = true;
+
         if (playerController != null)
             playerController.enabled = true;
+
         if (playerGameScript != null)
             playerGameScript.enabled = true;
+
+        // Kamera Bakış Kontrolünü Düzeltme
         if (playerLookScript != null)
+        {
             playerLookScript.enabled = true;
+
+            // Sorunu çözen ekleme:
+            // Eğer bu script 'StarterAssetsInputs' ise, kilitlenen cursorInputForLook değişkenini açıyoruz.
+            if (playerLookScript is StarterAssetsInputs inputs)
+            {
+                inputs.cursorInputForLook = true;
+            }
+            else
+            {
+                // Eğer 'is' cast çalışmazsa, GetComponent ile deneyelim (Garanti olsun)
+                var inputsComp = playerLookScript.GetComponent<StarterAssetsInputs>();
+                if (inputsComp != null)
+                {
+                    inputsComp.cursorInputForLook = true;
+                }
+            }
+        }
+
         if (interactionCollider != null)
             interactionCollider.enabled = true;
 
@@ -461,14 +522,25 @@ public class InteractableBook : MonoBehaviour, IInteractable, IForceExitable
     {
         if (direction == 0)
             yield break;
+
         isAnimating = true;
+
+        // --- SIRALI SES ÇALMA ---
 
         if (pageFlipSounds != null && pageFlipSounds.Length > 0)
         {
+            // 1. Sıradaki sesi seç
+
             AudioClip clipToPlay = pageFlipSounds[currentSoundIndex];
+
             PlaySound(clipToPlay);
+
+            // 2. İndeksi bir sonrakine kaydır (Modül ile başa sarmasını sağla)
+
             currentSoundIndex = (currentSoundIndex + 1) % pageFlipSounds.Length;
         }
+
+        // ------------------------
 
         if (pageFlipObject != null)
             pageFlipObject.SetActive(true);
@@ -482,36 +554,52 @@ public class InteractableBook : MonoBehaviour, IInteractable, IForceExitable
         }
 
         float t = 0f;
+
         float flipSpeed = 1f / pageFlipDuration;
+
         bool indicesUpdated = false;
 
         while (t < 1f)
         {
             t += Time.deltaTime * flipSpeed;
+
             t = Mathf.Clamp01(t);
+
             float v = t * t * t * (t * (t * 6f - 15f) + 10f);
+
             float flipAmount = (direction > 0) ? v : 1f - v;
+
             if (pageTurnMaterial != null)
                 pageTurnMaterial.SetFloat("_PageFlip", flipAmount);
 
             if (t >= 0.5f && !indicesUpdated)
             {
                 UpdatePageIndices(direction);
+
                 UpdateBookPagesMaterial();
+
                 indicesUpdated = true;
             }
+
             yield return null;
         }
 
         if (!indicesUpdated)
         {
             UpdatePageIndices(direction);
+
             UpdateBookPagesMaterial();
         }
+
         if (pageFlipObject != null)
             pageFlipObject.SetActive(false);
+
+        // Ses çalma kodu buradan yukarı taşındı (Senkron için)
+
         currentPage = direction > 0 ? currentPage + 1 : currentPage - 1;
+
         UpdatePageUI();
+
         isAnimating = false;
     }
 
@@ -520,16 +608,20 @@ public class InteractableBook : MonoBehaviour, IInteractable, IForceExitable
         if (direction > 0)
         {
             pageIndexL += 2;
+
             pageIndexR += 2;
         }
         else
         {
             pageIndexL -= 2;
+
             pageIndexR -= 2;
         }
+
         if (allowLoop)
         {
             pageIndexL = (pageIndexL + totalPages) % totalPages;
+
             pageIndexR = (pageIndexR + totalPages) % totalPages;
         }
     }

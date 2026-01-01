@@ -98,7 +98,7 @@ public class InteractableBookEditor : Editor
             EditorGUILayout.PropertyField(serializedObject.FindProperty("pageNumberText"));
             EditorGUILayout.PropertyField(
                 serializedObject.FindProperty("bookCollider"),
-                new GUIContent("Sayfa Collider'ı")
+                new GUIContent("Sayfa Collider'i")
             );
             EditorGUILayout.Space(5);
             EditorGUILayout.PropertyField(serializedObject.FindProperty("animationDuration"));

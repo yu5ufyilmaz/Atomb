@@ -4791,6 +4791,7 @@ MonoBehaviour:
     width: 0.2
     height: 0.2
   hasPasswordBeenFound: 0
+  bookCollider: {fileID: 0}
 --- !u!114 &285976799
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4804,11 +4805,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   outlineMode: 0
-  outlineColor: {r: 0.8773585, g: 0.13656996, b: 0.28140357, a: 1}
+  outlineColor:
+    r: 0.8773585
+    g: 0.13656996
+    b: 0.28140357
+    a: 1
   outlineWidth: 2
   precomputeOutline: 0
   bakeKeys: []
   bakeValues: []
+  renderers: []
+  outlineMaskMaterial: {fileID: 0}
+  outlineFillMaterial: {fileID: 0}
+  needsUpdate: 1
 --- !u!82 &285976800
 AudioSource:
   m_ObjectHideFlags: 0
@@ -5006,9 +5015,9 @@ RectTransform:
   - {fileID: 2094938276}
   - {fileID: 1735270669}
   - {fileID: 232751194}
-  - {fileID: 120310974}
   - {fileID: 2126680184}
   - {fileID: 2032837738}
+  - {fileID: 120310974}
   - {fileID: 2103762615}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -5031,7 +5040,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::NotebookUI
   notebookPanel: {fileID: 1735270668}
   passwordListText: {fileID: 1621423023}
-  hiddenPosition: {x: 50, y: -600}
+  hiddenPosition: {x: 50, y: -550}
   visiblePosition: {x: 50, y: 0}
   moveSpeed: 5
   notificationPanel: {fileID: 0}
@@ -15041,11 +15050,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   outlineMode: 0
-  outlineColor: {r: 0.8773585, g: 0.13656996, b: 0.28140357, a: 1}
+  outlineColor:
+    r: 0.8773585
+    g: 0.13656996
+    b: 0.28140357
+    a: 1
   outlineWidth: 2
   precomputeOutline: 0
   bakeKeys: []
   bakeValues: []
+  renderers: []
+  outlineMaskMaterial: {fileID: 0}
+  outlineFillMaterial: {fileID: 0}
+  needsUpdate: 1
 --- !u!82 &938416275
 AudioSource:
   m_ObjectHideFlags: 0
@@ -15199,6 +15216,7 @@ MonoBehaviour:
     width: 0
     height: 0
   hasPasswordBeenFound: 0
+  bookCollider: {fileID: 0}
 --- !u!1 &939139315
 GameObject:
   m_ObjectHideFlags: 19
@@ -19031,8 +19049,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 0.43820572, y: 0.07802582, z: 0.6321804}
-  m_Center: {x: -0.20338058, y: 0.05172956, z: -0.025098294}
+  m_Size: {x: 0.76604366, y: 0.5380657, z: 0.6321805}
+  m_Center: {x: -0.039462, y: 0.0026583567, z: -0.025098294}
 --- !u!95 &1189130146
 Animator:
   serializedVersion: 7
@@ -19076,7 +19094,7 @@ MonoBehaviour:
   bookPagesMaterial: {fileID: 0}
   pageFlipObject: {fileID: 3582818965538638662}
   pageFlipRenderer: {fileID: 5386886447618600329}
-  pageTurnMaterial: {fileID: 0}
+  pageTurnMaterial: {fileID: 2100000, guid: 9a7e6289cdf99db49bfe1ef3680d5b1a, type: 2}
   audioSource: {fileID: 285976800}
   bookOpenSound: {fileID: 8300000, guid: fa63e2ac008f76245aa27b7ea4938007, type: 3}
   bookCloseSound: {fileID: 8300000, guid: c87d4bd814009324eb507e77fcc2164d, type: 3}
@@ -19097,7 +19115,7 @@ MonoBehaviour:
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
   canContainPassword: 1
   highlightColor: {r: 0.8396226, g: 0.80364424, b: 0.7247686, a: 0.039215688}
-  emissionIntensity: 1
+  emissionIntensity: 4
   isOpen: 0
   isAnimating: 0
   currentPage: 0
@@ -19111,6 +19129,7 @@ MonoBehaviour:
     width: 0.2
     height: 0.2
   hasPasswordBeenFound: 0
+  bookCollider: {fileID: 0}
 --- !u!1 &1201733588
 GameObject:
   m_ObjectHideFlags: 0
@@ -19426,6 +19445,7 @@ MonoBehaviour:
     width: 0.2
     height: 0.2
   hasPasswordBeenFound: 0
+  bookCollider: {fileID: 0}
 --- !u!114 &1212067468
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -19439,11 +19459,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   outlineMode: 0
-  outlineColor: {r: 1, g: 1, b: 1, a: 1}
+  outlineColor:
+    r: 1
+    g: 1
+    b: 1
+    a: 1
   outlineWidth: 2
   precomputeOutline: 0
   bakeKeys: []
   bakeValues: []
+  renderers: []
+  outlineMaskMaterial: {fileID: 0}
+  outlineFillMaterial: {fileID: 0}
+  needsUpdate: 1
 --- !u!82 &1212067469
 AudioSource:
   m_ObjectHideFlags: 0
@@ -21095,6 +21123,7 @@ MonoBehaviour:
     width: 0.2
     height: 0.2
   hasPasswordBeenFound: 0
+  bookCollider: {fileID: 0}
 --- !u!114 &1322135891
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -21108,11 +21137,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   outlineMode: 0
-  outlineColor: {r: 0.8773585, g: 0.13656996, b: 0.28140357, a: 1}
+  outlineColor:
+    r: 0.8773585
+    g: 0.13656996
+    b: 0.28140357
+    a: 1
   outlineWidth: 2
   precomputeOutline: 0
   bakeKeys: []
   bakeValues: []
+  renderers: []
+  outlineMaskMaterial: {fileID: 0}
+  outlineFillMaterial: {fileID: 0}
+  needsUpdate: 1
 --- !u!82 &1322135892
 AudioSource:
   m_ObjectHideFlags: 0
@@ -21492,7 +21529,6 @@ GameObject:
   - component: {fileID: 1342168775}
   - component: {fileID: 1342168774}
   - component: {fileID: 1342168773}
-  - component: {fileID: 1342168776}
   - component: {fileID: 1342168777}
   m_Layer: 6
   m_Name: BookModel (1)
@@ -21583,7 +21619,7 @@ MonoBehaviour:
   bookPagesMaterial: {fileID: 0}
   pageFlipObject: {fileID: 3210173825281065507}
   pageFlipRenderer: {fileID: 606245804395878102}
-  pageTurnMaterial: {fileID: 0}
+  pageTurnMaterial: {fileID: 2100000, guid: 9a7e6289cdf99db49bfe1ef3680d5b1a, type: 2}
   audioSource: {fileID: 285976800}
   bookOpenSound: {fileID: 8300000, guid: fa63e2ac008f76245aa27b7ea4938007, type: 3}
   bookCloseSound: {fileID: 8300000, guid: c87d4bd814009324eb507e77fcc2164d, type: 3}
@@ -21618,24 +21654,7 @@ MonoBehaviour:
     width: 0.2
     height: 0.2
   hasPasswordBeenFound: 0
---- !u!114 &1342168776
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1342168771}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5fea29bb7c508c244a1f805a5fd3fc4d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  outlineMode: 0
-  outlineColor: {r: 1, g: 1, b: 1, a: 1}
-  outlineWidth: 2
-  precomputeOutline: 0
-  bakeKeys: []
-  bakeValues: []
+  bookCollider: {fileID: 0}
 --- !u!82 &1342168777
 AudioSource:
   m_ObjectHideFlags: 0
@@ -28852,6 +28871,7 @@ MonoBehaviour:
     width: 0.2
     height: 0.2
   hasPasswordBeenFound: 0
+  bookCollider: {fileID: 0}
 --- !u!1001 &1806373827
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -35595,7 +35615,7 @@ SkinnedMeshRenderer:
   m_RendererPriority: 0
   m_Materials:
   - {fileID: 7242585184073117898, guid: bd1670637738c4cf6837b7383f4c585e, type: 3}
-  - {fileID: -6787558793841473226, guid: bd1670637738c4cf6837b7383f4c585e, type: 3}
+  - {fileID: 2100000, guid: e15374f878ec0ed4fb50baad6782f24f, type: 2}
   - {fileID: 2100000, guid: fed2c93b655a0604786d7f41affafc1c, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
@@ -36246,7 +36266,7 @@ Transform:
   m_GameObject: {fileID: 3582818965538638662}
   serializedVersion: 2
   m_LocalRotation: {x: -0.00000003774895, y: 0, z: -0, w: 1}
-  m_LocalPosition: {x: -0, y: 0.035, z: 0}
+  m_LocalPosition: {x: -0, y: 0.04, z: 0}
   m_LocalScale: {x: 100, y: 0.33, z: 100}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -37077,16 +37097,16 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 919132147930775284}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 22.152, y: 1.483, z: 1.351}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_LocalRotation: {x: 0.5, y: 0.5, z: -0.5, w: 0.5}
+  m_LocalPosition: {x: 14.9807, y: 1.6183, z: 7.349}
+  m_LocalScale: {x: 0.72, y: 0.72, z: 0.72}
+  m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 5094988294980146260}
   - {fileID: 5806138085860900320}
   - {fileID: 378750704353663643}
   m_Father: {fileID: 679974355}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 90, y: 0, z: -90}
 --- !u!4 &543450652772615674
 Transform:
   m_ObjectHideFlags: 0
@@ -39536,11 +39556,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   outlineMode: 0
-  outlineColor: {r: 0.8773585, g: 0.13656996, b: 0.28140357, a: 1}
+  outlineColor:
+    r: 0.8773585
+    g: 0.13656996
+    b: 0.28140357
+    a: 1
   outlineWidth: 2
   precomputeOutline: 0
   bakeKeys: []
   bakeValues: []
+  renderers: []
+  outlineMaskMaterial: {fileID: 0}
+  outlineFillMaterial: {fileID: 0}
+  needsUpdate: 1
 --- !u!82 &919132149050187588
 AudioSource:
   m_ObjectHideFlags: 0

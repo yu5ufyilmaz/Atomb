@@ -566,6 +566,7 @@ public class InteractableTuringMachine : MonoBehaviour, IInteractable, IForceExi
         if (!PasswordManager.Instance)
             return;
 
+        // Şifre string'ini oluşturma (Burası aynı)
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < wordWheelIndices.Length; i++)
             sb.Append(wordChars[wordWheelIndices[i]]);
@@ -573,10 +574,24 @@ public class InteractableTuringMachine : MonoBehaviour, IInteractable, IForceExi
         string sp = symbolChars[GetCorrectSymbolIndex()];
         string np =
             $"{numberChars[numberWheelIndices[0]]}{numberChars[numberWheelIndices[1]]}{numberChars[numberWheelIndices[2]]}";
+
         string pw = $"{wp}_{sp}_{np}";
 
         Debug.Log($"GİRİLEN ŞİFRE: '{pw}'");
 
+        // --- DÜZELTME BURADA ---
+        // Eski Hatalı Kod: if (PasswordManager.Instance.GetDiscoveredClues().Contains(pw))
+
+        // Yeni Doğru Kod: "Bu şifre daha önce ONAYLANDI MI?" diye soruyoruz.
+        if (PasswordManager.Instance.IsPasswordUsed(pw))
+        {
+            Debug.Log("Bu şifre zaten kullanıldı!");
+            PlaySound(failSound); // Hata sesi çal
+            return; // Fonksiyondan çık
+        }
+        // -----------------------
+
+        // Şifre daha önce kullanılmadıysa doğrulamayı dene
         if (PasswordManager.Instance.ValidatePassword(pw))
         {
             PlaySound(successSound);

@@ -163,7 +163,6 @@ public class PasswordManager : MonoBehaviour
 
     public bool ValidatePassword(string passwordID)
     {
-        // 1. DURUM: TUTORIAL ŞİFRESİ
         if (passwordID == tutorialPassword)
         {
             Debug.Log("📘 TUTORIAL ŞİFRESİ GİRİLDİ (Sayaca eklenmiyor).");
@@ -172,6 +171,14 @@ public class PasswordManager : MonoBehaviour
             // [SES ENTEGRASYONU] Tutorial şifresi çözüldü
             if (MegaphoneSystem.Instance != null)
                 MegaphoneSystem.Instance.OnTutorialSolved();
+
+            // --- ÇÖZÜM BURADA: TUTORIAL MODUNU KAPAT ---
+            if (PlayerInteraction.Instance != null)
+            {
+                PlayerInteraction.Instance.DisableTutorialMode();
+                Debug.Log("🔓 Tutorial Modu Kapatıldı. Tüm etkileşimler açık.");
+            }
+            // -------------------------------------------
 
             return true;
         }
