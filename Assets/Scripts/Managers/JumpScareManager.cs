@@ -145,6 +145,12 @@ public class JumpscareManager : MonoBehaviour
         JumpscareStyle style
     )
     {
+        // --- BU SATIRI EN BAŞA EKLE ---
+        // Pressure System'e "Efektlere dokunma, bende" diyoruz.
+        if (PressureSystemManager.Instance != null)
+        {
+            PressureSystemManager.Instance.StopEffectsForJumpscare();
+        }
         // 1. KONTROLLERİ KAPAT
         if (playerInput)
         {
@@ -305,4 +311,6 @@ public class JumpscareManager : MonoBehaviour
         }
         return null;
     }
+
+   
 }

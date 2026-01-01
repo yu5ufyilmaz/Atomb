@@ -4676,6 +4676,7 @@ MonoBehaviour:
   safeColor: {r: 1, g: 1, b: 1, a: 1}
   dangerColor: {r: 1, g: 0.22601756, b: 0, a: 1}
   globalVolume: {fileID: 994232616}
+  overridePostProcessing: 0
   explosionEffect: {fileID: 0}
   warningUI: {fileID: 0}
 --- !u!4 &211895211
@@ -4897,7 +4898,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &232751194
 RectTransform:
   m_ObjectHideFlags: 0
@@ -6332,12 +6333,12 @@ RectTransform:
   m_Children:
   - {fileID: 2094938276}
   - {fileID: 1735270669}
-  - {fileID: 232751194}
   - {fileID: 2126680184}
   - {fileID: 2032837738}
   - {fileID: 120310974}
   - {fileID: 310412475}
   - {fileID: 2103762615}
+  - {fileID: 232751194}
   - {fileID: 1379882046}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -27080,7 +27081,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1379882046
 Transform:
   m_ObjectHideFlags: 0
