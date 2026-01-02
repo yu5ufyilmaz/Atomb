@@ -9,6 +9,7 @@ public class InteractableHidingSpot : MonoBehaviour, IInteractable, IForceExitab
     [Tooltip("Saklanınca kameranın duracağı dip nokta (Dolabın içi)")]
     [SerializeField]
     private Transform hideCameraPosition;
+    private StarterAssets.CharacterController playerMoveScript;
 
     [Tooltip("Peek atınca (kafa uzatınca) kameranın geleceği nokta")]
     [SerializeField]
@@ -167,13 +168,16 @@ public class InteractableHidingSpot : MonoBehaviour, IInteractable, IForceExitab
     }
 
     // --- GİRİŞ SEKANSI ---
-    // --- GİRİŞ SEKANSI ---
     private IEnumerator EnterSequence()
     {
         inTransition = true;
-        ToggleControls(false);
 
-        // GameManager'a Kayıt Ol
+        // Eğer playerMoveScript null ise burada bulalım ki hata vermesin
+        if (playerMoveScript == null && playerController != null)
+            playerMoveScript = playerController.GetComponent<StarterAssets.CharacterController>();
+
+        ToggleControls(false); // Dondur
+
         if (GameManager.Instance != null)
             GameManager.Instance.activeInteraction = this;
 
@@ -188,21 +192,16 @@ public class InteractableHidingSpot : MonoBehaviour, IInteractable, IForceExitab
         isOccupied = true;
         PlaySound(hideSound);
 
-        // --- DEĞİŞİKLİK BURADA BAŞLIYOR ---
-
-        // A. Kapıyı Aç
+        // A. KAPIYI AÇ
         if (propAnimator)
             propAnimator.SetTrigger(propOpenTrigger);
-
         if (playerAnimator)
             playerAnimator.SetTrigger(playerAnimTrigger);
 
-        // B. Kapı açılana kadar BEKLE (Bunu eklemezsen kapının içinden geçer)
+        // B. BEKLE (Animasyon süresi kadar)
         yield return new WaitForSeconds(doorOpenDelay);
 
-        // -----------------------------------
-
-        // 2. İçeri Yürü
+        // 2. İÇERİ YÜRÜ
         StartCoroutine(MoveAndLockRotation(insidePosition.position, lookInRot, enterAnimDuration));
 
         // Kamera Kafa Takibi
@@ -236,6 +235,7 @@ public class InteractableHidingSpot : MonoBehaviour, IInteractable, IForceExitab
             safeWaitDuration = 0;
         yield return new WaitForSeconds(safeWaitDuration);
 
+        // Kamera Yerleşimi
         mainCamera.SetParent(null);
         if (hideCameraPosition)
         {
@@ -267,7 +267,7 @@ public class InteractableHidingSpot : MonoBehaviour, IInteractable, IForceExitab
 
         TogglePlayerModel(false);
 
-        // C. Kapıyı Kapat
+        // C. KAPIYI KAPAT
         if (propAnimator)
             propAnimator.SetTrigger(propCloseTrigger);
 
@@ -282,23 +282,18 @@ public class InteractableHidingSpot : MonoBehaviour, IInteractable, IForceExitab
         if (GameManager.Instance != null)
             GameManager.Instance.activeInteraction = null;
 
-        // --- DEĞİŞİKLİK BURADA ---
-
-        // A. Kapıyı Aç
+        // A. KAPIYI AÇ
         if (propAnimator)
             propAnimator.SetTrigger(propOpenTrigger);
-
         PlaySound(unhideSound);
 
-        // B. Kapı açılana kadar BEKLE
+        // B. BEKLE (Kapı açılsın diye)
         yield return new WaitForSeconds(doorOpenDelay);
-
-        // --------------------------
 
         // 1. POZİSYON VE YÖNÜ AYARLA
         if (insidePosition != null && playerController != null)
         {
-            playerController.enabled = false;
+            playerController.enabled = false; // Fiziği kapat
             playerController.transform.position = insidePosition.position;
             playerController.transform.rotation = exitPosition.rotation;
             yield return null;
@@ -336,22 +331,34 @@ public class InteractableHidingSpot : MonoBehaviour, IInteractable, IForceExitab
         }
 
         // 4. DIŞARI YÜRÜ
+        // MoveAndLockRotation metodunda playerPhysics kullanıyorsan orayı da playerController yapmayı unutma!
         StartCoroutine(
             MoveAndLockRotation(exitPosition.position, exitPosition.rotation, enterAnimDuration)
         );
 
         yield return new WaitForSeconds(enterAnimDuration);
 
-        // 5. BİTİŞ - Kapıyı Kapat
+        // 5. BİTİŞ - KAPIYI KAPAT
         if (propAnimator)
-            propAnimator.SetTrigger(propCloseTrigger); // <-- Kapıyı kapatmayı unutma
+            propAnimator.SetTrigger(propCloseTrigger);
 
         mainCamera.SetParent(null);
+
+        // KAMERA YÖNÜNÜ DÜZELT (Yüzünü görmemen için)
+        if (playerMoveScript != null)
+        {
+            float finalYaw = mainCamera.rotation.eulerAngles.y;
+            float finalPitch = mainCamera.rotation.eulerAngles.x;
+            playerMoveScript.ForceCameraRotation(finalYaw, finalPitch);
+        }
+
         if (playerController)
-            playerController.enabled = true;
+            playerController.enabled = true; // Fiziği aç
         if (cinemachineBrain)
             cinemachineBrain.enabled = true;
-        ToggleControls(true);
+
+        ToggleControls(true); // Kontrolü ver
+
         isOccupied = false;
         isPeeking = false;
         inTransition = false;

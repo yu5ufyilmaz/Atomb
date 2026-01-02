@@ -105,7 +105,7 @@ public class NotebookUI : MonoBehaviour
         foreach (string pw in passwords)
         {
             bool isUsed = PasswordManager.Instance.IsPasswordUsed(pw);
-            string displayText = pw;
+            string displayText = pw.Replace("_", " ");
 
             if (isUsed)
             {

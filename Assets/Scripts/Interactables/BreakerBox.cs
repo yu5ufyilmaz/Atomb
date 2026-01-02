@@ -95,7 +95,9 @@ public class BreakerBox : MonoBehaviour, IInteractable
 
     private int GetActiveLightCount()
     {
-        return allLights.Count(l => l.IsOn);
+        // IsOn: Açık mı?
+        // ContributesToRisk: Risk grubunda mı?
+        return allLights.Count(l => l.IsOn && l.ContributesToRisk);
     }
     #endregion
 
@@ -124,35 +126,40 @@ public class BreakerBox : MonoBehaviour, IInteractable
 
     private void RunRiskCheck()
     {
-        int activeLights = GetActiveLightCount();
-        int totalLights = allLights.Count;
+        // Sadece risk oluşturanları hesaba kat (Koridor ışıkları hariç)
+        int activeRiskLights = GetActiveLightCount();
+        int totalRiskLights = allLights.Count(l => l.ContributesToRisk); // Toplam riskli cihaz sayısı
 
-        if (activeLights == 0 || totalLights == 0)
+        // Eğer hiç riskli cihaz yoksa (Sadece koridor ışıkları varsa) risk 0'dır.
+        if (activeRiskLights == 0 || totalRiskLights == 0)
         {
             cycleCount = 0;
             return;
         }
 
-        float loadPercentage = (float)activeLights / totalLights;
+        // Yük oranını hesapla (Örn: 3 riskli ışıktan 2'si açık = %66 yük)
+        float loadPercentage = (float)activeRiskLights / totalRiskLights;
+
         float baseRisk = loadPercentage * maxRiskAtFullLoad;
         float cycleRisk = cycleCount * cycleRiskMultiplier;
         float tripChance = Mathf.Clamp01(baseRisk + cycleRisk);
 
         Debug.Log(
-            $"Breaker Check: {activeLights}/{totalLights} ışık (%{loadPercentage * 100:F0} yük). Toplam Trip Şansı: {tripChance * 100:F0}%"
+            $"Breaker Check: {activeRiskLights}/{totalRiskLights} riskli ışık açık. Trip Şansı: %{tripChance * 100:F0}"
         );
 
         if (Random.value < tripChance)
         {
-            // --- SİSTEM TARAFINDAN ŞARTEL ATTIRILIYOR ---
-            Debug.LogWarning("BREAKER TRIPPED! System risk reset.");
+            // ŞARTEL ATTI!
+            // Buradaki kod değişmiyor, çünkü 'isTripped = true' olunca
+            // tüm ışıklar (koridor dahil) zaten kendini kapatıyor.
+            Debug.LogWarning("BREAKER TRIPPED!");
             isTripped = true;
             cycleCount = 0;
 
-            PlaySound(breakerTripSound); // Bu lokal 'mekanik' ses (klik sesi)
+            PlaySound(breakerTripSound);
             StartHandleAnimation(handleDownRotation);
 
-            // [SES ENTEGRASYONU] Megafon anonsu: "Elektrikler kesildi!"
             if (MegaphoneSystem.Instance != null)
                 MegaphoneSystem.Instance.OnBreakerTripped();
 
@@ -161,7 +168,6 @@ public class BreakerBox : MonoBehaviour, IInteractable
         else
         {
             cycleCount++;
-            Debug.Log("System is stable. Risk increased for next cycle.");
         }
     }
     #endregion

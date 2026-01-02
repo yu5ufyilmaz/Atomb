@@ -752,6 +752,20 @@ namespace StarterAssets
             );
         }
 
+        // --- BU FONKSİYONU EKLE ---
+        public void ForceCameraRotation(float yaw, float pitch)
+        {
+            // Scriptin hafızasındaki açıları, şu anki gerçek açılara eşitliyoruz
+            _cinemachineTargetYaw = yaw;
+            _cinemachineTargetPitch = pitch;
+
+            // Cinemachine objesini de hemen güncelliyoruz ki "kayma" olmasın
+            if (CinemachineCameraTarget != null)
+            {
+                CinemachineCameraTarget.transform.rotation = Quaternion.Euler(pitch, yaw, 0.0f);
+            }
+        }
+
         private void OnFootstep(AnimationEvent animationEvent)
         {
             if (animationEvent.animatorClipInfo.weight > 0.5f)

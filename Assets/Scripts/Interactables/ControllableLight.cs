@@ -6,6 +6,12 @@ public class ControllableLight : MonoBehaviour, IInteractable
     [SerializeField]
     private Light[] targetLight; // Kontrol edilecek ışıklar
 
+    [Header("Breaker Settings")]
+    [Tooltip("Bu ışık açıkken şartel atma riskini artırsın mı? (Koridor ışıkları için KAPAT)")]
+    [SerializeField]
+    private bool contributesToRisk = true; // Varsayılan: Evet, risk oluşturur.
+    public bool ContributesToRisk => contributesToRisk;
+
     [Tooltip("Oyuncu bu ışığın açık olmasını mı istiyor?")]
     [SerializeField]
     private bool desiredStateIsOn = true;

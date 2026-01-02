@@ -1,14 +1,19 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine.UI; // Slider için gerekli
+using UnityEngine.UI;
 
 public class MainMenuManager : MonoBehaviour
 {
     [Header("Ayarlar")]
     [Tooltip("Oyun sahnesinin Build Settings'deki tam adı")]
     [SerializeField]
-    private string gameSceneName = "GameScene"; // Sahne adını buraya yazacaksın
+    private string gameSceneName = "GameScene";
+
+    // --- YENİ ÖZELLİK: GECİKME ---
+    [Tooltip("Yükleme ekranı EN AZ kaç saniye görünsün?")]
+    [SerializeField]
+    private float minLoadTime = 3.0f;
 
     [Header("UI Referansları")]
     [SerializeField]
@@ -17,25 +22,24 @@ public class MainMenuManager : MonoBehaviour
     [SerializeField]
     private GameObject loadingPanel;
 
+    [Header("Loading Görselleri")]
+    [Tooltip("Daire şeklinde dolacak resimlerin listesi")]
     [SerializeField]
-    private Slider loadingSlider;
+    private Image[] loadingImages;
 
     private void Start()
     {
-        // Menü açıldığında Loading ekranını gizle, ana menüyü aç
         if (loadingPanel != null)
             loadingPanel.SetActive(false);
         if (mainMenuPanel != null)
             mainMenuPanel.SetActive(true);
 
-        // Mouse imlecini serbest bırak ve görünür yap (Oyundan çıkıp menüye dönünce önemli)
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
     }
 
     public void PlayGame()
     {
-        // Play butonuna atayacağımız fonksiyon
         StartCoroutine(LoadLevelAsync());
     }
 
@@ -44,31 +48,64 @@ public class MainMenuManager : MonoBehaviour
 #if UNITY_EDITOR
         UnityEditor.EditorApplication.isPlaying = false;
 #endif
-        // Quit butonuna atayacağımız fonksiyon
         Debug.Log("Oyundan Çıkıldı!");
         Application.Quit();
     }
 
     private IEnumerator LoadLevelAsync()
     {
-        // 1. Loading ekranını aç, menüyü kapat
+        // 1. Panelleri ayarla
         if (mainMenuPanel != null)
             mainMenuPanel.SetActive(false);
         if (loadingPanel != null)
             loadingPanel.SetActive(true);
 
-        // 2. Sahneyi asenkron yüklemeye başla
-        AsyncOperation operation = SceneManager.LoadSceneAsync(gameSceneName);
+        // Görselleri sıfırla
+        if (loadingImages != null)
+        {
+            foreach (Image img in loadingImages)
+                if (img != null)
+                    img.fillAmount = 0f;
+        }
 
-        // 3. Yükleme bitene kadar bekle ve slider'ı güncelle
+        // 2. Sahneyi arka planda yüklemeye başla AMA sahneye geçiş iznini kapat
+        AsyncOperation operation = SceneManager.LoadSceneAsync(gameSceneName);
+        operation.allowSceneActivation = false; // <-- ÖNEMLİ: Dolana kadar geçiş yapma
+
+        float elapsedTime = 0f;
+
+        // 3. Döngü: Hem gerçek yüklemeyi hem de bizim yapay süreyi kontrol et
         while (!operation.isDone)
         {
-            // operation.progress 0 ile 0.9 arasında değer döndürür.
-            // Bunu 0-1 arasına yaymak için matematiksel işlem yapıyoruz.
-            float progress = Mathf.Clamp01(operation.progress / 0.9f);
+            elapsedTime += Time.deltaTime;
 
-            if (loadingSlider != null)
-                loadingSlider.value = progress;
+            // A. Gerçek Yükleme Durumu (Unity'de 0.9'da durur, onu 0-1 yapıyoruz)
+            float realProgress = Mathf.Clamp01(operation.progress / 0.9f);
+
+            // B. Bizim Yapay Zamanlayıcı (Geçen süre / Hedef süre)
+            float fakeProgress = Mathf.Clamp01(elapsedTime / minLoadTime);
+
+            // C. HANGİSİ DAHA AZ İSE ONU GÖSTER
+            // Böylece oyun hemen yüklense bile 'fakeProgress' yavaş olduğu için onu bekleriz.
+            // Oyun yavaş yüklenirse 'realProgress' yavaş kalır, onu bekleriz.
+            float finalProgress = Mathf.Min(realProgress, fakeProgress);
+
+            // UI Güncelle
+            if (loadingImages != null)
+            {
+                foreach (Image img in loadingImages)
+                {
+                    if (img != null)
+                        img.fillAmount = finalProgress;
+                }
+            }
+
+            // Eğer bar tamamen dolduysa (%100) artık sahneyi açabiliriz
+            if (finalProgress >= 1.0f)
+            {
+                // Küçük bir bekleme daha ekleyip (göz zevki için) sahneyi aktif et
+                operation.allowSceneActivation = true;
+            }
 
             yield return null;
         }
