@@ -732,17 +732,26 @@ public class InteractableBook : MonoBehaviour, IInteractable, IForceExitable
             Vector2 uv = hit.textureCoord;
             Debug.Log($"Hit Book UV: {uv}");
 
+            // Mesh UV'sinden hangi sayfaya tıklandığını belirle
+            // Mesh UV: 0-0.5 = sol sayfa, 0.5-1 = sağ sayfa
             bool hitRightPage = uv.x > 0.5f;
-            bool isTargetPage =
-                (hitRightPage && pageIndexR == passwordPage)
-                || (!hitRightPage && pageIndexL == passwordPage);
+            
+            // Şu an görüntülenen sayfa indexleri
+            int clickedPageIndex = hitRightPage ? pageIndexR : pageIndexL;
+            
+            bool isTargetPage = (clickedPageIndex == passwordPage);
             
             if (isTargetPage)
             {
+                // Mesh UV'sini sayfa-local UV'ye çevir (0-1 aralığına normalize et)
+                // Sol sayfa: uv.x 0-0.5 -> 0-1
+                // Sağ sayfa: uv.x 0.5-1 -> 0-1
                 float pageLocalU = hitRightPage ? (uv.x - 0.5f) * 2.0f : uv.x * 2.0f;
                 Vector2 pageUV = new Vector2(pageLocalU, uv.y);
                 
+                Debug.Log($"Password Page: {passwordPage} | Clicked Page: {clickedPageIndex}");
                 Debug.Log($"Calculated PageUV: {pageUV} | Hotspot: {passwordHotspotUV}");
+                Debug.Log($"Hotspot Contains Check: x={pageUV.x} in [{passwordHotspotUV.xMin}-{passwordHotspotUV.xMax}], y={pageUV.y} in [{passwordHotspotUV.yMin}-{passwordHotspotUV.yMax}]");
 
                 if (passwordHotspotUV.Contains(pageUV))
                 {
@@ -756,7 +765,7 @@ public class InteractableBook : MonoBehaviour, IInteractable, IForceExitable
             }
             else
             {
-                Debug.Log("Wrong Page clicked (Left/Right mismatch).");
+                Debug.Log($"Wrong Page clicked. Target: {passwordPage}, Clicked: {clickedPageIndex}");
             }
         }
         else
@@ -816,26 +825,64 @@ public class InteractableBook : MonoBehaviour, IInteractable, IForceExitable
 
     private void OnDrawGizmosSelected()
     {
-        if (!isPasswordBook || passwordHotspotUV == null)
+        if (!isPasswordBook || passwordHotspotUV.width <= 0 || passwordHotspotUV.height <= 0)
             return;
+
         Gizmos.color = new Color(1.0f, 0f, 0f, 0.7f);
-        Gizmos.matrix = transform.localToWorldMatrix;
+
+        // Mesh Renderer'ın local bounds'unu al
+        Bounds localBounds;
+        if (bookSkinnedMeshRenderer != null)
+        {
+            localBounds = bookSkinnedMeshRenderer.localBounds;
+        }
+        else if (bookCollider != null)
+        {
+            // Collider varsa onun bounds'unu kullan
+            localBounds = bookCollider.bounds;
+            // World bounds'u local'e çevir
+            localBounds.center = transform.InverseTransformPoint(localBounds.center);
+        }
+        else
+        {
+            return;
+        }
+
+        // Kitap açıkken sol ve sağ sayfaların pozisyonlarını hesapla
+        // Mesh UV: Sol sayfa = 0-0.5, Sağ sayfa = 0.5-1
+        // passwordPage çift ise sol sayfa, tek ise sağ sayfa
         bool isRightPage = (passwordPage % 2) != 0;
-        float pageCenterX = isRightPage ? (-singlePageSize.x / 2.0f) : (singlePageSize.x / 2.0f);
-        Vector3 hotspotCenter =
-            new Vector3(pageCenterX, 0, 0)
-            + new Vector3(
-                (passwordHotspotUV.x + passwordHotspotUV.width / 2f - 0.5f) * singlePageSize.x,
-                gizmoYOffset,
-                (passwordHotspotUV.y + passwordHotspotUV.height / 2f - 0.5f) * singlePageSize.y
-            );
-        Gizmos.DrawWireCube(
-            hotspotCenter,
-            new Vector3(
-                passwordHotspotUV.width * singlePageSize.x,
-                0.001f,
-                passwordHotspotUV.height * singlePageSize.y
-            )
+        
+        // Kitabın x ekseninde yarısı sol, yarısı sağ sayfa
+        float halfWidth = localBounds.size.x / 2f;
+        
+        // Sayfa merkezi (local koordinatlarda)
+        float pageCenterX = isRightPage 
+            ? localBounds.center.x + halfWidth / 2f  // Sağ tarafa offset
+            : localBounds.center.x - halfWidth / 2f; // Sol tarafa offset
+
+        // Hotspot'un sayfa üzerindeki konumu
+        // passwordHotspotUV: 0-1 arasında normalize edilmiş koordinatlar
+        float hotspotLocalX = (passwordHotspotUV.x + passwordHotspotUV.width / 2f - 0.5f) * halfWidth;
+        float hotspotLocalZ = (passwordHotspotUV.y + passwordHotspotUV.height / 2f - 0.5f) * localBounds.size.z;
+
+        Vector3 hotspotCenter = new Vector3(
+            pageCenterX + hotspotLocalX,
+            localBounds.max.y + gizmoYOffset,
+            localBounds.center.z + hotspotLocalZ
         );
+
+        Vector3 hotspotSize = new Vector3(
+            passwordHotspotUV.width * halfWidth,
+            0.001f,
+            passwordHotspotUV.height * localBounds.size.z
+        );
+
+        Gizmos.matrix = transform.localToWorldMatrix;
+        Gizmos.DrawWireCube(hotspotCenter, hotspotSize);
+        
+        // Ek olarak dolu bir cube da çiz (daha görünür olması için)
+        Gizmos.color = new Color(1.0f, 0f, 0f, 0.3f);
+        Gizmos.DrawCube(hotspotCenter, hotspotSize);
     }
 }
