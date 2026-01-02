@@ -418,6 +418,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   roomName: ParticleAccelerator_Room
   isCorridor: 0
+  roomSpeakerTransform: {fileID: 0}
   onFirstEnterSound:
     clip: {fileID: 8300000, guid: 897f817c82d48c54fbf943c11418e8cc, type: 3}
     subtitleID: 
@@ -782,6 +783,11 @@ MonoBehaviour:
   - {fileID: 8043881135266646645}
   - {fileID: 8043881134657747567}
   desiredStateIsOn: 1
+  canPlayerInteract: 1
+  contributesToRisk: 1
+  switchModel: {fileID: 0}
+  onRotation: {x: -15, y: 0, z: 0}
+  offRotation: {x: 15, y: 0, z: 0}
   switchSound: {fileID: 8300000, guid: b3d8f3277b2012743874445cab25994e, type: 3}
   errorSound: {fileID: 8300000, guid: 49c01fb0ec75d814cb0ba90fabd92054, type: 3}
   audioSource: {fileID: 83947996}
@@ -1023,20 +1029,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speakerSource: {fileID: 88059970}
-  introClip: {fileID: 8300000, guid: 15ee8dc2e2587804e80a412943e65da6, type: 3}
-  nagPickupClip: {fileID: 8300000, guid: 8e69f05c81bdb624e9d8ad6b3554f61e, type: 3}
-  nagInputClip: {fileID: 8300000, guid: 03ede6ca8f211d04ab43acc11dc2a0f7, type: 3}
-  machineUnlockClip: {fileID: 8300000, guid: 97806e1f11a53924fbc781e2aaa68844, type: 3}
-  pressureEmergencyClip: {fileID: 0}
-  pressureRoomIntroClip: {fileID: 0}
-  idleCorridorClip: {fileID: 8300000, guid: cb85a96ddca67bf4b895ff8c3511a930, type: 3}
-  idlePuzzleClip: {fileID: 0}
-  holdingCodeClip: {fileID: 0}
-  lightsWarningClip: {fileID: 8300000, guid: cc6c4b0ae4bb67b479f9137b72e89e7a, type: 3}
-  denyExitClip: {fileID: 0}
-  finalSpeechClip: {fileID: 8300000, guid: f8309a0e63e8eec4b94863d34b2ffa04, type: 3}
-  nagFinalClip: {fileID: 0}
-  idleThreshold: 30
+  startGameClip: {fileID: 0}
+  startGameSubtitleID: start_game
+  startGameDelay: 3
+  notepadPickupClip: {fileID: 0}
+  notepadPickupSubtitleID: first_notepad
+  firstMistakeClip: {fileID: 0}
+  firstMistakeSubtitleID: first_mistake
+  tutorialSolvedClip: {fileID: 0}
+  tutorialSolvedSubtitleID: tutorial_solved
+  pressureWarningClip: {fileID: 0}
+  pressureWarningSubtitleID: pressure_warning
+  breakerTripClip: {fileID: 0}
+  breakerTripSubtitleID: breaker_trip
+  finalCodeClip: {fileID: 0}
+  finalCodeSubtitleID: final_code
 --- !u!82 &88059970
 AudioSource:
   m_ObjectHideFlags: 0
@@ -3757,6 +3764,11 @@ MonoBehaviour:
   - {fileID: 8043881135415540250}
   - {fileID: 8043881135101977017}
   desiredStateIsOn: 1
+  canPlayerInteract: 1
+  contributesToRisk: 1
+  switchModel: {fileID: 0}
+  onRotation: {x: -15, y: 0, z: 0}
+  offRotation: {x: 15, y: 0, z: 0}
   switchSound: {fileID: 8300000, guid: b3d8f3277b2012743874445cab25994e, type: 3}
   errorSound: {fileID: 8300000, guid: 49c01fb0ec75d814cb0ba90fabd92054, type: 3}
   audioSource: {fileID: 83947996}
@@ -3988,17 +4000,13 @@ MonoBehaviour:
   playerPhysicsController: {fileID: 919132148867769545}
   playerInputScript: {fileID: 919132148867769544}
   playerAnimator: {fileID: 919132148867769543}
-  playerMovementScript: {fileID: 919132148867769544}
+  playerMovementScript: {fileID: 0}
   fixedCameraTransform: {fileID: 1714064006}
   magnetRotationAxis: {x: 1, y: 0, z: 0}
   ringRotationAxisIndex: 2
   ringBaseRotation: 90
   cameraTransitionDuration: 1
   interactAnimTrigger: InspectMachine
-  cameraViewTarget: {fileID: 1714064006}
-  interactionStandPoint: {fileID: 228473712}
-  autoWalkSpeed: 2
-  autoRotateSpeed: 5
   magnetPivot: {fileID: 1210539046733776556}
   acceleratorRing: {fileID: 5786001930406513169}
   ionBeamObj: {fileID: 625354363545955320}
@@ -4019,6 +4027,7 @@ MonoBehaviour:
   successSound: {fileID: 8300000, guid: 200bf7f78de72de428d566135d8748a1, type: 3}
   overheatSound: {fileID: 0}
   beamHumSound: {fileID: 0}
+  magnetMoveSound: {fileID: 0}
 --- !u!65 &210862873
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -4199,6 +4208,7 @@ MonoBehaviour:
   safeColor: {r: 1, g: 1, b: 1, a: 1}
   dangerColor: {r: 1, g: 0.22601756, b: 0, a: 1}
   globalVolume: {fileID: 994232616}
+  overridePostProcessing: 0
   explosionEffect: {fileID: 0}
   warningUI: {fileID: 0}
 --- !u!4 &211895211
@@ -5393,6 +5403,9 @@ MonoBehaviour:
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
   canContainPassword: 1
+  outlineController: {fileID: 0}
+  highlightColor: {r: 1, g: 0.8, b: 0, a: 1}
+  emissionIntensity: 10
   isOpen: 0
   isAnimating: 0
   currentPage: 0
@@ -5406,8 +5419,6 @@ MonoBehaviour:
     width: 0.2
     height: 0.2
   hasPasswordBeenFound: 0
-  outlineColor: {r: 1, g: 1, b: 0, a: 1}
-  outlineWidth: 5
   bookCollider: {fileID: 0}
 --- !u!114 &285976799
 MonoBehaviour:
@@ -5684,6 +5695,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   deathScreenPanel: {fileID: 232751193}
   mainMenuSceneName: MainMenu
+  uiElementsToHide: []
+  fadeImage: {fileID: 0}
+  fadeDuration: 3
+  fadeDelay: 1
 --- !u!1 &290969276
 GameObject:
   m_ObjectHideFlags: 0
@@ -6645,11 +6660,19 @@ MonoBehaviour:
   warning1Clip: {fileID: 0}
   warning2Clip: {fileID: 0}
   killSound: {fileID: 8300000, guid: 49d8be8b7055e5e47963c96fba7defc9, type: 3}
+  animator: {fileID: 0}
   adamModel: {fileID: 1310089141}
   jumpScareDistance: 1
   debugStatus: 
   debugTimer: 0
   debugTotalTimeNeeded: 0
+  adamJumpscareProfile:
+    duration: 2.5
+    enemyEyeHeightOffset: 1.3
+    targetFOV: 40
+    tiltAngle: 10
+    shakeIntensity: 0.5
+    shakeFrequency: 20
 --- !u!82 &325091005
 AudioSource:
   m_ObjectHideFlags: 0
@@ -8544,6 +8567,11 @@ MonoBehaviour:
   - {fileID: 8043881134671243060}
   - {fileID: 8043881135774942097}
   desiredStateIsOn: 1
+  canPlayerInteract: 1
+  contributesToRisk: 1
+  switchModel: {fileID: 0}
+  onRotation: {x: -15, y: 0, z: 0}
+  offRotation: {x: 15, y: 0, z: 0}
   switchSound: {fileID: 8300000, guid: b3d8f3277b2012743874445cab25994e, type: 3}
   errorSound: {fileID: 8300000, guid: 49c01fb0ec75d814cb0ba90fabd92054, type: 3}
   audioSource: {fileID: 83947996}
@@ -9548,6 +9576,7 @@ MonoBehaviour:
   hideSound: {fileID: 8300000, guid: 5345c5b12ec84614aa11cd9ec377b66b, type: 3}
   unhideSound: {fileID: 8300000, guid: a3c6518f71ee459418ba1a2cd277cc92, type: 3}
   peekSound: {fileID: 0}
+  doorOpenDelay: 1
 --- !u!65 &454887306
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -10460,207 +10489,6 @@ Transform:
   - {fileID: 1255307940}
   m_Father: {fileID: 1429351375}
   m_LocalEulerAnglesHint: {x: -10.352018, y: -89.999985, z: 0}
---- !u!1001 &512981376
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
-      propertyPath: m_IESSpot
-      value: 
-      objectReference: {fileID: 451883346217600177, guid: c6eb889c7220763438b67079c7e37879, type: 3}
-    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
-      propertyPath: m_IESPoint
-      value: 
-      objectReference: {fileID: 3883328704701382318, guid: c6eb889c7220763438b67079c7e37879, type: 3}
-    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
-      propertyPath: m_ShapeRadius
-      value: 0.05
-      objectReference: {fileID: 0}
-    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
-      propertyPath: m_PenumbraTint
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
-      propertyPath: m_ShadowTint.b
-      value: 0.3207547
-      objectReference: {fileID: 0}
-    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
-      propertyPath: m_ShadowTint.g
-      value: 0.3207547
-      objectReference: {fileID: 0}
-    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
-      propertyPath: m_ShadowTint.r
-      value: 0.3207547
-      objectReference: {fileID: 0}
-    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
-      propertyPath: m_SoftnessScale
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
-      propertyPath: m_ShadowNearPlane
-      value: 0.3
-      objectReference: {fileID: 0}
-    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
-      propertyPath: m_InnerSpotPercent
-      value: 0.6669006
-      objectReference: {fileID: 0}
-    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
-      propertyPath: m_LinkShadowLayers
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
-      propertyPath: m_ShadowUpdateMode
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
-      propertyPath: m_SpotIESCutoffPercent
-      value: 100
-      objectReference: {fileID: 0}
-    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
-      propertyPath: m_AlwaysDrawDynamicShadows
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
-      propertyPath: m_ShadowResolution.m_Level
-      value: 3
-      objectReference: {fileID: 0}
-    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
-      propertyPath: m_UseContactShadow.m_Level
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
-      propertyPath: m_ShadowResolution.m_Override
-      value: 8192
-      objectReference: {fileID: 0}
-    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
-      propertyPath: m_UpdateShadowOnLightMovement
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
-      propertyPath: m_UseContactShadow.m_Override
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
-      propertyPath: m_ShadowResolution.m_UseOverride
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3508960752760877314, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
-      propertyPath: m_UseContactShadow.m_UseOverride
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4105877466196517156, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 7172324977897585192, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
-      propertyPath: m_Name
-      value: lambdeneme (6)
-      objectReference: {fileID: 0}
-    - target: {fileID: 7172324977897585192, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7548850176812605586, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 20.696
-      objectReference: {fileID: 0}
-    - target: {fileID: 7548850176812605586, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 4.09
-      objectReference: {fileID: 0}
-    - target: {fileID: 7548850176812605586, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0.17
-      objectReference: {fileID: 0}
-    - target: {fileID: 7548850176812605586, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 7548850176812605586, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7548850176812605586, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7548850176812605586, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7548850176812605586, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7548850176812605586, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7548850176812605586, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
-      propertyPath: m_Type
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
-      propertyPath: m_Range
-      value: 6
-      objectReference: {fileID: 0}
-    - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
-      propertyPath: m_Cookie
-      value: 
-      objectReference: {fileID: 451883346217600177, guid: c6eb889c7220763438b67079c7e37879, type: 3}
-    - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
-      propertyPath: m_Intensity
-      value: 1209.4211
-      objectReference: {fileID: 0}
-    - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
-      propertyPath: m_SpotAngle
-      value: 140
-      objectReference: {fileID: 0}
-    - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
-      propertyPath: m_Lightmapping
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
-      propertyPath: m_ShadowRadius
-      value: 0.05
-      objectReference: {fileID: 0}
-    - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
-      propertyPath: m_Shadows.m_Type
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
-      propertyPath: m_BounceIntensity
-      value: 3
-      objectReference: {fileID: 0}
-    - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
-      propertyPath: m_BoundingSphereOverride.w
-      value: 4.3e-44
-      objectReference: {fileID: 0}
-    - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
-      propertyPath: m_BoundingSphereOverride.x
-      value: 8.62e-43
-      objectReference: {fileID: 0}
-    - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
-      propertyPath: m_BoundingSphereOverride.y
-      value: 1.1e-43
-      objectReference: {fileID: 0}
-    - target: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
-      propertyPath: m_BoundingSphereOverride.z
-      value: 0
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
 --- !u!1 &531144711
 GameObject:
   m_ObjectHideFlags: 0
@@ -11128,7 +10956,7 @@ MonoBehaviour:
   lockSound: {fileID: 8300000, guid: 9f655b83441045740a1844f69eb8a399, type: 3}
   unlockSound: {fileID: 8300000, guid: 290619d38bd804f4c88e3e476f15dff5, type: 3}
   lockedTryOpenSound: {fileID: 8300000, guid: cd90140df257b8c4bb0db9f436dbcfb5, type: 3}
-  playerController: {fileID: 919132148867769545}
+  playerPhysics: {fileID: 0}
 --- !u!65 &557927590
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -14492,6 +14320,11 @@ MonoBehaviour:
   - {fileID: 8043881135070408817}
   - {fileID: 8043881135524643956}
   desiredStateIsOn: 1
+  canPlayerInteract: 1
+  contributesToRisk: 1
+  switchModel: {fileID: 0}
+  onRotation: {x: -15, y: 0, z: 0}
+  offRotation: {x: 15, y: 0, z: 0}
   switchSound: {fileID: 8300000, guid: b3d8f3277b2012743874445cab25994e, type: 3}
   errorSound: {fileID: 8300000, guid: 49c01fb0ec75d814cb0ba90fabd92054, type: 3}
   audioSource: {fileID: 83947996}
@@ -14777,6 +14610,11 @@ MonoBehaviour:
   targetLight:
   - {fileID: 8043881134836436237}
   desiredStateIsOn: 1
+  canPlayerInteract: 1
+  contributesToRisk: 1
+  switchModel: {fileID: 0}
+  onRotation: {x: -15, y: 0, z: 0}
+  offRotation: {x: 15, y: 0, z: 0}
   switchSound: {fileID: 8300000, guid: b3d8f3277b2012743874445cab25994e, type: 3}
   errorSound: {fileID: 8300000, guid: 49c01fb0ec75d814cb0ba90fabd92054, type: 3}
   audioSource: {fileID: 83947996}
@@ -17298,6 +17136,9 @@ MonoBehaviour:
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: 725e301b34f00429ca9064b7d0eaa616, type: 2}
   canContainPassword: 1
+  outlineController: {fileID: 0}
+  highlightColor: {r: 1, g: 0.8, b: 0, a: 1}
+  emissionIntensity: 10
   isOpen: 0
   isAnimating: 0
   currentPage: 0
@@ -17311,8 +17152,6 @@ MonoBehaviour:
     width: 0
     height: 0
   hasPasswordBeenFound: 0
-  outlineColor: {r: 1, g: 1, b: 0, a: 1}
-  outlineWidth: 5
   bookCollider: {fileID: 0}
 --- !u!1 &939139315
 GameObject:
@@ -18646,7 +18485,7 @@ MonoBehaviour:
   lockSound: {fileID: 8300000, guid: 9f655b83441045740a1844f69eb8a399, type: 3}
   unlockSound: {fileID: 8300000, guid: 290619d38bd804f4c88e3e476f15dff5, type: 3}
   lockedTryOpenSound: {fileID: 8300000, guid: cd90140df257b8c4bb0db9f436dbcfb5, type: 3}
-  playerController: {fileID: 919132148867769545}
+  playerPhysics: {fileID: 0}
 --- !u!65 &958033080
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -18899,6 +18738,11 @@ MonoBehaviour:
   - {fileID: 8043881134938667542}
   - {fileID: 8043881135641951859}
   desiredStateIsOn: 1
+  canPlayerInteract: 1
+  contributesToRisk: 1
+  switchModel: {fileID: 0}
+  onRotation: {x: -15, y: 0, z: 0}
+  offRotation: {x: 15, y: 0, z: 0}
   switchSound: {fileID: 8300000, guid: b3d8f3277b2012743874445cab25994e, type: 3}
   errorSound: {fileID: 8300000, guid: 49c01fb0ec75d814cb0ba90fabd92054, type: 3}
   audioSource: {fileID: 83947996}
@@ -19400,6 +19244,11 @@ MonoBehaviour:
   - {fileID: 8043881136505751019}
   - {fileID: 8043881134676898963}
   desiredStateIsOn: 1
+  canPlayerInteract: 1
+  contributesToRisk: 1
+  switchModel: {fileID: 0}
+  onRotation: {x: -15, y: 0, z: 0}
+  offRotation: {x: 15, y: 0, z: 0}
   switchSound: {fileID: 8300000, guid: b3d8f3277b2012743874445cab25994e, type: 3}
   errorSound: {fileID: 8300000, guid: 49c01fb0ec75d814cb0ba90fabd92054, type: 3}
   audioSource: {fileID: 83947996}
@@ -19674,6 +19523,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   roomName: Fuse_Room
   isCorridor: 0
+  roomSpeakerTransform: {fileID: 0}
   onFirstEnterSound:
     clip: {fileID: 0}
     subtitleID: 
@@ -20605,7 +20455,7 @@ MonoBehaviour:
   lockSound: {fileID: 8300000, guid: 9f655b83441045740a1844f69eb8a399, type: 3}
   unlockSound: {fileID: 8300000, guid: 290619d38bd804f4c88e3e476f15dff5, type: 3}
   lockedTryOpenSound: {fileID: 8300000, guid: cd90140df257b8c4bb0db9f436dbcfb5, type: 3}
-  playerController: {fileID: 919132148867769545}
+  playerPhysics: {fileID: 0}
 --- !u!65 &1114964452
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -20749,6 +20599,11 @@ MonoBehaviour:
   - {fileID: 8043881135286458413}
   - {fileID: 8043881134501523872}
   desiredStateIsOn: 1
+  canPlayerInteract: 1
+  contributesToRisk: 1
+  switchModel: {fileID: 0}
+  onRotation: {x: -15, y: 0, z: 0}
+  offRotation: {x: 15, y: 0, z: 0}
   switchSound: {fileID: 8300000, guid: b3d8f3277b2012743874445cab25994e, type: 3}
   errorSound: {fileID: 8300000, guid: 49c01fb0ec75d814cb0ba90fabd92054, type: 3}
   audioSource: {fileID: 83947996}
@@ -21451,6 +21306,11 @@ MonoBehaviour:
   - {fileID: 8043881135132633399}
   - {fileID: 8043881134901173537}
   desiredStateIsOn: 1
+  canPlayerInteract: 1
+  contributesToRisk: 1
+  switchModel: {fileID: 0}
+  onRotation: {x: -15, y: 0, z: 0}
+  offRotation: {x: 15, y: 0, z: 0}
   switchSound: {fileID: 8300000, guid: b3d8f3277b2012743874445cab25994e, type: 3}
   errorSound: {fileID: 8300000, guid: 49c01fb0ec75d814cb0ba90fabd92054, type: 3}
   audioSource: {fileID: 83947996}
@@ -22018,6 +21878,9 @@ MonoBehaviour:
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
   canContainPassword: 1
+  outlineController: {fileID: 0}
+  highlightColor: {r: 1, g: 0.8, b: 0, a: 1}
+  emissionIntensity: 10
   isOpen: 0
   isAnimating: 0
   currentPage: 0
@@ -22031,8 +21894,6 @@ MonoBehaviour:
     width: 0.2
     height: 0.2
   hasPasswordBeenFound: 0
-  outlineColor: {r: 1, g: 1, b: 0, a: 1}
-  outlineWidth: 5
   bookCollider: {fileID: 0}
 --- !u!1 &1201733588
 GameObject:
@@ -22105,6 +21966,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   roomName: Office_Room
   isCorridor: 0
+  roomSpeakerTransform: {fileID: 0}
   onFirstEnterSound:
     clip: {fileID: 0}
     subtitleID: 
@@ -22333,6 +22195,9 @@ MonoBehaviour:
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
   canContainPassword: 1
+  outlineController: {fileID: 0}
+  highlightColor: {r: 1, g: 0.8, b: 0, a: 1}
+  emissionIntensity: 10
   isOpen: 0
   isAnimating: 0
   currentPage: 0
@@ -22346,8 +22211,6 @@ MonoBehaviour:
     width: 0.2
     height: 0.2
   hasPasswordBeenFound: 0
-  outlineColor: {r: 1, g: 1, b: 0, a: 1}
-  outlineWidth: 5
   bookCollider: {fileID: 0}
 --- !u!114 &1212067468
 MonoBehaviour:
@@ -24195,6 +24058,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   roomName: Chemistry_Lab
   isCorridor: 0
+  roomSpeakerTransform: {fileID: 0}
   onFirstEnterSound:
     clip: {fileID: 8300000, guid: d584952350fb8764fbd6e26bdfe2630f, type: 3}
     subtitleID: chemistry_lab_entrance
@@ -24826,6 +24690,9 @@ MonoBehaviour:
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
   canContainPassword: 1
+  outlineController: {fileID: 0}
+  highlightColor: {r: 1, g: 0.8, b: 0, a: 1}
+  emissionIntensity: 10
   isOpen: 0
   isAnimating: 0
   currentPage: 0
@@ -24839,8 +24706,6 @@ MonoBehaviour:
     width: 0.2
     height: 0.2
   hasPasswordBeenFound: 0
-  outlineColor: {r: 1, g: 1, b: 0, a: 1}
-  outlineWidth: 5
   bookCollider: {fileID: 0}
 --- !u!114 &1322135891
 MonoBehaviour:
@@ -25155,6 +25020,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   roomName: Corridor
   isCorridor: 1
+  roomSpeakerTransform: {fileID: 0}
   onFirstEnterSound:
     clip: {fileID: 0}
     subtitleID: 
@@ -25347,6 +25213,9 @@ MonoBehaviour:
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: 51515ebaa232ea446892709aafa79e1c, type: 2}
   canContainPassword: 0
+  outlineController: {fileID: 0}
+  highlightColor: {r: 1, g: 0.8, b: 0, a: 1}
+  emissionIntensity: 10
   isOpen: 0
   isAnimating: 0
   currentPage: 0
@@ -25360,8 +25229,6 @@ MonoBehaviour:
     width: 0.2
     height: 0.2
   hasPasswordBeenFound: 0
-  outlineColor: {r: 1, g: 1, b: 0, a: 1}
-  outlineWidth: 5
   bookCollider: {fileID: 0}
 --- !u!114 &1342168776
 MonoBehaviour:
@@ -25782,17 +25649,18 @@ MonoBehaviour:
   mainCamera: {fileID: 0}
   headBone: {fileID: 0}
   globalVolume: {fileID: 994232616}
-  shakeIntensity: 0.05
-  shakeFrequency: 10
-  tiltAngle: 10
-  targetFOV: 35
+  defaultProfile:
+    duration: 2.5
+    enemyEyeHeightOffset: 1.3
+    targetFOV: 40
+    tiltAngle: 10
+    shakeIntensity: 0.5
+    shakeFrequency: 20
   slowTurnSpeed: 3.5
   fastTurnSpeed: 15
   obstacleLayers:
     serializedVersion: 2
     m_Bits: 257
-  obstacleCheckDistance: 1
-  defaultScareDuration: 2.5
   eyeOffset: {x: 0, y: 0, z: 0.05}
 --- !u!1 &1365237083
 GameObject:
@@ -28443,6 +28311,7 @@ MonoBehaviour:
   hideSound: {fileID: 8300000, guid: 5345c5b12ec84614aa11cd9ec377b66b, type: 3}
   unhideSound: {fileID: 8300000, guid: a3c6518f71ee459418ba1a2cd277cc92, type: 3}
   peekSound: {fileID: 0}
+  doorOpenDelay: 1
 --- !u!65 &1430485573
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -30355,6 +30224,7 @@ MonoBehaviour:
   jumpscareDistance: 1.2
   lookAtDoorThreshold: 60
   spawnYOffset: 0.5
+  animator: {fileID: 0}
   guderianModel: {fileID: 1567846634}
   audioSource: {fileID: 1552689768}
   footstepSounds:
@@ -30372,6 +30242,13 @@ MonoBehaviour:
   debugBreachProgress: 0
   debugApproachProgress: 0
   debugCooldown: 0
+  guderianJumpscareProfile:
+    duration: 2.5
+    enemyEyeHeightOffset: 1.3
+    targetFOV: 40
+    tiltAngle: 10
+    shakeIntensity: 0.5
+    shakeFrequency: 20
 --- !u!82 &1552689768
 AudioSource:
   m_ObjectHideFlags: 0
@@ -32683,6 +32560,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   roomName: Valve_Room
   isCorridor: 0
+  roomSpeakerTransform: {fileID: 0}
   onFirstEnterSound:
     clip: {fileID: 8300000, guid: ac9b279d7ce20874d82e1eca141c8d2b, type: 3}
     subtitleID: pressure_emergency
@@ -34336,6 +34214,9 @@ MonoBehaviour:
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
   canContainPassword: 1
+  outlineController: {fileID: 0}
+  highlightColor: {r: 1, g: 0.8, b: 0, a: 1}
+  emissionIntensity: 10
   isOpen: 0
   isAnimating: 0
   currentPage: 0
@@ -34349,8 +34230,6 @@ MonoBehaviour:
     width: 0.2
     height: 0.2
   hasPasswordBeenFound: 0
-  outlineColor: {r: 1, g: 1, b: 0, a: 1}
-  outlineWidth: 5
   bookCollider: {fileID: 0}
 --- !u!1001 &1806373827
 PrefabInstance:
@@ -36695,7 +36574,7 @@ MonoBehaviour:
   lockSound: {fileID: 8300000, guid: 9f655b83441045740a1844f69eb8a399, type: 3}
   unlockSound: {fileID: 8300000, guid: 290619d38bd804f4c88e3e476f15dff5, type: 3}
   lockedTryOpenSound: {fileID: 8300000, guid: cd90140df257b8c4bb0db9f436dbcfb5, type: 3}
-  playerController: {fileID: 919132148867769545}
+  playerPhysics: {fileID: 0}
 --- !u!65 &1895917549
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -40109,7 +39988,7 @@ MonoBehaviour:
   lockSound: {fileID: 8300000, guid: 9f655b83441045740a1844f69eb8a399, type: 3}
   unlockSound: {fileID: 8300000, guid: 290619d38bd804f4c88e3e476f15dff5, type: 3}
   lockedTryOpenSound: {fileID: 8300000, guid: cd90140df257b8c4bb0db9f436dbcfb5, type: 3}
-  playerController: {fileID: 919132148867769545}
+  playerPhysics: {fileID: 0}
 --- !u!65 &2094466267
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -40877,7 +40756,7 @@ MonoBehaviour:
   lockSound: {fileID: 8300000, guid: 9f655b83441045740a1844f69eb8a399, type: 3}
   unlockSound: {fileID: 8300000, guid: 290619d38bd804f4c88e3e476f15dff5, type: 3}
   lockedTryOpenSound: {fileID: 8300000, guid: cd90140df257b8c4bb0db9f436dbcfb5, type: 3}
-  playerController: {fileID: 919132148867769545}
+  playerPhysics: {fileID: 0}
 --- !u!65 &2118506178
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -41036,6 +40915,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   roomName: Corridor
   isCorridor: 1
+  roomSpeakerTransform: {fileID: 0}
   onFirstEnterSound:
     clip: {fileID: 0}
     subtitleID: 
@@ -61450,7 +61330,7 @@ MonoBehaviour:
   lockSound: {fileID: 8300000, guid: 9f655b83441045740a1844f69eb8a399, type: 3}
   unlockSound: {fileID: 8300000, guid: 290619d38bd804f4c88e3e476f15dff5, type: 3}
   lockedTryOpenSound: {fileID: 8300000, guid: cd90140df257b8c4bb0db9f436dbcfb5, type: 3}
-  playerController: {fileID: 0}
+  playerPhysics: {fileID: 0}
 --- !u!4 &4873254516340577158
 Transform:
   m_ObjectHideFlags: 0
@@ -62631,7 +62511,7 @@ MonoBehaviour:
   lockSound: {fileID: 8300000, guid: 9f655b83441045740a1844f69eb8a399, type: 3}
   unlockSound: {fileID: 8300000, guid: 290619d38bd804f4c88e3e476f15dff5, type: 3}
   lockedTryOpenSound: {fileID: 8300000, guid: cd90140df257b8c4bb0db9f436dbcfb5, type: 3}
-  playerController: {fileID: 0}
+  playerPhysics: {fileID: 0}
 --- !u!33 &5249818077544463783
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -65164,6 +65044,13 @@ MonoBehaviour:
   jumpscareSound: {fileID: 8300000, guid: ea6457709cae84244bff3b55a98ebd92, type: 3}
   jumpscareDistance: 1.2
   jumpscareYOffset: 0
+  leesJumpscareProfile:
+    duration: 2.5
+    enemyEyeHeightOffset: 1.3
+    targetFOV: 40
+    tiltAngle: 10
+    shakeIntensity: 0.5
+    shakeFrequency: 20
   spawnCooldownAfterDespawn: 45
   showDebugLogs: 1
   debugCooldownTimer: 0
@@ -68523,7 +68410,7 @@ MonoBehaviour:
   lockSound: {fileID: 8300000, guid: 9f655b83441045740a1844f69eb8a399, type: 3}
   unlockSound: {fileID: 8300000, guid: 290619d38bd804f4c88e3e476f15dff5, type: 3}
   lockedTryOpenSound: {fileID: 8300000, guid: cd90140df257b8c4bb0db9f436dbcfb5, type: 3}
-  playerController: {fileID: 0}
+  playerPhysics: {fileID: 0}
 --- !u!65 &6639605331598362738
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -75780,7 +75667,7 @@ MonoBehaviour:
   lockSound: {fileID: 8300000, guid: 9f655b83441045740a1844f69eb8a399, type: 3}
   unlockSound: {fileID: 8300000, guid: 290619d38bd804f4c88e3e476f15dff5, type: 3}
   lockedTryOpenSound: {fileID: 8300000, guid: cd90140df257b8c4bb0db9f436dbcfb5, type: 3}
-  playerController: {fileID: 0}
+  playerPhysics: {fileID: 0}
 --- !u!95 &8451910101129716070
 Animator:
   serializedVersion: 7
@@ -77307,7 +77194,7 @@ MonoBehaviour:
   lockSound: {fileID: 8300000, guid: 9f655b83441045740a1844f69eb8a399, type: 3}
   unlockSound: {fileID: 8300000, guid: 290619d38bd804f4c88e3e476f15dff5, type: 3}
   lockedTryOpenSound: {fileID: 8300000, guid: cd90140df257b8c4bb0db9f436dbcfb5, type: 3}
-  playerController: {fileID: 0}
+  playerPhysics: {fileID: 0}
 --- !u!95 &8893835746074177536
 Animator:
   serializedVersion: 7
@@ -77583,7 +77470,7 @@ MonoBehaviour:
   lockSound: {fileID: 8300000, guid: 9f655b83441045740a1844f69eb8a399, type: 3}
   unlockSound: {fileID: 8300000, guid: 290619d38bd804f4c88e3e476f15dff5, type: 3}
   lockedTryOpenSound: {fileID: 8300000, guid: cd90140df257b8c4bb0db9f436dbcfb5, type: 3}
-  playerController: {fileID: 919132148867769545}
+  playerPhysics: {fileID: 0}
 --- !u!1 &8939965521055335242
 GameObject:
   m_ObjectHideFlags: 0
@@ -78803,7 +78690,6 @@ SceneRoots:
   - {fileID: 912981996}
   - {fileID: 1392630960}
   - {fileID: 158441199}
-  - {fileID: 512981376}
   - {fileID: 1391918875}
   - {fileID: 1869003144}
   - {fileID: 1895625004}
