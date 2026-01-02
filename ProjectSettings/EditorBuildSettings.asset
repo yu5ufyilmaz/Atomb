@@ -11,7 +11,7 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/Scenes/Osman_GameScene.unity
     guid: 69db779f08b31b941949389b9e6674d0
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/CreditsMenu.unity
     guid: 381841f0aa55e674bbb2f09dce66ce8e
   - enabled: 0
