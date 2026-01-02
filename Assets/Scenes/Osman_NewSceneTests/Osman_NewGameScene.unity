@@ -7158,7 +7158,7 @@ MonoBehaviour:
   gizmoYOffset: 0.18
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
-  canContainPassword: 1
+  canContainPassword: 0
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -8279,7 +8279,7 @@ MonoBehaviour:
   gizmoYOffset: 0.18
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
-  canContainPassword: 1
+  canContainPassword: 0
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -10149,7 +10149,7 @@ MonoBehaviour:
   gizmoYOffset: 0.18
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
-  canContainPassword: 1
+  canContainPassword: 0
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -13780,7 +13780,7 @@ MonoBehaviour:
   gizmoYOffset: 0.18
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
-  canContainPassword: 1
+  canContainPassword: 0
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -14542,7 +14542,7 @@ MonoBehaviour:
   gizmoYOffset: 0.18
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
-  canContainPassword: 1
+  canContainPassword: 0
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -15322,7 +15322,7 @@ MonoBehaviour:
   gizmoYOffset: 0.18
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
-  canContainPassword: 1
+  canContainPassword: 0
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -16267,7 +16267,7 @@ MonoBehaviour:
   gizmoYOffset: 0.18
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
-  canContainPassword: 1
+  canContainPassword: 0
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -20114,7 +20114,7 @@ MonoBehaviour:
   gizmoYOffset: 0.18
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
-  canContainPassword: 1
+  canContainPassword: 0
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -22618,7 +22618,7 @@ MonoBehaviour:
   gizmoYOffset: 0.18
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
-  canContainPassword: 1
+  canContainPassword: 0
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -26064,7 +26064,7 @@ MonoBehaviour:
   gizmoYOffset: 0.18
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
-  canContainPassword: 1
+  canContainPassword: 0
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -26372,7 +26372,7 @@ MonoBehaviour:
   gizmoYOffset: 0.18
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
-  canContainPassword: 1
+  canContainPassword: 0
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -26709,7 +26709,7 @@ MonoBehaviour:
   gizmoYOffset: 0.18
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
-  canContainPassword: 1
+  canContainPassword: 0
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -28280,7 +28280,7 @@ MonoBehaviour:
   gizmoYOffset: 0.18
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
-  canContainPassword: 1
+  canContainPassword: 0
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -29040,7 +29040,7 @@ MonoBehaviour:
   gizmoYOffset: 0.18
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
-  canContainPassword: 1
+  canContainPassword: 0
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -40681,7 +40681,7 @@ MonoBehaviour:
   gizmoYOffset: 0.18
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
-  canContainPassword: 1
+  canContainPassword: 0
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -41013,7 +41013,7 @@ MonoBehaviour:
   gizmoYOffset: 0.18
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
-  canContainPassword: 1
+  canContainPassword: 0
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -41969,7 +41969,7 @@ MonoBehaviour:
   gizmoYOffset: 0.18
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
-  canContainPassword: 1
+  canContainPassword: 0
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -42607,7 +42607,7 @@ MonoBehaviour:
   gizmoYOffset: 0.18
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
-  canContainPassword: 1
+  canContainPassword: 0
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -45688,7 +45688,7 @@ MonoBehaviour:
   gizmoYOffset: 0.18
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
-  canContainPassword: 1
+  canContainPassword: 0
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -46530,7 +46530,7 @@ MonoBehaviour:
   gizmoYOffset: 0.18
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
-  canContainPassword: 1
+  canContainPassword: 0
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -48333,7 +48333,7 @@ MonoBehaviour:
   gizmoYOffset: 0.18
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
-  canContainPassword: 1
+  canContainPassword: 0
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -48772,7 +48772,7 @@ MonoBehaviour:
   gizmoYOffset: 0.18
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
-  canContainPassword: 1
+  canContainPassword: 0
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -50387,7 +50387,7 @@ MonoBehaviour:
   gizmoYOffset: 0.18
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
-  canContainPassword: 1
+  canContainPassword: 0
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -52989,7 +52989,7 @@ MonoBehaviour:
   gizmoYOffset: 0.18
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
-  canContainPassword: 1
+  canContainPassword: 0
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -53007,75 +53007,6 @@ MonoBehaviour:
     height: 0.2
   hasPasswordBeenFound: 0
   bookCollider: {fileID: 0}
---- !u!1 &1379882045
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1379882046}
-  - component: {fileID: 1379882047}
-  m_Layer: 5
-  m_Name: Custom Pass
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1379882046
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1379882045}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 960, y: 540, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 2114283753834967213}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1379882047
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1379882045}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 26d6499a6bd256e47b859377446493a1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_IsGlobal: 1
-  fadeRadius: 0
-  priority: 0
-  customPasses:
-  - rid: 3404556434847564190
-  injectionPoint: 1
-  m_TargetCamera: {fileID: 0}
-  useTargetCamera: 0
-  references:
-    version: 2
-    RefIds:
-    - rid: 3404556434847564190
-      type: {class: FullScreenCustomPass, ns: UnityEngine.Rendering.HighDefinition, asm: Unity.RenderPipelines.HighDefinition.Runtime}
-      data:
-        m_Name: Custom Pass
-        enabled: 1
-        targetColorBuffer: 0
-        targetDepthBuffer: 0
-        clearFlags: 0
-        passFoldout: 0
-        m_Version: 0
-        fullscreenPassMaterial: {fileID: 2100000, guid: ce060fd662b395b4f8a882d9f8cc0f89, type: 2}
-        materialPassIndex: 0
-        materialPassName: Custom Pass 0
-        fetchColorBuffer: 0
 --- !u!1 &1381540906
 GameObject:
   m_ObjectHideFlags: 0
@@ -54847,7 +54778,7 @@ MonoBehaviour:
   gizmoYOffset: 0.18
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
-  canContainPassword: 1
+  canContainPassword: 0
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -56922,7 +56853,7 @@ MonoBehaviour:
   gizmoYOffset: 0.18
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
-  canContainPassword: 1
+  canContainPassword: 0
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -57159,7 +57090,7 @@ MonoBehaviour:
   gizmoYOffset: 0.18
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
-  canContainPassword: 1
+  canContainPassword: 0
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -58619,7 +58550,7 @@ MonoBehaviour:
   gizmoYOffset: 0.18
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
-  canContainPassword: 1
+  canContainPassword: 0
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -60927,7 +60858,7 @@ MonoBehaviour:
   gizmoYOffset: 0.18
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
-  canContainPassword: 1
+  canContainPassword: 0
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -65535,7 +65466,7 @@ MonoBehaviour:
   gizmoYOffset: 0.18
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
-  canContainPassword: 1
+  canContainPassword: 0
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -66041,7 +65972,7 @@ MonoBehaviour:
   gizmoYOffset: 0.18
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
-  canContainPassword: 1
+  canContainPassword: 0
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -66889,7 +66820,7 @@ MonoBehaviour:
   gizmoYOffset: 0.18
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
-  canContainPassword: 1
+  canContainPassword: 0
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -67728,7 +67659,7 @@ MonoBehaviour:
   gizmoYOffset: 0.18
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
-  canContainPassword: 1
+  canContainPassword: 0
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -67965,7 +67896,7 @@ MonoBehaviour:
   gizmoYOffset: 0.18
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
-  canContainPassword: 1
+  canContainPassword: 0
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -70371,7 +70302,7 @@ MonoBehaviour:
   gizmoYOffset: 0.18
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
-  canContainPassword: 1
+  canContainPassword: 0
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -74020,7 +73951,7 @@ MonoBehaviour:
   gizmoYOffset: 0.18
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
-  canContainPassword: 1
+  canContainPassword: 0
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -75128,7 +75059,7 @@ MonoBehaviour:
   gizmoYOffset: 0.18
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
-  canContainPassword: 1
+  canContainPassword: 0
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -75491,7 +75422,7 @@ MonoBehaviour:
   gizmoYOffset: 0.18
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
-  canContainPassword: 1
+  canContainPassword: 0
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -75855,7 +75786,7 @@ MonoBehaviour:
   gizmoYOffset: 0.18
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
-  canContainPassword: 1
+  canContainPassword: 0
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -76771,7 +76702,7 @@ MonoBehaviour:
   gizmoYOffset: 0.18
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
-  canContainPassword: 1
+  canContainPassword: 0
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -81111,7 +81042,7 @@ MonoBehaviour:
   gizmoYOffset: 0.18
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
-  canContainPassword: 1
+  canContainPassword: 0
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -82107,7 +82038,7 @@ MonoBehaviour:
   gizmoYOffset: 0.18
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
-  canContainPassword: 1
+  canContainPassword: 0
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -83100,7 +83031,7 @@ MonoBehaviour:
   gizmoYOffset: 0.18
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
-  canContainPassword: 1
+  canContainPassword: 0
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -96110,7 +96041,6 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 1379882046}
   - {fileID: 994232615}
   - {fileID: 1161246486}
   - {fileID: 1639134101}
