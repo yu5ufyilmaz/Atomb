@@ -5526,7 +5526,7 @@ MonoBehaviour:
   pageFlipObject: {fileID: 154545051}
   pageFlipRenderer: {fileID: 154545053}
   pageTurnMaterial: {fileID: 2100000, guid: 9a17d45b7b9f58347b1cf6ef1f5424d1, type: 2}
-  audioSource: {fileID: 0}
+  audioSource: {fileID: 140257372}
   bookOpenSound: {fileID: 8300000, guid: fa63e2ac008f76245aa27b7ea4938007, type: 3}
   bookCloseSound: {fileID: 8300000, guid: c87d4bd814009324eb507e77fcc2164d, type: 3}
   pageFlipSounds:
@@ -5543,7 +5543,7 @@ MonoBehaviour:
   singlePageSize: {x: 0.9, y: 1.25}
   gizmoYOffset: 0.18
   animationDuration: 1
-  bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
+  bookIdentity: {fileID: 11400000, guid: 2633f89b3a7c9c24d9891c9441650338, type: 2}
   canContainPassword: 1
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
@@ -6940,7 +6940,7 @@ MonoBehaviour:
   pageFlipObject: {fileID: 125487738}
   pageFlipRenderer: {fileID: 125487740}
   pageTurnMaterial: {fileID: 2100000, guid: 7094ba8ccca5da246851e0590bb98488, type: 2}
-  audioSource: {fileID: 0}
+  audioSource: {fileID: 179452381}
   bookOpenSound: {fileID: 8300000, guid: fa63e2ac008f76245aa27b7ea4938007, type: 3}
   bookCloseSound: {fileID: 8300000, guid: c87d4bd814009324eb507e77fcc2164d, type: 3}
   pageFlipSounds:
@@ -6957,7 +6957,7 @@ MonoBehaviour:
   singlePageSize: {x: 0.9, y: 1.25}
   gizmoYOffset: 0.18
   animationDuration: 1
-  bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
+  bookIdentity: {fileID: 11400000, guid: 18f4c2f2e786f504085a2ca1bc9ebfd9, type: 2}
   canContainPassword: 1
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
@@ -8063,7 +8063,7 @@ MonoBehaviour:
   pageFlipObject: {fileID: 1038026791}
   pageFlipRenderer: {fileID: 1038026793}
   pageTurnMaterial: {fileID: 2100000, guid: 3e545b554cfdb75418e5229da7f3ac49, type: 2}
-  audioSource: {fileID: 0}
+  audioSource: {fileID: 195555930}
   bookOpenSound: {fileID: 8300000, guid: fa63e2ac008f76245aa27b7ea4938007, type: 3}
   bookCloseSound: {fileID: 8300000, guid: c87d4bd814009324eb507e77fcc2164d, type: 3}
   pageFlipSounds:
@@ -8080,7 +8080,7 @@ MonoBehaviour:
   singlePageSize: {x: 0.9, y: 1.25}
   gizmoYOffset: 0.18
   animationDuration: 1
-  bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
+  bookIdentity: {fileID: 11400000, guid: 2a0f195687fb3034f9280cd43ec4cf0a, type: 2}
   canContainPassword: 1
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
@@ -9803,7 +9803,7 @@ MonoBehaviour:
   pageFlipObject: {fileID: 1147045285}
   pageFlipRenderer: {fileID: 1147045287}
   pageTurnMaterial: {fileID: 2100000, guid: 646bad8529753954aa11aadd087c05da, type: 2}
-  audioSource: {fileID: 0}
+  audioSource: {fileID: 254541723}
   bookOpenSound: {fileID: 8300000, guid: fa63e2ac008f76245aa27b7ea4938007, type: 3}
   bookCloseSound: {fileID: 8300000, guid: c87d4bd814009324eb507e77fcc2164d, type: 3}
   pageFlipSounds:
@@ -9821,7 +9821,7 @@ MonoBehaviour:
   gizmoYOffset: 0.18
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
-  canContainPassword: 1
+  canContainPassword: 0
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -14175,7 +14175,7 @@ MonoBehaviour:
   pageFlipObject: {fileID: 405355595}
   pageFlipRenderer: {fileID: 405355597}
   pageTurnMaterial: {fileID: 2100000, guid: f3ad30e10e0b25e4aa1719084bc1d92c, type: 2}
-  audioSource: {fileID: 0}
+  audioSource: {fileID: 333391361}
   bookOpenSound: {fileID: 8300000, guid: fa63e2ac008f76245aa27b7ea4938007, type: 3}
   bookCloseSound: {fileID: 8300000, guid: c87d4bd814009324eb507e77fcc2164d, type: 3}
   pageFlipSounds:
@@ -14193,7 +14193,7 @@ MonoBehaviour:
   gizmoYOffset: 0.18
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
-  canContainPassword: 1
+  canContainPassword: 0
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -14808,7 +14808,7 @@ MonoBehaviour:
   pageFlipObject: {fileID: 1900253552}
   pageFlipRenderer: {fileID: 1900253554}
   pageTurnMaterial: {fileID: 2100000, guid: da4b7094cfb060e49a58dd35553822dd, type: 2}
-  audioSource: {fileID: 0}
+  audioSource: {fileID: 341030750}
   bookOpenSound: {fileID: 8300000, guid: fa63e2ac008f76245aa27b7ea4938007, type: 3}
   bookCloseSound: {fileID: 8300000, guid: c87d4bd814009324eb507e77fcc2164d, type: 3}
   pageFlipSounds:
@@ -14826,7 +14826,7 @@ MonoBehaviour:
   gizmoYOffset: 0.18
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
-  canContainPassword: 1
+  canContainPassword: 0
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -16281,7 +16281,7 @@ MonoBehaviour:
   pageFlipObject: {fileID: 1546574068}
   pageFlipRenderer: {fileID: 1546574070}
   pageTurnMaterial: {fileID: 2100000, guid: 35705427e84365a45810609df281c8ef, type: 2}
-  audioSource: {fileID: 0}
+  audioSource: {fileID: 377836493}
   bookOpenSound: {fileID: 8300000, guid: fa63e2ac008f76245aa27b7ea4938007, type: 3}
   bookCloseSound: {fileID: 8300000, guid: c87d4bd814009324eb507e77fcc2164d, type: 3}
   pageFlipSounds:
@@ -16299,7 +16299,7 @@ MonoBehaviour:
   gizmoYOffset: 0.18
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
-  canContainPassword: 1
+  canContainPassword: 0
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -20423,7 +20423,7 @@ MonoBehaviour:
   pageFlipObject: {fileID: 1110610097}
   pageFlipRenderer: {fileID: 1110610099}
   pageTurnMaterial: {fileID: 2100000, guid: 3b01752ddb7a2ca4caad61e1cd5271ea, type: 2}
-  audioSource: {fileID: 0}
+  audioSource: {fileID: 477310333}
   bookOpenSound: {fileID: 8300000, guid: fa63e2ac008f76245aa27b7ea4938007, type: 3}
   bookCloseSound: {fileID: 8300000, guid: c87d4bd814009324eb507e77fcc2164d, type: 3}
   pageFlipSounds:
@@ -20440,7 +20440,7 @@ MonoBehaviour:
   singlePageSize: {x: 0.9, y: 1.25}
   gizmoYOffset: 0.18
   animationDuration: 1
-  bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
+  bookIdentity: {fileID: 11400000, guid: 07341820b2684904898940bff856a3e3, type: 2}
   canContainPassword: 1
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
@@ -22825,7 +22825,7 @@ MonoBehaviour:
   pageFlipObject: {fileID: 585996693}
   pageFlipRenderer: {fileID: 585996695}
   pageTurnMaterial: {fileID: 2100000, guid: cfeb1dd55d1aaba4384379ad09ec048c, type: 2}
-  audioSource: {fileID: 0}
+  audioSource: {fileID: 574083465}
   bookOpenSound: {fileID: 8300000, guid: fa63e2ac008f76245aa27b7ea4938007, type: 3}
   bookCloseSound: {fileID: 8300000, guid: c87d4bd814009324eb507e77fcc2164d, type: 3}
   pageFlipSounds:
@@ -22843,7 +22843,7 @@ MonoBehaviour:
   gizmoYOffset: 0.18
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
-  canContainPassword: 1
+  canContainPassword: 0
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -23550,7 +23550,7 @@ MonoBehaviour:
   pageFlipObject: {fileID: 301558400}
   pageFlipRenderer: {fileID: 301558402}
   pageTurnMaterial: {fileID: 2100000, guid: 35ac920c49c77de44ac7becce53a6fe2, type: 2}
-  audioSource: {fileID: 0}
+  audioSource: {fileID: 584014574}
   bookOpenSound: {fileID: 8300000, guid: fa63e2ac008f76245aa27b7ea4938007, type: 3}
   bookCloseSound: {fileID: 8300000, guid: c87d4bd814009324eb507e77fcc2164d, type: 3}
   pageFlipSounds:
@@ -23568,7 +23568,7 @@ MonoBehaviour:
   gizmoYOffset: 0.18
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
-  canContainPassword: 1
+  canContainPassword: 0
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -26467,7 +26467,7 @@ MonoBehaviour:
   pageFlipObject: {fileID: 741943295}
   pageFlipRenderer: {fileID: 741943297}
   pageTurnMaterial: {fileID: 2100000, guid: 1a95211a54927fb44b644e1f750528c5, type: 2}
-  audioSource: {fileID: 0}
+  audioSource: {fileID: 662576324}
   bookOpenSound: {fileID: 8300000, guid: fa63e2ac008f76245aa27b7ea4938007, type: 3}
   bookCloseSound: {fileID: 8300000, guid: c87d4bd814009324eb507e77fcc2164d, type: 3}
   pageFlipSounds:
@@ -26485,7 +26485,7 @@ MonoBehaviour:
   gizmoYOffset: 0.18
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
-  canContainPassword: 1
+  canContainPassword: 0
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -26775,7 +26775,7 @@ MonoBehaviour:
   pageFlipObject: {fileID: 877378185}
   pageFlipRenderer: {fileID: 877378187}
   pageTurnMaterial: {fileID: 2100000, guid: 61dbd8a7dc158844fbe0c217208f812e, type: 2}
-  audioSource: {fileID: 0}
+  audioSource: {fileID: 671289953}
   bookOpenSound: {fileID: 8300000, guid: fa63e2ac008f76245aa27b7ea4938007, type: 3}
   bookCloseSound: {fileID: 8300000, guid: c87d4bd814009324eb507e77fcc2164d, type: 3}
   pageFlipSounds:
@@ -26793,7 +26793,7 @@ MonoBehaviour:
   gizmoYOffset: 0.18
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
-  canContainPassword: 1
+  canContainPassword: 0
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -27112,7 +27112,7 @@ MonoBehaviour:
   pageFlipObject: {fileID: 1044355401}
   pageFlipRenderer: {fileID: 1044355403}
   pageTurnMaterial: {fileID: 2100000, guid: 1500334d66917cb4ba48bec828fd2de4, type: 2}
-  audioSource: {fileID: 0}
+  audioSource: {fileID: 681003705}
   bookOpenSound: {fileID: 8300000, guid: fa63e2ac008f76245aa27b7ea4938007, type: 3}
   bookCloseSound: {fileID: 8300000, guid: c87d4bd814009324eb507e77fcc2164d, type: 3}
   pageFlipSounds:
@@ -27129,7 +27129,7 @@ MonoBehaviour:
   singlePageSize: {x: 0.9, y: 1.25}
   gizmoYOffset: 0.18
   animationDuration: 1
-  bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
+  bookIdentity: {fileID: 11400000, guid: edb514d172dfc2e49acc780fede64633, type: 2}
   canContainPassword: 1
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
@@ -28778,7 +28778,7 @@ MonoBehaviour:
   pageFlipObject: {fileID: 705088834}
   pageFlipRenderer: {fileID: 705088836}
   pageTurnMaterial: {fileID: 2100000, guid: 8fa79b9e2b4b7e5429feefc9933b34c1, type: 2}
-  audioSource: {fileID: 0}
+  audioSource: {fileID: 721224883}
   bookOpenSound: {fileID: 8300000, guid: fa63e2ac008f76245aa27b7ea4938007, type: 3}
   bookCloseSound: {fileID: 8300000, guid: c87d4bd814009324eb507e77fcc2164d, type: 3}
   pageFlipSounds:
@@ -28796,7 +28796,7 @@ MonoBehaviour:
   gizmoYOffset: 0.18
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
-  canContainPassword: 1
+  canContainPassword: 0
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -29761,7 +29761,7 @@ MonoBehaviour:
   pageFlipObject: {fileID: 2107733559}
   pageFlipRenderer: {fileID: 2107733561}
   pageTurnMaterial: {fileID: 2100000, guid: 6d4f6bf5b5da93044b73db8246b4caf2, type: 2}
-  audioSource: {fileID: 0}
+  audioSource: {fileID: 753543260}
   bookOpenSound: {fileID: 8300000, guid: fa63e2ac008f76245aa27b7ea4938007, type: 3}
   bookCloseSound: {fileID: 8300000, guid: c87d4bd814009324eb507e77fcc2164d, type: 3}
   pageFlipSounds:
@@ -29779,7 +29779,7 @@ MonoBehaviour:
   gizmoYOffset: 0.18
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
-  canContainPassword: 1
+  canContainPassword: 0
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -41384,7 +41384,7 @@ MonoBehaviour:
   pageFlipObject: {fileID: 611510728}
   pageFlipRenderer: {fileID: 611510730}
   pageTurnMaterial: {fileID: 2100000, guid: 49e7acccd4eed764e9e6bba7a68a77bc, type: 2}
-  audioSource: {fileID: 0}
+  audioSource: {fileID: 1065301556}
   bookOpenSound: {fileID: 8300000, guid: fa63e2ac008f76245aa27b7ea4938007, type: 3}
   bookCloseSound: {fileID: 8300000, guid: c87d4bd814009324eb507e77fcc2164d, type: 3}
   pageFlipSounds:
@@ -41401,8 +41401,8 @@ MonoBehaviour:
   singlePageSize: {x: 0.9, y: 1.25}
   gizmoYOffset: 0.18
   animationDuration: 1
-  bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
-  canContainPassword: 1
+  bookIdentity: {fileID: 0}
+  canContainPassword: 0
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -41529,7 +41529,7 @@ GameObject:
   - component: {fileID: 1072082316}
   - component: {fileID: 1072082315}
   m_Layer: 6
-  m_Name: ReallyLastBook3 (12)
+  m_Name: ReallyLastBook3 (41)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -41716,7 +41716,7 @@ MonoBehaviour:
   pageFlipObject: {fileID: 871721100}
   pageFlipRenderer: {fileID: 871721102}
   pageTurnMaterial: {fileID: 2100000, guid: 35ac920c49c77de44ac7becce53a6fe2, type: 2}
-  audioSource: {fileID: 0}
+  audioSource: {fileID: 1072082315}
   bookOpenSound: {fileID: 8300000, guid: fa63e2ac008f76245aa27b7ea4938007, type: 3}
   bookCloseSound: {fileID: 8300000, guid: c87d4bd814009324eb507e77fcc2164d, type: 3}
   pageFlipSounds:
@@ -41733,7 +41733,7 @@ MonoBehaviour:
   singlePageSize: {x: 0.9, y: 1.25}
   gizmoYOffset: 0.18
   animationDuration: 1
-  bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
+  bookIdentity: {fileID: 11400000, guid: e8e70f6881874c346a915ed2051a4797, type: 2}
   canContainPassword: 1
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
@@ -42672,7 +42672,7 @@ MonoBehaviour:
   pageFlipObject: {fileID: 1650894316}
   pageFlipRenderer: {fileID: 1650894318}
   pageTurnMaterial: {fileID: 2100000, guid: d8647910d5946554b8760c89d40ba696, type: 2}
-  audioSource: {fileID: 0}
+  audioSource: {fileID: 1086956338}
   bookOpenSound: {fileID: 8300000, guid: fa63e2ac008f76245aa27b7ea4938007, type: 3}
   bookCloseSound: {fileID: 8300000, guid: c87d4bd814009324eb507e77fcc2164d, type: 3}
   pageFlipSounds:
@@ -42689,8 +42689,8 @@ MonoBehaviour:
   singlePageSize: {x: 0.9, y: 1.25}
   gizmoYOffset: 0.18
   animationDuration: 1
-  bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
-  canContainPassword: 1
+  bookIdentity: {fileID: 0}
+  canContainPassword: 0
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -43099,7 +43099,7 @@ MonoBehaviour:
   pageFlipObject: {fileID: 107383919}
   pageFlipRenderer: {fileID: 107383921}
   pageTurnMaterial: {fileID: 2100000, guid: 3f2f338e319f1c249ba63a3c9d2266b1, type: 2}
-  audioSource: {fileID: 0}
+  audioSource: {fileID: 1109607867}
   bookOpenSound: {fileID: 8300000, guid: fa63e2ac008f76245aa27b7ea4938007, type: 3}
   bookCloseSound: {fileID: 8300000, guid: c87d4bd814009324eb507e77fcc2164d, type: 3}
   pageFlipSounds:
@@ -43117,7 +43117,7 @@ MonoBehaviour:
   gizmoYOffset: 0.18
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
-  canContainPassword: 1
+  canContainPassword: 0
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -43983,6 +43983,7 @@ Transform:
   - {fileID: 38299286}
   - {fileID: 274573608}
   - {fileID: 1754959359}
+  - {fileID: 1995951542}
   m_Father: {fileID: 961026592}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1134978558
@@ -45808,7 +45809,7 @@ MonoBehaviour:
   pageFlipObject: {fileID: 3582818965538638662}
   pageFlipRenderer: {fileID: 5386886447618600329}
   pageTurnMaterial: {fileID: 2100000, guid: 49711b154de546d4cbc1f212f0aa89f7, type: 2}
-  audioSource: {fileID: 0}
+  audioSource: {fileID: 1189130144}
   bookOpenSound: {fileID: 8300000, guid: fa63e2ac008f76245aa27b7ea4938007, type: 3}
   bookCloseSound: {fileID: 8300000, guid: c87d4bd814009324eb507e77fcc2164d, type: 3}
   pageFlipSounds:
@@ -45826,7 +45827,7 @@ MonoBehaviour:
   gizmoYOffset: 0.18
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
-  canContainPassword: 1
+  canContainPassword: 0
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -46263,7 +46264,7 @@ MonoBehaviour:
   pageFlipObject: {fileID: 1661714748}
   pageFlipRenderer: {fileID: 1661714750}
   pageTurnMaterial: {fileID: 2100000, guid: cfeb1dd55d1aaba4384379ad09ec048c, type: 2}
-  audioSource: {fileID: 0}
+  audioSource: {fileID: 1196226277}
   bookOpenSound: {fileID: 8300000, guid: fa63e2ac008f76245aa27b7ea4938007, type: 3}
   bookCloseSound: {fileID: 8300000, guid: c87d4bd814009324eb507e77fcc2164d, type: 3}
   pageFlipSounds:
@@ -46281,7 +46282,7 @@ MonoBehaviour:
   gizmoYOffset: 0.18
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
-  canContainPassword: 1
+  canContainPassword: 0
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -47104,7 +47105,7 @@ MonoBehaviour:
   pageFlipObject: {fileID: 1806074227}
   pageFlipRenderer: {fileID: 1806074229}
   pageTurnMaterial: {fileID: 2100000, guid: 94e654a6ca00d0240bedb9edaeb13c68, type: 2}
-  audioSource: {fileID: 0}
+  audioSource: {fileID: 1223161653}
   bookOpenSound: {fileID: 8300000, guid: fa63e2ac008f76245aa27b7ea4938007, type: 3}
   bookCloseSound: {fileID: 8300000, guid: c87d4bd814009324eb507e77fcc2164d, type: 3}
   pageFlipSounds:
@@ -47122,7 +47123,7 @@ MonoBehaviour:
   gizmoYOffset: 0.18
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
-  canContainPassword: 1
+  canContainPassword: 0
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -49122,7 +49123,7 @@ MonoBehaviour:
   pageFlipObject: {fileID: 282281995}
   pageFlipRenderer: {fileID: 282281997}
   pageTurnMaterial: {fileID: 2100000, guid: a0b8a3bab250b7b4cbf8a0f73598acdd, type: 2}
-  audioSource: {fileID: 0}
+  audioSource: {fileID: 1256292138}
   bookOpenSound: {fileID: 8300000, guid: fa63e2ac008f76245aa27b7ea4938007, type: 3}
   bookCloseSound: {fileID: 8300000, guid: c87d4bd814009324eb507e77fcc2164d, type: 3}
   pageFlipSounds:
@@ -49139,7 +49140,7 @@ MonoBehaviour:
   singlePageSize: {x: 0.9, y: 1.25}
   gizmoYOffset: 0.18
   animationDuration: 1
-  bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
+  bookIdentity: {fileID: 11400000, guid: 4784611e90dfbfc4c9ca6a2f2d182815, type: 2}
   canContainPassword: 1
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
@@ -49561,7 +49562,7 @@ MonoBehaviour:
   pageFlipObject: {fileID: 693634230}
   pageFlipRenderer: {fileID: 693634232}
   pageTurnMaterial: {fileID: 2100000, guid: c3f7069f13cb0a04aa7711d1661b8bc6, type: 2}
-  audioSource: {fileID: 0}
+  audioSource: {fileID: 1260408675}
   bookOpenSound: {fileID: 8300000, guid: fa63e2ac008f76245aa27b7ea4938007, type: 3}
   bookCloseSound: {fileID: 8300000, guid: c87d4bd814009324eb507e77fcc2164d, type: 3}
   pageFlipSounds:
@@ -49579,7 +49580,7 @@ MonoBehaviour:
   gizmoYOffset: 0.18
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
-  canContainPassword: 1
+  canContainPassword: 0
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -51197,7 +51198,7 @@ MonoBehaviour:
   pageFlipObject: {fileID: 598922151}
   pageFlipRenderer: {fileID: 598922153}
   pageTurnMaterial: {fileID: 2100000, guid: 8fa79b9e2b4b7e5429feefc9933b34c1, type: 2}
-  audioSource: {fileID: 0}
+  audioSource: {fileID: 1318469511}
   bookOpenSound: {fileID: 8300000, guid: fa63e2ac008f76245aa27b7ea4938007, type: 3}
   bookCloseSound: {fileID: 8300000, guid: c87d4bd814009324eb507e77fcc2164d, type: 3}
   pageFlipSounds:
@@ -51215,7 +51216,7 @@ MonoBehaviour:
   gizmoYOffset: 0.18
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
-  canContainPassword: 1
+  canContainPassword: 0
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -54022,7 +54023,7 @@ MonoBehaviour:
   pageFlipObject: {fileID: 454337065}
   pageFlipRenderer: {fileID: 454337067}
   pageTurnMaterial: {fileID: 2100000, guid: 6597aa6669c6ff147b30898a1d94f620, type: 2}
-  audioSource: {fileID: 0}
+  audioSource: {fileID: 1379879201}
   bookOpenSound: {fileID: 8300000, guid: fa63e2ac008f76245aa27b7ea4938007, type: 3}
   bookCloseSound: {fileID: 8300000, guid: c87d4bd814009324eb507e77fcc2164d, type: 3}
   pageFlipSounds:
@@ -54040,7 +54041,7 @@ MonoBehaviour:
   gizmoYOffset: 0.18
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
-  canContainPassword: 1
+  canContainPassword: 0
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -55843,7 +55844,7 @@ MonoBehaviour:
   pageFlipObject: {fileID: 1783747693}
   pageFlipRenderer: {fileID: 1783747695}
   pageTurnMaterial: {fileID: 2100000, guid: b1a0413b37dd75647af0d024b6f3be5c, type: 2}
-  audioSource: {fileID: 0}
+  audioSource: {fileID: 1414593353}
   bookOpenSound: {fileID: 8300000, guid: fa63e2ac008f76245aa27b7ea4938007, type: 3}
   bookCloseSound: {fileID: 8300000, guid: c87d4bd814009324eb507e77fcc2164d, type: 3}
   pageFlipSounds:
@@ -55861,7 +55862,7 @@ MonoBehaviour:
   gizmoYOffset: 0.18
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
-  canContainPassword: 1
+  canContainPassword: 0
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -57918,7 +57919,7 @@ MonoBehaviour:
   pageFlipObject: {fileID: 309868666}
   pageFlipRenderer: {fileID: 309868668}
   pageTurnMaterial: {fileID: 2100000, guid: cf105f460e4d4784591e48615c9d9a9a, type: 2}
-  audioSource: {fileID: 0}
+  audioSource: {fileID: 1468211873}
   bookOpenSound: {fileID: 8300000, guid: fa63e2ac008f76245aa27b7ea4938007, type: 3}
   bookCloseSound: {fileID: 8300000, guid: c87d4bd814009324eb507e77fcc2164d, type: 3}
   pageFlipSounds:
@@ -57936,7 +57937,7 @@ MonoBehaviour:
   gizmoYOffset: 0.18
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
-  canContainPassword: 1
+  canContainPassword: 0
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -58155,7 +58156,7 @@ MonoBehaviour:
   pageFlipObject: {fileID: 689431216}
   pageFlipRenderer: {fileID: 689431218}
   pageTurnMaterial: {fileID: 2100000, guid: 61dbd8a7dc158844fbe0c217208f812e, type: 2}
-  audioSource: {fileID: 0}
+  audioSource: {fileID: 1468974315}
   bookOpenSound: {fileID: 8300000, guid: fa63e2ac008f76245aa27b7ea4938007, type: 3}
   bookCloseSound: {fileID: 8300000, guid: c87d4bd814009324eb507e77fcc2164d, type: 3}
   pageFlipSounds:
@@ -58173,7 +58174,7 @@ MonoBehaviour:
   gizmoYOffset: 0.18
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
-  canContainPassword: 1
+  canContainPassword: 0
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -58930,7 +58931,7 @@ MonoBehaviour:
   pageFlipObject: {fileID: 1316116798}
   pageFlipRenderer: {fileID: 1316116800}
   pageTurnMaterial: {fileID: 2100000, guid: 1cd6badd6094d164b86b3fc74db79eff, type: 2}
-  audioSource: {fileID: 0}
+  audioSource: {fileID: 1499679016}
   bookOpenSound: {fileID: 8300000, guid: fa63e2ac008f76245aa27b7ea4938007, type: 3}
   bookCloseSound: {fileID: 8300000, guid: c87d4bd814009324eb507e77fcc2164d, type: 3}
   pageFlipSounds:
@@ -58948,7 +58949,7 @@ MonoBehaviour:
   gizmoYOffset: 0.18
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
-  canContainPassword: 1
+  canContainPassword: 0
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -59957,7 +59958,7 @@ MonoBehaviour:
   pageFlipObject: {fileID: 1325789808}
   pageFlipRenderer: {fileID: 1325789810}
   pageTurnMaterial: {fileID: 2100000, guid: 7b8f0dd78deee194a8dc2e34d243751c, type: 2}
-  audioSource: {fileID: 0}
+  audioSource: {fileID: 1506348887}
   bookOpenSound: {fileID: 8300000, guid: fa63e2ac008f76245aa27b7ea4938007, type: 3}
   bookCloseSound: {fileID: 8300000, guid: c87d4bd814009324eb507e77fcc2164d, type: 3}
   pageFlipSounds:
@@ -59975,7 +59976,7 @@ MonoBehaviour:
   gizmoYOffset: 0.18
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
-  canContainPassword: 1
+  canContainPassword: 0
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -63315,7 +63316,7 @@ MonoBehaviour:
   pageFlipObject: {fileID: 1809725614}
   pageFlipRenderer: {fileID: 1809725616}
   pageTurnMaterial: {fileID: 2100000, guid: 2432cb08975ff8940b0a47e732f7757b, type: 2}
-  audioSource: {fileID: 0}
+  audioSource: {fileID: 1566698686}
   bookOpenSound: {fileID: 8300000, guid: fa63e2ac008f76245aa27b7ea4938007, type: 3}
   bookCloseSound: {fileID: 8300000, guid: c87d4bd814009324eb507e77fcc2164d, type: 3}
   pageFlipSounds:
@@ -63333,7 +63334,7 @@ MonoBehaviour:
   gizmoYOffset: 0.18
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
-  canContainPassword: 1
+  canContainPassword: 0
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -67620,7 +67621,7 @@ MonoBehaviour:
   pageFlipObject: {fileID: 463957754}
   pageFlipRenderer: {fileID: 463957756}
   pageTurnMaterial: {fileID: 2100000, guid: fea9f9f22e6d90f4bbae6a2c30552d77, type: 2}
-  audioSource: {fileID: 0}
+  audioSource: {fileID: 1655404876}
   bookOpenSound: {fileID: 8300000, guid: fa63e2ac008f76245aa27b7ea4938007, type: 3}
   bookCloseSound: {fileID: 8300000, guid: c87d4bd814009324eb507e77fcc2164d, type: 3}
   pageFlipSounds:
@@ -67638,7 +67639,7 @@ MonoBehaviour:
   gizmoYOffset: 0.18
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
-  canContainPassword: 1
+  canContainPassword: 0
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -68158,7 +68159,7 @@ MonoBehaviour:
   pageFlipObject: {fileID: 2034729313}
   pageFlipRenderer: {fileID: 2034729315}
   pageTurnMaterial: {fileID: 2100000, guid: f3ad30e10e0b25e4aa1719084bc1d92c, type: 2}
-  audioSource: {fileID: 0}
+  audioSource: {fileID: 1666612828}
   bookOpenSound: {fileID: 8300000, guid: fa63e2ac008f76245aa27b7ea4938007, type: 3}
   bookCloseSound: {fileID: 8300000, guid: c87d4bd814009324eb507e77fcc2164d, type: 3}
   pageFlipSounds:
@@ -68176,7 +68177,7 @@ MonoBehaviour:
   gizmoYOffset: 0.18
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
-  canContainPassword: 1
+  canContainPassword: 0
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -68664,7 +68665,7 @@ MonoBehaviour:
   pageFlipObject: {fileID: 744589390}
   pageFlipRenderer: {fileID: 744589392}
   pageTurnMaterial: {fileID: 2100000, guid: fea9f9f22e6d90f4bbae6a2c30552d77, type: 2}
-  audioSource: {fileID: 0}
+  audioSource: {fileID: 1674332864}
   bookOpenSound: {fileID: 8300000, guid: fa63e2ac008f76245aa27b7ea4938007, type: 3}
   bookCloseSound: {fileID: 8300000, guid: c87d4bd814009324eb507e77fcc2164d, type: 3}
   pageFlipSounds:
@@ -68682,7 +68683,7 @@ MonoBehaviour:
   gizmoYOffset: 0.18
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
-  canContainPassword: 1
+  canContainPassword: 0
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -69371,7 +69372,7 @@ MonoBehaviour:
   pageFlipObject: {fileID: 641070521}
   pageFlipRenderer: {fileID: 641070523}
   pageTurnMaterial: {fileID: 2100000, guid: f104a4c7f35b74c40b7aab2c7610c45c, type: 2}
-  audioSource: {fileID: 0}
+  audioSource: {fileID: 1712195288}
   bookOpenSound: {fileID: 8300000, guid: fa63e2ac008f76245aa27b7ea4938007, type: 3}
   bookCloseSound: {fileID: 8300000, guid: c87d4bd814009324eb507e77fcc2164d, type: 3}
   pageFlipSounds:
@@ -69388,7 +69389,7 @@ MonoBehaviour:
   singlePageSize: {x: 0.9, y: 1.25}
   gizmoYOffset: 0.18
   animationDuration: 1
-  bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
+  bookIdentity: {fileID: 11400000, guid: a7f2861ca145c7e409e842cae9482924, type: 2}
   canContainPassword: 1
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
@@ -70433,7 +70434,7 @@ MonoBehaviour:
   pageFlipObject: {fileID: 885656707}
   pageFlipRenderer: {fileID: 885656709}
   pageTurnMaterial: {fileID: 2100000, guid: b1a0413b37dd75647af0d024b6f3be5c, type: 2}
-  audioSource: {fileID: 0}
+  audioSource: {fileID: 1737783707}
   bookOpenSound: {fileID: 8300000, guid: fa63e2ac008f76245aa27b7ea4938007, type: 3}
   bookCloseSound: {fileID: 8300000, guid: c87d4bd814009324eb507e77fcc2164d, type: 3}
   pageFlipSounds:
@@ -70451,7 +70452,7 @@ MonoBehaviour:
   gizmoYOffset: 0.18
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
-  canContainPassword: 1
+  canContainPassword: 0
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -70702,7 +70703,7 @@ MonoBehaviour:
   pageFlipObject: {fileID: 702821461}
   pageFlipRenderer: {fileID: 702821463}
   pageTurnMaterial: {fileID: 2100000, guid: 30b9cb6507b8d754995dec02ad3c11b4, type: 2}
-  audioSource: {fileID: 0}
+  audioSource: {fileID: 1740610274}
   bookOpenSound: {fileID: 8300000, guid: fa63e2ac008f76245aa27b7ea4938007, type: 3}
   bookCloseSound: {fileID: 8300000, guid: c87d4bd814009324eb507e77fcc2164d, type: 3}
   pageFlipSounds:
@@ -70720,7 +70721,7 @@ MonoBehaviour:
   gizmoYOffset: 0.18
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
-  canContainPassword: 1
+  canContainPassword: 0
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -73100,7 +73101,7 @@ MonoBehaviour:
   pageFlipObject: {fileID: 1748012304}
   pageFlipRenderer: {fileID: 1748012306}
   pageTurnMaterial: {fileID: 2100000, guid: 083b43ade984aab45a42bb73c9af5455, type: 2}
-  audioSource: {fileID: 0}
+  audioSource: {fileID: 1825376493}
   bookOpenSound: {fileID: 8300000, guid: fa63e2ac008f76245aa27b7ea4938007, type: 3}
   bookCloseSound: {fileID: 8300000, guid: c87d4bd814009324eb507e77fcc2164d, type: 3}
   pageFlipSounds:
@@ -73118,7 +73119,7 @@ MonoBehaviour:
   gizmoYOffset: 0.18
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
-  canContainPassword: 1
+  canContainPassword: 0
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -77373,7 +77374,7 @@ MonoBehaviour:
   pageFlipObject: {fileID: 1213811452}
   pageFlipRenderer: {fileID: 1213811454}
   pageTurnMaterial: {fileID: 2100000, guid: 61dbd8a7dc158844fbe0c217208f812e, type: 2}
-  audioSource: {fileID: 0}
+  audioSource: {fileID: 1934091807}
   bookOpenSound: {fileID: 8300000, guid: fa63e2ac008f76245aa27b7ea4938007, type: 3}
   bookCloseSound: {fileID: 8300000, guid: c87d4bd814009324eb507e77fcc2164d, type: 3}
   pageFlipSounds:
@@ -77391,7 +77392,7 @@ MonoBehaviour:
   gizmoYOffset: 0.18
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
-  canContainPassword: 1
+  canContainPassword: 0
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -78682,7 +78683,7 @@ MonoBehaviour:
   pageFlipObject: {fileID: 1982690720}
   pageFlipRenderer: {fileID: 1982690722}
   pageTurnMaterial: {fileID: 2100000, guid: 51836cfda507c144ba004b7229a18009, type: 2}
-  audioSource: {fileID: 0}
+  audioSource: {fileID: 1958378596}
   bookOpenSound: {fileID: 8300000, guid: fa63e2ac008f76245aa27b7ea4938007, type: 3}
   bookCloseSound: {fileID: 8300000, guid: c87d4bd814009324eb507e77fcc2164d, type: 3}
   pageFlipSounds:
@@ -78699,7 +78700,7 @@ MonoBehaviour:
   singlePageSize: {x: 0.9, y: 1.25}
   gizmoYOffset: 0.18
   animationDuration: 1
-  bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
+  bookIdentity: {fileID: 11400000, guid: d8450f206ca080d45a4fee43aaad03ce, type: 2}
   canContainPassword: 1
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
@@ -79045,7 +79046,7 @@ MonoBehaviour:
   pageFlipObject: {fileID: 1051080684}
   pageFlipRenderer: {fileID: 1051080686}
   pageTurnMaterial: {fileID: 2100000, guid: 8cda0f79a494de44393ec08f9abfaae1, type: 2}
-  audioSource: {fileID: 0}
+  audioSource: {fileID: 1962715670}
   bookOpenSound: {fileID: 8300000, guid: fa63e2ac008f76245aa27b7ea4938007, type: 3}
   bookCloseSound: {fileID: 8300000, guid: c87d4bd814009324eb507e77fcc2164d, type: 3}
   pageFlipSounds:
@@ -79063,7 +79064,7 @@ MonoBehaviour:
   gizmoYOffset: 0.18
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
-  canContainPassword: 1
+  canContainPassword: 0
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -79409,7 +79410,7 @@ MonoBehaviour:
   pageFlipObject: {fileID: 1080613641}
   pageFlipRenderer: {fileID: 1080613643}
   pageTurnMaterial: {fileID: 2100000, guid: d8647910d5946554b8760c89d40ba696, type: 2}
-  audioSource: {fileID: 0}
+  audioSource: {fileID: 1968778372}
   bookOpenSound: {fileID: 8300000, guid: fa63e2ac008f76245aa27b7ea4938007, type: 3}
   bookCloseSound: {fileID: 8300000, guid: c87d4bd814009324eb507e77fcc2164d, type: 3}
   pageFlipSounds:
@@ -79426,7 +79427,7 @@ MonoBehaviour:
   singlePageSize: {x: 0.9, y: 1.25}
   gizmoYOffset: 0.18
   animationDuration: 1
-  bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
+  bookIdentity: {fileID: 11400000, guid: eb8cfc1405e5cca4399af1013ce54b9c, type: 2}
   canContainPassword: 1
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
@@ -80473,7 +80474,7 @@ MonoBehaviour:
   pageFlipObject: {fileID: 623711047}
   pageFlipRenderer: {fileID: 623711049}
   pageTurnMaterial: {fileID: 2100000, guid: 5b2ced90bbc3a4d469c43a82032f5137, type: 2}
-  audioSource: {fileID: 0}
+  audioSource: {fileID: 1989776875}
   bookOpenSound: {fileID: 8300000, guid: fa63e2ac008f76245aa27b7ea4938007, type: 3}
   bookCloseSound: {fileID: 8300000, guid: c87d4bd814009324eb507e77fcc2164d, type: 3}
   pageFlipSounds:
@@ -80491,7 +80492,7 @@ MonoBehaviour:
   gizmoYOffset: 0.18
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
-  canContainPassword: 1
+  canContainPassword: 0
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -80604,6 +80605,246 @@ Transform:
   m_Children: []
   m_Father: {fileID: 2083656658}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1995951541
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1995951542}
+  - component: {fileID: 1995951544}
+  - component: {fileID: 1995951543}
+  m_Layer: 6
+  m_Name: Area Light
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1995951542
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1995951541}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
+  m_LocalPosition: {x: 15.91, y: 1.53, z: 2.929}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1134978557}
+  m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
+--- !u!114 &1995951543
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1995951541}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7a68c43fe1f2a47cfa234b5eeaa98012, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_PointlightHDType: 0
+  m_SpotLightShape: 0
+  m_AreaLightShape: 0
+  m_EnableSpotReflector: 1
+  m_LightUnit: 0
+  m_LuxAtDistance: 1
+  m_Intensity: 0
+  m_InnerSpotPercent: 0
+  m_SpotIESCutoffPercent: 100
+  m_LightDimmer: 1
+  m_VolumetricDimmer: 1
+  m_FadeDistance: 10000
+  m_VolumetricFadeDistance: 10000
+  m_AffectDiffuse: 1
+  m_AffectSpecular: 1
+  m_NonLightmappedOnly: 0
+  m_ShapeWidth: 0.41911316
+  m_ShapeHeight: 0.33060998
+  m_AspectRatio: 1
+  m_ShapeRadius: 0.025
+  m_SoftnessScale: 1
+  m_UseCustomSpotLightShadowCone: 0
+  m_CustomSpotLightShadowCone: 30
+  m_MaxSmoothness: 0.99
+  m_ApplyRangeAttenuation: 1
+  m_DisplayAreaLightEmissiveMesh: 0
+  m_AreaLightCookie: {fileID: 0}
+  m_IESPoint: {fileID: 3883328704701382318, guid: c6eb889c7220763438b67079c7e37879, type: 3}
+  m_IESSpot: {fileID: 451883346217600177, guid: c6eb889c7220763438b67079c7e37879, type: 3}
+  m_IncludeForRayTracing: 1
+  m_IncludeForPathTracing: 1
+  m_AreaLightShadowCone: 120
+  m_UseScreenSpaceShadows: 0
+  m_InteractsWithSky: 1
+  m_AngularDiameter: 0.5
+  diameterMultiplerMode: 0
+  diameterMultiplier: 1
+  diameterOverride: 0.5
+  celestialBodyShadingSource: 1
+  sunLightOverride: {fileID: 0}
+  sunColor: {r: 1, g: 1, b: 1, a: 1}
+  sunIntensity: 130000
+  moonPhase: 0.2
+  moonPhaseRotation: 0
+  earthshine: 1
+  flareSize: 2
+  flareTint: {r: 1, g: 1, b: 1, a: 1}
+  flareFalloff: 4
+  flareMultiplier: 1
+  surfaceTexture: {fileID: 0}
+  surfaceTint: {r: 1, g: 1, b: 1, a: 1}
+  m_Distance: 1.5e+11
+  m_UseRayTracedShadows: 0
+  m_NumRayTracingSamples: 4
+  m_FilterTracedShadow: 1
+  m_FilterSizeTraced: 16
+  m_SunLightConeAngle: 0.5
+  m_LightShadowRadius: 0.5
+  m_SemiTransparentShadow: 0
+  m_ColorShadow: 1
+  m_DistanceBasedFiltering: 0
+  m_EvsmExponent: 15
+  m_EvsmLightLeakBias: 0
+  m_EvsmVarianceBias: 0.00001
+  m_EvsmBlurPasses: 0
+  m_LightlayersMask: 1
+  m_LinkShadowLayers: 1
+  m_ShadowNearPlane: 0
+  m_BlockerSampleCount: 24
+  m_FilterSampleCount: 16
+  m_MinFilterSize: 0.1
+  m_DirLightPCSSBlockerSampleCount: 24
+  m_DirLightPCSSFilterSampleCount: 16
+  m_DirLightPCSSMaxPenumbraSize: 0.56
+  m_DirLightPCSSMaxSamplingDistance: 0.5
+  m_DirLightPCSSMinFilterSizeTexels: 1.5
+  m_DirLightPCSSMinFilterMaxAngularDiameter: 10
+  m_DirLightPCSSBlockerSearchAngularDiameter: 12
+  m_DirLightPCSSBlockerSamplingClumpExponent: 2
+  m_KernelSize: 5
+  m_LightAngle: 1
+  m_MaxDepthBias: 0.001
+  m_ShadowResolution:
+    m_Override: 512
+    m_UseOverride: 1
+    m_Level: 0
+  m_ShadowDimmer: 1
+  m_VolumetricShadowDimmer: 1
+  m_ShadowFadeDistance: 10000
+  m_UseContactShadow:
+    m_Override: 0
+    m_UseOverride: 1
+    m_Level: 0
+  m_RayTracedContactShadow: 0
+  m_ShadowTint: {r: 0, g: 0, b: 0, a: 1}
+  m_PenumbraTint: 0
+  m_NormalBias: 0.75
+  m_SlopeBias: 0.5
+  m_ShadowUpdateMode: 0
+  m_AlwaysDrawDynamicShadows: 0
+  m_UpdateShadowOnLightMovement: 0
+  m_CachedShadowTranslationThreshold: 0.01
+  m_CachedShadowAngularThreshold: 0.5
+  m_BarnDoorAngle: 90
+  m_BarnDoorLength: 0.05
+  m_preserveCachedShadow: 0
+  m_OnDemandShadowRenderOnPlacement: 1
+  m_ShadowCascadeRatios:
+  - 0.05
+  - 0.2
+  - 0.3
+  m_ShadowCascadeBorders:
+  - 0.2
+  - 0.2
+  - 0.2
+  - 0.2
+  m_ShadowAlgorithm: 0
+  m_ShadowVariant: 0
+  m_ShadowPrecision: 0
+  useOldInspector: 0
+  useVolumetric: 1
+  featuresFoldout: 1
+  m_AreaLightEmissiveMeshShadowCastingMode: 0
+  m_AreaLightEmissiveMeshMotionVectorGenerationMode: 0
+  m_AreaLightEmissiveMeshLayer: -1
+  m_Version: 13
+  m_ObsoleteShadowResolutionTier: 1
+  m_ObsoleteUseShadowQualitySettings: 0
+  m_ObsoleteCustomShadowResolution: 512
+  m_ObsoleteContactShadows: 0
+--- !u!108 &1995951544
+Light:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1995951541}
+  m_Enabled: 1
+  serializedVersion: 11
+  m_Type: 3
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Intensity: 574.30524
+  m_Range: 3.73
+  m_SpotAngle: 30
+  m_InnerSpotAngle: 21.80208
+  m_CookieSize: 10
+  m_Shadows:
+    m_Type: 0
+    m_Resolution: -1
+    m_CustomResolution: -1
+    m_Strength: 1
+    m_Bias: 0.05
+    m_NormalBias: 0.4
+    m_NearPlane: 0.2
+    m_CullingMatrixOverride:
+      e00: 1
+      e01: 0
+      e02: 0
+      e03: 0
+      e10: 0
+      e11: 1
+      e12: 0
+      e13: 0
+      e20: 0
+      e21: 0
+      e22: 1
+      e23: 0
+      e30: 0
+      e31: 0
+      e32: 0
+      e33: 1
+    m_UseCullingMatrixOverride: 0
+  m_Cookie: {fileID: 0}
+  m_DrawHalo: 0
+  m_Flare: {fileID: 0}
+  m_RenderMode: 0
+  m_CullingMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_RenderingLayerMask: 1
+  m_Lightmapping: 4
+  m_LightShadowCasterMode: 2
+  m_AreaSize: {x: 0.41911316, y: 0.33060998}
+  m_BounceIntensity: 1
+  m_ColorTemperature: 4586
+  m_UseColorTemperature: 1
+  m_BoundingSphereOverride: {x: 0, y: 0, z: 0, w: 3.9969077}
+  m_UseBoundingSphereOverride: 1
+  m_UseViewFrustumForShadowCasterCull: 1
+  m_ForceVisible: 0
+  m_ShadowRadius: 0
+  m_ShadowAngle: 0
+  m_LightUnit: 0
+  m_LuxAtDistance: 1
+  m_EnableSpotReflector: 1
 --- !u!1 &1996489830
 GameObject:
   m_ObjectHideFlags: 0
@@ -81314,7 +81555,7 @@ MonoBehaviour:
   pageFlipObject: {fileID: 1954733762}
   pageFlipRenderer: {fileID: 1954733764}
   pageTurnMaterial: {fileID: 2100000, guid: b816e3ecb1361e543a2b5b2dc2948578, type: 2}
-  audioSource: {fileID: 0}
+  audioSource: {fileID: 2006143334}
   bookOpenSound: {fileID: 8300000, guid: fa63e2ac008f76245aa27b7ea4938007, type: 3}
   bookCloseSound: {fileID: 8300000, guid: c87d4bd814009324eb507e77fcc2164d, type: 3}
   pageFlipSounds:
@@ -81331,8 +81572,8 @@ MonoBehaviour:
   singlePageSize: {x: 0.9, y: 1.25}
   gizmoYOffset: 0.18
   animationDuration: 1
-  bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
-  canContainPassword: 1
+  bookIdentity: {fileID: 0}
+  canContainPassword: 0
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -85457,7 +85698,7 @@ MonoBehaviour:
   pageFlipObject: {fileID: 768805145}
   pageFlipRenderer: {fileID: 768805147}
   pageTurnMaterial: {fileID: 2100000, guid: 92d7d63b1d4683b41a78d120ff2f25eb, type: 2}
-  audioSource: {fileID: 0}
+  audioSource: {fileID: 2079154477}
   bookOpenSound: {fileID: 8300000, guid: fa63e2ac008f76245aa27b7ea4938007, type: 3}
   bookCloseSound: {fileID: 8300000, guid: c87d4bd814009324eb507e77fcc2164d, type: 3}
   pageFlipSounds:
@@ -85474,7 +85715,7 @@ MonoBehaviour:
   singlePageSize: {x: 0.9, y: 1.25}
   gizmoYOffset: 0.18
   animationDuration: 1
-  bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
+  bookIdentity: {fileID: 11400000, guid: a7f2861ca145c7e409e842cae9482924, type: 2}
   canContainPassword: 1
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
@@ -86417,7 +86658,7 @@ MonoBehaviour:
   pageFlipObject: {fileID: 149688535}
   pageFlipRenderer: {fileID: 149688537}
   pageTurnMaterial: {fileID: 2100000, guid: 866f138e5cb9c33499e4941bef72074c, type: 2}
-  audioSource: {fileID: 0}
+  audioSource: {fileID: 2098547088}
   bookOpenSound: {fileID: 8300000, guid: fa63e2ac008f76245aa27b7ea4938007, type: 3}
   bookCloseSound: {fileID: 8300000, guid: c87d4bd814009324eb507e77fcc2164d, type: 3}
   pageFlipSounds:
@@ -86435,7 +86676,7 @@ MonoBehaviour:
   gizmoYOffset: 0.18
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
-  canContainPassword: 1
+  canContainPassword: 0
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -87291,7 +87532,7 @@ MonoBehaviour:
   pageFlipObject: {fileID: 1976440635}
   pageFlipRenderer: {fileID: 1976440637}
   pageTurnMaterial: {fileID: 2100000, guid: 5f82b689dcf1ef44ab4432ad306ec652, type: 2}
-  audioSource: {fileID: 0}
+  audioSource: {fileID: 2114408550}
   bookOpenSound: {fileID: 8300000, guid: fa63e2ac008f76245aa27b7ea4938007, type: 3}
   bookCloseSound: {fileID: 8300000, guid: c87d4bd814009324eb507e77fcc2164d, type: 3}
   pageFlipSounds:
@@ -87309,7 +87550,7 @@ MonoBehaviour:
   gizmoYOffset: 0.18
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
-  canContainPassword: 1
+  canContainPassword: 0
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
