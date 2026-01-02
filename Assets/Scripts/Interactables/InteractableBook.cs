@@ -9,19 +9,13 @@ public class InteractableBook : MonoBehaviour, IInteractable, IForceExitable
     // --- EDİTÖRDE GÖRÜNMESİ GEREKENLER (AYARLAR) ---
 
     [Header("📖 Kitap Ayarları")]
-    [Tooltip("Kitabın animasyon bileşeni")]
     public Animator bookAnimator;
-
-    [Tooltip("Sayfa çevirme süresi")]
     public float pageFlipDuration = 0.8f;
-
-    [Tooltip("Toplam sayfa sayısı")]
     public int totalPages = 8;
-
-    [Tooltip("Son sayfadan başa dönsün mü?")]
     public bool allowLoop = false;
 
     [Header("🎨 Görsel & Materyal")]
+    [Tooltip("Kitabın olduğu Skinned Mesh Renderer (Tek parça model)")]
     public SkinnedMeshRenderer bookSkinnedMeshRenderer;
     public int bookMaterialIndex = 0;
     public Material bookPagesMaterial;
@@ -35,10 +29,7 @@ public class InteractableBook : MonoBehaviour, IInteractable, IForceExitable
     public AudioSource audioSource;
     public AudioClip bookOpenSound;
     public AudioClip bookCloseSound;
-
-    [Tooltip("Sayfa çevirme sesleri (Sırayla çalınır)")]
-    public AudioClip[] pageFlipSounds; // Dizi (Array) olarak tanımlı
-
+    public AudioClip[] pageFlipSounds;
     public AudioClip passwordFoundSound;
 
     [Header("🎥 Kamera & Pozisyon")]
@@ -62,13 +53,34 @@ public class InteractableBook : MonoBehaviour, IInteractable, IForceExitable
     private float animationDuration = 1f;
 
     [Header("📘 KİTAP KİMLİĞİ")]
-    [Tooltip("Bu kitabın türü ne? (Kırmızı Kitap Datası vb.)")]
     public PasswordData bookIdentity;
-
-    [Tooltip("Bu kitaptan şifre çıkabilir mi? (Süs ise kapat)")]
     public bool canContainPassword = true;
 
-    // --- EDİTÖRDE GİZLENECEK TEKNİK DEĞİŞKENLER (Runtime) ---
+    // --- YENİ: OUTLINE & HIGHLIGHT AYARLARI ---
+    [Header("✨ Vurgu (Highlight) Ayarları")]
+    [Tooltip("HDRP Outline Scripti (Varsa Emission yerine bu çalışır)")]
+    public HDRPOutlineController outlineController;
+
+    [Tooltip("Vurgu Rengi (Sarı, Beyaz vb.)")]
+    public Color highlightColor = new Color(1f, 0.8f, 0f);
+
+    [Tooltip("HDRP Şiddeti (Eğer parlamıyorsa bunu 10, 50, 100 yap!)")]
+    [Range(0f, 100f)]
+    public float emissionIntensity = 10f;
+
+    // --- Runtime Değişkenler ---
+    private class RendererHighlightData
+    {
+        public Renderer renderer;
+        public Material[] originalMaterials;
+        public Material[] highlightMaterials;
+    }
+
+    private List<RendererHighlightData> allRenderersData = new List<RendererHighlightData>();
+    private Material[] highlightMaterials;
+    private bool isFocused = false;
+
+    // Diğer gizli değişkenler...
     [HideInInspector]
     public bool isOpen = false;
 
@@ -78,7 +90,6 @@ public class InteractableBook : MonoBehaviour, IInteractable, IForceExitable
     [HideInInspector]
     public int currentPage = 0;
 
-    // Password System
     [HideInInspector]
     public bool isPasswordBook = false;
 
@@ -94,46 +105,28 @@ public class InteractableBook : MonoBehaviour, IInteractable, IForceExitable
     [HideInInspector]
     public bool hasPasswordBeenFound = false;
 
-    // Internal References
     private UnityEngine.CharacterController playerController;
     private StarterAssets.CharacterController playerGameScript;
     private MonoBehaviour playerLookScript;
     private Animator playerAnimator;
     private Camera mainCamera;
     private BoxCollider interactionCollider;
-
-    [Header("✨ Outline (Vurgu) Ayarları")]
-    [SerializeField]
-    private Color outlineColor = new Color(1f, 1f, 0f, 1f);
-
-    [Range(0f, 10f)]
-    [SerializeField]
-    private float outlineWidth = 5f;
-    private Outline outlineScript;
-
-    [Header("Raycast Ayarları")]
-    [Tooltip("Sayfaların olduğu Mesh Collider buraya atanmalı!")]
-    [SerializeField]
-    private Collider bookCollider;
+    public Collider bookCollider;
 
     private Vector3 originalLocalPosition;
     private Quaternion originalLocalRotation;
     private Transform originalParent;
-
-    // Animator Hashleri
     private static readonly int OpenTrigger = Animator.StringToHash("Open");
     private static readonly int CloseTrigger = Animator.StringToHash("Close");
     private static readonly int IsOpenBool = Animator.StringToHash("IsOpen");
     private static readonly int PageNumber = Animator.StringToHash("PageNumber");
-
     private int pageIndexL;
     private int pageIndexR;
-
-    // YENİ: Ses sırasını takip edecek değişken
     private int currentSoundIndex = 0;
 
     private void Awake()
     {
+        // Sayfa materyali kopyalama
         if (bookPagesMaterial != null)
         {
             bookPagesMaterial = new Material(bookPagesMaterial);
@@ -149,6 +142,7 @@ public class InteractableBook : MonoBehaviour, IInteractable, IForceExitable
         }
         else if (bookSkinnedMeshRenderer != null)
         {
+            // Fallback
             Material[] materials = bookSkinnedMeshRenderer.sharedMaterials;
             if (bookMaterialIndex < materials.Length && materials[bookMaterialIndex] != null)
             {
@@ -164,51 +158,58 @@ public class InteractableBook : MonoBehaviour, IInteractable, IForceExitable
             if (pageFlipRenderer != null)
                 pageFlipRenderer.material = pageTurnMaterial;
         }
-        else if (pageFlipRenderer != null)
-        {
-            pageTurnMaterial = new Material(pageFlipRenderer.sharedMaterial);
-            pageFlipRenderer.material = pageTurnMaterial;
-        }
     }
 
     private void Start()
     {
-        outlineScript = GetComponent<Outline>();
-        if (outlineScript == null)
-            outlineScript = GetComponentInChildren<Outline>();
+        if (outlineController == null)
+            outlineController = GetComponentInChildren<HDRPOutlineController>();
 
-        if (outlineScript != null)
+        // --- 2. HIGHLIGHT (EMISSION) HAZIRLIĞI (GÜNCELLENDİ) ---
+        // Kitabın altındaki TÜM Renderer'ları bul (Kapak, Sayfalar, vs.)
+        Renderer[] renderers = GetComponentsInChildren<Renderer>(true);
+
+        foreach (Renderer r in renderers)
         {
-            outlineScript.OutlineColor = outlineColor;
-            outlineScript.OutlineWidth = outlineWidth;
-            outlineScript.OutlineMode = Outline.Mode.OutlineAll;
-            outlineScript.enabled = false;
+            // Outline/Flip parçalarını veya particle'ları hariç tutmak istersen buraya if ekleyebilirsin
+            if (r == pageFlipRenderer)
+                continue; // Örn: Sayfa çevirme efektini parlatma
+
+            RendererHighlightData data = new RendererHighlightData();
+            data.renderer = r;
+            data.originalMaterials = r.materials; // Orijinal materyalleri sakla
+
+            // Highlight materyallerini oluştur
+            data.highlightMaterials = new Material[data.originalMaterials.Length];
+            for (int i = 0; i < data.originalMaterials.Length; i++)
+            {
+                Material mat = new Material(data.originalMaterials[i]);
+                mat.EnableKeyword("_EMISSION");
+
+                // HDRP Emission Rengi Ayarı
+                Color finalEmission = highlightColor * emissionIntensity;
+                if (mat.HasProperty("_EmissiveColor"))
+                    mat.SetColor("_EmissiveColor", finalEmission);
+                else if (mat.HasProperty("_EmissionColor"))
+                    mat.SetColor("_EmissionColor", finalEmission);
+
+                mat.globalIlluminationFlags = MaterialGlobalIlluminationFlags.None;
+                data.highlightMaterials[i] = mat;
+            }
+
+            allRenderersData.Add(data);
         }
 
+        // --- DİĞER BAŞLANGIÇ KODLARI ---
         interactionCollider = GetComponent<BoxCollider>();
         if (interactionCollider == null)
             interactionCollider = gameObject.AddComponent<BoxCollider>();
 
         if (bookCollider == null)
-        {
             bookCollider = GetComponentInChildren<MeshCollider>();
-            if (bookCollider == null)
-            {
-                Collider[] cols = GetComponentsInChildren<Collider>();
-                foreach (var c in cols)
-                {
-                    if (!c.isTrigger && c != interactionCollider)
-                    {
-                        bookCollider = c;
-                        break;
-                    }
-                }
-            }
-        }
 
         if (bookAnimator == null)
             bookAnimator = GetComponent<Animator>();
-
         if (bookAnimator != null)
         {
             bookAnimator.SetBool(IsOpenBool, isOpen);
@@ -230,7 +231,6 @@ public class InteractableBook : MonoBehaviour, IInteractable, IForceExitable
 
         if (bookUI != null)
             bookUI.SetActive(false);
-
         if (pageFlipObject != null)
             pageFlipObject.SetActive(false);
 
@@ -247,6 +247,7 @@ public class InteractableBook : MonoBehaviour, IInteractable, IForceExitable
             bookPagesMaterial.SetFloat("_PageIndexL", pageIndexL);
             bookPagesMaterial.SetFloat("_PageIndexR", pageIndexR);
         }
+
         if (pageTurnMaterial != null)
             pageTurnMaterial.SetFloat("_PageCount", totalPages);
     }
@@ -256,18 +257,11 @@ public class InteractableBook : MonoBehaviour, IInteractable, IForceExitable
         if (isOpen && !isAnimating)
         {
             HandlePageInput();
-
             if (isPasswordBook && !hasPasswordBeenFound && Input.GetMouseButtonDown(0))
                 CheckForPasswordClick();
 
-            // --- YENİ EKLENECEK KISIM: STAMINA YENİLEME ---
-            // Kitap açıkken karakter scripti (playerGameScript) kapalıdır.
-            // Bu yüzden staminayı buradan elle dolduruyoruz.
             if (playerGameScript != null)
-            {
                 playerGameScript.ExternalStaminaRegen(Time.deltaTime);
-            }
-            // ---------------------------------------------
         }
 
         if (isOpen && Input.GetKeyDown(KeyCode.F))
@@ -277,65 +271,55 @@ public class InteractableBook : MonoBehaviour, IInteractable, IForceExitable
         }
     }
 
-    private void CheckForPasswordClick()
+    public void OnFocus()
     {
-        if (pageIndexL != passwordPage && pageIndexR != passwordPage)
+        if (isOpen || isAnimating || isFocused)
             return;
+        isFocused = true;
 
-        Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
-        if (Physics.Raycast(ray, out RaycastHit hit))
+        // 1. ÖNCELİK: Outline Scripti (İstersen bunu tamamen silebilirsin)
+        if (outlineController != null)
         {
-            if (hit.collider == bookCollider)
+            outlineController.ToggleOutline(true);
+        }
+        // 2. ÖNCELİK: Gelişmiş Emission Sistemi (Tüm parçalar parlar)
+        else
+        {
+            foreach (var data in allRenderersData)
             {
-                Vector2 uv = hit.textureCoord;
-                bool hitRightPage = uv.x > 0.5f;
-                bool isTargetPage =
-                    (hitRightPage && pageIndexR == passwordPage)
-                    || (!hitRightPage && pageIndexL == passwordPage);
-
-                if (isTargetPage)
-                {
-                    float pageLocalU = hitRightPage ? (uv.x - 0.5f) * 2.0f : uv.x * 2.0f;
-                    float pageLocalV = uv.y;
-                    Vector2 pageUV = new Vector2(pageLocalU, pageLocalV);
-
-                    if (passwordHotspotUV.Contains(pageUV))
-                    {
-                        TriggerPasswordFind();
-                    }
-                }
+                if (data.renderer != null)
+                    data.renderer.materials = data.highlightMaterials;
             }
         }
     }
 
-    private void TriggerPasswordFind()
+    public void OnLoseFocus()
     {
-        if (hasPasswordBeenFound || !isPasswordBook)
+        if (!isFocused)
             return;
+        isFocused = false;
 
-        hasPasswordBeenFound = true;
-        PasswordManager.Instance.DiscoverClue(passwordID);
-        PlaySound(passwordFoundSound);
-
-        if (NotebookUI.Instance != null)
-            NotebookUI.Instance.ShowPasswordNotification(passwordID);
-
-        // --- EKLENEN KISIM: Megafon Sistemi Tetikleyicisi ---
-        if (MegaphoneSystem.Instance != null)
+        // 1. ÖNCELİK: Outline Scripti
+        if (outlineController != null)
         {
-            MegaphoneSystem.Instance.OnNotePickedUp();
-
-            MegaphoneSystem.Instance.ResetIdleTimer();
+            outlineController.ToggleOutline(false);
         }
-        // -----------------------------------------------------
-
-        StartCoroutine(CloseBook());
+        // 2. ÖNCELİK: Gelişmiş Emission Sistemi
+        else
+        {
+            foreach (var data in allRenderersData)
+            {
+                if (data.renderer != null)
+                    data.renderer.materials = data.originalMaterials;
+            }
+        }
     }
 
     public void Interact()
     {
         if (isAnimating || isOpen)
             return;
+        OnLoseFocus(); // Etkileşime girince söndür
         StartCoroutine(OpenBook());
     }
 
@@ -350,27 +334,27 @@ public class InteractableBook : MonoBehaviour, IInteractable, IForceExitable
     {
         isAnimating = true;
         isOpen = true;
-        // --- DEĞİŞEN KISIM BURASI ---
+
         if (ControlsUIManager.Instance != null)
         {
-            // Artık string yollamak yerine Enum yolluyoruz.
-            // Bu sayede "massSpectrometerPanel" açılacak.
             ControlsUIManager.Instance.ShowMachineUI(ControlsUIManager.MachineType.Book);
         }
-        if (outlineScript != null)
-            outlineScript.enabled = false;
 
         if (GameManager.Instance != null)
             GameManager.Instance.activeInteraction = this;
 
         if (interactionCollider != null)
             interactionCollider.enabled = false;
+
         if (playerGameScript != null)
             playerGameScript.enabled = false;
+
         if (playerController != null)
             playerController.enabled = false;
+
         if (playerLookScript != null)
             playerLookScript.enabled = false;
+
         if (playerAnimator != null)
             playerAnimator.enabled = false;
 
@@ -401,6 +385,7 @@ public class InteractableBook : MonoBehaviour, IInteractable, IForceExitable
             bookAnimator.SetTrigger(OpenTrigger);
             bookAnimator.SetBool(IsOpenBool, true);
         }
+
         PlaySound(bookOpenSound);
 
         yield return new WaitForSeconds(animationDuration);
@@ -408,13 +393,14 @@ public class InteractableBook : MonoBehaviour, IInteractable, IForceExitable
         pageIndexL = 0;
         pageIndexR = 1;
         currentPage = 1;
-        UpdateBookPagesMaterial();
 
+        UpdateBookPagesMaterial();
         if (bookUI != null)
         {
             bookUI.SetActive(true);
             UpdatePageUI();
         }
+
         isAnimating = false;
     }
 
@@ -422,13 +408,14 @@ public class InteractableBook : MonoBehaviour, IInteractable, IForceExitable
     {
         isAnimating = true;
         isOpen = false;
+
         if (ControlsUIManager.Instance != null)
             ControlsUIManager.Instance.HideControls();
         if (GameManager.Instance != null)
             GameManager.Instance.activeInteraction = null;
-
         if (bookUI != null)
             bookUI.SetActive(false);
+
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
 
@@ -438,7 +425,6 @@ public class InteractableBook : MonoBehaviour, IInteractable, IForceExitable
             bookAnimator.SetBool(IsOpenBool, false);
         }
         PlaySound(bookCloseSound);
-
         yield return new WaitForSeconds(animationDuration);
 
         Vector3 targetWorldPosition;
@@ -470,14 +456,33 @@ public class InteractableBook : MonoBehaviour, IInteractable, IForceExitable
         transform.localPosition = originalLocalPosition;
         transform.localRotation = originalLocalRotation;
 
+        // --- KONTROLLERİ GERİ AÇMA (DÜZELTİLEN KISIM) ---
         if (playerAnimator != null)
             playerAnimator.enabled = true;
         if (playerController != null)
             playerController.enabled = true;
         if (playerGameScript != null)
             playerGameScript.enabled = true;
+
         if (playerLookScript != null)
+        {
             playerLookScript.enabled = true;
+
+            // ESC'den sonra kilitlenen kamerayı zorla aç
+            if (playerLookScript is StarterAssetsInputs inputs)
+            {
+                inputs.cursorInputForLook = true;
+            }
+            else
+            {
+                var inputsComp = playerLookScript.GetComponent<StarterAssetsInputs>();
+                if (inputsComp != null)
+                {
+                    inputsComp.cursorInputForLook = true;
+                }
+            }
+        }
+
         if (interactionCollider != null)
             interactionCollider.enabled = true;
 
@@ -515,19 +520,15 @@ public class InteractableBook : MonoBehaviour, IInteractable, IForceExitable
     {
         if (direction == 0)
             yield break;
+
         isAnimating = true;
 
-        // --- SIRALI SES ÇALMA ---
         if (pageFlipSounds != null && pageFlipSounds.Length > 0)
         {
-            // 1. Sıradaki sesi seç
             AudioClip clipToPlay = pageFlipSounds[currentSoundIndex];
             PlaySound(clipToPlay);
-
-            // 2. İndeksi bir sonrakine kaydır (Modül ile başa sarmasını sağla)
             currentSoundIndex = (currentSoundIndex + 1) % pageFlipSounds.Length;
         }
-        // ------------------------
 
         if (pageFlipObject != null)
             pageFlipObject.SetActive(true);
@@ -548,7 +549,6 @@ public class InteractableBook : MonoBehaviour, IInteractable, IForceExitable
         {
             t += Time.deltaTime * flipSpeed;
             t = Mathf.Clamp01(t);
-
             float v = t * t * t * (t * (t * 6f - 15f) + 10f);
             float flipAmount = (direction > 0) ? v : 1f - v;
 
@@ -561,6 +561,7 @@ public class InteractableBook : MonoBehaviour, IInteractable, IForceExitable
                 UpdateBookPagesMaterial();
                 indicesUpdated = true;
             }
+
             yield return null;
         }
 
@@ -572,7 +573,6 @@ public class InteractableBook : MonoBehaviour, IInteractable, IForceExitable
 
         if (pageFlipObject != null)
             pageFlipObject.SetActive(false);
-        // Ses çalma kodu buradan yukarı taşındı (Senkron için)
 
         currentPage = direction > 0 ? currentPage + 1 : currentPage - 1;
         UpdatePageUI();
@@ -600,22 +600,94 @@ public class InteractableBook : MonoBehaviour, IInteractable, IForceExitable
         }
     }
 
+    private void UpdateBookPagesMaterial()
+    {
+        // 1. Senin elindeki değişkeni güncelle (Hafızadaki referans)
+        if (bookPagesMaterial != null)
+        {
+            bookPagesMaterial.SetFloat("_PageIndexL", pageIndexL);
+            bookPagesMaterial.SetFloat("_PageIndexR", pageIndexR);
+        }
+
+        // 2. ASIL ÇÖZÜM: O an Renderer'ın üzerinde takılı olan "CANLI" materyali bul ve güncelle
+        // Çünkü Highlight sistemi materyalleri sök-tak yaparken referans kopmuş olabilir.
+        if (bookSkinnedMeshRenderer != null)
+        {
+            // .materials çağrısı o anki güncel kopyaları getirir
+            Material[] currentMats = bookSkinnedMeshRenderer.materials;
+
+            // İndeks hatası olmasın diye kontrol
+            if (bookMaterialIndex >= 0 && bookMaterialIndex < currentMats.Length)
+            {
+                Material liveMaterial = currentMats[bookMaterialIndex];
+
+                // Eğer canlı materyal boş değilse, değerleri ona da bas
+                if (liveMaterial != null)
+                {
+                    liveMaterial.SetFloat("_PageIndexL", pageIndexL);
+                    liveMaterial.SetFloat("_PageIndexR", pageIndexR);
+                }
+            }
+        }
+    }
+
+    private void UpdatePageUI()
+    {
+        if (pageNumberText != null)
+            pageNumberText.text = $"{pageIndexL}-{pageIndexR}";
+    }
+
+    private void CheckForPasswordClick()
+    {
+        if (pageIndexL != passwordPage && pageIndexR != passwordPage)
+            return;
+        Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
+        if (Physics.Raycast(ray, out RaycastHit hit))
+        {
+            if (hit.collider == bookCollider)
+            {
+                Vector2 uv = hit.textureCoord;
+                bool hitRightPage = uv.x > 0.5f;
+                bool isTargetPage =
+                    (hitRightPage && pageIndexR == passwordPage)
+                    || (!hitRightPage && pageIndexL == passwordPage);
+                if (isTargetPage)
+                {
+                    float pageLocalU = hitRightPage ? (uv.x - 0.5f) * 2.0f : uv.x * 2.0f;
+                    Vector2 pageUV = new Vector2(pageLocalU, uv.y);
+                    if (passwordHotspotUV.Contains(pageUV))
+                        TriggerPasswordFind();
+                }
+            }
+        }
+    }
+
+    private void TriggerPasswordFind()
+    {
+        if (hasPasswordBeenFound || !isPasswordBook)
+            return;
+        hasPasswordBeenFound = true;
+        PasswordManager.Instance.DiscoverClue(passwordID);
+        PlaySound(passwordFoundSound);
+        if (NotebookUI.Instance != null)
+            NotebookUI.Instance.ShowPasswordNotification(passwordID);
+        if (MegaphoneSystem.Instance != null)
+            MegaphoneSystem.Instance.OnNotepadPickedUp();
+        StartCoroutine(CloseBook());
+    }
+
     public void AssignPassword(string newPasswordID, int locationIndex)
     {
         if (!canContainPassword || bookIdentity == null)
             return;
         if (locationIndex >= bookIdentity.possibleLocations.Count)
             return;
-
         isPasswordBook = true;
         passwordID = newPasswordID;
-
         var locEntry = bookIdentity.possibleLocations[locationIndex];
         passwordPage = locEntry.pageIndex;
         passwordHotspotUV = locEntry.hotspotUV;
         hasPasswordBeenFound = false;
-
-        Debug.Log($"{gameObject.name} şifrelendi. ID: {passwordID} | Yer: {locEntry.note}");
     }
 
     public void ClearPassword()
@@ -625,38 +697,10 @@ public class InteractableBook : MonoBehaviour, IInteractable, IForceExitable
         hasPasswordBeenFound = false;
     }
 
-    private void UpdateBookPagesMaterial()
-    {
-        if (bookPagesMaterial == null)
-            return;
-        bookPagesMaterial.SetFloat("_PageIndexL", pageIndexL);
-        bookPagesMaterial.SetFloat("_PageIndexR", pageIndexR);
-    }
-
-    private void UpdatePageUI()
-    {
-        if (pageNumberText != null)
-            pageNumberText.text = $"{pageIndexL}-{pageIndexR}";
-    }
-
     private void PlaySound(AudioClip clip)
     {
         if (audioSource != null && clip != null)
             audioSource.PlayOneShot(clip);
-    }
-
-    public void OnFocus()
-    {
-        if (isOpen || isAnimating)
-            return;
-        if (outlineScript != null)
-            outlineScript.enabled = true;
-    }
-
-    public void OnLoseFocus()
-    {
-        if (outlineScript != null)
-            outlineScript.enabled = false;
     }
 
     public void ForceExit()
@@ -669,31 +713,24 @@ public class InteractableBook : MonoBehaviour, IInteractable, IForceExitable
     {
         if (!isPasswordBook || passwordHotspotUV == null)
             return;
-
         Gizmos.color = new Color(1.0f, 0f, 0f, 0.7f);
         Gizmos.matrix = transform.localToWorldMatrix;
-
         bool isRightPage = (passwordPage % 2) != 0;
         float pageCenterX = isRightPage ? (-singlePageSize.x / 2.0f) : (singlePageSize.x / 2.0f);
-        Vector3 pageCenterLocalPos = new Vector3(pageCenterX, 0, 0);
-
-        float hotspotCenter_UV_X = passwordHotspotUV.x + (passwordHotspotUV.width / 2.0f);
-        float hotspotCenter_UV_Y = passwordHotspotUV.y + (passwordHotspotUV.height / 2.0f);
-
-        float hotspotOffsetX_UV = hotspotCenter_UV_X - 0.5f;
-        float hotspotOffsetY_UV = hotspotCenter_UV_Y - 0.5f;
-
-        float hotspotOffsetX_Local = hotspotOffsetX_UV * singlePageSize.x;
-        float hotspotOffsetZ_Local = hotspotOffsetY_UV * singlePageSize.y;
-
         Vector3 hotspotCenter =
-            pageCenterLocalPos
-            + new Vector3(hotspotOffsetX_Local, gizmoYOffset, hotspotOffsetZ_Local);
-
-        float hotspotWidth_Local = passwordHotspotUV.width * singlePageSize.x;
-        float hotspotHeight_Local = passwordHotspotUV.height * singlePageSize.y;
-        Vector3 hotspotSize = new Vector3(hotspotWidth_Local, 0.001f, hotspotHeight_Local);
-
-        Gizmos.DrawWireCube(hotspotCenter, hotspotSize);
+            new Vector3(pageCenterX, 0, 0)
+            + new Vector3(
+                (passwordHotspotUV.x + passwordHotspotUV.width / 2f - 0.5f) * singlePageSize.x,
+                gizmoYOffset,
+                (passwordHotspotUV.y + passwordHotspotUV.height / 2f - 0.5f) * singlePageSize.y
+            );
+        Gizmos.DrawWireCube(
+            hotspotCenter,
+            new Vector3(
+                passwordHotspotUV.width * singlePageSize.x,
+                0.001f,
+                passwordHotspotUV.height * singlePageSize.y
+            )
+        );
     }
 }

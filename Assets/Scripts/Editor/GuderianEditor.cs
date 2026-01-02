@@ -1,7 +1,7 @@
 #if UNITY_EDITOR
 using UnityEngine;
 using UnityEditor;
-using UnityEngine.AI; // NavMesh Agent tipini tanımak için
+using UnityEngine.AI;
 
 [CustomEditor(typeof(GuderianAI))]
 public class GuderianEditor : Editor
@@ -63,6 +63,13 @@ public class GuderianEditor : Editor
             }
             EditorGUILayout.PropertyField(serializedObject.FindProperty("guderianModel"));
 
+            // --- YENİ EKLENEN KISIM ---
+            EditorGUILayout.PropertyField(
+                serializedObject.FindProperty("animator"),
+                new GUIContent("Animator Controller")
+            );
+            // ---------------------------
+
             EditorGUILayout.Space(5);
             EditorGUILayout.LabelField("Sesler", EditorStyles.boldLabel);
             EditorGUILayout.PropertyField(serializedObject.FindProperty("audioSource"));
@@ -113,7 +120,12 @@ public class GuderianEditor : Editor
             EditorGUILayout.Space(5);
             EditorGUILayout.PropertyField(serializedObject.FindProperty("jumpscareDistance"));
             EditorGUILayout.PropertyField(serializedObject.FindProperty("spawnYOffset"));
-
+            EditorGUILayout.Space(10);
+            EditorGUILayout.LabelField("Kişisel Jumpscare Ayarları", EditorStyles.boldLabel);
+            EditorGUILayout.PropertyField(
+                serializedObject.FindProperty("guderianJumpscareProfile"),
+                true
+            );
             EditorGUILayout.Space(5);
             EditorGUILayout.LabelField($"Spawn Şansı: {script.GetCurrentChance()}%");
             EditorGUILayout.LabelField(

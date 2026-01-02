@@ -440,21 +440,21 @@ public class InteractableTuringMachine : MonoBehaviour, IInteractable, IForceExi
             UpdateActiveWheelHighlight();
         }
 
-        if (Input.GetKeyDown(KeyCode.Q))
+        if (Input.GetKeyDown(KeyCode.A))
         {
             HandleIndexChange(-1);
             UpdateActiveWheelHighlight();
         }
-        else if (Input.GetKeyDown(KeyCode.E))
+        else if (Input.GetKeyDown(KeyCode.D))
         {
             HandleIndexChange(1);
             UpdateActiveWheelHighlight();
         }
 
         float rotationInput = 0f;
-        if (Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.RightArrow))
+        if (Input.GetKeyDown(KeyCode.RightArrow))
             rotationInput = 1f;
-        if (Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.LeftArrow))
+        if (Input.GetKeyDown(KeyCode.LeftArrow))
             rotationInput = -1f;
 
         float scroll = Input.mouseScrollDelta.y;
@@ -566,6 +566,7 @@ public class InteractableTuringMachine : MonoBehaviour, IInteractable, IForceExi
         if (!PasswordManager.Instance)
             return;
 
+        // Şifre string'ini oluşturma (Burası aynı)
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < wordWheelIndices.Length; i++)
             sb.Append(wordChars[wordWheelIndices[i]]);
@@ -573,24 +574,28 @@ public class InteractableTuringMachine : MonoBehaviour, IInteractable, IForceExi
         string sp = symbolChars[GetCorrectSymbolIndex()];
         string np =
             $"{numberChars[numberWheelIndices[0]]}{numberChars[numberWheelIndices[1]]}{numberChars[numberWheelIndices[2]]}";
+
         string pw = $"{wp}_{sp}_{np}";
 
         Debug.Log($"GİRİLEN ŞİFRE: '{pw}'");
 
+        // --- DÜZELTME BURADA ---
+        // Eski Hatalı Kod: if (PasswordManager.Instance.GetDiscoveredClues().Contains(pw))
+
+        // Yeni Doğru Kod: "Bu şifre daha önce ONAYLANDI MI?" diye soruyoruz.
+        if (PasswordManager.Instance.IsPasswordUsed(pw))
+        {
+            Debug.Log("Bu şifre zaten kullanıldı!");
+            PlaySound(failSound); // Hata sesi çal
+            return; // Fonksiyondan çık
+        }
+        // -----------------------
+
+        // Şifre daha önce kullanılmadıysa doğrulamayı dene
         if (PasswordManager.Instance.ValidatePassword(pw))
         {
             PlaySound(successSound);
             UpdateIndicators(PasswordManager.Instance.GetValidatedPasswordCount());
-
-            // --- EKLENEN KISIM: Megafon Sistemi ---
-            if (MegaphoneSystem.Instance != null)
-            {
-                // Eğer bu ilk şifreyse Tutorial biter ("Aferin, sistemler açıldı" vs.)
-                // Değilse sadece "Güzel, devam et" der.
-                MegaphoneSystem.Instance.OnTutorialCompleted();
-                MegaphoneSystem.Instance.OnCodeSubmitted();
-            }
-            // -------------------------------------
         }
         else
         {

@@ -4,43 +4,59 @@ public class ControllableLight : MonoBehaviour, IInteractable
 {
     [Header("Light Settings")]
     [SerializeField]
-    private Light[] targetLight; // Kontrol edilecek ışık
+    private Light[] targetLight; // Kontrol edilecek ışıklar
 
-    [Tooltip("Oyuncu bu ışığın açık olmasını mı istiyor?")]
+    [Tooltip("Işık başlangıçta açık mı? (Koridor için TRUE yap)")]
     [SerializeField]
     private bool desiredStateIsOn = true;
+
+    [Header("Breaker & Interaction Settings")]
+    [Tooltip("Bu ışık düğmeyle açılıp kapansın mı? (Koridor için FALSE, Oda için TRUE)")]
+    [SerializeField]
+    private bool canPlayerInteract = true;
+
+    [Tooltip("Bu ışık açıkken şartel atma riskini artırsın mı? (Koridor için genelde FALSE)")]
+    [SerializeField]
+    private bool contributesToRisk = true;
+
+    [Header("Animation Settings")]
+    [Tooltip("Dönmesini istediğin anahtar modeli (Koridor ışığında boş bırakabilirsin)")]
+    [SerializeField]
+    private Transform switchModel;
+
+    [SerializeField]
+    private Vector3 onRotation = new Vector3(-15f, 0f, 0f);
+
+    [SerializeField]
+    private Vector3 offRotation = new Vector3(15f, 0f, 0f);
 
     [Header("Audio")]
     [SerializeField]
     private AudioClip switchSound;
 
     [SerializeField]
-    private AudioClip errorSound; // Şartel atıkken basma sesi
+    private AudioClip errorSound;
 
     [SerializeField]
-    private AudioSource audioSource; //
+    private AudioSource audioSource;
 
-    [Header("Visual Feedback (Opsiyonel)")]
+    [Header("Visual Feedback")]
     [SerializeField]
-    private Material onMaterial; //
-
-    [SerializeField]
-    private Material offMaterial; //
+    private Material onMaterial;
 
     [SerializeField]
-    private MeshRenderer switchRenderer; //
+    private Material offMaterial;
 
+    [SerializeField]
+    private MeshRenderer switchRenderer;
+
+    // BreakerBox'ın okuyacağı değerler
     public bool IsOn => desiredStateIsOn;
+    public bool ContributesToRisk => contributesToRisk;
 
     private void Start()
     {
-        if (targetLight == null)
-        {
-            // Eğer ışık atanmamışsa hata verme, sessizce geç (Editörde bazen boş kalabilir)
-            return;
-        }
-
-        // Merkezi BreakerBox'a kendini kaydet
+        // Kendini sisteme kaydet
         if (BreakerBox.Instance != null)
         {
             BreakerBox.Instance.RegisterLight(this);
@@ -48,13 +64,11 @@ public class ControllableLight : MonoBehaviour, IInteractable
             BreakerBox.Instance.OnBreakerReset += HandleBreakerReset;
         }
 
-        // Başlangıç durumunu ayarla
         UpdateLightVisual();
     }
 
     private void OnDestroy()
     {
-        // Hafıza sızıntısını önlemek için kaydı sil
         if (BreakerBox.Instance != null)
         {
             BreakerBox.Instance.UnregisterLight(this);
@@ -63,49 +77,38 @@ public class ControllableLight : MonoBehaviour, IInteractable
         }
     }
 
-    // --- YENİ: Editörde Değişiklik Yapınca Anında Güncelle ---
-    private void OnValidate()
-    {
-        UpdateLightVisual();
-    }
-
-    // --- YENİ: Editör Butonu İçin Özel Fonksiyon ---
-    // Bu fonksiyon oyun mantığını (ses, şartel kontrolü vb.) bypass eder.
+    // --- EKSİK OLAN VE HATAYA SEBEP OLAN FONKSİYON ---
     public void ToggleLightEditor()
     {
         desiredStateIsOn = !desiredStateIsOn;
         UpdateLightVisual();
     }
 
+    // --------------------------------------------------
+
     public void Interact()
     {
-        // Eğer şartel atmışsa, ışığı açmaya izin verme
+        // EĞER OYUNCU ETKİLEŞİMİ KAPALIYSA (Koridor Işığıysa) HİÇBİR ŞEY YAPMA
+        if (!canPlayerInteract)
+            return;
+
         if (BreakerBox.Instance != null && BreakerBox.Instance.IsTripped)
         {
             PlaySound(errorSound);
             return;
         }
 
-        // --- EKLENEN KISIM: Idle Sıfırlama ---
-        if (MegaphoneSystem.Instance != null)
-        {
-            // Oyuncu ışıkla oynuyor, demek ki aktif.
-            MegaphoneSystem.Instance.ResetIdleTimer();
-            // İleride buraya "Çok fazla ışık açma" kontrolü de eklenebilir.
-            // MegaphoneSystem.Instance.CheckLightsState(...);
-        }
-        // -------------------------------------
-
-        // Oyuncunun "isteğini" değiştir
         desiredStateIsOn = !desiredStateIsOn;
         PlaySound(switchSound);
-
-        // Görseli güncelle
         UpdateLightVisual();
     }
 
     public string GetInteractionPrompt()
     {
+        // EĞER ETKİLEŞİM KAPALIYSA YAZI ÇIKMASIN
+        if (!canPlayerInteract)
+            return "";
+
         if (BreakerBox.Instance != null && BreakerBox.Instance.IsTripped)
         {
             return "Şartel Atık";
@@ -116,38 +119,44 @@ public class ControllableLight : MonoBehaviour, IInteractable
 
     private void HandleBreakerTrip()
     {
-        // Debug.Log(gameObject.name + " -> Breaker attı, ışık kapandı.");
+        // Şartel atınca sadece görseli güncelle (Elektrik kesildi diyecek)
         UpdateLightVisual();
     }
 
     private void HandleBreakerReset()
     {
-        // Debug.Log(gameObject.name + " -> Breaker kaldırıldı, durum kontrol ediliyor.");
         UpdateLightVisual();
     }
 
-    // Işığın GÖRSEL durumunu günceller
     private void UpdateLightVisual()
     {
-        // Editörde BreakerBox.Instance NULL olabilir, bu durumda "Elektrik Var" kabul ediyoruz.
-        // Böylece editörde rahatça ışıkları açıp kapatabilirsin.
-        bool canBeOn = (BreakerBox.Instance == null) || !BreakerBox.Instance.IsTripped;
+        // 1. ELEKTRİK KONTROLÜ
+        // BreakerBox yoksa veya şartel atmamışsa elektrik vardır.
+        bool hasPower = (BreakerBox.Instance == null) || !BreakerBox.Instance.IsTripped;
 
-        // Nihai durum: Şartel atmamışsa VE oyuncu açık olmasını istiyorsa
-        bool finalState = canBeOn && desiredStateIsOn;
+        // Işık yanıyor mu? = (Elektrik Var MI?) VE (Düğme Açık Mı?)
+        bool isLightActive = hasPower && desiredStateIsOn;
 
         if (targetLight != null)
         {
             foreach (Light item in targetLight)
             {
-                item.enabled = finalState;
+                if (item != null)
+                    item.enabled = isLightActive;
             }
         }
 
-        // Düğme materyalini GÜNCEL duruma göre ayarla
+        // 2. MATERYAL (Eğer anahtar modeli varsa)
         if (switchRenderer != null && onMaterial != null && offMaterial != null)
         {
-            switchRenderer.sharedMaterial = finalState ? onMaterial : offMaterial;
+            switchRenderer.sharedMaterial = isLightActive ? onMaterial : offMaterial;
+        }
+
+        // 3. ANAHTAR ROTASYONU
+        // Sadece anahtar modeli varsa döndür
+        if (switchModel != null)
+        {
+            switchModel.localEulerAngles = desiredStateIsOn ? onRotation : offRotation;
         }
     }
 
@@ -159,7 +168,7 @@ public class ControllableLight : MonoBehaviour, IInteractable
         }
     }
 
-    public void OnFocus() { } // Şimdilik boş kalsın
+    public void OnFocus() { }
 
-    public void OnLoseFocus() { } // Şimdilik boş kalsın
+    public void OnLoseFocus() { }
 }

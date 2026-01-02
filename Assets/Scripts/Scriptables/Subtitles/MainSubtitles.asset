@@ -16,169 +16,187 @@ MonoBehaviour:
   - id: chemistry_lab_entrance
     note: "Kimya lab\u0131na ilk giri\u015F"
     segments:
-    - startTime: 0
-      duration: 3
+    - duration: 3
       textTR: "Evet buras\u0131 da G\xF6rd\xFC\u011F\xFCn \xFCzere kimya labarotuvar\u0131"
       textEN: Welcome to the Chemistry Lab...
       textDE: 
-    - startTime: 3
-      duration: 5
+    - duration: 5
       textTR: "Evet biliyorum biraz s\u0131k\u0131c\u0131 ama ramo gay"
       textEN: Try not to touch anything you can't afford, which is everything.
       textDE: 
-    - startTime: 8
-      duration: 5
+    - duration: 5
       textTR: 
       textEN: ' And this monstrosity? It''s the Mass... Spectro... Spectro-ma-thingy...'
       textDE: 
-    - startTime: 13
-      duration: 4
+    - duration: 4
       textTR: 
       textEN: whatever the hell they call it. It analyzes matter. You analyze the
         machine.
       textDE: 
-    - startTime: 17
-      duration: 3
+    - duration: 3
       textTR: 
       textEN: Just make it work. Don't bore me with the details.
       textDE: 
-  - id: tutorial_intro
+  - id: start_game
     note: "Kimya lab\u0131na ilk giri\u015F"
     segments:
-    - startTime: 0
-      duration: 3
-      textTR: "Kalk aya\u011Fa Doktor. Uyuyacak vaktimiz yok."
-      textEN: 
+    - duration: 5
+      textTR: 
+      textEN: "Professor... I see you\u2019re enjoying American tax-payer funded
+        sleep."
       textDE: 
-    - startTime: 3.5
-      duration: 4
-      textTR: "D\u0131\u015Far\u0131daki sava\u015F bizi beklemiyor. Proje bug\xFCn
-        bitmeli."
-      textEN: 
+    - duration: 1
+      textTR: 
+      textEN: Wake up.
       textDE: 
-    - startTime: 8
-      duration: 3
-      textTR: "\u015Eimdi toparln masan\u0131n \xFCst\xFCnde \xF6rnek bir form\xFCl
-        var."
-      textEN: 
+    - duration: 5
+      textTR: 
+      textEN: There is a notepad on your desk with the test sequence. Pick it up.
       textDE: 
-  - id: tutorial_nag_pickup
-    note: 
-    segments:
-    - startTime: 0
-      duration: 3
-      textTR: "O rapora bak\u0131p duracak m\u0131s\u0131n Johan?\n"
-      textEN: 
-      textDE: 
-    - startTime: 3.5
-      duration: 3.5
-      textTR: "Onu yerden al. \u0130\xE7indeki veriler hayat\u0131ndan daha de\u011Ferli.\n"
-      textEN: 
-      textDE: 
-  - id: tutorial_unlock
-    note: 
-    segments:
-    - startTime: 0
-      duration: 2.5
-      textTR: "G\xFCzel. \u015Eimdi odaklan."
-      textEN: 
-      textDE: 
-    - startTime: 3
-      duration: 4.5
-      textTR: O koddaki parametreleri Turing Makinesi'ne gir. Hemen.
-      textEN: 
-      textDE: 
-    - startTime: 8
-      duration: 3
-      textTR: Beni bekletme Doktor.
-      textEN: 
-      textDE: 
-  - id: tutorial_nag_input
-    note: 
-    segments:
-    - startTime: 0
-      duration: 3
-      textTR: "Neden duraksad\u0131n? Emirlerimi sorgulama."
-      textEN: 
-      textDE: 
-    - startTime: 3.5
-      duration: 3.5
-      textTR: "Kodu makineye gir. Bu bir rica de\u011Fil."
-      textEN: 
+    - duration: 7
+      textTR: 
+      textEN: Let's see if you can handle simple instructions before we let you play
+        with the big toys.
       textDE: 
   - id: pressure_emergency
     note: 
     segments:
-    - startTime: 0
-      duration: 3
+    - duration: 3
       textTR: "Doktor! Bas\u0131n\xE7 g\xF6stergelerine bak!"
       textEN: 
       textDE: 
-    - startTime: 3.5
-      duration: 4
+    - duration: 4
       textTR: "Sistemi dengelemezsen aylar s\xFCren eme\u011Fimiz havaya u\xE7acak!"
       textEN: 
       textDE: 
-    - startTime: 8
-      duration: 2.5
+    - duration: 2.5
       textTR: "Vanalar\u0131 \xE7evir! \u015E\u0130MD\u0130!"
-      textEN: 
-      textDE: 
-  - id: idle_holding_code
-    note: 
-    segments:
-    - startTime: 0
-      duration: 3.5
-      textTR: "Elindeki o \u015Fifreyi s\xFCs diye vermedim sana."
-      textEN: 
-      textDE: 
-    - startTime: 4
-      duration: 3
-      textTR: "G\xF6revini yap Johan. Kap\u0131y\u0131 a\xE7."
-      textEN: 
-      textDE: 
-  - id: idle_move_warning
-    note: 
-    segments:
-    - startTime: 0
-      duration: 3
-      textTR: "Ne o? Korkudan fel\xE7 mi oldun?"
-      textEN: 
-      textDE: 
-    - startTime: 3.5
-      duration: 4.5
-      textTR: "Hareket et! Sava\u015F alan\u0131ndaki askerler durmuyor, sen de duramazs\u0131n."
-      textEN: 
-      textDE: 
-  - id: lights_warning
-    note: 
-    segments:
-    - startTime: 0
-      duration: 3
-      textTR: "I\u015F\u0131klar\u0131 kapa lan"
-      textEN: 
-      textDE: 
-  - id: final_gate_open
-    note: 
-    segments:
-    - startTime: 0
-      duration: 3
-      textTR: "Aferin t\xFCm \u015Fifreleri \xE7z\xF6d\xFCn"
-      textEN: 
-      textDE: 
-  - id: final_gate_locked
-    note: 
-    segments:
-    - startTime: 0
-      duration: 3
-      textTR: "Olum kilitli la i\u015Fte"
       textEN: 
       textDE: 
   - id: particle_room_entrance
     note: 
     segments:
-    - startTime: 0
-      duration: 3
+    - duration: 3
       textTR: "Olum kilitli la i\u015Fte"
       textEN: 
+      textDE: 
+  - id: first_notepad
+    note: 
+    segments:
+    - duration: 3
+      textTR: 
+      textEN: 'Now, write that code into the Siswan Machine.
+
+'
+      textDE: 
+    - duration: 4
+      textTR: 
+      textEN: And Professor? Do it exactly as written.
+      textDE: 
+    - duration: 1
+      textTR: 
+      textEN: No improvising.
+      textDE: 
+    - duration: 2
+      textTR: 
+      textEN: No creative liberties.
+      textDE: 
+    - duration: 4
+      textTR: 
+      textEN: You are here to follow orders, not to think freely.
+      textDE: 
+    - duration: 6
+      textTR: 
+      textEN: 'We cured you of that habit when we brought you here. Move.
+
+'
+      textDE: 
+  - id: first_mistake
+    note: 
+    segments:
+    - duration: 4
+      textTR: 
+      textEN: Is this a joke? IS IT?!
+      textDE: 
+    - duration: 4
+      textTR: 
+      textEN: I was told your people were perfectionists!
+      textDE: 
+    - duration: 7
+      textTR: 
+      textEN: ' ''Master Race,'' my ass... Right now, you can''t even type a few
+        numbers correctly.
+
+'
+      textDE: 
+    - duration: 4
+      textTR: 
+      textEN: ' Do I need to translate it into German for you, Jerry?'
+      textDE: 
+    - duration: 3
+      textTR: 
+      textEN: DO IT AGAIN!
+      textDE: 
+  - id: tutorial_solved
+    note: 
+    segments:
+    - duration: 3
+      textTR: 
+      textEN: See? Not that hard when you focus.
+      textDE: 
+    - duration: 3
+      textTR: 
+      textEN: I'm unlocking the lab doors. Get out there.
+      textDE: 
+    - duration: 7
+      textTR: 
+      textEN: 'Don''t expect a medal for doing what you''re told. Get back to work.
+
+'
+      textDE: 
+  - id: final_code
+    note: 
+    segments:
+    - duration: 4
+      textTR: 
+      textEN: Gute Arbeit. The math is done, Johan.
+      textDE: 
+    - duration: 5
+      textTR: 
+      textEN: But equations don't win wars. Fire does.
+      textDE: 
+    - duration: 10
+      textTR: 
+      textEN: Proceed to the Test Chamber. What you do in the next five minutes will
+        decide the fate of mankind for the next five hundred years.
+      textDE: 
+    - duration: 8
+      textTR: 
+      textEN: We are done playing with numbers... Go inside, and set the world on
+        fire.
+      textDE: 
+  - id: new_dialogue_9
+    note: 
+    segments:
+    - duration: 4
+      textTR: 
+      textEN: 'The pressure is spiking! What are you doing down there?!
+
+'
+      textDE: 
+    - duration: 5
+      textTR: 
+      textEN: 'The pressure is spiking! What are you doing down there?!
+
+'
+      textDE: 
+    - duration: 10
+      textTR: 
+      textEN: Proceed to the Test Chamber. What you do in the next five minutes will
+        decide the fate of mankind for the next five hundred years.
+      textDE: 
+    - duration: 8
+      textTR: 
+      textEN: We are done playing with numbers... Go inside, and set the world on
+        fire.
       textDE: 

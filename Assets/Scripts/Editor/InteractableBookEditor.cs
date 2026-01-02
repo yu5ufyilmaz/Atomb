@@ -6,9 +6,8 @@ using UnityEditor;
 [CanEditMultipleObjects]
 public class InteractableBookEditor : Editor
 {
-    // Katlanabilir menülerin durumları
     private static bool showIdentity = true;
-    private static bool showOutline = true;
+    private static bool showHighlight = true;
     private static bool showGeneralSettings = false;
     private static bool showVisuals = false;
     private static bool showAudio = false;
@@ -18,7 +17,6 @@ public class InteractableBookEditor : Editor
     public override void OnInspectorGUI()
     {
         serializedObject.Update();
-
         InteractableBook book = (InteractableBook)target;
 
         GUIStyle headerStyle = new GUIStyle(EditorStyles.boldLabel);
@@ -26,13 +24,10 @@ public class InteractableBookEditor : Editor
         headerStyle.normal.textColor = new Color(0.7f, 0.8f, 1f);
 
         EditorGUILayout.Space(10);
-        EditorGUILayout.LabelField(
-            $"📚 KİTAP EDİTÖRÜ (ID: {book.gameObject.GetInstanceID()})",
-            headerStyle
-        );
+        EditorGUILayout.LabelField($"📚 KİTAP EDİTÖRÜ (Skinned)", headerStyle);
         EditorGUILayout.Space(5);
 
-        // --- 1. KİTAP KİMLİĞİ ---
+        // --- 1. KİMLİK ---
         showIdentity = EditorGUILayout.BeginFoldoutHeaderGroup(
             showIdentity,
             "🆔 Kitap Kimliği & Şifre"
@@ -48,40 +43,72 @@ public class InteractableBookEditor : Editor
                 serializedObject.FindProperty("canContainPassword"),
                 new GUIContent("Şifre Çıkabilir mi?")
             );
-
             if (book.bookIdentity == null && book.canContainPassword)
-            {
-                EditorGUILayout.HelpBox(
-                    "⚠️ Şifre çıkabilir dediniz ama 'Kitap Türü' (Data) atamadınız!",
-                    MessageType.Warning
-                );
-            }
+                EditorGUILayout.HelpBox("⚠️ 'Kitap Türü' atanmamış!", MessageType.Warning);
             EditorGUILayout.EndVertical();
         }
         EditorGUILayout.EndFoldoutHeaderGroup();
-
         EditorGUILayout.Space(2);
 
-        // --- 2. OUTLINE ---
-        showOutline = EditorGUILayout.BeginFoldoutHeaderGroup(
-            showOutline,
-            "✨ Outline (Vurgu) Ayarları"
+        // --- 2. HIGHLIGHT & OUTLINE AYARLARI ---
+        showHighlight = EditorGUILayout.BeginFoldoutHeaderGroup(
+            showHighlight,
+            "✨ Vurgu (Highlight / Outline) Ayarları"
         );
-        if (showOutline)
+        if (showHighlight)
         {
             EditorGUILayout.BeginVertical(EditorStyles.helpBox);
-            SerializedProperty colorProp = serializedObject.FindProperty("outlineColor");
-            SerializedProperty widthProp = serializedObject.FindProperty("outlineWidth");
 
-            if (colorProp != null && widthProp != null)
+            // --- YENİ EKLENEN KISIM: OUTLINE CONTROLLER ---
+            SerializedProperty outlineProp = serializedObject.FindProperty("outlineController");
+            EditorGUILayout.PropertyField(outlineProp, new GUIContent("HDRP Outline Scripti"));
+
+            if (outlineProp.objectReferenceValue != null)
             {
-                EditorGUILayout.PropertyField(colorProp, new GUIContent("Vurgu Rengi"));
-                EditorGUILayout.PropertyField(widthProp, new GUIContent("Çizgi Kalınlığı"));
+                // Eğer Outline atanmışsa kullanıcıyı bilgilendir
+                GUI.backgroundColor = new Color(0.8f, 1f, 0.8f); // Hafif yeşil arka plan
+                EditorGUILayout.HelpBox(
+                    "✅ Outline Scripti algılandı! Eski 'Emission' (Parlama) sistemi yerine Outline kullanılacak.",
+                    MessageType.Info
+                );
+                GUI.backgroundColor = Color.white;
             }
+            else
+            {
+                // Atanmamışsa uyarı verilebilir veya boş bırakılabilir
+                EditorGUILayout.HelpBox(
+                    "Outline Scripti boşsa, aşağıdaki Parlama (Emission) ayarları kullanılır.",
+                    MessageType.None
+                );
+            }
+
+            EditorGUILayout.Space(5);
+            EditorGUILayout.LabelField(
+                "Yedek Sistem (Emission/Parlama)",
+                EditorStyles.miniBoldLabel
+            );
+            // ----------------------------------------------
+
+            SerializedProperty colorProp = serializedObject.FindProperty("highlightColor");
+            SerializedProperty intensityProp = serializedObject.FindProperty("emissionIntensity");
+
+            EditorGUILayout.PropertyField(colorProp, new GUIContent("Vurgu Rengi"));
+            EditorGUILayout.PropertyField(
+                intensityProp,
+                new GUIContent("Parlaklık Şiddeti (HDRP)")
+            );
+
+            if (book.emissionIntensity < 1f)
+            {
+                EditorGUILayout.HelpBox(
+                    "Dikkat: Şiddet 1'den küçükse HDRP'de parlama GÖRÜNMEZ. 10 veya 50 gibi değerler deneyin.",
+                    MessageType.Info
+                );
+            }
+
             EditorGUILayout.EndVertical();
         }
         EditorGUILayout.EndFoldoutHeaderGroup();
-
         EditorGUILayout.Space(2);
 
         // --- 3. GENEL ---
@@ -96,17 +123,20 @@ public class InteractableBookEditor : Editor
             EditorGUILayout.PropertyField(serializedObject.FindProperty("totalPages"));
             EditorGUILayout.PropertyField(serializedObject.FindProperty("pageFlipDuration"));
             EditorGUILayout.PropertyField(serializedObject.FindProperty("allowLoop"));
+            EditorGUILayout.Space(5);
             EditorGUILayout.PropertyField(serializedObject.FindProperty("bookUI"));
             EditorGUILayout.PropertyField(serializedObject.FindProperty("pageNumberText"));
-
+            EditorGUILayout.PropertyField(
+                serializedObject.FindProperty("bookCollider"),
+                new GUIContent("Sayfa Collider'i")
+            );
             EditorGUILayout.Space(5);
-            EditorGUILayout.LabelField("Debug Görseli", EditorStyles.miniBoldLabel);
+            EditorGUILayout.PropertyField(serializedObject.FindProperty("animationDuration"));
             EditorGUILayout.PropertyField(serializedObject.FindProperty("singlePageSize"));
             EditorGUILayout.PropertyField(serializedObject.FindProperty("gizmoYOffset"));
             EditorGUILayout.EndVertical();
         }
         EditorGUILayout.EndFoldoutHeaderGroup();
-
         EditorGUILayout.Space(2);
 
         // --- 4. GÖRSEL ---
@@ -114,19 +144,31 @@ public class InteractableBookEditor : Editor
         if (showVisuals)
         {
             EditorGUILayout.BeginVertical(EditorStyles.helpBox);
-            EditorGUILayout.PropertyField(serializedObject.FindProperty("bookSkinnedMeshRenderer"));
+            EditorGUILayout.LabelField("Ana Model", EditorStyles.miniBoldLabel);
+            SerializedProperty skinnedProp = serializedObject.FindProperty(
+                "bookSkinnedMeshRenderer"
+            );
+            EditorGUILayout.PropertyField(skinnedProp);
+
+            if (book.bookSkinnedMeshRenderer == null)
+                EditorGUILayout.HelpBox(
+                    "SkinnedMeshRenderer BOŞ! Kitap çalışmaz.",
+                    MessageType.Error
+                );
+
             EditorGUILayout.PropertyField(serializedObject.FindProperty("bookMaterialIndex"));
+            EditorGUILayout.PropertyField(serializedObject.FindProperty("bookPagesMaterial"));
             EditorGUILayout.Space(5);
             EditorGUILayout.LabelField("Sayfa Çevirme Efekti", EditorStyles.miniBoldLabel);
             EditorGUILayout.PropertyField(serializedObject.FindProperty("pageFlipObject"));
             EditorGUILayout.PropertyField(serializedObject.FindProperty("pageFlipRenderer"));
+            EditorGUILayout.PropertyField(serializedObject.FindProperty("pageTurnMaterial"));
             EditorGUILayout.EndVertical();
         }
         EditorGUILayout.EndFoldoutHeaderGroup();
-
         EditorGUILayout.Space(2);
 
-        // --- 5. SES ---
+        // --- 5. SES, 6. KAMERA, 7. DEBUG (Standart) ---
         showAudio = EditorGUILayout.BeginFoldoutHeaderGroup(showAudio, "🔊 Sesler");
         if (showAudio)
         {
@@ -139,10 +181,8 @@ public class InteractableBookEditor : Editor
             EditorGUILayout.EndVertical();
         }
         EditorGUILayout.EndFoldoutHeaderGroup();
-
         EditorGUILayout.Space(2);
 
-        // --- 6. KAMERA ---
         showCamera = EditorGUILayout.BeginFoldoutHeaderGroup(showCamera, "🎥 Okuma Kamerası");
         if (showCamera)
         {
@@ -154,32 +194,15 @@ public class InteractableBookEditor : Editor
             EditorGUILayout.EndVertical();
         }
         EditorGUILayout.EndFoldoutHeaderGroup();
-
         EditorGUILayout.Space(10);
 
-        // --- 7. DEBUG ---
-        GUI.backgroundColor = new Color(1f, 0.5f, 0.5f);
-        showDebug = EditorGUILayout.BeginFoldoutHeaderGroup(showDebug, "🐞 DEBUG (Sadece İzleme)");
-        GUI.backgroundColor = Color.white;
+        showDebug = EditorGUILayout.BeginFoldoutHeaderGroup(showDebug, "🐞 DEBUG");
         if (showDebug)
         {
             EditorGUILayout.BeginVertical(EditorStyles.helpBox);
             GUI.enabled = false;
             EditorGUILayout.Toggle("Açık mı?", book.isOpen);
-            EditorGUILayout.IntField("Şu anki Sayfa", book.currentPage);
-
-            EditorGUILayout.Space(5);
-            EditorGUILayout.LabelField("Şifre Durumu:", EditorStyles.boldLabel);
-            if (book.isPasswordBook)
-            {
-                EditorGUILayout.TextField("Şifre ID", book.passwordID);
-                EditorGUILayout.IntField("Hedef Sayfa", book.passwordPage);
-                EditorGUILayout.Toggle("Bulundu mu?", book.hasPasswordBeenFound);
-            }
-            else
-            {
-                EditorGUILayout.LabelField("Bu kitapta şifre YOK");
-            }
+            EditorGUILayout.IntField("Sayfa", book.currentPage);
             GUI.enabled = true;
             EditorGUILayout.EndVertical();
         }

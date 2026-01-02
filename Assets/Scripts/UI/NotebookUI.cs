@@ -105,7 +105,7 @@ public class NotebookUI : MonoBehaviour
         foreach (string pw in passwords)
         {
             bool isUsed = PasswordManager.Instance.IsPasswordUsed(pw);
-            string displayText = pw;
+            string displayText = pw.Replace("_", " ");
 
             if (isUsed)
             {
@@ -133,6 +133,25 @@ public class NotebookUI : MonoBehaviour
             CancelInvoke(nameof(HideNotification));
             Invoke(nameof(HideNotification), notificationDuration);
         }
+    }
+
+    // --- YENİ EKLENEN: DIŞARIDAN ZORLA KAPATMA ---
+    public void ForceClose()
+    {
+        // 1. Paneli Görünmez Yap veya Konumunu Sıfırla
+        if (notebookPanel != null)
+        {
+            // Hareket ettiği için konumunu gizliye çekmemiz daha güvenli
+            if (panelRect != null)
+                panelRect.anchoredPosition = hiddenPosition;
+
+            // Ya da direkt SetActive false yapabilirsin ama script çalıştığı için Update onu geri açabilir.
+            // En temizi konumu resetlemektir.
+        }
+
+        // 2. Bildirimi de kapat
+        if (notificationPanel != null)
+            notificationPanel.SetActive(false);
     }
 
     private void HideNotification()

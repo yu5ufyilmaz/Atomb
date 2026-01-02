@@ -1,5 +1,4 @@
 using System.Collections;
-using TMPro;
 using UnityEngine;
 
 public class MegaphoneSystem : MonoBehaviour
@@ -7,43 +6,46 @@ public class MegaphoneSystem : MonoBehaviour
     public static MegaphoneSystem Instance;
 
     [Header("Components")]
-    public AudioSource speakerSource;
+    public AudioSource speakerSource; // Inspector'dan Spatial Blend'i 1 (3D) yapmayı unutma!
 
-    // SubtitleText artık GlobalSubtitleManager tarafından yönetildiği için buradan silebiliriz
-    // Ama Inspector'da referans kopmasın diye tutmak istersen kalabilir, fakat kullanılmayacak.
+    [Header("--- 1. OYUN BAŞLANGICI ---")]
+    public AudioClip startGameClip;
+    public string startGameSubtitleID = "start_game";
+    public float startGameDelay = 3f; // Kaç saniye sonra çalsın?
 
-    [Header("--- TUTORIAL CLIPS ---")]
-    public AudioClip introClip;
-    public AudioClip nagPickupClip;
-    public AudioClip nagInputClip;
-    public AudioClip machineUnlockClip;
+    [Header("--- 2. İLK NOTEPAD ALIMI ---")]
+    public AudioClip notepadPickupClip;
+    public string notepadPickupSubtitleID = "first_notepad";
 
-    [Header("--- GAMEPLAY CLIPS ---")]
-    public AudioClip pressureEmergencyClip;
-    public AudioClip pressureRoomIntroClip;
+    [Header("--- 3. İLK HATA (YANLIŞ ŞİFRE) ---")]
+    public AudioClip firstMistakeClip;
+    public string firstMistakeSubtitleID = "first_mistake";
 
-    [Header("--- IDLE / NAG CLIPS ---")]
-    public AudioClip idleCorridorClip;
-    public AudioClip idlePuzzleClip;
-    public AudioClip holdingCodeClip;
-    public AudioClip lightsWarningClip;
+    [Header("--- 4. TUTORIAL BİTİŞİ (ŞİFRE ÇÖZÜLDÜ) ---")]
+    public AudioClip tutorialSolvedClip;
+    public string tutorialSolvedSubtitleID = "tutorial_solved";
 
-    [Header("--- FINAL CLIPS ---")]
-    public AudioClip denyExitClip;
-    public AudioClip finalSpeechClip;
-    public AudioClip nagFinalClip;
+    [Header("--- 5. BASINÇ UYARISI (İLK KEZ) ---")]
+    public AudioClip pressureWarningClip;
+    public string pressureWarningSubtitleID = "pressure_warning";
 
-    [Header("Settings")]
-    public float idleThreshold = 45f;
+    [Header("--- 6. ŞARTEL ATTI (İLK KEZ) ---")]
+    public AudioClip breakerTripClip;
+    public string breakerTripSubtitleID = "breaker_trip";
 
-    // State
-    private bool isTutorialActive = true;
-    private bool hasPickedUpNote = false;
-    private bool hasEnteredPressureRoom = false;
-    private bool isRealGameStarted = false;
+    [Header("--- 7. FİNAL ŞİFRE GİRİLDİ ---")]
+    public AudioClip finalCodeClip;
+    public string finalCodeSubtitleID = "final_code";
 
-    private float lastInteractionTime;
-    private bool hasCodeButNotEntered = false;
+    // --- KONTROL BAYRAKLARI (Tek seferlik çalışması için) ---
+    private bool hasPlayedStart = false;
+    private bool hasPlayedNotepad = false;
+    private bool hasPlayedMistake = false;
+    private bool hasPlayedPressure = false;
+    private bool hasPlayedBreaker = false;
+    private bool hasPlayedTutorial = false;
+
+    // Tutorial ve Final zaten doğası gereği tek seferliktir ama yine de kontrol edebiliriz.
 
     void Awake()
     {
@@ -55,184 +57,121 @@ public class MegaphoneSystem : MonoBehaviour
 
     void Start()
     {
-        lastInteractionTime = Time.time;
-        StartCoroutine(StartTutorialSequence());
-    }
-
-    void Update()
-    {
-        if (isRealGameStarted)
-        {
-            CheckIdleStatus();
-        }
+        // 1. Koşul: Oyun başladıktan birkaç saniye sonra çal
+        StartCoroutine(StartGameRoutine());
     }
 
     // ========================================================================
-    // 📢 TEMEL ÇALMA VE OLAY YÖNETİMİ
+    // 📢 TEMEL ÇALMA FONKSİYONLARI
     // ========================================================================
 
-    /// <summary>
-    /// RoomManager veya diğer scriptlerden gelen "DialogueEvent" paketini çalar.
-    /// </summary>
-    public void PlayEvent(DialogueEvent evt)
+    // Diğer scriptlerden (RoomManager) gelen özel olaylar için
+    public void PlayEvent(DialogueEvent evt, Transform soundOrigin = null)
     {
         if (evt == null)
             return;
-        PlayAudio(evt.clip, evt.subtitleID);
+        PlayAudio(evt.clip, evt.subtitleID, soundOrigin);
     }
 
-    /// <summary>
-    /// Hem sesi çalar hem de Global Altyazı sistemine ID gönderir.
-    /// </summary>
-    private void PlayAudio(AudioClip clip, string subtitleID)
+    private void PlayAudio(AudioClip clip, string subtitleID, Transform soundOrigin = null)
     {
-        // 1. SESİ ÇAL
         if (clip != null && speakerSource != null)
         {
             speakerSource.Stop();
             speakerSource.clip = clip;
+
+            // Eğer bir konum (hoparlör) verildiyse oraya ışınla ve 3D yap
+            if (soundOrigin != null)
+            {
+                speakerSource.transform.position = soundOrigin.position;
+                speakerSource.spatialBlend = 1.0f;
+            }
+            else
+            {
+                // Konum yoksa (kafa sesi/genel anons) 2D yap
+                speakerSource.spatialBlend = 0.0f;
+            }
+
             speakerSource.Play();
         }
 
-        // 2. ALTYAZIYI GÖSTER (GlobalSubtitleManager Varsa)
+        // Altyazıyı Tetikle
         if (GlobalSubtitleManager.Instance != null)
         {
-            // Değişiklik: Artık süre (duration) göndermiyoruz. Manager kendi veritabanından alacak.
             GlobalSubtitleManager.Instance.Show(subtitleID);
         }
     }
 
     // ========================================================================
-    // 🎓 TUTORIAL AKIŞI
+    // 🎯 7 TEMEL KOŞUL FONKSİYONLARI (Diğer scriptler bunları çağıracak)
     // ========================================================================
 
-    IEnumerator StartTutorialSequence()
+    // 1. OYUN BAŞLANGICI (Otomatik)
+    IEnumerator StartGameRoutine()
     {
-        // Ses dosyası yoksa sadece log basar, çökmez.
-        if (introClip == null)
+        yield return new WaitForSeconds(startGameDelay);
+        if (!hasPlayedStart)
         {
-            Debug.LogWarning("⚠️ MegaphoneSystem: Intro Clip atanmamış! Sadece altyazı çalışacak.");
-        }
-
-        // "tutorial_intro" ID'sini veritabanında oluşturmayı unutma!
-        PlayAudio(introClip, "tutorial_intro");
-
-        float waitTime = (introClip != null) ? introClip.length : 4f;
-        yield return new WaitForSeconds(waitTime + 2f);
-
-        if (!hasPickedUpNote)
-        {
-            PlayAudio(nagPickupClip, "tutorial_nag_pickup");
+            PlayAudio(startGameClip, startGameSubtitleID);
+            hasPlayedStart = true;
         }
     }
 
-    public void OnNotePickedUp()
+    // 2. İLK NOTEPAD (InteractableBook.cs çağıracak)
+    public void OnNotepadPickedUp()
     {
-        if (hasPickedUpNote)
+        if (hasPlayedNotepad)
             return;
 
-        hasPickedUpNote = true;
-        StopAllCoroutines();
-
-        PlayAudio(machineUnlockClip, "tutorial_unlock");
-        StartCoroutine(WaitForInputRoutine());
+        PlayAudio(notepadPickupClip, notepadPickupSubtitleID);
+        hasPlayedNotepad = true;
     }
 
-    IEnumerator WaitForInputRoutine()
+    // 3. İLK HATA (PasswordManager.cs çağıracak)
+    public void OnFirstMistake()
     {
-        yield return new WaitForSeconds(20f);
-        if (isTutorialActive)
-        {
-            PlayAudio(nagInputClip, "tutorial_nag_input");
-        }
-    }
-
-    public void OnTutorialCompleted()
-    {
-        if (!isTutorialActive)
+        if (hasPlayedMistake)
             return;
 
-        isTutorialActive = false;
-        isRealGameStarted = true;
-        StopAllCoroutines();
-
-        if (PlayerInteraction.Instance != null)
-        {
-            PlayerInteraction.Instance.DisableTutorialMode();
-        }
-
-        Debug.Log("Tutorial Bitti. Gerçek Oyun Başladı.");
+        PlayAudio(firstMistakeClip, firstMistakeSubtitleID);
+        hasPlayedMistake = true;
     }
 
-    // ========================================================================
-    // ⚡ OYUN İÇİ OLAYLAR (Basınç, Idle vb.)
-    // ========================================================================
-
-    public void CheckPressureEvent(float currentPressure, float threshold)
+    public void OnTutorialSolved()
     {
-        if (!isRealGameStarted)
+        // EĞER DAHA ÖNCE ÇALDIYSA İŞLEM YAPMA
+        if (hasPlayedTutorial)
             return;
 
-        if (currentPressure >= threshold)
-        {
-            // Basınç odasına henüz girilmediyse uyar
-            if (!hasEnteredPressureRoom)
-            {
-                PlayAudio(pressureEmergencyClip, "pressure_emergency");
-                // Not: hasEnteredPressureRoom'u burada true yapmıyoruz,
-                // oyuncu gerçekten odaya girdiğinde RoomManager yapacak.
-            }
-        }
+        PlayAudio(tutorialSolvedClip, tutorialSolvedSubtitleID);
+
+        // BİR KERE ÇALDIKTAN SONRA KİLİTLE
+        hasPlayedTutorial = true;
     }
 
-    // NOT: OnRoomEnter fonksiyonu SİLİNDİ. Artık RoomManager.cs kendi sesini "PlayEvent" ile çalıyor.
-
-    public void ResetIdleTimer()
+    // 5. BASINÇ UYARISI (PressureSystemManager.cs çağıracak)
+    public void OnPressureThresholdExceeded()
     {
-        lastInteractionTime = Time.time;
-    }
-
-    public void OnCodeFound()
-    {
-        hasCodeButNotEntered = true;
-        ResetIdleTimer();
-    }
-
-    public void OnCodeSubmitted()
-    {
-        hasCodeButNotEntered = false;
-        ResetIdleTimer();
-    }
-
-    private void CheckIdleStatus()
-    {
-        if (speakerSource != null && speakerSource.isPlaying)
+        if (hasPlayedPressure)
             return;
 
-        if (Time.time - lastInteractionTime > idleThreshold)
-        {
-            if (hasCodeButNotEntered)
-                PlayAudio(holdingCodeClip, "idle_holding_code");
-            else
-                PlayAudio(idleCorridorClip, "idle_move_warning");
-
-            ResetIdleTimer();
-        }
+        PlayAudio(pressureWarningClip, pressureWarningSubtitleID);
+        hasPlayedPressure = true;
     }
 
-    public void CheckLightsState(int openLightCount)
+    // 6. ŞARTEL ATTI (BreakerBox.cs çağıracak)
+    public void OnBreakerTripped()
     {
-        if (openLightCount > 5)
-        {
-            PlayAudio(lightsWarningClip, "lights_warning");
-        }
+        if (hasPlayedBreaker)
+            return;
+
+        PlayAudio(breakerTripClip, breakerTripSubtitleID);
+        hasPlayedBreaker = true;
     }
 
-    public void OnFinalGateTry(bool allCodesEntered)
+    // 7. FİNAL ŞİFRE (PasswordManager.cs çağıracak)
+    public void OnFinalCodeEntered()
     {
-        if (allCodesEntered)
-            PlayAudio(nagFinalClip, "final_gate_open");
-        else
-            PlayAudio(denyExitClip, "final_gate_locked");
+        PlayAudio(finalCodeClip, finalCodeSubtitleID);
     }
 }

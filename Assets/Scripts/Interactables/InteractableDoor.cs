@@ -1,4 +1,5 @@
 using System.Collections;
+using StarterAssets; // Input ve Karakter scriptlerine erişim için şart
 using UnityEngine;
 
 public class InteractableDoor : MonoBehaviour, IInteractable
@@ -20,28 +21,23 @@ public class InteractableDoor : MonoBehaviour, IInteractable
     [Header("Audio Settings")]
     [SerializeField]
     private AudioSource audioSource;
-
-    [Tooltip("Kapı açılırken çalacak ses")]
     public AudioClip openSound;
-
-    [Tooltip("Kapı kapanırken çalacak ses")]
     public AudioClip closeSound;
-
-    [Tooltip("Kapı kilitlenirken çıkan ses (Anahtar sesi vb.)")]
     public AudioClip lockSound;
-
-    [Tooltip("Kapı kilidi açılırken çıkan ses")]
     public AudioClip unlockSound;
-
-    [Tooltip("Kilitli kapıyı açmaya çalışınca çıkan ses (Zorlama/Rattle)")]
     public AudioClip lockedTryOpenSound;
 
-    // GuderianAI gibi dışarıdan erişmek isteyenler için
     public AudioSource DoorAudioSource => audioSource;
 
-    [Header("Character Controller")]
+    [Header("Player Freeze References")]
+    [Tooltip("Oyuncunun üzerindeki CharacterController (Fizik)")]
     [SerializeField]
-    private UnityEngine.CharacterController playerController;
+    private UnityEngine.CharacterController playerPhysics;
+
+    // Kod içinde otomatik bulacağız ama Inspector'dan da bakabilirsin
+    private Animator _playerAnimator;
+    private StarterAssetsInputs _playerInput;
+    private StarterAssets.CharacterController _playerMoveScript;
 
     private static readonly int OpenTrigger = Animator.StringToHash("Open");
     private static readonly int CloseTrigger = Animator.StringToHash("Close");
@@ -55,9 +51,35 @@ public class InteractableDoor : MonoBehaviour, IInteractable
         if (doorAnimator != null)
             doorAnimator.SetBool(IsOpenBool, isOpen);
 
-        if (playerController == null)
-            playerController = FindObjectOfType<UnityEngine.CharacterController>();
+        // Oyuncuyu bul ve bileşenlerini al
+        if (playerPhysics == null)
+            playerPhysics = FindObjectOfType<UnityEngine.CharacterController>();
+
+        if (playerPhysics != null)
+        {
+            _playerAnimator = playerPhysics.GetComponent<Animator>();
+            _playerInput = playerPhysics.GetComponent<StarterAssetsInputs>();
+            // İsim çakışmasını önlemek için tam namespace kullanıyoruz
+            _playerMoveScript = playerPhysics.GetComponent<StarterAssets.CharacterController>();
+        }
     }
+
+    // --- YENİ EKLENEN: GELİŞMİŞ DONDURMA FONKSİYONU ---
+    private void FreezePlayer(bool freeze)
+    {
+        if (playerPhysics == null)
+            return;
+
+        if (_playerMoveScript != null)
+        {
+            // ESKİ HATALI KOD: restrictRotation: true (Hep kısıtlı kalıyordu)
+            // YENİ DOĞRU KOD: restrictRotation: freeze (Donarsa kısıtla, çözülürse serbest bırak)
+
+            _playerMoveScript.SetFrozen(freeze, lockCameraInput: false, restrictRotation: freeze);
+        }
+    }
+
+    // ---------------------------------------------------
 
     public void Interact()
     {
@@ -66,11 +88,8 @@ public class InteractableDoor : MonoBehaviour, IInteractable
 
         if (isLocked)
         {
-            // KİLİTLİ KAPIYI ZORLAMA SESİ
             PlaySound(lockedTryOpenSound);
-            Debug.Log("Kapı kilitli! (Zorlama sesi çaldı)");
-
-            // Opsiyonel: Kilitli kapı animasyonu (hafif sallanma) eklenebilir
+            Debug.Log("Kapı kilitli!");
             if (doorAnimator != null)
                 doorAnimator.SetTrigger("Locked");
             return;
@@ -93,8 +112,9 @@ public class InteractableDoor : MonoBehaviour, IInteractable
         isAnimating = true;
         isOpen = !isOpen;
 
-        if (playerController != null)
-            playerController.enabled = false;
+        // ESKİ KOD: if (playerController != null) playerController.enabled = false;
+        // YENİ KOD: Tam teşekküllü dondurma
+        FreezePlayer(true);
 
         if (doorAnimator != null)
         {
@@ -102,32 +122,23 @@ public class InteractableDoor : MonoBehaviour, IInteractable
             doorAnimator.SetBool(IsOpenBool, isOpen);
         }
 
-        // AÇMA / KAPAMA SESİ
         PlaySound(isOpen ? openSound : closeSound);
 
         yield return new WaitForSeconds(animationDuration);
 
-        if (playerController != null)
-            playerController.enabled = true;
+        // Oyuncuyu çöz
+        FreezePlayer(false);
 
         isAnimating = false;
     }
 
-    // --- DIŞARIDAN KONTROL (KİLİT SİSTEMİ İÇİN) ---
-
     public void SetLocked(bool locked)
     {
-        // Durum değişti mi kontrol et (Gereksiz ses çalmamak için)
         if (isLocked == locked)
             return;
-
         isLocked = locked;
-
-        // KİLİTLEME / KİLİT AÇMA SESİ
-        // Bu fonksiyonu InteractableDoorLock.cs veya GameManager çağıracak
         PlaySound(isLocked ? lockSound : unlockSound);
 
-        // Eğer kilitlendiyse ve kapı açıksa, kapıyı kapat
         if (isLocked && isOpen)
         {
             isOpen = false;
@@ -135,7 +146,7 @@ public class InteractableDoor : MonoBehaviour, IInteractable
             {
                 doorAnimator.SetTrigger(CloseTrigger);
                 doorAnimator.SetBool(IsOpenBool, false);
-                PlaySound(closeSound); // Kapanma sesi de çalsın
+                PlaySound(closeSound);
             }
         }
     }

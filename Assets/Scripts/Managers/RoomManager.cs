@@ -10,6 +10,12 @@ public class RoomManager : MonoBehaviour
     public bool isCorridor = false;
 
     [Header("🔊 Olay Sesleri (Otomatik Tanıtım)")]
+    // YENİ EKLENEN KISIM: Sesin çıkacağı fiziksel konum
+    [Tooltip(
+        "Bu odadaki fiziksel Megafon/Hoparlör objesini buraya sürükle. Ses buradan 3D olarak yayılacak."
+    )]
+    public Transform roomSpeakerTransform;
+
     [Tooltip("Oyuncu bu odaya İLK defa girdiğinde çalacak ses ve altyazı.")]
     public DialogueEvent onFirstEnterSound;
 
@@ -84,9 +90,8 @@ public class RoomManager : MonoBehaviour
             isPlayerInside = true;
 
             // =========================================================
-            // 🔊 YENİ SİSTEM: İLK GİRİŞ SESİNİ ÇAL
+            // 🔊 GÜNCELLENEN SİSTEM: İLK GİRİŞ SESİNİ ÇAL (3D DESTEKLİ)
             // =========================================================
-            // Eğer daha önce girilmediyse VE ses/yazı atanmışsa çal
             if (!hasEnteredBefore)
             {
                 if (
@@ -99,19 +104,17 @@ public class RoomManager : MonoBehaviour
                 {
                     Debug.Log($"📢 {roomName}: İlk giriş yapıldı, tanıtım çalınıyor.");
 
-                    // MegaphoneSystem'e paketi gönderip çaldırıyoruz
-                    onFirstEnterSound.Play();
+                    // DEĞİŞİKLİK BURADA: Artık odadaki hoparlörün konumunu da gönderiyoruz.
+                    // DialogueEvent.cs ve MegaphoneSystem.cs güncellemelerinle uyumlu çalışır.
+                    onFirstEnterSound.Play(roomSpeakerTransform);
 
                     hasEnteredBefore = true; // KİLİTLE: Bir daha çalmasın
                 }
             }
 
-            // Megafon "Idle" sayacını sıfırla çünkü oyuncu yeni bir yere girdi, aktif sayılır.
-            if (MegaphoneSystem.Instance != null)
-                MegaphoneSystem.Instance.ResetIdleTimer();
             // =========================================================
 
-            // --- AI Logic (Pusu ve Takip) ---
+            // --- AI Logic (Pusu ve Takip) --- (Buralar Orijinal Haliyle Aynı)
             if (GuderianAI.Instance && GuderianAI.Instance.IsCampingPlayerInRoom(this))
             {
                 GuderianAI.Instance.TriggerAmbushExecute();
@@ -151,6 +154,7 @@ public class RoomManager : MonoBehaviour
         return count;
     }
 
+    // OnDrawGizmos orijinal haliyle korundu
     private void OnDrawGizmos()
     {
         BoxCollider box = GetComponent<BoxCollider>();
@@ -163,7 +167,6 @@ public class RoomManager : MonoBehaviour
             Gizmos.DrawCube(box.center, box.size);
         }
 
-        // Pusu noktasını sahnede kırmızı bir küre olarak göster
         if (ambushSpawnPoint != null)
         {
             Gizmos.color = Color.red;
