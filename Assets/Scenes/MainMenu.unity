@@ -2287,7 +2287,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0458edef058b36c4caa97e8928e028e6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gameSceneName: Osman_NewGameScene
+  gameSceneName: FurkanLast_NewGameScene 1
   minLoadTime: 3
   mainMenuPanel: {fileID: 1055916764}
   loadingPanel: {fileID: 730636967}
