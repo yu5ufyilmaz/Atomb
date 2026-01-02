@@ -22,6 +22,9 @@ public class MainMenuManager : MonoBehaviour
     [SerializeField]
     private GameObject loadingPanel;
 
+    [SerializeField]
+    private GameObject creditsPanel;
+
     [Header("Loading Görselleri")]
     [Tooltip("Daire şeklinde dolacak resimlerin listesi")]
     [SerializeField]
@@ -31,6 +34,8 @@ public class MainMenuManager : MonoBehaviour
     {
         if (loadingPanel != null)
             loadingPanel.SetActive(false);
+        if (creditsPanel != null)
+            creditsPanel.SetActive(false);
         if (mainMenuPanel != null)
             mainMenuPanel.SetActive(true);
 
@@ -41,6 +46,22 @@ public class MainMenuManager : MonoBehaviour
     public void PlayGame()
     {
         StartCoroutine(LoadLevelAsync());
+    }
+
+    public void OpenCredits()
+    {
+        if (mainMenuPanel != null)
+            mainMenuPanel.SetActive(false);
+        if (creditsPanel != null)
+            creditsPanel.SetActive(true);
+    }
+
+    public void CloseCredits()
+    {
+        if (creditsPanel != null)
+            creditsPanel.SetActive(false);
+        if (mainMenuPanel != null)
+            mainMenuPanel.SetActive(true);
     }
 
     public void QuitGame()
