@@ -408,7 +408,23 @@ public class InteractableBook : MonoBehaviour, IInteractable, IForceExitable
 
         PlaySound(bookOpenSound);
 
+        // Animasyonun TAMAMEN bitmesini bekle
         yield return new WaitForSeconds(animationDuration);
+        
+        // Animator'ın "Open" state'ine geçmesini bekle
+        if (bookAnimator != null)
+        {
+            // Animator'ın güncellenmesi için bir frame bekle
+            yield return null;
+            
+            // Animasyonun normalizedTime'ı 1.0'a ulaşana kadar bekle (tam bitiş)
+            AnimatorStateInfo stateInfo = bookAnimator.GetCurrentAnimatorStateInfo(0);
+            while (stateInfo.normalizedTime < 1.0f || bookAnimator.IsInTransition(0))
+            {
+                yield return null;
+                stateInfo = bookAnimator.GetCurrentAnimatorStateInfo(0);
+            }
+        }
 
         pageIndexL = 0;
         pageIndexR = 1;
@@ -430,7 +446,7 @@ public class InteractableBook : MonoBehaviour, IInteractable, IForceExitable
                 bakedMesh.name = "BakedBookCollider";
             }
             
-            bookSkinnedMeshRenderer.BakeMesh(bakedMesh);
+            bookSkinnedMeshRenderer.BakeMesh(bakedMesh, true); // true = scale dahil et
             mc.sharedMesh = bakedMesh;
             
             // DİĞER COLLIDER'LARI KAPAT (Örn: Kapak veya Statik Mesh Collider raycast'i engellemesin)
