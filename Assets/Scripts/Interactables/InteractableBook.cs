@@ -113,6 +113,11 @@ public class InteractableBook : MonoBehaviour, IInteractable, IForceExitable
     private BoxCollider interactionCollider;
     public Collider bookCollider;
 
+    // --- COLLIDER FIX VARIABLES ---
+    private Mesh originalMesh;
+    private Mesh bakedMesh;
+    // ------------------------------
+
     private Vector3 originalLocalPosition;
     private Quaternion originalLocalRotation;
     private Transform originalParent;
@@ -164,6 +169,21 @@ public class InteractableBook : MonoBehaviour, IInteractable, IForceExitable
     {
         if (outlineController == null)
             outlineController = GetComponentInChildren<HDRPOutlineController>();
+
+        // --- COLLIDER FIX ---
+        if (bookCollider != null)
+        {
+            // Orijinal mesh'i sakla (kapalı hali)
+            // Eğer MeshCollider'ın sharedMesh'i null ise (örn. BoxCollider kullanılıyorsa) bu adım atlanabilir,
+            // ama kodun geri kalanında MeshCollider varsayılıyor.
+            if (bookCollider is MeshCollider mc)
+            {
+                originalMesh = mc.sharedMesh;
+                bakedMesh = new Mesh();
+                bakedMesh.name = "BakedBookCollider";
+            }
+        }
+        // --------------------
 
         // --- 2. HIGHLIGHT (EMISSION) HAZIRLIĞI (GÜNCELLENDİ) ---
         // Kitabın altındaki TÜM Renderer'ları bul (Kapak, Sayfalar, vs.)
@@ -401,11 +421,49 @@ public class InteractableBook : MonoBehaviour, IInteractable, IForceExitable
             UpdatePageUI();
         }
 
+        // --- COLLIDER FIX: Mesh'i Bake Et ve Engelleyenleri Kapat ---
+        if (bookSkinnedMeshRenderer != null && bookCollider is MeshCollider mc)
+        {
+            if (bakedMesh == null)
+            {
+                bakedMesh = new Mesh();
+                bakedMesh.name = "BakedBookCollider";
+            }
+            
+            bookSkinnedMeshRenderer.BakeMesh(bakedMesh);
+            mc.sharedMesh = bakedMesh;
+            
+            // DİĞER COLLIDER'LARI KAPAT (Örn: Kapak veya Statik Mesh Collider raycast'i engellemesin)
+            Collider[] allCols = GetComponentsInChildren<Collider>();
+            foreach (var col in allCols)
+            {
+                if (col != bookCollider && col != interactionCollider)
+                    col.enabled = false;
+            }
+        }
+        // ------------------------------------
+
         isAnimating = false;
     }
 
     private IEnumerator CloseBook()
     {
+        // --- COLLIDER FIX: Mesh'i Geri Al ve Colliderları Aç ---
+        // Kitap kapanırken eski (kapalı) mesh'e dön
+        if (bookCollider is MeshCollider mc && originalMesh != null)
+        {
+            mc.sharedMesh = originalMesh;
+        }
+
+        // Diğer colliderları geri aç
+        Collider[] allCols = GetComponentsInChildren<Collider>();
+        foreach (var col in allCols)
+        {
+            if (col != bookCollider && col != interactionCollider)
+                col.enabled = true;
+        }
+        // ------------------------------------
+
         isAnimating = true;
         isOpen = false;
 
@@ -641,24 +699,53 @@ public class InteractableBook : MonoBehaviour, IInteractable, IForceExitable
     {
         if (pageIndexL != passwordPage && pageIndexR != passwordPage)
             return;
-        Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
-        if (Physics.Raycast(ray, out RaycastHit hit))
+
+        if (bookCollider == null)
         {
-            if (hit.collider == bookCollider)
+            Debug.LogWarning("bookCollider is null!");
+            return;
+        }
+
+        Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
+        
+        // Doğrudan kitabın collider'ına raycast at, sahnedeki diğer nesneleri yoksay
+        if (bookCollider.Raycast(ray, out RaycastHit hit, 100f))
+        {
+            Debug.Log($"Raycast Hit BOOK: {hit.collider.name}");
+            
+            Vector2 uv = hit.textureCoord;
+            Debug.Log($"Hit Book UV: {uv}");
+
+            bool hitRightPage = uv.x > 0.5f;
+            bool isTargetPage =
+                (hitRightPage && pageIndexR == passwordPage)
+                || (!hitRightPage && pageIndexL == passwordPage);
+            
+            if (isTargetPage)
             {
-                Vector2 uv = hit.textureCoord;
-                bool hitRightPage = uv.x > 0.5f;
-                bool isTargetPage =
-                    (hitRightPage && pageIndexR == passwordPage)
-                    || (!hitRightPage && pageIndexL == passwordPage);
-                if (isTargetPage)
+                float pageLocalU = hitRightPage ? (uv.x - 0.5f) * 2.0f : uv.x * 2.0f;
+                Vector2 pageUV = new Vector2(pageLocalU, uv.y);
+                
+                Debug.Log($"Calculated PageUV: {pageUV} | Hotspot: {passwordHotspotUV}");
+
+                if (passwordHotspotUV.Contains(pageUV))
                 {
-                    float pageLocalU = hitRightPage ? (uv.x - 0.5f) * 2.0f : uv.x * 2.0f;
-                    Vector2 pageUV = new Vector2(pageLocalU, uv.y);
-                    if (passwordHotspotUV.Contains(pageUV))
-                        TriggerPasswordFind();
+                    Debug.Log("PASSWORD FOUND!");
+                    TriggerPasswordFind();
+                }
+                else
+                {
+                    Debug.Log("Click missed hotspot.");
                 }
             }
+            else
+            {
+                Debug.Log("Wrong Page clicked (Left/Right mismatch).");
+            }
+        }
+        else
+        {
+            Debug.Log("Raycast did not hit bookCollider.");
         }
     }
 
@@ -688,6 +775,8 @@ public class InteractableBook : MonoBehaviour, IInteractable, IForceExitable
         passwordPage = locEntry.pageIndex;
         passwordHotspotUV = locEntry.hotspotUV;
         hasPasswordBeenFound = false;
+        
+        Debug.Log($"[InteractableBook] Password Assigned: {passwordID} at Page {passwordPage}. Hotspot: {passwordHotspotUV}");
     }
 
     public void ClearPassword()
