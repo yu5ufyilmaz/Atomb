@@ -34,6 +34,13 @@ public class GameManager : MonoBehaviour
         RefreshReferences();
     }
 
+    private void Start()
+    {
+        // Oyun başladığında mouse'u gizle ve kilitle
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
+    }
+
     public bool IsCursorRequired()
     {
         // 1. Eğer hiçbir etkileşimde değilsek (FPS modu), fare GİZLİ olmalı.
