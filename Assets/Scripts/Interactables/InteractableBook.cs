@@ -602,10 +602,33 @@ public class InteractableBook : MonoBehaviour, IInteractable, IForceExitable
 
     private void UpdateBookPagesMaterial()
     {
-        if (bookPagesMaterial == null)
-            return;
-        bookPagesMaterial.SetFloat("_PageIndexL", pageIndexL);
-        bookPagesMaterial.SetFloat("_PageIndexR", pageIndexR);
+        // 1. Senin elindeki değişkeni güncelle (Hafızadaki referans)
+        if (bookPagesMaterial != null)
+        {
+            bookPagesMaterial.SetFloat("_PageIndexL", pageIndexL);
+            bookPagesMaterial.SetFloat("_PageIndexR", pageIndexR);
+        }
+
+        // 2. ASIL ÇÖZÜM: O an Renderer'ın üzerinde takılı olan "CANLI" materyali bul ve güncelle
+        // Çünkü Highlight sistemi materyalleri sök-tak yaparken referans kopmuş olabilir.
+        if (bookSkinnedMeshRenderer != null)
+        {
+            // .materials çağrısı o anki güncel kopyaları getirir
+            Material[] currentMats = bookSkinnedMeshRenderer.materials;
+
+            // İndeks hatası olmasın diye kontrol
+            if (bookMaterialIndex >= 0 && bookMaterialIndex < currentMats.Length)
+            {
+                Material liveMaterial = currentMats[bookMaterialIndex];
+
+                // Eğer canlı materyal boş değilse, değerleri ona da bas
+                if (liveMaterial != null)
+                {
+                    liveMaterial.SetFloat("_PageIndexL", pageIndexL);
+                    liveMaterial.SetFloat("_PageIndexR", pageIndexR);
+                }
+            }
+        }
     }
 
     private void UpdatePageUI()

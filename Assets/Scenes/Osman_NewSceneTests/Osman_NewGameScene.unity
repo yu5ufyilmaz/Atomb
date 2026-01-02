@@ -45214,7 +45214,7 @@ MonoBehaviour:
   bookPagesMaterial: {fileID: 0}
   pageFlipObject: {fileID: 3582818965538638662}
   pageFlipRenderer: {fileID: 5386886447618600329}
-  pageTurnMaterial: {fileID: 2100000, guid: 9a7e6289cdf99db49bfe1ef3680d5b1a, type: 2}
+  pageTurnMaterial: {fileID: -876546973899608171, guid: e2e70770c73439e4081a6455ddea233d, type: 3}
   audioSource: {fileID: 0}
   bookOpenSound: {fileID: 8300000, guid: fa63e2ac008f76245aa27b7ea4938007, type: 3}
   bookCloseSound: {fileID: 8300000, guid: c87d4bd814009324eb507e77fcc2164d, type: 3}
@@ -60467,7 +60467,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   currentState: 0
   agent: {fileID: 1552689769}
-  checkInterval: 30
+  checkInterval: 25
   baseSpawnChance: 5
   chanceIncreaseStep: 5
   minTimeBetweenAttacks: 30
@@ -85728,7 +85728,7 @@ SkinnedMeshRenderer:
   m_Materials:
   - {fileID: 7242585184073117898, guid: bd1670637738c4cf6837b7383f4c585e, type: 3}
   - {fileID: 2100000, guid: e15374f878ec0ed4fb50baad6782f24f, type: 2}
-  - {fileID: 2100000, guid: fed2c93b655a0604786d7f41affafc1c, type: 2}
+  - {fileID: 2100000, guid: 874af49f959de47038acf1d124ed0b82, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -111798,7 +111798,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 9a7e6289cdf99db49bfe1ef3680d5b1a, type: 2}
+  - {fileID: -876546973899608171, guid: e2e70770c73439e4081a6455ddea233d, type: 3}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -114360,7 +114360,7 @@ MonoBehaviour:
     tiltAngle: 1
     shakeIntensity: 0.5
     shakeFrequency: 10
-  spawnCooldownAfterDespawn: 0
+  spawnCooldownAfterDespawn: 90
   showDebugLogs: 1
   debugCooldownTimer: 0
   debugReactionTimer: 0
