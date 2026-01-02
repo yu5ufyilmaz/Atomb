@@ -113,7 +113,7 @@ Transform:
   m_GameObject: {fileID: 4105877466196517156}
   serializedVersion: 2
   m_LocalRotation: {x: 0.7071068, y: -0, z: -0, w: 0.7071068}
-  m_LocalPosition: {x: 0.0015001297, y: -0.182, z: 0.0014998913}
+  m_LocalPosition: {x: 0.0015001297, y: -0.145, z: 0.0014998913}
   m_LocalScale: {x: 0.50000006, y: 0.5, z: 0.49999994}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -130,9 +130,9 @@ Light:
   serializedVersion: 11
   m_Type: 0
   m_Color: {r: 0.990566, g: 0.86716247, b: 0.75226945, a: 1}
-  m_Intensity: 265.76715
-  m_Range: 5
-  m_SpotAngle: 132.69995
+  m_Intensity: 1591.5494
+  m_Range: 6
+  m_SpotAngle: 120
   m_InnerSpotAngle: 5.7253194
   m_CookieSize: 10
   m_Shadows:
@@ -175,11 +175,11 @@ Light:
   m_BounceIntensity: 3
   m_ColorTemperature: 6000
   m_UseColorTemperature: 1
-  m_BoundingSphereOverride: {x: 9.29e-43, y: 1.11e-43, z: 0, w: 4.3e-44}
+  m_BoundingSphereOverride: {x: 6.15e-43, y: 2.28e-43, z: 0, w: 4.672434e-39}
   m_UseBoundingSphereOverride: 0
   m_UseViewFrustumForShadowCasterCull: 1
   m_ForceVisible: 0
-  m_ShadowRadius: 0
+  m_ShadowRadius: 0.08
   m_ShadowAngle: 0
   m_LightUnit: 0
   m_LuxAtDistance: 1
@@ -203,7 +203,7 @@ MonoBehaviour:
   m_LightUnit: 0
   m_LuxAtDistance: 1
   m_Intensity: 0
-  m_InnerSpotPercent: 0.7535798
+  m_InnerSpotPercent: 0.6467847
   m_SpotIESCutoffPercent: 100
   m_LightDimmer: 1
   m_VolumetricDimmer: 5
@@ -215,7 +215,7 @@ MonoBehaviour:
   m_ShapeWidth: 0.5
   m_ShapeHeight: 0.5
   m_AspectRatio: 1
-  m_ShapeRadius: 0
+  m_ShapeRadius: 0.08
   m_SoftnessScale: 1
   m_UseCustomSpotLightShadowCone: 0
   m_CustomSpotLightShadowCone: 30
@@ -223,8 +223,8 @@ MonoBehaviour:
   m_ApplyRangeAttenuation: 1
   m_DisplayAreaLightEmissiveMesh: 0
   m_AreaLightCookie: {fileID: 0}
-  m_IESPoint: {fileID: 1137469800791337882, guid: b4c36603fae3d2441b2fce8eedc18606, type: 3}
-  m_IESSpot: {fileID: 7239850024627736813, guid: b4c36603fae3d2441b2fce8eedc18606, type: 3}
+  m_IESPoint: {fileID: 3883328704701382318, guid: c6eb889c7220763438b67079c7e37879, type: 3}
+  m_IESSpot: {fileID: 451883346217600177, guid: c6eb889c7220763438b67079c7e37879, type: 3}
   m_IncludeForRayTracing: 1
   m_IncludeForPathTracing: 1
   m_AreaLightShadowCone: 120

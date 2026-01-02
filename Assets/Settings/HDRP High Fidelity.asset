@@ -86,7 +86,7 @@ MonoBehaviour:
     supportVFXRayTracing: 0
     supportedRayTracingMode: 3
     lightLoopSettings:
-      cookieAtlasSize: 512
+      cookieAtlasSize: 4096
       cookieFormat: 74
       cookieAtlasLastValidMip: 0
       cookieTexArraySize: 16
@@ -115,20 +115,20 @@ MonoBehaviour:
       maxLocalVolumetricFogSize: 32
       maxLocalVolumetricFogOnScreen: 64
     hdShadowInitParams:
-      maxShadowRequests: 128
+      maxShadowRequests: 2048
       directionalShadowsDepthBits: 32
       punctualShadowFilteringQuality: 2
       directionalShadowFilteringQuality: 2
       areaShadowFilteringQuality: 1
       punctualLightShadowAtlas:
-        shadowAtlasResolution: 4096
+        shadowAtlasResolution: 8192
         shadowAtlasDepthBits: 32
         useDynamicViewportRescale: 1
       areaLightShadowAtlas:
         shadowAtlasResolution: 4096
         shadowAtlasDepthBits: 32
         useDynamicViewportRescale: 1
-      cachedPunctualLightShadowAtlas: 4096
+      cachedPunctualLightShadowAtlas: 8192
       cachedAreaLightShadowAtlas: 4096
       allowDirectionalMixedCachedShadows: 0
       shadowResolutionDirectional:
@@ -144,7 +144,7 @@ MonoBehaviour:
         m_SchemaId:
           m_Id: With4Levels
       maxDirectionalShadowMapResolution: 4096
-      maxPunctualShadowMapResolution: 4096
+      maxPunctualShadowMapResolution: 8192
       maxAreaShadowMapResolution: 4096
       supportScreenSpaceShadows: 0
       maxScreenSpaceShadowSlots: 4

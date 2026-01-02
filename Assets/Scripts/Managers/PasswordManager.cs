@@ -89,7 +89,8 @@ public class PasswordManager : MonoBehaviour
         // Tutorial notu hariç diğer uygun kitapları bul
         var eligibleBooks = allBooksInLevel
             .Where(b =>
-                b.canContainPassword
+                b != null // Null kitapları filtrele
+                && b.canContainPassword
                 && b.bookIdentity != null
                 && b.bookIdentity.possibleLocations.Count > 0
                 && b != tutorialNoteBook // <--- ÖNEMLİ: Tutorial notunu havuza katma
