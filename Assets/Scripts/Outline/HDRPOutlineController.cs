@@ -3,51 +3,54 @@ using UnityEngine;
 
 public class HDRPOutlineController : MonoBehaviour
 {
-    // Inspector'dan Outline yapacağın objeleri seçebilirsin
-    // Eğer scriptin olduğu obje ise boş bırak.
-    public GameObject targetObject;
+    [Header("Ayarlar")]
+    [Tooltip("Outline yapılacak en üst ana obje. (Kitabın en tepesindeki Parent objeyi sürükle)")]
+    public GameObject targetRootObject;
 
+    // Performans için renderer'ları hafızada tutacağız
+    private Renderer[] allChildRenderers;
     private int outlineLayer;
     private int defaultLayer;
     private bool isActive = false;
 
-    void Start()
+    void Awake()
     {
-        if (targetObject == null)
-            targetObject = gameObject;
+        // 1. Eğer inspector'dan root seçmediysen, otomatik olarak en tepeyi bulmaya çalışır
+        if (targetRootObject == null)
+        {
+            // Bu scriptin takılı olduğu objeyi varsayılan yap
+            targetRootObject = gameObject;
+        }
 
-        // Layer isimlerini ID'ye çeviriyoruz
+        // 2. Layer ID'lerini al (Unity ayarlarındaki isimlerin "Outline" ve "Default" olduğundan emin ol)
         outlineLayer = LayerMask.NameToLayer("Outline");
         defaultLayer = LayerMask.NameToLayer("Default");
+
+        // 3. Ana objenin altındaki (kendisi dahil) TÜM Renderer'ları (Mesh, SkinnedMesh) bul ve listele
+        // 'true' parametresi, pasif olan objeleri de bulmasını sağlar.
+        allChildRenderers = targetRootObject.GetComponentsInChildren<Renderer>(true);
     }
 
-    // Bu fonksiyonu başka scriptlerden çağırabilirsin
     public void ToggleOutline(bool status)
     {
         isActive = status;
-        if (isActive)
+
+        // Outline aktifse 'Outline' katmanını, değilse 'Default' katmanını seç
+        int targetLayer = isActive ? outlineLayer : defaultLayer;
+
+        if (allChildRenderers != null)
         {
-            // Objeyi ve varsa çocuklarını Outline katmanına al
-            SetLayerRecursively(targetObject, outlineLayer);
-        }
-        else
-        {
-            // Normale döndür
-            SetLayerRecursively(targetObject, defaultLayer);
+            foreach (Renderer r in allChildRenderers)
+            {
+                if (r != null)
+                {
+                    r.gameObject.layer = targetLayer;
+                }
+            }
         }
     }
 
-    // Sadece objeyi değil, alt parçalarını da (örneğin silahın parçaları) değiştirir
-    void SetLayerRecursively(GameObject obj, int newLayer)
-    {
-        obj.layer = newLayer;
-        foreach (Transform child in obj.transform)
-        {
-            SetLayerRecursively(child.gameObject, newLayer);
-        }
-    }
-
-    // TEST ETMEK İÇİN: Klavyeden T'ye basınca aç/kapa
+    // Editörde test etmek için T tuşu
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.T))

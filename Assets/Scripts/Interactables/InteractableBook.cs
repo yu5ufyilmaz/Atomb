@@ -69,7 +69,14 @@ public class InteractableBook : MonoBehaviour, IInteractable, IForceExitable
     public float emissionIntensity = 10f;
 
     // --- Runtime Değişkenler ---
-    private Material[] originalMaterials;
+    private class RendererHighlightData
+    {
+        public Renderer renderer;
+        public Material[] originalMaterials;
+        public Material[] highlightMaterials;
+    }
+
+    private List<RendererHighlightData> allRenderersData = new List<RendererHighlightData>();
     private Material[] highlightMaterials;
     private bool isFocused = false;
 
@@ -155,47 +162,42 @@ public class InteractableBook : MonoBehaviour, IInteractable, IForceExitable
 
     private void Start()
     {
-        // --- 1. OUTLINE KONTROLÜ (YENİ) ---
-        // Eğer editörden atanmadıysa, alt objelerde ara
         if (outlineController == null)
-        {
             outlineController = GetComponentInChildren<HDRPOutlineController>();
-        }
 
-        // --- 2. HIGHLIGHT (EMISSION) HAZIRLIĞI ---
-        if (bookSkinnedMeshRenderer != null)
+        // --- 2. HIGHLIGHT (EMISSION) HAZIRLIĞI (GÜNCELLENDİ) ---
+        // Kitabın altındaki TÜM Renderer'ları bul (Kapak, Sayfalar, vs.)
+        Renderer[] renderers = GetComponentsInChildren<Renderer>(true);
+
+        foreach (Renderer r in renderers)
         {
-            originalMaterials = bookSkinnedMeshRenderer.materials;
+            // Outline/Flip parçalarını veya particle'ları hariç tutmak istersen buraya if ekleyebilirsin
+            if (r == pageFlipRenderer)
+                continue; // Örn: Sayfa çevirme efektini parlatma
 
-            if (bookMaterialIndex >= 0 && bookMaterialIndex < originalMaterials.Length)
+            RendererHighlightData data = new RendererHighlightData();
+            data.renderer = r;
+            data.originalMaterials = r.materials; // Orijinal materyalleri sakla
+
+            // Highlight materyallerini oluştur
+            data.highlightMaterials = new Material[data.originalMaterials.Length];
+            for (int i = 0; i < data.originalMaterials.Length; i++)
             {
-                bookPagesMaterial = originalMaterials[bookMaterialIndex];
-            }
+                Material mat = new Material(data.originalMaterials[i]);
+                mat.EnableKeyword("_EMISSION");
 
-            highlightMaterials = new Material[originalMaterials.Length];
-            for (int i = 0; i < originalMaterials.Length; i++)
-            {
-                highlightMaterials[i] = new Material(originalMaterials[i]);
-                highlightMaterials[i].EnableKeyword("_EMISSION");
-
+                // HDRP Emission Rengi Ayarı
                 Color finalEmission = highlightColor * emissionIntensity;
-                if (highlightMaterials[i].HasProperty("_EmissiveColor"))
-                {
-                    highlightMaterials[i].SetColor("_EmissiveColor", finalEmission);
-                }
-                else if (highlightMaterials[i].HasProperty("_EmissionColor"))
-                {
-                    highlightMaterials[i].SetColor("_EmissionColor", finalEmission);
-                }
-                highlightMaterials[i].globalIlluminationFlags =
-                    MaterialGlobalIlluminationFlags.None;
+                if (mat.HasProperty("_EmissiveColor"))
+                    mat.SetColor("_EmissiveColor", finalEmission);
+                else if (mat.HasProperty("_EmissionColor"))
+                    mat.SetColor("_EmissionColor", finalEmission);
+
+                mat.globalIlluminationFlags = MaterialGlobalIlluminationFlags.None;
+                data.highlightMaterials[i] = mat;
             }
-        }
-        else
-        {
-            Debug.LogError(
-                "InteractableBook: 'bookSkinnedMeshRenderer' atanmamış! Highlight çalışmaz."
-            );
+
+            allRenderersData.Add(data);
         }
 
         // --- DİĞER BAŞLANGIÇ KODLARI ---
@@ -269,26 +271,25 @@ public class InteractableBook : MonoBehaviour, IInteractable, IForceExitable
         }
     }
 
-    // ========================================================================
-    // 💡 ODAKLANMA (HIGHLIGHT / OUTLINE) MANTIĞI (GÜNCELLENDİ)
-    // ========================================================================
     public void OnFocus()
     {
-        // Kitap açıksa veya animasyon oynuyorsa odaklanma yapma
         if (isOpen || isAnimating || isFocused)
             return;
-
         isFocused = true;
 
-        // 1. ÖNCELİK: Outline Scripti (Varsa bunu kullan)
+        // 1. ÖNCELİK: Outline Scripti (İstersen bunu tamamen silebilirsin)
         if (outlineController != null)
         {
             outlineController.ToggleOutline(true);
         }
-        // 2. ÖNCELİK: Eski Emission Sistemi (Outline yoksa bunu kullan)
-        else if (bookSkinnedMeshRenderer != null && highlightMaterials != null)
+        // 2. ÖNCELİK: Gelişmiş Emission Sistemi (Tüm parçalar parlar)
+        else
         {
-            bookSkinnedMeshRenderer.materials = highlightMaterials;
+            foreach (var data in allRenderersData)
+            {
+                if (data.renderer != null)
+                    data.renderer.materials = data.highlightMaterials;
+            }
         }
     }
 
@@ -296,7 +297,6 @@ public class InteractableBook : MonoBehaviour, IInteractable, IForceExitable
     {
         if (!isFocused)
             return;
-
         isFocused = false;
 
         // 1. ÖNCELİK: Outline Scripti
@@ -304,10 +304,14 @@ public class InteractableBook : MonoBehaviour, IInteractable, IForceExitable
         {
             outlineController.ToggleOutline(false);
         }
-        // 2. ÖNCELİK: Eski Emission Sistemi
-        else if (bookSkinnedMeshRenderer != null && originalMaterials != null)
+        // 2. ÖNCELİK: Gelişmiş Emission Sistemi
+        else
         {
-            bookSkinnedMeshRenderer.materials = originalMaterials;
+            foreach (var data in allRenderersData)
+            {
+                if (data.renderer != null)
+                    data.renderer.materials = data.originalMaterials;
+            }
         }
     }
 
