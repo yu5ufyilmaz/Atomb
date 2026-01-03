@@ -108,10 +108,21 @@ public class LeesEnemyAI : MonoBehaviour
     private UnityEngine.CharacterController targetCharacterController;
     private StarterAssetsInputs playerInputs;
 
+    // RAM Optimizasyonu: Önbelleklenmiş renderer ve collider'lar
+    private Renderer[] cachedRenderers;
+    private Collider[] cachedColliders;
+
+    // RAM Optimizasyonu: Spawn noktası shuffle için yeniden kullanılabilir liste
+    private List<Transform> shuffleBuffer = new List<Transform>();
+
     private void Awake()
     {
         if (Instance == null)
             Instance = this;
+
+        // RAM Optimizasyonu: Renderer ve Collider'ları önbelleğe al
+        cachedRenderers = GetComponentsInChildren<Renderer>();
+        cachedColliders = GetComponentsInChildren<Collider>();
     }
 
     private void Start()
@@ -516,16 +527,20 @@ public class LeesEnemyAI : MonoBehaviour
         if (currentRoom == null || currentRoom.spawnPoints.Count == 0)
             return null;
 
-        List<Transform> shuffledPoints = new List<Transform>(currentRoom.spawnPoints);
-        for (int i = 0; i < shuffledPoints.Count; i++)
+        // RAM Optimizasyonu: Yeni Liste yerine önbellek kullan
+        shuffleBuffer.Clear();
+        shuffleBuffer.AddRange(currentRoom.spawnPoints);
+        
+        // Fisher-Yates shuffle
+        for (int i = 0; i < shuffleBuffer.Count; i++)
         {
-            Transform temp = shuffledPoints[i];
-            int randomIndex = Random.Range(i, shuffledPoints.Count);
-            shuffledPoints[i] = shuffledPoints[randomIndex];
-            shuffledPoints[randomIndex] = temp;
+            Transform temp = shuffleBuffer[i];
+            int randomIndex = Random.Range(i, shuffleBuffer.Count);
+            shuffleBuffer[i] = shuffleBuffer[randomIndex];
+            shuffleBuffer[randomIndex] = temp;
         }
 
-        foreach (Transform point in shuffledPoints)
+        foreach (Transform point in shuffleBuffer)
         {
             if (!IsPositionVisibleToPlayer(point.position))
                 return point;
@@ -582,10 +597,17 @@ public class LeesEnemyAI : MonoBehaviour
 
     private void ShowModel(bool show)
     {
-        foreach (var r in GetComponentsInChildren<Renderer>())
-            r.enabled = show;
-        foreach (var c in GetComponentsInChildren<Collider>())
-            c.enabled = show;
+        // RAM Optimizasyonu: Önbelleklenmiş array'leri kullan
+        if (cachedRenderers != null)
+        {
+            foreach (var r in cachedRenderers)
+                if (r != null) r.enabled = show;
+        }
+        if (cachedColliders != null)
+        {
+            foreach (var c in cachedColliders)
+                if (c != null) c.enabled = show;
+        }
     }
 
     public void EnterRoom(RoomManager room) => currentRoom = room;

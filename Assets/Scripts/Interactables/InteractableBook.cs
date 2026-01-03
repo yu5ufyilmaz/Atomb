@@ -129,6 +129,9 @@ public class InteractableBook : MonoBehaviour, IInteractable, IForceExitable
     private int pageIndexR;
     private int currentSoundIndex = 0;
 
+    // RAM Optimizasyonu: Child collider'lar için önbellek
+    private Collider[] cachedChildColliders;
+
     private void Awake()
     {
         // Sayfa materyali kopyalama
@@ -227,6 +230,9 @@ public class InteractableBook : MonoBehaviour, IInteractable, IForceExitable
 
         if (bookCollider == null)
             bookCollider = GetComponentInChildren<MeshCollider>();
+
+        // RAM Optimizasyonu: Child collider'ları önbelleğe al
+        cachedChildColliders = GetComponentsInChildren<Collider>();
 
         if (bookAnimator == null)
             bookAnimator = GetComponent<Animator>();
@@ -450,10 +456,10 @@ public class InteractableBook : MonoBehaviour, IInteractable, IForceExitable
             mc.sharedMesh = bakedMesh;
             
             // DİĞER COLLIDER'LARI KAPAT (Örn: Kapak veya Statik Mesh Collider raycast'i engellemesin)
-            Collider[] allCols = GetComponentsInChildren<Collider>();
-            foreach (var col in allCols)
+            // RAM Optimizasyonu: Önbelleklenmiş collider'ları kullan
+            foreach (var col in cachedChildColliders)
             {
-                if (col != bookCollider && col != interactionCollider)
+                if (col != null && col != bookCollider && col != interactionCollider)
                     col.enabled = false;
             }
         }
@@ -472,10 +478,10 @@ public class InteractableBook : MonoBehaviour, IInteractable, IForceExitable
         }
 
         // Diğer colliderları geri aç
-        Collider[] allCols = GetComponentsInChildren<Collider>();
-        foreach (var col in allCols)
+        // RAM Optimizasyonu: Önbelleklenmiş collider'ları kullan
+        foreach (var col in cachedChildColliders)
         {
-            if (col != bookCollider && col != interactionCollider)
+            if (col != null && col != bookCollider && col != interactionCollider)
                 col.enabled = true;
         }
         // ------------------------------------

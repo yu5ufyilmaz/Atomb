@@ -103,6 +103,9 @@ public class GuderianAI : MonoBehaviour
     private int _animIDSpeed;
     private int _animIDAttack;
 
+    // Performans: Player referansı önbelleği
+    private Transform cachedPlayer;
+
     [Header("Jumpscare Ayarları")]
     // ... (Eski değişkenler kalabilir ama profile taşıdıklarımızı kullanacağız)
     public JumpscareProfile guderianJumpscareProfile; // <-- YENİ
@@ -129,6 +132,11 @@ public class GuderianAI : MonoBehaviour
         // Animasyon parametre ID'lerini al
         _animIDSpeed = Animator.StringToHash("Speed");
         _animIDAttack = Animator.StringToHash("Attack");
+
+        // Performans: Player referansını önbelleğe al
+        GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
+        if (playerObj != null)
+            cachedPlayer = playerObj.transform;
     }
 
     private void Update()
@@ -610,7 +618,17 @@ public class GuderianAI : MonoBehaviour
             animator.SetTrigger(_animIDAttack); // Saldır
         }
 
-        Transform player = GameObject.FindGameObjectWithTag("Player").transform;
+        // Performans: Önbellekteki player referansını kullan
+        Transform player = cachedPlayer;
+        if (player == null)
+        {
+            GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
+            if (playerObj != null)
+            {
+                cachedPlayer = playerObj.transform;
+                player = cachedPlayer;
+            }
+        }
         bool shouldPlayAnim = false; // Bu Player'ın animasyonudur
 
         if (activeRoom == null)
@@ -677,7 +695,8 @@ public class GuderianAI : MonoBehaviour
             animator.SetTrigger(_animIDAttack);
         }
 
-        GameObject player = GameObject.FindGameObjectWithTag("Player");
+        // Performans: Önbellekteki player referansını kullan
+        GameObject player = cachedPlayer != null ? cachedPlayer.gameObject : GameObject.FindGameObjectWithTag("Player");
 
         if (lockerExitPoint != null)
         {
@@ -721,7 +740,19 @@ public class GuderianAI : MonoBehaviour
     {
         if (activeRoom == null || activeRoom.roomDoor == null)
             return false;
-        Transform player = GameObject.FindGameObjectWithTag("Player").transform;
+        // Performans: Önbellekteki player referansını kullan
+        Transform player = cachedPlayer;
+        if (player == null)
+        {
+            GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
+            if (playerObj != null)
+            {
+                cachedPlayer = playerObj.transform;
+                player = cachedPlayer;
+            }
+            else
+                return false;
+        }
         Vector3 dirToDoor = (activeRoom.roomDoor.transform.position - player.position).normalized;
         float angle = Vector3.Angle(player.forward, dirToDoor);
         return angle < lookAtDoorThreshold;

@@ -50,7 +50,8 @@ public class HDRPOutlineController : MonoBehaviour
         }
     }
 
-    // Editörde test etmek için T tuşu
+    // Debug: Editörde test etmek için T tuşu
+#if UNITY_EDITOR
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.T))
@@ -58,4 +59,5 @@ public class HDRPOutlineController : MonoBehaviour
             ToggleOutline(!isActive);
         }
     }
+#endif
 }

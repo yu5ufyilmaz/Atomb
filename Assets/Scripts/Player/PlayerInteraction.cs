@@ -61,6 +61,9 @@ public class PlayerInteraction : MonoBehaviour
     private IInteractable currentInteractable;
     private Camera playerCamera;
 
+    // Performans: Collider -> IInteractable önbelleği
+    private Dictionary<Collider, IInteractable> interactableCache = new Dictionary<Collider, IInteractable>();
+
     private void Awake()
     {
         if (Instance == null)
@@ -97,10 +100,14 @@ public class PlayerInteraction : MonoBehaviour
 
         if (Physics.Raycast(ray, out RaycastHit hit, interactionDistance, interactionLayer))
         {
-            // IInteractable arayüzünü bul
-            IInteractable newInteractable = hit.collider.GetComponent<IInteractable>();
-            if (newInteractable == null)
-                newInteractable = hit.collider.GetComponentInParent<IInteractable>();
+            // Performans: Önbellekten al veya ara
+            if (!interactableCache.TryGetValue(hit.collider, out IInteractable newInteractable))
+            {
+                newInteractable = hit.collider.GetComponent<IInteractable>();
+                if (newInteractable == null)
+                    newInteractable = hit.collider.GetComponentInParent<IInteractable>();
+                interactableCache[hit.collider] = newInteractable;
+            }
 
             if (newInteractable != null)
             {
