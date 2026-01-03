@@ -1,5 +1,5 @@
 using System.Collections;
-using System.Reflection; // Input değerlerini sıfırlamak için gerekli
+using System.Reflection;
 using Cinemachine;
 using StarterAssets;
 using TMPro;
@@ -13,7 +13,7 @@ public class InteractableMassSpectrometer : MonoBehaviour, IInteractable, IForce
     private UnityEngine.CharacterController playerPhysicsController;
 
     [SerializeField]
-    private MonoBehaviour playerInputScript; // StarterAssetsInputs
+    private MonoBehaviour playerInputScript;
 
     [SerializeField]
     private Animator playerAnimator;
@@ -103,9 +103,20 @@ public class InteractableMassSpectrometer : MonoBehaviour, IInteractable, IForce
     [SerializeField]
     private AudioClip beamHumSound;
 
-    [Tooltip("Mıknatıs dönerken çalacak ses (YENİ)")]
+    [Tooltip("Mıknatıs dönerken çalacak ses")]
     [SerializeField]
-    private AudioClip magnetMoveSound; // <-- BUNU EKLE
+    private AudioClip magnetMoveSound;
+
+    // --- YENİ EKLENEN SESLER ---
+    [Tooltip("Halkalar dönerken çalacak ses (YENİ)")]
+    [SerializeField]
+    private AudioClip ringMoveSound;
+
+    [Tooltip("Güç yokken basıldığında çalacak hata sesi (YENİ)")]
+    [SerializeField]
+    private AudioClip errorSound;
+
+    // ---------------------------
 
     public bool IsPoweredOn { get; private set; } = false;
     public bool IsBroken { get; private set; } = false;
@@ -161,8 +172,6 @@ public class InteractableMassSpectrometer : MonoBehaviour, IInteractable, IForce
             playerInputScript = p.GetComponent<StarterAssetsInputs>() as MonoBehaviour;
             playerAnimator = p.GetComponent<Animator>();
 
-            // --- DEĞİŞİKLİK BURADA ---
-            // Eğer inspector'dan atanmamışsa, kodla bul
             if (playerMovementScript == null)
             {
                 playerMovementScript = p.GetComponent<StarterAssets.CharacterController>();
@@ -170,19 +179,13 @@ public class InteractableMassSpectrometer : MonoBehaviour, IInteractable, IForce
         }
     }
 
-    // --- GÜNCELLENMİŞ VERSİYON ---
     private void TogglePlayerControl(bool enableControl)
     {
-        // Artık "as" ile cast etmeye gerek yok, direkt değişkene sahibiz.
         if (playerMovementScript != null)
         {
             if (!enableControl)
             {
-                // DONDUR: Hareket etmesin (true), Kamerayı da kilitlesin (true)
-                // Çünkü makineye bakarken kafasını çevirmesini istemiyoruz.
                 playerMovementScript.SetFrozen(true, lockCameraInput: true);
-
-                // Ekstra önlem: Animator parametrelerini sıfırla
                 if (playerAnimator != null)
                 {
                     playerAnimator.SetFloat("Speed", 0f);
@@ -193,18 +196,9 @@ public class InteractableMassSpectrometer : MonoBehaviour, IInteractable, IForce
             }
             else
             {
-                // ÇÖZ: Her şeyi serbest bırak
                 playerMovementScript.SetFrozen(false, lockCameraInput: false);
             }
         }
-        else
-        {
-            Debug.LogError(
-                "HATA: MassSpectrometer playerMovementScript'i bulamadı! Inspector'ı kontrol et."
-            );
-        }
-
-        // Input scriptini kapatmıyoruz, SetFrozen işi hallediyor.
     }
 
     public void SetPower(bool state)
@@ -242,39 +236,40 @@ public class InteractableMassSpectrometer : MonoBehaviour, IInteractable, IForce
 
         if (!IsPoweredOn)
         {
+            // --- GÜNCELLENDİ: HATA SESİ VE MESAJI ---
+            if (audioSource && errorSound)
+            {
+                audioSource.PlayOneShot(errorSound);
+            }
+
             if (screenText != null)
             {
                 screenText.color = Color.red;
                 screenText.text = "POWER REQUIRED\nCHECK MAIN LEVER";
             }
             return;
+            // ----------------------------------------
         }
 
-        // --- HAREKET KODU YOK! DİREKT MODA GİRİYORUZ ---
         StartCoroutine(EnterMachineView());
     }
 
     private IEnumerator EnterMachineView()
     {
-        // 1. OYUNCUYU KİLİTLE (Hareket etmesin)
         TogglePlayerControl(false);
 
         if (GameManager.Instance != null)
             GameManager.Instance.activeInteraction = this;
 
-        // 2. Sanal Kamerayı Aç (Geçiş Başlasın)
         if (_interactionVC != null)
             _interactionVC.Priority = 100;
 
         if (playerAnimator)
             playerAnimator.SetTrigger(interactAnimTrigger);
 
-        // 3. Kamera Geçişi Kadar Bekle
         yield return new WaitForSeconds(cameraTransitionDuration);
 
-        // 4. Makine Modunu Aktif Et
         inMachineMode = true;
-
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
 
@@ -298,15 +293,11 @@ public class InteractableMassSpectrometer : MonoBehaviour, IInteractable, IForce
         inMachineMode = false;
         ResetPenalty();
 
-        // --- YENİ: Çıkarken dönme sesi veya grind sesi kalmasın ---
         if (loopAudioSource && loopAudioSource.isPlaying)
             loopAudioSource.Stop();
-        // ---------------------------------------------------------
 
         if (ControlsUIManager.Instance != null)
             ControlsUIManager.Instance.HideControls();
-
-        // ... (Kalan kodlar aynı: GameManager, Kamera, TogglePlayerControl vb.) ...
 
         if (GameManager.Instance != null)
             GameManager.Instance.activeInteraction = null;
@@ -317,7 +308,6 @@ public class InteractableMassSpectrometer : MonoBehaviour, IInteractable, IForce
         yield return new WaitForSeconds(cameraTransitionDuration);
 
         TogglePlayerControl(true);
-
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
 
@@ -354,51 +344,75 @@ public class InteractableMassSpectrometer : MonoBehaviour, IInteractable, IForce
         if (IsSolved)
             return;
 
-        // --- PUZZLE KODLARI ---
+        // --- GİRİŞLERİ OKU ---
         float mouseX = Input.GetAxis("Mouse X");
 
-        // ==========================================================
-        // --- YENİ EKLENEN KISIM: DÖNME SESİ MANTIĞI BAŞLANGICI ---
-        // ==========================================================
-        bool isMovingMouse = Mathf.Abs(mouseX) > 0.1f;
-        bool isGrinding = (currentGrindTimer > 0); // O sırada ceza sesi çalıyor mu?
+        float ringInput = 0f;
+        if (Input.GetKey(KeyCode.D))
+            ringInput = 1f;
+        if (Input.GetKey(KeyCode.A))
+            ringInput = -1f;
 
-        // Eğer fare oynuyorsa, ceza yoksa ve ses atanmışsa
-        if (isMovingMouse && !isGrinding && magnetMoveSound != null && loopAudioSource != null)
-        {
-            // Zaten bu ses çalmıyorsa başlat
-            if (!loopAudioSource.isPlaying || loopAudioSource.clip != magnetMoveSound)
-            {
-                loopAudioSource.clip = magnetMoveSound;
-                loopAudioSource.loop = true;
-                loopAudioSource.pitch = 1.0f;
-                loopAudioSource.Play();
-            }
-        }
-        // Fare durduysa ama ses hala çalıyorsa sustur
-        else if (!isMovingMouse && !isGrinding && loopAudioSource != null)
-        {
-            if (loopAudioSource.isPlaying && loopAudioSource.clip == magnetMoveSound)
-            {
-                loopAudioSource.Stop();
-            }
-        }
-        // ==========================================================
-        // --- YENİ EKLENEN KISIM SONU ---
-        // ==========================================================
-
-        if (magnetPivot != null)
-        {
-            magnetPivot.Rotate(Vector3.right * mouseX * magnetRotateSpeed * -1, Space.Self);
-        }
-
-        // ... Geri kalan kodlar aynen kalacak (Açı hesaplama, UI, Halka kontrolü vb.) ...
+        // Mıknatıs Açısı Kontrolü
         float rawAngle = magnetPivot.localEulerAngles.x;
         float currentMagAngle = (rawAngle > 180) ? rawAngle - 360 : rawAngle;
         float magDiff = Mathf.Abs(Mathf.DeltaAngle(currentMagAngle, safeZoneAngle));
         bool isMagnetSafe = magDiff < safeZoneTolerance;
 
-        // UI
+        // --- GÜNCELLENMİŞ SES MANTIĞI ---
+        bool isMovingMouse = Mathf.Abs(mouseX) > 0.1f;
+        bool isMovingRing = (ringInput != 0);
+        bool isGrinding = (currentGrindTimer > 0);
+
+        // Eğer şu an 'Sürtünme/Hata' (Grind) varsa, diğer seslere bakma, en yüksek öncelik onda (ApplyPenaltyLogic içinde yönetilir).
+        if (!isGrinding)
+        {
+            // 1. Öncelik: Halka Dönüyor mu? (Ve güvenli mi? Çünkü güvenli değilse grind sesi çalacak)
+            if (isMovingRing && isMagnetSafe && ringMoveSound != null)
+            {
+                if (!loopAudioSource.isPlaying || loopAudioSource.clip != ringMoveSound)
+                {
+                    loopAudioSource.clip = ringMoveSound;
+                    loopAudioSource.loop = true;
+                    loopAudioSource.pitch = 1.0f;
+                    loopAudioSource.Play();
+                }
+            }
+            // 2. Öncelik: Mıknatıs Dönüyor mu? (Halka dönmüyorsa buna bak)
+            else if (isMovingMouse && magnetMoveSound != null)
+            {
+                if (!loopAudioSource.isPlaying || loopAudioSource.clip != magnetMoveSound)
+                {
+                    loopAudioSource.clip = magnetMoveSound;
+                    loopAudioSource.loop = true;
+                    loopAudioSource.pitch = 1.0f;
+                    loopAudioSource.Play();
+                }
+            }
+            // 3. Hiçbiri yoksa sustur
+            else
+            {
+                if (
+                    loopAudioSource.isPlaying
+                    && (
+                        loopAudioSource.clip == magnetMoveSound
+                        || loopAudioSource.clip == ringMoveSound
+                    )
+                )
+                {
+                    loopAudioSource.Stop();
+                }
+            }
+        }
+        // ------------------------------------
+
+        // Mıknatıs Hareketi
+        if (magnetPivot != null)
+        {
+            magnetPivot.Rotate(Vector3.right * mouseX * magnetRotateSpeed * -1, Space.Self);
+        }
+
+        // UI Güncelleme
         float displayRingAngle = currentRingAngleValue % 360;
         if (displayRingAngle < 0)
             displayRingAngle += 360;
@@ -417,13 +431,7 @@ public class InteractableMassSpectrometer : MonoBehaviour, IInteractable, IForce
             }
         }
 
-        // HALKA
-        float ringInput = 0f;
-        if (Input.GetKey(KeyCode.D))
-            ringInput = 1f;
-        if (Input.GetKey(KeyCode.A))
-            ringInput = -1f;
-
+        // Halka Hareketi
         float ringDiff = Mathf.Abs(Mathf.DeltaAngle(currentRingAngleValue, ringTargetAngle));
 
         if (ringInput != 0)
@@ -432,14 +440,14 @@ public class InteractableMassSpectrometer : MonoBehaviour, IInteractable, IForce
             {
                 currentRingAngleValue += ringInput * ringRotateSpeed * Time.deltaTime;
                 UpdateRingRotation();
-                ResetPenalty();
+                ResetPenalty(); // Grind sesini burada durdurur
 
                 if (ringDiff < ringTolerance)
                     StartCoroutine(SuccessSequence());
             }
             else
             {
-                ApplyPenaltyLogic();
+                ApplyPenaltyLogic(); // Grind sesini burada başlatır
             }
         }
         else
@@ -448,12 +456,10 @@ public class InteractableMassSpectrometer : MonoBehaviour, IInteractable, IForce
         }
     }
 
-    // --- YARDIMCI FONKSİYONLAR ---
     private void ApplyPenaltyLogic()
     {
         currentGrindTimer += Time.deltaTime;
 
-        // Düzeltme: Eğer şu an 'Grind' (sürtme) sesi çalmıyorsa (başka ses varsa veya susmuşsa) Grind çal
         if (loopAudioSource && (!loopAudioSource.isPlaying || loopAudioSource.clip != grindSound))
         {
             loopAudioSource.clip = grindSound;
@@ -477,7 +483,7 @@ public class InteractableMassSpectrometer : MonoBehaviour, IInteractable, IForce
     {
         currentGrindTimer = 0f;
 
-        // Düzeltme: Sadece Grind sesi çalıyorsa sustur. Dönme sesi çalıyorsa dokunma.
+        // Sadece Grind sesi çalıyorsa sustur. Diğer sesler Update içinde yönetiliyor.
         if (loopAudioSource && loopAudioSource.isPlaying && loopAudioSource.clip == grindSound)
             loopAudioSource.Stop();
 

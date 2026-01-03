@@ -724,12 +724,40 @@ public class InteractableBook : MonoBehaviour, IInteractable, IForceExitable
 
         Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
         
-        // Doğrudan kitabın collider'ına raycast at, sahnedeki diğer nesneleri yoksay
-        if (bookCollider.Raycast(ray, out RaycastHit hit, 100f))
+        // BUILD FIX: Physics.Raycast kullan (Collider.Raycast build'de güvenilir değil)
+        // Tüm collider'lara raycast at ve kitabın collider'ına isabet edeni bul
+        RaycastHit hit;
+        bool hitBook = false;
+        
+        // Önce doğrudan bookCollider'a raycast dene
+        if (bookCollider.Raycast(ray, out hit, 100f))
+        {
+            hitBook = true;
+        }
+        // Fallback: Physics.Raycast ile tüm collider'lara at
+        else if (Physics.Raycast(ray, out hit, 100f))
+        {
+            // Kitabın herhangi bir child collider'ına isabet etti mi kontrol et
+            if (hit.collider == bookCollider || hit.collider.transform.IsChildOf(transform))
+            {
+                hitBook = true;
+            }
+        }
+        
+        if (hitBook)
         {
             Debug.Log($"Raycast Hit BOOK: {hit.collider.name}");
             
             Vector2 uv = hit.textureCoord;
+            
+            // BUILD FIX: Mesh "Read/Write Enabled" kapalıysa textureCoord (0,0) döner
+            // Bu durumda dünya koordinatlarından UV hesapla
+            if (uv == Vector2.zero)
+            {
+                Debug.Log("textureCoord is zero, calculating UV from world position...");
+                uv = CalculateUVFromWorldPosition(hit.point);
+            }
+            
             Debug.Log($"Hit Book UV: {uv}");
 
             // Mesh UV'sinden hangi sayfaya tıklandığını belirle
@@ -772,6 +800,51 @@ public class InteractableBook : MonoBehaviour, IInteractable, IForceExitable
         {
             Debug.Log("Raycast did not hit bookCollider.");
         }
+    }
+    
+    /// <summary>
+    /// Mesh "Read/Write Enabled" kapalı olduğunda dünya koordinatlarından UV hesaplar.
+    /// Bu, build'lerde textureCoord'un (0,0) dönmesi sorununu çözer.
+    /// </summary>
+    private Vector2 CalculateUVFromWorldPosition(Vector3 worldPoint)
+    {
+        // Dünya noktasını kitabın local koordinat sistemine çevir
+        Vector3 localPoint = transform.InverseTransformPoint(worldPoint);
+        
+        // Kitabın bounds'unu al
+        Bounds bounds;
+        if (bookSkinnedMeshRenderer != null)
+        {
+            bounds = bookSkinnedMeshRenderer.localBounds;
+        }
+        else if (bookCollider != null)
+        {
+            // Collider bounds'unu local'e çevir
+            bounds = bookCollider.bounds;
+            bounds.center = transform.InverseTransformPoint(bounds.center);
+            bounds.size = transform.InverseTransformVector(bounds.size);
+            // Negatif değerleri düzelt
+            bounds.size = new Vector3(Mathf.Abs(bounds.size.x), Mathf.Abs(bounds.size.y), Mathf.Abs(bounds.size.z));
+        }
+        else
+        {
+            Debug.LogWarning("Cannot calculate UV: No renderer or collider found!");
+            return Vector2.zero;
+        }
+        
+        // Local noktayı 0-1 aralığına normalize et
+        // X ekseni: Kitabın sol kenarından sağ kenarına (0 = sol, 1 = sağ)
+        // Z ekseni: Kitabın alt kenarından üst kenarına (0 = alt, 1 = üst) - Y olarak kullanılacak
+        float normalizedX = Mathf.InverseLerp(bounds.min.x, bounds.max.x, localPoint.x);
+        float normalizedY = Mathf.InverseLerp(bounds.min.z, bounds.max.z, localPoint.z);
+        
+        // Clamp to 0-1 range
+        normalizedX = Mathf.Clamp01(normalizedX);
+        normalizedY = Mathf.Clamp01(normalizedY);
+        
+        Debug.Log($"UV Calculation: localPoint={localPoint}, bounds.min=({bounds.min.x}, {bounds.min.z}), bounds.max=({bounds.max.x}, {bounds.max.z}), result=({normalizedX}, {normalizedY})");
+        
+        return new Vector2(normalizedX, normalizedY);
     }
 
     private void TriggerPasswordFind()
