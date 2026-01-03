@@ -94400,7 +94400,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d84ee166229295e409c9c4611d3f1452, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isTutorialMode: 0
+  isTutorialMode: 1
   allowedTutorialObjects:
   - {fileID: 1342168771}
   - {fileID: 433840398}
