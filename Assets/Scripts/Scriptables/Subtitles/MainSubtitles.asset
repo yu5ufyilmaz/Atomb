@@ -76,9 +76,23 @@ MonoBehaviour:
   - id: particle_room_entrance
     note: 
     segments:
+    - duration: 6
+      textTR: 
+      textEN: Step inside. The Particle Accelerator. The belly of the beast. See
+        that terminal?
+      textDE: 
     - duration: 3
-      textTR: "Olum kilitli la i\u015Fte"
-      textEN: 
+      textTR: 
+      textEN: That computer is the only thing keeping this monster on a leash.
+      textDE: 
+    - duration: 7
+      textTR: 
+      textEN: You smash atoms, Proffessor; I smash enemies. Use the terminal to keep
+        the cycle stable.
+      textDE: 
+    - duration: 5
+      textTR: 
+      textEN: ' I don''t want a crater where my base used to be.'
       textDE: 
   - id: first_notepad
     note: 
@@ -175,28 +189,27 @@ MonoBehaviour:
       textEN: We are done playing with numbers... Go inside, and set the world on
         fire.
       textDE: 
-  - id: new_dialogue_9
+  - id: pressure_room_entrance
     note: 
     segments:
+    - duration: 2
+      textTR: 
+      textEN: The Pressure Room.
+      textDE: 
+    - duration: 7
+      textTR: 
+      textEN: Now, I know you scientists claim you work well 'under pressure,' but
+        these pipes do not.
+      textDE: 
     - duration: 4
       textTR: 
-      textEN: 'The pressure is spiking! What are you doing down there?!
-
-'
+      textEN: Watch the gauges. If the needle hits the red, vent the system.
       textDE: 
-    - duration: 5
+    - duration: 4
       textTR: 
-      textEN: 'The pressure is spiking! What are you doing down there?!
-
-'
+      textEN: Unless You want to scrap of the wall with a spatula.
       textDE: 
-    - duration: 10
+    - duration: 4
       textTR: 
-      textEN: Proceed to the Test Chamber. What you do in the next five minutes will
-        decide the fate of mankind for the next five hundred years.
-      textDE: 
-    - duration: 8
-      textTR: 
-      textEN: We are done playing with numbers... Go inside, and set the world on
-        fire.
+      textEN: Your choise Johan.
       textDE: 

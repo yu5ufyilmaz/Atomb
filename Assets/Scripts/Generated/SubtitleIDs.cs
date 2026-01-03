@@ -3,6 +3,7 @@ public static class SubtitleIDs
 {
     public const string intro_01 = "intro_01";
     public const string chemistry_lab_entrance = "chemistry_lab_entrance";
+    public const string pressure_room_entrance = "pressure_room_entrance";
     public const string tutorial_intro = "tutorial_intro";
     public const string tutorial_nag_pickup = "tutorial_nag_pickup";
     public const string tutorial_unlock = "tutorial_unlock";
