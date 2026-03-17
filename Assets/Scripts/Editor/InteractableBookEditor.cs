@@ -8,6 +8,7 @@ public class InteractableBookEditor : Editor
 {
     private static bool showIdentity = true;
     private static bool showHighlight = true;
+    private static bool showSymbolPuzzle = true; // YENİ EKLENDİ
     private static bool showGeneralSettings = false;
     private static bool showVisuals = false;
     private static bool showAudio = false;
@@ -49,7 +50,49 @@ public class InteractableBookEditor : Editor
         }
         EditorGUILayout.EndFoldoutHeaderGroup();
         EditorGUILayout.Space(2);
+        // --- YENİ: 3D SEMBOL BULMACASI ---
+        showSymbolPuzzle = EditorGUILayout.BeginFoldoutHeaderGroup(
+            showSymbolPuzzle,
+            "🧩 3D Sembol Bulmacası"
+        );
+        if (showSymbolPuzzle)
+        {
+            EditorGUILayout.BeginVertical(EditorStyles.helpBox);
 
+            SerializedProperty isSymbolTargetProp = serializedObject.FindProperty(
+                "isSymbolTargetBook"
+            );
+            EditorGUILayout.PropertyField(
+                isSymbolTargetProp,
+                new GUIContent("Sembol Hedef Kitabı mı?")
+            );
+
+            // Sadece tik açıkken diğer ayarları göster (Daha temiz bir görünüm için)
+            if (isSymbolTargetProp.boolValue)
+            {
+                EditorGUILayout.PropertyField(
+                    serializedObject.FindProperty("requiredSymbolID"),
+                    new GUIContent("Gereken Sembol ID")
+                );
+                EditorGUILayout.PropertyField(
+                    serializedObject.FindProperty("symbolPuzzlePage"),
+                    new GUIContent("Çözüm Sayfası")
+                );
+                EditorGUILayout.PropertyField(
+                    serializedObject.FindProperty("targetSymbolAnchor"),
+                    new GUIContent("Hedef Çapa (Anchor)")
+                );
+
+                if (book.targetSymbolAnchor == null)
+                    EditorGUILayout.HelpBox(
+                        "Lütfen sayfaya yerleştirdiğiniz Anchor objesini atayın!",
+                        MessageType.Warning
+                    );
+            }
+            EditorGUILayout.EndVertical();
+        }
+        EditorGUILayout.EndFoldoutHeaderGroup();
+        EditorGUILayout.Space(2);
         // --- 2. HIGHLIGHT & OUTLINE AYARLARI ---
         showHighlight = EditorGUILayout.BeginFoldoutHeaderGroup(
             showHighlight,

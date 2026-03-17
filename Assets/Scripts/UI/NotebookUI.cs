@@ -11,19 +11,23 @@ public class NotebookUI : MonoBehaviour
     [SerializeField]
     private GameObject notebookPanel;
 
+    [Tooltip("Defterin içindeki ana yazı alanı (Eskiden passwordListText idi)")]
     [SerializeField]
-    private TextMeshProUGUI passwordListText;
+    private TextMeshProUGUI pageContentText;
+
+    [Tooltip("Sayfa numarasını gösterecek ufak yazı (Örn: Sayfa 1 / 3)")]
+    [SerializeField]
+    private TextMeshProUGUI pageNumberText;
 
     [Header("Hareket Ayarları")]
-    [Tooltip("Defterin kapalıyken duracağı konum (Ekranın altı)")]
+    [Tooltip("Defter kapalıyken (Ekran Dışı)")]
     [SerializeField]
-    private Vector2 hiddenPosition = new Vector2(0, -800); // Ekran dışı (aşağısı)
+    private Vector2 hiddenPosition = new Vector2(0, -800);
 
-    [Tooltip("Defterin açıkken duracağı konum (Ekran ortası)")]
+    [Tooltip("Defter açıkken (Ekranın yanı - Örneğin X: 400, Y: 0 yapabilirsin)")]
     [SerializeField]
-    private Vector2 visiblePosition = Vector2.zero; // Ekran merkezi
+    private Vector2 visiblePosition = new Vector2(400, 0);
 
-    [Tooltip("Kayma hızı (Yüksek değer = Hızlı)")]
     [SerializeField]
     private float moveSpeed = 10f;
 
@@ -37,6 +41,11 @@ public class NotebookUI : MonoBehaviour
     [SerializeField]
     private float notificationDuration = 3.0f;
 
+    // --- YENİ: SAYFA SİSTEMİ DEĞİŞKENLERİ ---
+    private bool isOpen = false;
+    private int currentPage = 0; // 0 = Şifreler Sayfası, 1, 2, 3... = Sembol Notları
+    private List<string> lorePages = new List<string>(); // Toplanan sembollerin hikayeleri/notları
+
     private RectTransform panelRect;
 
     private void Awake()
@@ -49,13 +58,10 @@ public class NotebookUI : MonoBehaviour
 
     private void Start()
     {
-        // Paneli başta aktif yapıyoruz (Yoksa hareket edemez)
         if (notebookPanel != null)
         {
             notebookPanel.SetActive(true);
             panelRect = notebookPanel.GetComponent<RectTransform>();
-
-            // Başlangıçta gizli konuma gönder
             if (panelRect != null)
                 panelRect.anchoredPosition = hiddenPosition;
         }
@@ -74,33 +80,88 @@ public class NotebookUI : MonoBehaviour
         if (panelRect == null)
             return;
 
-        // TAB tuşuna basılı tutuluyor mu?
-        bool isHolding = Input.GetKey(KeyCode.Tab);
+        // 1. AÇMA / KAPATMA MANTIĞI (TOGGLE)
+        if (Input.GetKeyDown(KeyCode.Tab))
+        {
+            isOpen = !isOpen;
+            if (isOpen)
+                UpdatePageDisplay(); // Defter açılınca mevcut sayfayı ekrana bas
+        }
 
-        // Hedef konumu belirle (Basılıysa Görünür, Değilse Gizli)
-        Vector2 targetPos = isHolding ? visiblePosition : hiddenPosition;
-
-        // Yumuşak geçiş yap (Lerp)
+        // Hedef konuma yumuşak geçiş
+        Vector2 targetPos = isOpen ? visiblePosition : hiddenPosition;
         panelRect.anchoredPosition = Vector2.Lerp(
             panelRect.anchoredPosition,
             targetPos,
             Time.deltaTime * moveSpeed
         );
 
-        // Tuşa ilk basıldığı an listeyi güncelle (Performans için her kare yapmıyoruz)
-        if (Input.GetKeyDown(KeyCode.Tab))
+        // 2. SAYFA ÇEVİRME MANTIĞI (Sadece defter açıkken)
+        if (isOpen)
         {
-            UpdatePasswordList();
+            if (Input.GetKeyDown(KeyCode.E)) // İleri Sayfa
+            {
+                if (currentPage < GetTotalPages() - 1)
+                {
+                    currentPage++;
+                    UpdatePageDisplay();
+                }
+            }
+            else if (Input.GetKeyDown(KeyCode.Q)) // Geri Sayfa
+            {
+                if (currentPage > 0)
+                {
+                    currentPage--;
+                    UpdatePageDisplay();
+                }
+            }
         }
     }
 
-    private void UpdatePasswordList()
+    private int GetTotalPages()
     {
-        if (PasswordManager.Instance == null)
+        // 1 Ana Şifreler Sayfası + Toplanan Hikaye Sayfaları
+        return 1 + lorePages.Count;
+    }
+
+    private void UpdatePageDisplay()
+    {
+        if (pageContentText == null)
             return;
 
+        if (currentPage == 0)
+        {
+            // SAYFA 0: ŞİFRELER EKRANI
+            pageContentText.text = GetPasswordsText();
+        }
+        else
+        {
+            // DİĞER SAYFALAR: SEMBOL/HİKAYE EKRANLARI
+            int loreIndex = currentPage - 1;
+            if (loreIndex >= 0 && loreIndex < lorePages.Count)
+            {
+                pageContentText.text = lorePages[loreIndex];
+            }
+        }
+
+        // Sayfa numarasını güncelle (Eğer UI'da atadıysan)
+        if (pageNumberText != null)
+        {
+            pageNumberText.text = $"- Sayfa {currentPage + 1} / {GetTotalPages()} -";
+        }
+    }
+
+    private string GetPasswordsText()
+    {
+        if (PasswordManager.Instance == null)
+            return "Şifre bulunamadı.";
+
         List<string> passwords = PasswordManager.Instance.GetDiscoveredClues();
+        if (passwords.Count == 0)
+            return "Henüz şifre bulunamadı...";
+
         StringBuilder sb = new StringBuilder();
+        sb.AppendLine("<size=120%><b>Bulunan Şifreler</b></size>\n");
 
         foreach (string pw in passwords)
         {
@@ -108,48 +169,53 @@ public class NotebookUI : MonoBehaviour
             string displayText = pw.Replace("_", " ");
 
             if (isUsed)
-            {
-                // Şifre aynen kalıyor, sadece yanına tik geliyor.
-                sb.AppendLine($"{displayText} <color=green>✓</color>");
-            }
+                sb.AppendLine($"<s>{displayText}</s> <color=green>✓</color>");
             else
-            {
                 sb.AppendLine(displayText);
-            }
         }
+        return sb.ToString();
+    }
 
-        if (passwordListText != null)
-            passwordListText.text = sb.ToString();
+    // --- YENİ EKLENEN: DÜNYADAN SEMBOL ALININCA ÇAĞRILACAK FONKSİYON ---
+    public void AddLorePage(string newLoreText)
+    {
+        lorePages.Add(newLoreText); // Listeye yeni sayfayı ekle
+
+        // Eklendiğine dair bildirim çıkar
+        ShowNotification("YENİ GÜNLÜK SAYFASI EKLENDİ");
+
+        // Eğer oyuncu deftere o an bakıyorsa ekranı anında tazele
+        if (isOpen)
+            UpdatePageDisplay();
     }
 
     public void ShowPasswordNotification(string passwordID)
+    {
+        ShowNotification($"YENİ İPUCU:\n{passwordID.Replace("_", " ")}");
+
+        // Şifreler sayfasındayken yeni şifre gelirse anında güncelle
+        if (isOpen && currentPage == 0)
+            UpdatePageDisplay();
+    }
+
+    private void ShowNotification(string message)
     {
         if (notificationPanel != null)
         {
             notificationPanel.SetActive(true);
             if (notificationText != null)
-                notificationText.text = $"YENİ İPUCU:\n{passwordID.Replace("_", " ")}";
+                notificationText.text = message;
 
             CancelInvoke(nameof(HideNotification));
             Invoke(nameof(HideNotification), notificationDuration);
         }
     }
 
-    // --- YENİ EKLENEN: DIŞARIDAN ZORLA KAPATMA ---
     public void ForceClose()
     {
-        // 1. Paneli Görünmez Yap veya Konumunu Sıfırla
-        if (notebookPanel != null)
-        {
-            // Hareket ettiği için konumunu gizliye çekmemiz daha güvenli
-            if (panelRect != null)
-                panelRect.anchoredPosition = hiddenPosition;
-
-            // Ya da direkt SetActive false yapabilirsin ama script çalıştığı için Update onu geri açabilir.
-            // En temizi konumu resetlemektir.
-        }
-
-        // 2. Bildirimi de kapat
+        isOpen = false;
+        if (panelRect != null)
+            panelRect.anchoredPosition = hiddenPosition;
         if (notificationPanel != null)
             notificationPanel.SetActive(false);
     }

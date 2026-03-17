@@ -62,7 +62,8 @@ public class PlayerInteraction : MonoBehaviour
     private Camera playerCamera;
 
     // Performans: Collider -> IInteractable önbelleği
-    private Dictionary<Collider, IInteractable> interactableCache = new Dictionary<Collider, IInteractable>();
+    private Dictionary<Collider, IInteractable> interactableCache =
+        new Dictionary<Collider, IInteractable>();
 
     private void Awake()
     {
@@ -87,6 +88,19 @@ public class PlayerInteraction : MonoBehaviour
 
     private void Update()
     {
+        // --- YENİ EKLENEN ÇAKIŞMA ÖNLEYİCİ KONTROL ---
+        // Eğer oyuncu şu an bir kitap veya makineyle etkileşimdeyse (odaklanmışsa)
+        if (GameManager.Instance != null && GameManager.Instance.activeInteraction != null)
+        {
+            // Eğer ekranda takılı kalmış bir vurgu (highlight) veya imleç varsa temizle
+            if (currentInteractable != null)
+            {
+                ClearCurrentInteractable();
+            }
+
+            // Aşağıdaki kodları (Raycast atma ve sol tık dinleme) çalıştırmadan çık!
+            return;
+        }
         CheckForInteractable();
         HandleInteractionInput();
     }

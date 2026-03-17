@@ -65,45 +65,39 @@ public class PasswordManager : MonoBehaviour
 
         Debug.Log("PasswordManager: Yeni oyun başlatılıyor...");
 
-        // --- 1. TUTORIAL NOTU AYARI ---
+        if (SymbolSpawner.Instance != null)
+        {
+            SymbolSpawner.Instance.SpawnRandomSymbol();
+        }
+
         if (tutorialNoteBook != null)
         {
-            // Şifre çıkabilir özelliğini kodla açıyoruz ki unutulmasın
             tutorialNoteBook.canContainPassword = true;
-
-            // 0. sayfaya (veya ilk uygun lokasyona) şifreyi bas
             tutorialNoteBook.AssignPassword(tutorialPassword, 0);
-
-            Debug.Log($"[Tutorial] Not Hazır. Şifre: {tutorialPassword}");
         }
-        else
+
+        // --- YENİ MANTIK: BULMACA KİTABINI BİR MAKİNE GİBİ BUL VE ŞİFREYİ ÇAK ---
+        int activeSymbolID =
+            SymbolSpawner.Instance != null ? SymbolSpawner.Instance.spawnedSymbolID : -1;
+
+        // Tüm kitaplar içinde, bizim aktif sembolümüzü bekleyen o özel kitabı bul (Data'sı var mı yok mu bakmadan!)
+        InteractableBook puzzleBook = allBooksInLevel.FirstOrDefault(b =>
+            b != null && b.isSymbolTargetBook && b.requiredSymbolID == activeSymbolID
+        );
+
+        if (puzzleBook != null)
         {
-            Debug.LogWarning("UYARI: Tutorial Note Book atanmamış!");
+            string puzzlePass = GenerateRandomPassword();
+            puzzleBook.AssignPuzzlePassword(puzzlePass); // UV istemeyen yeni fonksiyonu kullandık!
+            requiredPasswords.Add(puzzlePass);
+            Debug.Log($"[Oyun Şifresi - SEMBOL MAKİNESİ] {puzzleBook.name}: {puzzlePass}");
         }
-        // ------------------------------
+        // ----------------------------------------------------------------------
 
-        // --- 2. RANDOM ŞİFRELERİN DAĞITIMI ---
         int machineCount = 2; // Osiloskop + Spektrometre
         int bookCount = totalPasswordsNeeded - machineCount;
 
-        // Tutorial notu hariç diğer uygun kitapları bul
-        var eligibleBooks = allBooksInLevel
-            .Where(b =>
-                b != null // Null kitapları filtrele
-                && b.canContainPassword
-                && b.bookIdentity != null
-                && b.bookIdentity.possibleLocations.Count > 0
-                && b != tutorialNoteBook // <--- ÖNEMLİ: Tutorial notunu havuza katma
-            )
-            .ToList();
-
-        if (eligibleBooks.Count < bookCount)
-        {
-            Debug.LogError($"Yeterli kitap yok! Gereken: {bookCount}, Var: {eligibleBooks.Count}");
-            return;
-        }
-
-        // A) MAKİNELER
+        // A) DİĞER MAKİNELER
         if (oscilloscope != null)
         {
             string pass1 = GenerateRandomPassword();
@@ -118,7 +112,23 @@ public class PasswordManager : MonoBehaviour
             requiredPasswords.Add(pass2);
         }
 
-        // B) KİTAPLAR
+        // B) GERİ KALAN NORMAL KİTAPLAR (Tıklamalı olanlar)
+        // Burada bulmaca kitabını (puzzleBook) listeye katmıyoruz ki ona 2. kez şifre gitmesin
+        var eligibleBooks = allBooksInLevel
+            .Where(b =>
+                b != null
+                && b.canContainPassword
+                && b.bookIdentity != null
+                && b.bookIdentity.possibleLocations.Count > 0
+                && b != tutorialNoteBook
+                && b != puzzleBook
+            )
+            .ToList();
+
+        // Eğer sembol kitabına şifre verdiysek, dağıtılacak rastgele kitap şifresi sayısını 1 düşür
+        if (puzzleBook != null)
+            bookCount--;
+
         var selectedBooks = eligibleBooks.OrderBy(x => Random.value).Take(bookCount).ToList();
 
         foreach (var book in selectedBooks)
@@ -128,10 +138,8 @@ public class PasswordManager : MonoBehaviour
 
             book.AssignPassword(bookPass, randomLocIndex);
             requiredPasswords.Add(bookPass);
-            Debug.Log($"[Oyun Şifresi] {book.name}: {bookPass}");
+            Debug.Log($"[Oyun Şifresi - RASTGELE KİTAP] {book.name}: {bookPass}");
         }
-
-        Debug.Log($"DAĞITIM TAMAM. {requiredPasswords.Count} Oyun Şifresi + 1 Tutorial Şifresi.");
     }
 
     private string GenerateRandomPassword()

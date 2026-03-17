@@ -56,6 +56,13 @@ public class InteractableBook : MonoBehaviour, IInteractable, IForceExitable
     public PasswordData bookIdentity;
     public bool canContainPassword = true;
 
+    // --- YENİ: SEMBOL BULMACASI AYARLARI ---
+    [Header("🧩 3D Sembol Bulmacası Ayarları")]
+    public bool isSymbolTargetBook = false;
+    public int requiredSymbolID = 0; // Bu kitabı hangi sembol açar?
+    public int symbolPuzzlePage = -1; // Çözümün yapılacağı sayfa indeksi
+    public Transform targetSymbolAnchor; // Doğru konum ve açıyı referans alacağımız boş obje
+
     // --- YENİ: OUTLINE & HIGHLIGHT AYARLARI ---
     [Header("✨ Vurgu (Highlight) Ayarları")]
     [Tooltip("HDRP Outline Scripti (Varsa Emission yerine bu çalışır)")]
@@ -116,6 +123,7 @@ public class InteractableBook : MonoBehaviour, IInteractable, IForceExitable
     // --- COLLIDER FIX VARIABLES ---
     private Mesh originalMesh;
     private Mesh bakedMesh;
+
     // ------------------------------
 
     private Vector3 originalLocalPosition;
@@ -416,13 +424,13 @@ public class InteractableBook : MonoBehaviour, IInteractable, IForceExitable
 
         // Animasyonun TAMAMEN bitmesini bekle
         yield return new WaitForSeconds(animationDuration);
-        
+
         // Animator'ın "Open" state'ine geçmesini bekle
         if (bookAnimator != null)
         {
             // Animator'ın güncellenmesi için bir frame bekle
             yield return null;
-            
+
             // Animasyonun normalizedTime'ı 1.0'a ulaşana kadar bekle (tam bitiş)
             AnimatorStateInfo stateInfo = bookAnimator.GetCurrentAnimatorStateInfo(0);
             while (stateInfo.normalizedTime < 1.0f || bookAnimator.IsInTransition(0))
@@ -451,10 +459,10 @@ public class InteractableBook : MonoBehaviour, IInteractable, IForceExitable
                 bakedMesh = new Mesh();
                 bakedMesh.name = "BakedBookCollider";
             }
-            
+
             bookSkinnedMeshRenderer.BakeMesh(bakedMesh, true); // true = scale dahil et
             mc.sharedMesh = bakedMesh;
-            
+
             // DİĞER COLLIDER'LARI KAPAT (Örn: Kapak veya Statik Mesh Collider raycast'i engellemesin)
             // RAM Optimizasyonu: Önbelleklenmiş collider'ları kullan
             foreach (var col in cachedChildColliders)
@@ -717,8 +725,20 @@ public class InteractableBook : MonoBehaviour, IInteractable, IForceExitable
             pageNumberText.text = $"{pageIndexL}-{pageIndexR}";
     }
 
+    public bool IsOnPage(int targetPage)
+    {
+        return (pageIndexL == targetPage || pageIndexR == targetPage);
+    }
+
     private void CheckForPasswordClick()
     {
+        if (
+            PuzzleInventoryManager.Instance != null
+            && PuzzleInventoryManager.Instance.isOverlayActive
+        )
+        {
+            return;
+        }
         if (pageIndexL != passwordPage && pageIndexR != passwordPage)
             return;
 
@@ -729,12 +749,12 @@ public class InteractableBook : MonoBehaviour, IInteractable, IForceExitable
         }
 
         Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
-        
+
         // BUILD FIX: Physics.Raycast kullan (Collider.Raycast build'de güvenilir değil)
         // Tüm collider'lara raycast at ve kitabın collider'ına isabet edeni bul
         RaycastHit hit;
         bool hitBook = false;
-        
+
         // Önce doğrudan bookCollider'a raycast dene
         if (bookCollider.Raycast(ray, out hit, 100f))
         {
@@ -749,13 +769,13 @@ public class InteractableBook : MonoBehaviour, IInteractable, IForceExitable
                 hitBook = true;
             }
         }
-        
+
         if (hitBook)
         {
             Debug.Log($"Raycast Hit BOOK: {hit.collider.name}");
-            
+
             Vector2 uv = hit.textureCoord;
-            
+
             // BUILD FIX: Mesh "Read/Write Enabled" kapalıysa textureCoord (0,0) döner
             // Bu durumda dünya koordinatlarından UV hesapla
             if (uv == Vector2.zero)
@@ -763,18 +783,18 @@ public class InteractableBook : MonoBehaviour, IInteractable, IForceExitable
                 Debug.Log("textureCoord is zero, calculating UV from world position...");
                 uv = CalculateUVFromWorldPosition(hit.point);
             }
-            
+
             Debug.Log($"Hit Book UV: {uv}");
 
             // Mesh UV'sinden hangi sayfaya tıklandığını belirle
             // Mesh UV: 0-0.5 = sol sayfa, 0.5-1 = sağ sayfa
             bool hitRightPage = uv.x > 0.5f;
-            
+
             // Şu an görüntülenen sayfa indexleri
             int clickedPageIndex = hitRightPage ? pageIndexR : pageIndexL;
-            
+
             bool isTargetPage = (clickedPageIndex == passwordPage);
-            
+
             if (isTargetPage)
             {
                 // Mesh UV'sini sayfa-local UV'ye çevir (0-1 aralığına normalize et)
@@ -782,10 +802,12 @@ public class InteractableBook : MonoBehaviour, IInteractable, IForceExitable
                 // Sağ sayfa: uv.x 0.5-1 -> 0-1
                 float pageLocalU = hitRightPage ? (uv.x - 0.5f) * 2.0f : uv.x * 2.0f;
                 Vector2 pageUV = new Vector2(pageLocalU, uv.y);
-                
+
                 Debug.Log($"Password Page: {passwordPage} | Clicked Page: {clickedPageIndex}");
                 Debug.Log($"Calculated PageUV: {pageUV} | Hotspot: {passwordHotspotUV}");
-                Debug.Log($"Hotspot Contains Check: x={pageUV.x} in [{passwordHotspotUV.xMin}-{passwordHotspotUV.xMax}], y={pageUV.y} in [{passwordHotspotUV.yMin}-{passwordHotspotUV.yMax}]");
+                Debug.Log(
+                    $"Hotspot Contains Check: x={pageUV.x} in [{passwordHotspotUV.xMin}-{passwordHotspotUV.xMax}], y={pageUV.y} in [{passwordHotspotUV.yMin}-{passwordHotspotUV.yMax}]"
+                );
 
                 if (passwordHotspotUV.Contains(pageUV))
                 {
@@ -799,7 +821,9 @@ public class InteractableBook : MonoBehaviour, IInteractable, IForceExitable
             }
             else
             {
-                Debug.Log($"Wrong Page clicked. Target: {passwordPage}, Clicked: {clickedPageIndex}");
+                Debug.Log(
+                    $"Wrong Page clicked. Target: {passwordPage}, Clicked: {clickedPageIndex}"
+                );
             }
         }
         else
@@ -807,7 +831,7 @@ public class InteractableBook : MonoBehaviour, IInteractable, IForceExitable
             Debug.Log("Raycast did not hit bookCollider.");
         }
     }
-    
+
     /// <summary>
     /// Mesh "Read/Write Enabled" kapalı olduğunda dünya koordinatlarından UV hesaplar.
     /// Bu, build'lerde textureCoord'un (0,0) dönmesi sorununu çözer.
@@ -816,7 +840,7 @@ public class InteractableBook : MonoBehaviour, IInteractable, IForceExitable
     {
         // Dünya noktasını kitabın local koordinat sistemine çevir
         Vector3 localPoint = transform.InverseTransformPoint(worldPoint);
-        
+
         // Kitabın bounds'unu al
         Bounds bounds;
         if (bookSkinnedMeshRenderer != null)
@@ -830,30 +854,37 @@ public class InteractableBook : MonoBehaviour, IInteractable, IForceExitable
             bounds.center = transform.InverseTransformPoint(bounds.center);
             bounds.size = transform.InverseTransformVector(bounds.size);
             // Negatif değerleri düzelt
-            bounds.size = new Vector3(Mathf.Abs(bounds.size.x), Mathf.Abs(bounds.size.y), Mathf.Abs(bounds.size.z));
+            bounds.size = new Vector3(
+                Mathf.Abs(bounds.size.x),
+                Mathf.Abs(bounds.size.y),
+                Mathf.Abs(bounds.size.z)
+            );
         }
         else
         {
             Debug.LogWarning("Cannot calculate UV: No renderer or collider found!");
             return Vector2.zero;
         }
-        
+
         // Local noktayı 0-1 aralığına normalize et
         // X ekseni: Kitabın sol kenarından sağ kenarına (0 = sol, 1 = sağ)
         // Z ekseni: Kitabın alt kenarından üst kenarına (0 = alt, 1 = üst) - Y olarak kullanılacak
         float normalizedX = Mathf.InverseLerp(bounds.min.x, bounds.max.x, localPoint.x);
         float normalizedY = Mathf.InverseLerp(bounds.min.z, bounds.max.z, localPoint.z);
-        
+
         // Clamp to 0-1 range
         normalizedX = Mathf.Clamp01(normalizedX);
         normalizedY = Mathf.Clamp01(normalizedY);
-        
-        Debug.Log($"UV Calculation: localPoint={localPoint}, bounds.min=({bounds.min.x}, {bounds.min.z}), bounds.max=({bounds.max.x}, {bounds.max.z}), result=({normalizedX}, {normalizedY})");
-        
+
+        Debug.Log(
+            $"UV Calculation: localPoint={localPoint}, bounds.min=({bounds.min.x}, {bounds.min.z}), bounds.max=({bounds.max.x}, {bounds.max.z}), result=({normalizedX}, {normalizedY})"
+        );
+
         return new Vector2(normalizedX, normalizedY);
     }
 
-    private void TriggerPasswordFind()
+    // private olan bu kelimeyi public yapıyoruz
+    public void TriggerPasswordFind()
     {
         if (hasPasswordBeenFound || !isPasswordBook)
             return;
@@ -879,8 +910,23 @@ public class InteractableBook : MonoBehaviour, IInteractable, IForceExitable
         passwordPage = locEntry.pageIndex;
         passwordHotspotUV = locEntry.hotspotUV;
         hasPasswordBeenFound = false;
-        
-        Debug.Log($"[InteractableBook] Password Assigned: {passwordID} at Page {passwordPage}. Hotspot: {passwordHotspotUV}");
+
+        Debug.Log(
+            $"[InteractableBook] Password Assigned: {passwordID} at Page {passwordPage}. Hotspot: {passwordHotspotUV}"
+        );
+    }
+
+    // YENİ: Sembol Bulmacası (Makine Mantığı) için basitleştirilmiş şifre atama
+    public void AssignPuzzlePassword(string newPasswordID)
+    {
+        isPasswordBook = true;
+        passwordID = newPasswordID;
+        hasPasswordBeenFound = false;
+
+        // UV veya Hotspot atamasına gerek yok, çünkü tıklamayla değil Q tuşu (sembol) ile çözülecek!
+        Debug.Log(
+            $"[InteractableBook] SEMBOL PUZZLE ŞİFRESİ ATANDI: {passwordID} (Sayfa: {symbolPuzzlePage})"
+        );
     }
 
     public void ClearPassword()
@@ -931,19 +977,21 @@ public class InteractableBook : MonoBehaviour, IInteractable, IForceExitable
         // Mesh UV: Sol sayfa = 0-0.5, Sağ sayfa = 0.5-1
         // passwordPage çift ise sol sayfa, tek ise sağ sayfa
         bool isRightPage = (passwordPage % 2) != 0;
-        
+
         // Kitabın x ekseninde yarısı sol, yarısı sağ sayfa
         float halfWidth = localBounds.size.x / 2f;
-        
+
         // Sayfa merkezi (local koordinatlarda)
-        float pageCenterX = isRightPage 
-            ? localBounds.center.x + halfWidth / 2f  // Sağ tarafa offset
+        float pageCenterX = isRightPage
+            ? localBounds.center.x + halfWidth / 2f // Sağ tarafa offset
             : localBounds.center.x - halfWidth / 2f; // Sol tarafa offset
 
         // Hotspot'un sayfa üzerindeki konumu
         // passwordHotspotUV: 0-1 arasında normalize edilmiş koordinatlar
-        float hotspotLocalX = (passwordHotspotUV.x + passwordHotspotUV.width / 2f - 0.5f) * halfWidth;
-        float hotspotLocalZ = (passwordHotspotUV.y + passwordHotspotUV.height / 2f - 0.5f) * localBounds.size.z;
+        float hotspotLocalX =
+            (passwordHotspotUV.x + passwordHotspotUV.width / 2f - 0.5f) * halfWidth;
+        float hotspotLocalZ =
+            (passwordHotspotUV.y + passwordHotspotUV.height / 2f - 0.5f) * localBounds.size.z;
 
         Vector3 hotspotCenter = new Vector3(
             pageCenterX + hotspotLocalX,
@@ -959,7 +1007,7 @@ public class InteractableBook : MonoBehaviour, IInteractable, IForceExitable
 
         Gizmos.matrix = transform.localToWorldMatrix;
         Gizmos.DrawWireCube(hotspotCenter, hotspotSize);
-        
+
         // Ek olarak dolu bir cube da çiz (daha görünür olması için)
         Gizmos.color = new Color(1.0f, 0f, 0f, 0.3f);
         Gizmos.DrawCube(hotspotCenter, hotspotSize);
