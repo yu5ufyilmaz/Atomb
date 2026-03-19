@@ -112,9 +112,7 @@ public class InteractableDoor : MonoBehaviour, IInteractable
         isAnimating = true;
         isOpen = !isOpen;
 
-        // ESKİ KOD: if (playerController != null) playerController.enabled = false;
-        // YENİ KOD: Tam teşekküllü dondurma
-        FreezePlayer(true);
+        // Oyuncu artık donmuyor, serbestçe hareket edebilir!
 
         if (doorAnimator != null)
         {
@@ -124,10 +122,8 @@ public class InteractableDoor : MonoBehaviour, IInteractable
 
         PlaySound(isOpen ? openSound : closeSound);
 
+        // Animasyonun bitmesini bekle (Spam'i engellemek için gerekli)
         yield return new WaitForSeconds(animationDuration);
-
-        // Oyuncuyu çöz
-        FreezePlayer(false);
 
         isAnimating = false;
     }

@@ -259,127 +259,125 @@ public class InteractableTuringMachine : MonoBehaviour, IInteractable, IForceExi
     }
 
     // --- ADIM 1: YÜRÜME ---
+    // --- YENİ ADIM 1: SİNEMATİK OTURTMA (CINEMATIC SNAP) ---
     private IEnumerator MoveToInteractionPoint()
     {
         isInteracting = true;
         inMachineMode = false;
 
-        if (playerLookScript)
-            playerLookScript.enabled = false;
-        if (playerMovementScript)
-            playerMovementScript.enabled = false;
-        if (playerController)
-            playerController.enabled = true;
-
-        if (interactionStandPoint != null)
+        // 1. UYARIYI (Move called on inactive) KÖKTEN ÇÖZÜYORUZ
+        // Inspector'a güvenmek yerine, scripti doğrudan midesinden (GetComponent) alıp fişini çekiyoruz.
+        StarterAssets.CharacterController saController = null;
+        if (playerController != null)
         {
-            float timer = 0f;
-            int animIDSpeed = Animator.StringToHash("Speed");
-            int animIDMotionSpeed = Animator.StringToHash("MotionSpeed");
-            int animIDGrounded = Animator.StringToHash("Grounded");
-
-            while (timer < 4.0f)
+            saController = playerController.GetComponent<StarterAssets.CharacterController>();
+            if (saController != null)
             {
-                timer += Time.deltaTime;
-                Vector3 targetPos = interactionStandPoint.position;
-                Vector3 playerPos = playerController.transform.position;
-                playerPos.y = targetPos.y;
-
-                if (Vector3.Distance(playerPos, targetPos) < 0.15f)
-                    break;
-
-                Vector3 dir = (targetPos - playerPos).normalized;
-                if (dir != Vector3.zero)
-                {
-                    playerController.transform.rotation = Quaternion.Slerp(
-                        playerController.transform.rotation,
-                        Quaternion.LookRotation(dir),
-                        Time.deltaTime * autoRotateSpeed
-                    );
-                }
-
-                float speed = autoWalkSpeed;
-                if (playerAnimator)
-                {
-                    playerAnimator.SetBool(animIDGrounded, true);
-                    playerAnimator.SetFloat(animIDSpeed, speed);
-                    playerAnimator.SetFloat(animIDMotionSpeed, 1f);
-                }
-
-                playerController.Move(dir * speed * Time.deltaTime + Vector3.down); // Yerçekimi ekle
-                yield return null;
+                saController.enabled = false; // Script kapandı, uyarı verme ihtimali SIFIR!
             }
         }
 
-        // Son Oturtma (Snap)
+        if (playerLookScript)
+            playerLookScript.enabled = false;
+
+        // 2. FİZİĞİ KAPAT (Geçişte bir yerlere takılmayı önler)
+        if (playerController)
+            playerController.enabled = false;
+
+        // 3. KAYMA YERİNE "YÜRÜYEREK SÜZÜLME" (Sorunun Çözümü)
         if (interactionStandPoint != null)
         {
+            float duration = 1.2f; // İstediğin süre
             float t = 0f;
-            Quaternion startRot = playerController.transform.rotation;
             Vector3 startPos = playerController.transform.position;
-            while (t < 0.5f)
+            Quaternion startRot = playerController.transform.rotation;
+
+            // Eğer karakter makineye zaten dibindeyse adım atmasın, uzaktaysa atsın diye mesafe ölçüyoruz.
+            float dist = Vector3.Distance(startPos, interactionStandPoint.position);
+
+            while (t < duration)
             {
                 t += Time.deltaTime;
+                float normalizedTime = t / duration;
+                float smoothT = Mathf.SmoothStep(0f, 1f, normalizedTime);
+
+                // Pozisyon ve rotasyonu kaydırıyoruz
                 playerController.transform.position = Vector3.Lerp(
                     startPos,
                     interactionStandPoint.position,
-                    t / 0.5f
+                    smoothT
                 );
                 playerController.transform.rotation = Quaternion.Slerp(
                     startRot,
                     interactionStandPoint.rotation,
-                    t / 0.5f
+                    smoothT
                 );
-                if (playerAnimator)
-                    playerAnimator.SetFloat("Speed", 0);
+
+                // --- SİHİRLİ KISIM: YÜRÜME ANİMASYONUNU MANUEL ÇALIŞTIR ---
+                if (playerAnimator && dist > 0.1f)
+                {
+                    // 2.0 değeri yürüyüş animasyonudur. Makineye yaklaşırken yavaşlayarak durma hissi veriyoruz.
+                    float walkSpeed = Mathf.Lerp(2.0f, 0f, normalizedTime);
+                    playerAnimator.SetFloat("VelocityZ", walkSpeed);
+                    playerAnimator.SetFloat("MotionSpeed", 1.0f);
+                }
+
                 yield return null;
             }
+
+            // Hedefe ulaştığımızda animasyonu tamamen Idle'a (Duruş) çekiyoruz.
+            if (playerAnimator)
+            {
+                playerAnimator.SetFloat("VelocityZ", 0f);
+                playerAnimator.SetFloat("MotionSpeed", 0f);
+            }
+
+            playerController.transform.position = interactionStandPoint.position;
+            playerController.transform.rotation = interactionStandPoint.rotation;
         }
 
         StartCoroutine(EnterMachineView());
     }
 
-    // --- ADIM 2: YUMUŞAK GEÇİŞ (GİRİŞ) ---
+    // --- YENİ ADIM 2: MAKİNEYE GİRİŞ ---
     private IEnumerator EnterMachineView()
     {
         if (GameManager.Instance)
             GameManager.Instance.activeInteraction = this;
 
-        // Kontrolleri dondur
-        if (playerController)
-            playerController.enabled = false;
+        // Oturma/İnceleme animasyonunu tetikle
         if (playerAnimator)
             playerAnimator.SetTrigger(interactAnimTrigger);
 
         PlaySound(accessSound);
 
-        // VCAM AKTİF ET (Blend otomatik başlar)
+        // VCAM AKTİF ET (Cinemachine otomatik ve yumuşakça blend yapacak)
         if (interactVCam)
-            interactVCam.Priority = 100; // Ana kameradan yüksek olsun
+            interactVCam.Priority = 100;
 
-        // Blend süresini bekle (Varsayılan 1.5 - 2 saniye idealdir)
+        // Kameranın yerine geçmesini bekle
         yield return new WaitForSeconds(1.5f);
 
         inMachineMode = true;
 
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
+
         if (playerInteractionScript)
             playerInteractionScript.ToggleCrosshair(false);
-        // --- DEĞİŞEN KISIM BURASI ---
+
         if (ControlsUIManager.Instance != null)
         {
-            // Artık string yollamak yerine Enum yolluyoruz.
-            // Bu sayede "massSpectrometerPanel" açılacak.
             ControlsUIManager.Instance.ShowMachineUI(ControlsUIManager.MachineType.TuringMachine);
         }
+
         if (PasswordManager.Instance)
             UpdateIndicators(PasswordManager.Instance.GetValidatedPasswordCount());
 
         UpdateActiveWheelHighlight();
     }
 
-    // --- ADIM 3: YUMUŞAK GEÇİŞ (ÇIKIŞ) ---
+    // --- YENİ ADIM 3: MAKİNEDEN ÇIKIŞ ---
     private IEnumerator ExitMachineView()
     {
         if (isExiting)
@@ -390,21 +388,37 @@ public class InteractableTuringMachine : MonoBehaviour, IInteractable, IForceExi
         PlaySound(exitSound);
         ClearAllHighlights();
 
-        // VCAM PASİF ET (Unity otomatik olarak karakterin arkasına süzer)
+        // (Kameranın çıkışta sıçramasını engelleyen sihirli kodu burada da tutuyoruz)
+        StarterAssets.CharacterController saController = null;
+        if (playerController != null)
+        {
+            saController = playerController.GetComponent<StarterAssets.CharacterController>();
+            if (saController != null)
+            {
+                float currentYaw = playerController.transform.eulerAngles.y;
+                saController.ForceCameraRotation(currentYaw, 0f);
+            }
+        }
+
         if (interactVCam)
             interactVCam.Priority = 0;
 
-        // Blend süresini bekle
         yield return new WaitForSeconds(1.5f);
 
-        // Kontrolleri Aç
+        // 1. ÖNCE FİZİĞİ AÇ
+        // (Fizik motorunu açmadan hareket scriptini açmıyoruz ki o sarı uyarıyı tekrar vermesin!)
         if (playerController)
             playerController.enabled = true;
+
+        // 2. SONRA HAREKET SCRİPTİNİ AÇ
+        if (saController != null)
+        {
+            saController.enabled = true;
+            saController.SetFrozen(false, lockCameraInput: false, restrictRotation: false);
+        }
+
         if (playerLookScript)
             playerLookScript.enabled = true;
-        if (playerMovementScript)
-            playerMovementScript.enabled = true;
-
         if (playerInteractionScript)
             playerInteractionScript.ToggleCrosshair(true);
         if (ControlsUIManager.Instance)

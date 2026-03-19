@@ -10,6 +10,7 @@ public class InteractableOscilloscope : MonoBehaviour, IInteractable, IForceExit
     [Header("Player Control")]
     [SerializeField]
     private UnityEngine.CharacterController playerController;
+    private CinemachineVirtualCamera interactVCam;
 
     [SerializeField]
     private MonoBehaviour playerLookScript;
@@ -122,7 +123,19 @@ public class InteractableOscilloscope : MonoBehaviour, IInteractable, IForceExit
             mainCamera = Camera.main.transform;
             cinemachineBrain = mainCamera.GetComponent<CinemachineBrain>();
         }
-
+        if (fixedCameraTransform != null)
+        {
+            interactVCam = fixedCameraTransform.GetComponentInChildren<CinemachineVirtualCamera>();
+            if (interactVCam == null)
+            {
+                GameObject vcamObj = new GameObject("Oscilloscope_Interact_VCam");
+                vcamObj.transform.parent = fixedCameraTransform;
+                vcamObj.transform.localPosition = Vector3.zero;
+                vcamObj.transform.localRotation = Quaternion.identity;
+                interactVCam = vcamObj.AddComponent<CinemachineVirtualCamera>();
+                interactVCam.Priority = 0;
+            }
+        }
         if (voltsKnob)
             voltsKnobInitialRot = voltsKnob.localRotation;
         if (timeKnob)
@@ -163,103 +176,62 @@ public class InteractableOscilloscope : MonoBehaviour, IInteractable, IForceExit
     public string GetInteractionPrompt() =>
         isSolved ? "Sinyal Stabil" : (isInteracting ? "" : "[Sol Tık] Sinyali Düzelt");
 
+    // --- SİNEMATİK OTURTMA (OSİLOSKOP) ---
     private IEnumerator MoveToInteractionPoint()
     {
         isInteracting = true;
         inMachineMode = false;
 
-        // Karakterin kendi kontrolünü kapat
+        // 1. İNPUTLARI VE KAMERA KONTROLÜNÜ DONDUR
+        StarterAssets.CharacterController saController =
+            playerMovementScript as StarterAssets.CharacterController;
+        if (saController != null)
+        {
+            saController.SetFrozen(true, lockCameraInput: true, restrictRotation: false);
+        }
         if (playerLookScript)
             playerLookScript.enabled = false;
 
-        // KRİTİK NOKTA: Hareket scriptini kapatmazsak çatışma çıkar
-        if (playerMovementScript != null)
+        // 2. SCRİPTİ VE FİZİĞİ KAPAT (Konsol hatalarını ve titremeyi önler)
+        if (playerMovementScript)
             playerMovementScript.enabled = false;
-
-        // Ama CharacterController (fizik/collider) açık kalmalı ki biz hareket ettirebilelim
         if (playerController)
-            playerController.enabled = true;
+            playerController.enabled = false;
 
-        // --- YÜRÜME DÖNGÜSÜ ---
+        // 3. YUMUŞAK GEÇİŞ (0.5 Saniyede Pürüzsüzce Masaya Geçiş)
         if (interactionStandPoint != null)
         {
-            int animIDSpeed = Animator.StringToHash("Speed");
-            int animIDMotionSpeed = Animator.StringToHash("MotionSpeed");
-            int animIDGrounded = Animator.StringToHash("Grounded");
+            float duration = 0.5f;
+            float t = 0f;
+            Vector3 startPos = playerController.transform.position;
+            Quaternion startRot = playerController.transform.rotation;
 
-            float timer = 0f;
-            while (timer < 4.0f) // Max 4 saniye dene
-            {
-                timer += Time.deltaTime;
-                Vector3 playerPos = playerController.transform.position;
-                Vector3 targetPos = interactionStandPoint.position;
-                playerPos.y = targetPos.y = 0; // Yükseklik farkını yoksay
-
-                float distance = Vector3.Distance(playerPos, targetPos);
-                if (distance < 0.1f)
-                    break; // Geldik sayılır
-
-                Vector3 dir = (targetPos - playerPos).normalized;
-                if (dir != Vector3.zero)
-                {
-                    Quaternion lookRot = Quaternion.LookRotation(dir);
-                    playerController.transform.rotation = Quaternion.Slerp(
-                        playerController.transform.rotation,
-                        lookRot,
-                        Time.deltaTime * autoRotateSpeed
-                    );
-                }
-
-                float speed = (distance < 0.5f) ? 0.5f : autoWalkSpeed;
-
-                if (playerAnimator)
-                {
-                    playerAnimator.SetBool(animIDGrounded, true);
-                    playerAnimator.SetFloat(animIDSpeed, speed);
-                    playerAnimator.SetFloat(animIDMotionSpeed, 1f);
-                }
-
-                // Hareketi uygula
-                Vector3 motion = dir * speed;
-                motion.y = -9.81f;
-                playerController.Move(motion * Time.deltaTime);
-
-                yield return null;
-            }
-
-            // Durdur
             if (playerAnimator)
             {
-                playerAnimator.SetFloat(animIDSpeed, 0f);
-                playerAnimator.SetFloat(animIDMotionSpeed, 1f);
+                playerAnimator.SetFloat("Speed", 0f);
+                playerAnimator.SetFloat("MotionSpeed", 0f);
             }
-        }
 
-        // --- HİZALAMA (SNAP) ---
-        // Yürüme bitince tam noktaya kaydır ki yamuk durmasın
-        if (interactionStandPoint != null)
-        {
-            float rotTimer = 0f;
-            Quaternion startRot = playerController.transform.rotation;
-            Vector3 startPos = playerController.transform.position;
-
-            while (rotTimer < 0.5f)
+            while (t < duration)
             {
-                rotTimer += Time.deltaTime;
-                float t = rotTimer / 0.5f;
-                // Yumuşak geçiş
+                t += Time.deltaTime;
+                float smoothT = Mathf.SmoothStep(0f, 1f, t / duration);
+
                 playerController.transform.position = Vector3.Lerp(
                     startPos,
                     interactionStandPoint.position,
-                    t
+                    smoothT
                 );
                 playerController.transform.rotation = Quaternion.Slerp(
                     startRot,
                     interactionStandPoint.rotation,
-                    t
+                    smoothT
                 );
                 yield return null;
             }
+
+            playerController.transform.position = interactionStandPoint.position;
+            playerController.transform.rotation = interactionStandPoint.rotation;
         }
 
         StartCoroutine(EnterMachineView());
@@ -270,58 +242,29 @@ public class InteractableOscilloscope : MonoBehaviour, IInteractable, IForceExit
         if (GameManager.Instance != null)
             GameManager.Instance.activeInteraction = this;
 
-        // 1. Cinemachine'i Kapat (Kamerayı serbest bırak)
-        if (cinemachineBrain)
-            cinemachineBrain.enabled = false;
-
-        // 2. Oyuncuyu Dondur
-        if (playerController)
-            playerController.enabled = false;
-
-        // 3. Animasyonu Oynat (Örn: Eğilme/Bakma)
         if (playerAnimator)
             playerAnimator.SetTrigger(interactAnimTrigger);
 
-        // 4. Kamerayı Yumuşakça Yerine Al
-        if (fixedCameraTransform != null)
-        {
-            Vector3 startPos = mainCamera.position;
-            Quaternion startRot = mainCamera.rotation;
-            float t = 0f;
+        // VCAM AKTİF ET (Manuel Lerp ve Brain kapatmaya gerek kalmadı, sistem süzülecek)
+        if (interactVCam)
+            interactVCam.Priority = 100;
 
-            while (t < cameraTransitionDuration)
-            {
-                t += Time.deltaTime;
-                float s = Mathf.SmoothStep(0f, 1f, t / cameraTransitionDuration);
+        yield return new WaitForSeconds(1.5f); // Kameranın süzülmesini bekle
 
-                mainCamera.position = Vector3.Lerp(startPos, fixedCameraTransform.position, s);
-                mainCamera.rotation = Quaternion.Slerp(startRot, fixedCameraTransform.rotation, s);
-                yield return null;
-            }
-            // Tam oturt
-            mainCamera.position = fixedCameraTransform.position;
-            mainCamera.rotation = fixedCameraTransform.rotation;
-        }
-
-        // 5. Modu Aktif Et (LateUpdate kamerayı kilitleyecek)
         inMachineMode = true;
 
-        // UI ve Cursor
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
 
-        // --- DEĞİŞEN KISIM BURASI ---
         if (ControlsUIManager.Instance != null)
         {
-            // Artık string yollamak yerine Enum yolluyoruz.
-            // Bu sayede "massSpectrometerPanel" açılacak.
             ControlsUIManager.Instance.ShowMachineUI(ControlsUIManager.MachineType.Oscilloscope);
         }
+
         PlayerInteraction playerInt = FindObjectOfType<PlayerInteraction>();
         if (playerInt != null)
             playerInt.ToggleCrosshair(false);
 
-        // Sesleri Aç
         FadeAudio(true, 1.0f);
         UpdateAudioAndWaveform();
         UpdateKnobVisuals();
@@ -332,33 +275,39 @@ public class InteractableOscilloscope : MonoBehaviour, IInteractable, IForceExit
         if (isExiting)
             yield break;
         isExiting = true;
-        inMachineMode = false; // Kamera kilidini kaldır
+        inMachineMode = false;
 
         FadeAudio(false, 0.5f);
 
-        // 1. Cinemachine Brain'i Aç (Otomatik Blend yapsın)
-        // AYAKLARA GİTME SORUNUNU BU ÇÖZER
-        if (cinemachineBrain)
-        {
-            cinemachineBrain.enabled = true;
-        }
+        // VCAM PASİF ET (Kamera yumuşakça karakterin ensesine geri dönecek)
+        if (interactVCam)
+            interactVCam.Priority = 0;
 
-        // Blend süresi kadar bekle (1 saniye ideal)
-        yield return new WaitForSeconds(1.0f);
+        yield return new WaitForSeconds(1.5f);
 
-        // 2. Kontrolleri Geri Ver
-        if (playerController != null)
+        // 1. FİZİĞİ VE SCRİPTİ GERİ AÇ
+        if (playerController)
             playerController.enabled = true;
+        if (playerMovementScript)
+            playerMovementScript.enabled = true;
+
+        // 2. HAREKET KİLİDİNİ ÇÖZ
+        StarterAssets.CharacterController saController =
+            playerMovementScript as StarterAssets.CharacterController;
+        if (saController != null)
+        {
+            saController.SetFrozen(false, lockCameraInput: false, restrictRotation: false);
+        }
         if (playerLookScript)
             playerLookScript.enabled = true;
-        if (playerMovementScript != null)
-            playerMovementScript.enabled = true;
 
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
+
         PlayerInteraction playerInt = FindObjectOfType<PlayerInteraction>();
         if (playerInt != null)
             playerInt.ToggleCrosshair(true);
+
         if (ControlsUIManager.Instance != null)
             ControlsUIManager.Instance.HideControls();
         if (GameManager.Instance != null)
@@ -419,16 +368,6 @@ public class InteractableOscilloscope : MonoBehaviour, IInteractable, IForceExit
         }
     }
 
-    private void LateUpdate()
-    {
-        // KAMERAYI ÇİVİ GİBİ ÇAK
-        // Eğer makine modundaysak kamera bir milim bile kıpırdayamaz.
-        if (inMachineMode && fixedCameraTransform != null)
-        {
-            mainCamera.position = fixedCameraTransform.position;
-            mainCamera.rotation = fixedCameraTransform.rotation;
-        }
-    }
 
     // --- YARDIMCI FONKSİYONLAR ---
     private void UpdateAudioAndWaveform()

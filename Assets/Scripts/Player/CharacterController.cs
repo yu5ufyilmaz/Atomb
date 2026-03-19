@@ -365,7 +365,16 @@ namespace StarterAssets
                 return; // Hareket hesaplamasını yapmadan fonksiyondan çık
             }
             // 1. Hız Hesaplama
+            // 1. Hız Hesaplama
             float targetSpeed = _input.sprint ? SprintSpeed : MoveSpeed;
+
+            // --- YENİ: BİTKİNLİK HİSSİYATI ---
+            // Eğer karakter yorgunluktan tükenmişse (ceza modundaysa), normalden de yavaş yürüsün.
+            if (isExhausted)
+            {
+                targetSpeed = MoveSpeed * 0.65f; // Normal yürüme hızının %65'ine düşer
+            }
+
             if (_input.move == Vector2.zero)
                 targetSpeed = 0.0f;
 
@@ -669,20 +678,31 @@ namespace StarterAssets
             if (_input.move != Vector2.zero && speed > 0.1f)
             {
                 // Koşuyorsak frekansı artır
+                // Koşuyorsak frekansı artır
                 float freq = _input.sprint ? BobFrequency * 1.3f : BobFrequency;
+
+                // Varsayılan sallantı genliklerini al
+                float currentBobY = BobYAmplitude;
+                float currentBobX = BobXAmplitude;
+
+                // --- YENİ: YORGUNLUK (EXHAUSTED) ETKİSİ ---
+                if (isExhausted)
+                {
+                    // Yorgunken adımlar daha ağır ve dengesiz olur
+                    currentBobY *= 2.0f; // Aşağı/Yukarı sarsıntı 2 katına çıkar (Ağırlaşmış adımlar)
+                    currentBobX *= 1.8f; // Sağa/Sola yalpalanma neredeyse 2 kat artar (Denge kaybı)
+                    freq *= 0.8f; // Adım atma sıklığı %20 yavaşlar (Bitkinlik)
+                }
 
                 _bobTimer += Time.deltaTime * freq;
 
                 // --- DOĞAL YÜRÜME FORMÜLÜ (Lissajous Curve / 8 Çizme) ---
 
                 // 1. Y EKSENİ (Yukarı/Aşağı): Sinüs dalgası (Adım atma)
-                // Mutlak değer (Mathf.Abs) kullanmıyoruz, yumuşak iniş çıkış olsun.
-                float bobYOffset = Mathf.Sin(_bobTimer) * BobYAmplitude;
+                float bobYOffset = Mathf.Sin(_bobTimer) * currentBobY;
 
                 // 2. X EKSENİ (Sağa/Sola): Kosinüs dalgası (Ağırlık verme)
-                // Frekansı yarıya bölüyoruz (_bobTimer / 2f).
-                // Çünkü: İki adımda (Sol-Sağ) bir tam tur sağa-sola sallanırız.
-                float bobXOffset = Mathf.Cos(_bobTimer / 2f) * BobXAmplitude;
+                float bobXOffset = Mathf.Cos(_bobTimer / 2f) * currentBobX;
 
                 // Kameranın pozisyonunu hedef pozisyona doğru yumuşakça (Lerp) kaydır
                 Vector3 currentPos = CinemachineCameraTarget.transform.localPosition;
@@ -697,7 +717,7 @@ namespace StarterAssets
                 CinemachineCameraTarget.transform.localPosition = Vector3.Lerp(
                     currentPos,
                     targetPos,
-                    Time.deltaTime * 15f
+                    Time.deltaTime * 8f
                 );
             }
             else
@@ -714,7 +734,7 @@ namespace StarterAssets
                     CinemachineCameraTarget.transform.localPosition = Vector3.Lerp(
                         currentPos,
                         targetPos,
-                        Time.deltaTime * 6f
+                        Time.deltaTime * 4f
                     );
                 }
             }
