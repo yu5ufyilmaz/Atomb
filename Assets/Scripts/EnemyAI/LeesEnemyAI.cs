@@ -158,6 +158,8 @@ public class LeesEnemyAI : MonoBehaviour
 
     private void Update()
     {
+        if (!GameManager.Instance.isGameStarted)
+            return;
         if (GlobalEnemyManager.Instance != null && GlobalEnemyManager.Instance.stopAllEnemies)
             return;
 
@@ -530,7 +532,7 @@ public class LeesEnemyAI : MonoBehaviour
         // RAM Optimizasyonu: Yeni Liste yerine önbellek kullan
         shuffleBuffer.Clear();
         shuffleBuffer.AddRange(currentRoom.spawnPoints);
-        
+
         // Fisher-Yates shuffle
         for (int i = 0; i < shuffleBuffer.Count; i++)
         {
@@ -601,12 +603,14 @@ public class LeesEnemyAI : MonoBehaviour
         if (cachedRenderers != null)
         {
             foreach (var r in cachedRenderers)
-                if (r != null) r.enabled = show;
+                if (r != null)
+                    r.enabled = show;
         }
         if (cachedColliders != null)
         {
             foreach (var c in cachedColliders)
-                if (c != null) c.enabled = show;
+                if (c != null)
+                    c.enabled = show;
         }
     }
 

@@ -18,8 +18,8 @@ TagManager:
   - Enemy
   - Wall
   - Outline
-  - 
-  - 
+  - MenuObj
+  - QuitObj
   - 
   - 
   - 

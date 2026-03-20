@@ -4,11 +4,14 @@ public class SymbolSpawner : MonoBehaviour
 {
     public static SymbolSpawner Instance { get; private set; }
 
-    [Header("Rastgele Spawn Ayarları")]
+    [Header("Sembol Objeleri (Prefab veya Sahne Objesi)")]
     public GameObject[] possibleSymbolObjects;
 
+    [Header("Spawn Konumları")]
+    public Transform[] spawnPoints; // Müfettiş panelinden 4 adet boş Transform ekle
+
     [HideInInspector]
-    public int spawnedSymbolID = -1; // Hangi sembolün aktif olduğunu tutacağız
+    public int spawnedSymbolID = -1;
 
     private void Awake()
     {
@@ -18,38 +21,49 @@ public class SymbolSpawner : MonoBehaviour
             Destroy(gameObject);
     }
 
-    private void Start()
-    {
-        // PasswordManager Start'ta çalıştığı için çakışma olmasın diye
-        // buradaki Start'ı boş bırakıp, fonksiyonu dışarıdan tetikleteceğiz.
-    }
-
     public void SpawnRandomSymbol()
     {
         if (possibleSymbolObjects == null || possibleSymbolObjects.Length == 0)
             return;
 
+        // Önce tüm sembolleri deaktif et
         foreach (GameObject obj in possibleSymbolObjects)
         {
             if (obj != null)
                 obj.SetActive(false);
         }
 
-        int randomIndex = Random.Range(0, possibleSymbolObjects.Length);
+        // 1. Rastgele bir sembol seç
+        int randomSymbolIndex = Random.Range(0, possibleSymbolObjects.Length);
+        GameObject selectedSymbol = possibleSymbolObjects[randomSymbolIndex];
 
-        if (possibleSymbolObjects[randomIndex] != null)
+        if (selectedSymbol != null)
         {
-            possibleSymbolObjects[randomIndex].SetActive(true);
+            // 2. Rastgele bir konum seç (Eğer spawnPoints doluysa)
+            if (spawnPoints != null && spawnPoints.Length > 0)
+            {
+                int randomPointIndex = Random.Range(0, spawnPoints.Length);
+                Transform targetPoint = spawnPoints[randomPointIndex];
 
-            // Seçilen objenin ID'sini alıp hafızaya yazıyoruz
-            InteractableSymbol sym = possibleSymbolObjects[randomIndex]
-                .GetComponent<InteractableSymbol>();
+                // Sembolü seçilen konuma ışınla
+                selectedSymbol.transform.position = targetPoint.position;
+                selectedSymbol.transform.rotation = targetPoint.rotation;
+                selectedSymbol.transform.SetParent(targetPoint);
+            }
+
+            // 3. Sembolü aktif et
+            selectedSymbol.SetActive(true);
+
+            // ID Ataması
+            InteractableSymbol sym = selectedSymbol.GetComponent<InteractableSymbol>();
             if (sym != null)
                 spawnedSymbolID = sym.symbolID;
             else
-                spawnedSymbolID = randomIndex; // Eğer script yoksa sırasını ID kabul et
+                spawnedSymbolID = randomSymbolIndex;
 
-            Debug.Log($"[Spawner] Rastgele Sembol Aktif Edildi. ID: {spawnedSymbolID}");
+            Debug.Log(
+                $"[Spawner] Sembol: {selectedSymbol.name} | Konum ID: {spawnedSymbolID} noktasında oluşturuldu."
+            );
         }
     }
 }

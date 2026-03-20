@@ -83,11 +83,16 @@ public class PressureSystemManager : MonoBehaviour
 
         if (warningUI != null)
             warningUI.SetActive(false);
+        HandlePostProcessing();
     }
 
     private void Update()
     {
         if (isGameOver)
+            return;
+
+        // YENİ EKLENEN KONTROL: Oyun henüz başlamadıysa basınç artışını DONDUR
+        if (GameManager.Instance != null && !GameManager.Instance.isGameStarted)
             return;
 
         // Basınç Mantığı

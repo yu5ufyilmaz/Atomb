@@ -238,6 +238,14 @@ namespace StarterAssets
             // Rastgelelik için seed belirle
             if (CinemachineCameraTarget != null)
                 _defaultYPos = CinemachineCameraTarget.transform.localPosition.y;
+            if (GameManager.Instance != null && !GameManager.Instance.isGameStarted)
+            {
+                // Faz 1: Masada Oturuyoruz
+                // freeze = true (Karakter yürüyemez)
+                // lockCameraInput = false (Fare ile etrafa bakabiliriz)
+                // restrictRotation = true (Sadece masa etrafında kısıtlı açıda bakabiliriz, arkaya dönemeyiz)
+                SetFrozen(true, false, true);
+            }
         }
 
         private void Update()
@@ -267,6 +275,12 @@ namespace StarterAssets
             _animIDVelocityX = Animator.StringToHash("VelocityX");
             _animIDVelocityZ = Animator.StringToHash("VelocityZ");
             // ----------------------------
+        }
+
+        // --- YENİ EKLENEN FONKSİYON: Head Bob Merkezini Sıfırlama ---
+        public void ResetHeadBobYPos(float newYPos)
+        {
+            _defaultYPos = newYPos;
         }
 
         private void GroundedCheck()

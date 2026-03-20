@@ -35,6 +35,10 @@ public class PauseManager : MonoBehaviour
 
     private void Update()
     {
+        // YENİ EKLENEN KONTROL: Oyun henüz başlamadıysa ESC tuşunu tamamen yok say!
+        if (GameManager.Instance != null && !GameManager.Instance.isGameStarted)
+            return;
+
         // ESC tuşuna basılınca
         if (Input.GetKeyDown(KeyCode.Escape))
         {
@@ -55,9 +59,9 @@ public class PauseManager : MonoBehaviour
 
         // 2. Zamanı Durdur
         Time.timeScale = 0f;
-        
+
         // 3. SESLERİ DURDUR (YENİ EKLENEN KISIM)
-        AudioListener.pause = true; 
+        AudioListener.pause = true;
 
         // 4. Paneli Aç
         if (pauseMenuPanel != null)
@@ -132,9 +136,9 @@ public class PauseManager : MonoBehaviour
     {
         // Sahne değişirken zamanı mutlaka 1 yapmalıyız, yoksa menü donuk başlar!
         Time.timeScale = 1f;
-        
+
         // Menüye dönünce sesler geri gelmeli (YENİ EKLENEN KISIM)
-        AudioListener.pause = false; 
+        AudioListener.pause = false;
 
         if (GameManager.Instance != null)
             GameManager.Instance.isGamePaused = false;

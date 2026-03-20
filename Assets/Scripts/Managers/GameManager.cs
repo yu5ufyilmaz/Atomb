@@ -10,6 +10,9 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
 
+    [Header("Oyun Akışı")]
+    public bool isGameStarted = false; // Oyunun başlayıp başlamadığını tutar
+
     [Header("Sistem Referansları (Otomatik Bulunur)")]
     public BreakerBox breakerBox;
     public PasswordManager passwordManager;
@@ -36,13 +39,22 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
-        // Oyun başladığında mouse'u gizle ve kilitle
+        // BAŞLANGIÇTA FARE SERBEST OLMALI (Masadaki Start/Options'a tıklamak için)
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
+    }
+
+    public void StartGameMode()
+    {
+        isGameStarted = true;
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
     }
 
     public bool IsCursorRequired()
     {
+        if (!isGameStarted)
+            return true;
         // 1. Eğer hiçbir etkileşimde değilsek (FPS modu), fare GİZLİ olmalı.
         if (activeInteraction == null)
             return false;

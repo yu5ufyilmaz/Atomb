@@ -55,9 +55,8 @@ public class MegaphoneSystem : MonoBehaviour
             Destroy(gameObject);
     }
 
-    void Start()
+    public void TriggerGameStartAudio()
     {
-        // 1. Koşul: Oyun başladıktan birkaç saniye sonra çal
         StartCoroutine(StartGameRoutine());
     }
 

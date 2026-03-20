@@ -106,6 +106,16 @@ public class BreakerBox : MonoBehaviour, IInteractable
     {
         while (true)
         {
+            // YENİ EKLENEN KONTROL: Eğer oyun duraklatıldıysa veya HENÜZ BAŞLAMADIYSA bekle!
+            if (
+                GameManager.Instance != null
+                && (!GameManager.Instance.isGameStarted || GameManager.Instance.isGamePaused)
+            )
+            {
+                yield return null; // Bir sonraki frame'i bekle, zamanlayıcıyı ilerletme.
+                continue; // Döngünün başına dön
+            }
+
             if (isTripped)
             {
                 // ŞARTEL ATIK: Oyuncu düzeltene kadar bekle
@@ -113,9 +123,29 @@ public class BreakerBox : MonoBehaviour, IInteractable
             }
             else
             {
-                // ŞARTEL AÇIK: 180 saniye bekle.
-                yield return new WaitForSeconds(checkInterval);
+                // YENİ EKLENEN KISIM: WaitForSeconds yerine kendi zamanlayıcımızı yazıyoruz.
+                // Çünkü WaitForSeconds arka planda durdurulamaz. Kendi sayacımız duraklamaya saygı duyar.
+                float timer = 0f;
+                while (timer < checkInterval)
+                {
+                    // Oyun durdurulursa sayacı durdur
+                    if (
+                        GameManager.Instance != null
+                        && (
+                            !GameManager.Instance.isGameStarted || GameManager.Instance.isGamePaused
+                        )
+                    )
+                    {
+                        yield return null;
+                    }
+                    else
+                    {
+                        timer += Time.deltaTime; // Sadece oyun akarken saniyeleri say
+                        yield return null;
+                    }
+                }
 
+                // Süre dolduğunda şartel atmamışsa risk kontrolü yap
                 if (!isTripped)
                 {
                     RunRiskCheck();

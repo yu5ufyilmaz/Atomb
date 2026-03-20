@@ -141,6 +141,8 @@ public class GuderianAI : MonoBehaviour
 
     private void Update()
     {
+        if (!GameManager.Instance.isGameStarted)
+            return;
         // Global Durdurma Kontrolü
         if (GlobalEnemyManager.Instance.stopAllEnemies)
         {
@@ -696,7 +698,10 @@ public class GuderianAI : MonoBehaviour
         }
 
         // Performans: Önbellekteki player referansını kullan
-        GameObject player = cachedPlayer != null ? cachedPlayer.gameObject : GameObject.FindGameObjectWithTag("Player");
+        GameObject player =
+            cachedPlayer != null
+                ? cachedPlayer.gameObject
+                : GameObject.FindGameObjectWithTag("Player");
 
         if (lockerExitPoint != null)
         {

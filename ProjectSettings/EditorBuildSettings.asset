@@ -6,6 +6,9 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
+    path: Assets/Scenes/Osman_NewSceneTests/PressAnyKeyMenu.unity
+    guid: acd6ece9af2e5d543bd0bfe26f0c38de
+  - enabled: 0
     path: Assets/Scenes/MainMenu.unity
     guid: ab093048dc1969c45a00eb93ea9af6f0
   - enabled: 0

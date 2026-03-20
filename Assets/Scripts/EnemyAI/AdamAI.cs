@@ -70,6 +70,8 @@ public class AdamAI : MonoBehaviour
 
     private void Update()
     {
+        if (!GameManager.Instance.isGameStarted)
+            return;
         // Debug Güncellemesi
         if (playerCurrentRoom == null)
             currentDetectedRoom = "YOK (Koridor/Boşluk)";
