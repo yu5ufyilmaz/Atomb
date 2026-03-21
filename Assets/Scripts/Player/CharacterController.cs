@@ -238,13 +238,14 @@ namespace StarterAssets
             // Rastgelelik için seed belirle
             if (CinemachineCameraTarget != null)
                 _defaultYPos = CinemachineCameraTarget.transform.localPosition.y;
+            // CharacterController.cs içindeki Start() metodunun en alt kısmı
             if (GameManager.Instance != null && !GameManager.Instance.isGameStarted)
             {
                 // Faz 1: Masada Oturuyoruz
                 // freeze = true (Karakter yürüyemez)
-                // lockCameraInput = false (Fare ile etrafa bakabiliriz)
-                // restrictRotation = true (Sadece masa etrafında kısıtlı açıda bakabiliriz, arkaya dönemeyiz)
-                SetFrozen(true, false, true);
+                // lockCameraInput = true (Kamera TAMAMEN kilitli, fare ile etrafa bakamayız)
+                // restrictRotation = false (Artık tam kilitli olduğumuz için boyun kısıtlamasına gerek yok)
+                SetFrozen(true, true, false);
             }
         }
 

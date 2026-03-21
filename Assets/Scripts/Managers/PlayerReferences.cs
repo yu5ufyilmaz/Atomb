@@ -1,5 +1,5 @@
-using UnityEngine;
 using StarterAssets;
+using UnityEngine;
 
 /// <summary>
 /// Merkezi singleton: Tüm script'lerin FindObjectOfType yapmak yerine
@@ -9,13 +9,26 @@ public class PlayerReferences : MonoBehaviour
 {
     public static PlayerReferences Instance { get; private set; }
 
-    [HideInInspector] public UnityEngine.CharacterController physicsController;
-    [HideInInspector] public StarterAssets.CharacterController gameController;
-    [HideInInspector] public StarterAssetsInputs inputs;
-    [HideInInspector] public Animator animator;
-    [HideInInspector] public Camera mainCamera;
-    [HideInInspector] public PlayerInteraction interaction;
-    [HideInInspector] public Transform playerTransform;
+    [HideInInspector]
+    public UnityEngine.CharacterController physicsController;
+
+    [HideInInspector]
+    public StarterAssets.CharacterController gameController;
+
+    [HideInInspector]
+    public StarterAssetsInputs inputs;
+
+    [HideInInspector]
+    public Animator animator;
+
+    [HideInInspector]
+    public Camera mainCamera;
+
+    [HideInInspector]
+    public PlayerInteraction interaction;
+
+    [HideInInspector]
+    public Transform playerTransform;
 
     private void Awake()
     {

@@ -44,11 +44,53 @@ public class GameManager : MonoBehaviour
         Cursor.visible = true;
     }
 
+    // GameManager.cs içindeki StartGameMode metodu
     public void StartGameMode()
     {
         isGameStarted = true;
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
+
+        // YENİ EKLENEN KISIM: Oyun başladığında karakterin kilitlerini aç
+        StarterAssets.CharacterController player =
+            FindObjectOfType<StarterAssets.CharacterController>();
+        if (player != null)
+        {
+            // freeze = false, lockCameraInput = false, restrictRotation = false
+            player.SetFrozen(false, false, false);
+        }
+    }
+
+    // GameManager.cs İÇİNE EKLENECEK
+    public void UpdateCursorState()
+    {
+        // 1. Oyun duraklatıldıysa fare KESİNLİKLE AÇIK
+        if (isGamePaused)
+        {
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
+            return;
+        }
+
+        // 2. Oyun henüz başlamadıysa (Ana Menü / Splash) fare KESİNLİKLE AÇIK
+        if (!isGameStarted)
+        {
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
+            return;
+        }
+
+        // 3. Oyun içi etkileşimler (Kitap, Vana vb.)
+        if (IsCursorRequired())
+        {
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
+        }
+        else
+        {
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
+        }
     }
 
     public bool IsCursorRequired()

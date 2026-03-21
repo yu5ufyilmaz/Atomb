@@ -89,8 +89,14 @@ public class PlayerInteraction : MonoBehaviour
     private void Update()
     {
         // --- YENİ EKLENEN ÇAKIŞMA ÖNLEYİCİ KONTROL ---
-        // Eğer oyuncu şu an bir kitap veya makineyle etkileşimdeyse (odaklanmışsa)
-        if (GameManager.Instance != null && GameManager.Instance.activeInteraction != null)
+        bool isInteracting =
+            GameManager.Instance != null && GameManager.Instance.activeInteraction != null;
+        bool isSymbolOverlayActive =
+            PuzzleInventoryManager.Instance != null
+            && PuzzleInventoryManager.Instance.isOverlayActive;
+
+        // Eğer oyuncu şu an bir makineyle etkileşimdeyse VEYA Ekranda 'T' ile açılmış sembol varsa
+        if (isInteracting || isSymbolOverlayActive)
         {
             // Eğer ekranda takılı kalmış bir vurgu (highlight) veya imleç varsa temizle
             if (currentInteractable != null)
@@ -101,6 +107,7 @@ public class PlayerInteraction : MonoBehaviour
             // Aşağıdaki kodları (Raycast atma ve sol tık dinleme) çalıştırmadan çık!
             return;
         }
+
         CheckForInteractable();
         HandleInteractionInput();
     }

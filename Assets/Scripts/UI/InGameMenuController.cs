@@ -53,10 +53,14 @@ public class InGameMenuController : MonoBehaviour
                     ui.SetActive(false);
             }
 
+            // InGameMenuController.cs Start() metodu içi
             if (cameraTarget != null)
             {
                 lockedPosition = cameraTarget.position;
                 isCameraLocked = true;
+
+                // --- YENİ EKLENEN KOD: Kamerayı kemikten ayır ki titremesin ---
+                cameraTarget.SetParent(null);
             }
 
             // --- YENİ: MENÜ MÜZİĞİNİ BAŞLAT ---
@@ -87,14 +91,15 @@ public class InGameMenuController : MonoBehaviour
 
     private IEnumerator GameStartRoutine()
     {
-        GameManager.Instance.StartGameMode();
+        // --- 1. OYUNCU KİLİDİNİ AÇMA, SADECE FAREYİ GİZLE ---
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
 
-        // --- GÜNCELLENDİ: Masadaki yazıları YAVAŞÇA silerek kapat ---
+        // Masadaki yazıları yavaşça silerek kapat
         foreach (GameObject obj in menuObjectsToHide)
         {
             if (obj != null)
             {
-                // uiFadeDuration (1.5 sn) süresinde yavaşça kaybolacaklar
                 StartCoroutine(FadeOutAndHide(obj, uiFadeDuration));
             }
         }
@@ -104,18 +109,17 @@ public class InGameMenuController : MonoBehaviour
             playerAnimator.SetTrigger("StandUp");
         }
 
-        // --- YENİ: AYAĞA KALKMA SES EFEKTİNİ ÇAL ---
         if (sfxSource != null && standUpSound != null)
         {
             sfxSource.PlayOneShot(standUpSound);
         }
 
-        // --- YENİ: MÜZİĞİ YAVAŞÇA KISMA İŞLEMİNİ BAŞLAT ---
         if (menuMusicSource != null)
         {
             StartCoroutine(FadeOutMusic(menuMusicSource, musicFadeDuration));
         }
 
+        // --- KAMERA YUMUŞAK GEÇİŞİ ---
         if (cameraTarget != null && cameraAnchor != null)
         {
             Vector3 startPos = lockedPosition;
@@ -136,22 +140,36 @@ public class InGameMenuController : MonoBehaviour
 
             isCameraLocked = false;
 
-            // Kamerayı fiziksel olarak Anchor'a bağla ve İÇ pozisyonunu KESİN SIFIRLA
+            // Kamerayı fiziksel olarak Anchor'a (Kafaya) bağla ve İÇ pozisyonunu/rotasyonunu KESİN SIFIRLA
             cameraTarget.SetParent(cameraAnchor);
             cameraTarget.localPosition = Vector3.zero;
+            cameraTarget.localRotation = Quaternion.identity; // Kemik nereye bakıyorsa oraya bak
         }
         else
         {
             yield return new WaitForSeconds(standUpDuration);
         }
 
+        // --- 2. GEÇİŞ BİTTİ: OYUNU ŞİMDİ BAŞLAT (Karakterin kilidini aç) ---
+        GameManager.Instance.StartGameMode();
+
         if (playerController != null)
         {
-            // --- YENİ EKLENEN KOD: HeadBob sistemine kamerayı aşağı çekmemesini söyle ---
             playerController.ResetHeadBobYPos(0f);
 
-            // Karakterin kilidini aç
-            playerController.SetFrozen(false, false, false);
+            // --- 3. KAMERA AÇILARINI SENKRONİZE ET (Kontrol verildiği an ışınlanmasın) ---
+            if (cameraTarget != null)
+            {
+                float finalYaw = cameraTarget.eulerAngles.y;
+                float finalPitch = cameraTarget.eulerAngles.x;
+
+                // Pitch (X) açısı Unity'de 360 sarmalına girebilir, düzeltiyoruz:
+                if (finalPitch > 180f)
+                    finalPitch -= 360f;
+
+                // CharacterController'a kameranın şu anki açısını öğretiyoruz
+                playerController.ForceCameraRotation(finalYaw, finalPitch);
+            }
         }
 
         if (MegaphoneSystem.Instance != null)

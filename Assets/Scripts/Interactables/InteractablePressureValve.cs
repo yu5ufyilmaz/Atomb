@@ -224,8 +224,7 @@ public class InteractablePressureValve : MonoBehaviour, IInteractable, IForceExi
         yield return new WaitForSeconds(1.5f);
 
         inValveMode = true;
-        Cursor.lockState = CursorLockMode.None; // Mouse lazım
-        Cursor.visible = true;
+        GameManager.Instance.UpdateCursorState();
 
         if (ControlsUIManager.Instance != null)
         {
@@ -256,13 +255,16 @@ public class InteractablePressureValve : MonoBehaviour, IInteractable, IForceExi
         if (playerMovementScript)
             playerMovementScript.enabled = true;
 
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
+        // --- DÜZELTİLEN KISIM BURASI ---
+        // 1. ÖNCE etkileşimi sıfırla ki GameManager vanadan çıktığımızı bilsin!
+        if (GameManager.Instance)
+            GameManager.Instance.activeInteraction = null;
+
+        // 2. SONRA fareyi güncelle. (Artık etkileşim null olduğu için fareyi gizleyecektir)
+        GameManager.Instance.UpdateCursorState();
 
         if (ControlsUIManager.Instance)
             ControlsUIManager.Instance.HideControls();
-        if (GameManager.Instance)
-            GameManager.Instance.activeInteraction = null;
 
         isExiting = false;
     }

@@ -109,7 +109,10 @@ public class SymbolOverlayManager : MonoBehaviour
     private void ToggleSymbol(bool state, InteractableBook book)
     {
         PuzzleInventoryManager.Instance.isOverlayActive = state;
-
+        if (PlayerInteraction.Instance != null)
+        {
+            PlayerInteraction.Instance.ToggleCrosshair(!state);
+        }
         if (state)
         {
             if (activeSymbolInstance == null)

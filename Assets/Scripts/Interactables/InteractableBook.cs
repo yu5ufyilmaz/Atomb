@@ -392,8 +392,7 @@ public class InteractableBook : MonoBehaviour, IInteractable, IForceExitable
         if (playerAnimator != null)
             playerAnimator.enabled = false;
 
-        Cursor.lockState = CursorLockMode.None;
-        Cursor.visible = true;
+        GameManager.Instance.UpdateCursorState();
 
         originalParent = transform.parent;
         originalLocalPosition = transform.localPosition;
@@ -504,8 +503,7 @@ public class InteractableBook : MonoBehaviour, IInteractable, IForceExitable
         if (bookUI != null)
             bookUI.SetActive(false);
 
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
+        GameManager.Instance.UpdateCursorState();
 
         if (bookAnimator != null)
         {
