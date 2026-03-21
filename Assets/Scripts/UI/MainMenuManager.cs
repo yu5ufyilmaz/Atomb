@@ -8,6 +8,9 @@ public class MainMenuManager : MonoBehaviour
     [SerializeField]
     private float fadeDuration = 1.5f;
 
+    [SerializeField]
+    private GameObject settingsPanel; // <--- YENİ EKLENDİ
+
     [Header("UI Referansları")]
     [SerializeField]
     private GameObject mainMenuPanel;
@@ -22,7 +25,8 @@ public class MainMenuManager : MonoBehaviour
     {
         if (creditsPanel != null)
             creditsPanel.SetActive(false);
-
+        if (settingsPanel != null)
+            settingsPanel.SetActive(false); // <--- YENİ EKLENDİ
         if (mainMenuPanel != null)
         {
             mainMenuPanel.SetActive(true);
@@ -52,6 +56,22 @@ public class MainMenuManager : MonoBehaviour
         }
 
         StartCoroutine(StartGameTransitionRoutine());
+    }
+
+    public void OpenSettings()
+    {
+        if (mainMenuPanel != null)
+            mainMenuPanel.SetActive(false);
+        if (settingsPanel != null)
+            settingsPanel.SetActive(true);
+    }
+
+    public void CloseSettings()
+    {
+        if (settingsPanel != null)
+            settingsPanel.SetActive(false);
+        if (mainMenuPanel != null)
+            mainMenuPanel.SetActive(true);
     }
 
     public void OpenCredits()

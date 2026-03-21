@@ -11,6 +11,9 @@ public class PauseManager : MonoBehaviour
     [SerializeField]
     private string mainMenuSceneName = "MainMenu"; // Ana menü sahnesinin tam adı
 
+    [SerializeField]
+    private GameObject settingsPanel; // <--- YENİ EKLENDİ
+
     [Header("Oyuncu Referansları")]
     [Tooltip("Karakterin Input Scripti (Mouse kilidini yönetmek için)")]
     [SerializeField]
@@ -23,7 +26,8 @@ public class PauseManager : MonoBehaviour
         // Başlangıçta panel kapalı olsun
         if (pauseMenuPanel != null)
             pauseMenuPanel.SetActive(false);
-
+        if (settingsPanel != null)
+            settingsPanel.SetActive(false); // <--- YENİ EKLENDİ
         // Oyun başladığında zamanın ve seslerin aktığından emin ol
         Time.timeScale = 1f;
         AudioListener.pause = false; // <--- GARANTİ OLSUN DİYE EKLENDİ
@@ -42,10 +46,18 @@ public class PauseManager : MonoBehaviour
         // ESC tuşuna basılınca
         if (Input.GetKeyDown(KeyCode.Escape))
         {
-            if (isPaused)
+            if (settingsPanel != null && settingsPanel.activeSelf)
+            {
+                CloseSettings();
+            }
+            else if (isPaused)
+            {
                 ResumeGame();
+            }
             else
+            {
                 PauseGame();
+            }
         }
     }
 
@@ -95,7 +107,8 @@ public class PauseManager : MonoBehaviour
         // 4. Paneli Kapat
         if (pauseMenuPanel != null)
             pauseMenuPanel.SetActive(false);
-
+        if (settingsPanel != null)
+            settingsPanel.SetActive(false); // <--- YENİ: Garantilemek için
         // 5. Inputları geri aç
         if (playerInputs != null)
             playerInputs.cursorInputForLook = true;
@@ -104,6 +117,22 @@ public class PauseManager : MonoBehaviour
         // Körlemesine fareyi kapatmak yerine, duruma göre karar veriyoruz.
 
         GameManager.Instance.UpdateCursorState();
+    }
+
+    public void OpenSettings()
+    {
+        if (pauseMenuPanel != null)
+            pauseMenuPanel.SetActive(false);
+        if (settingsPanel != null)
+            settingsPanel.SetActive(true);
+    }
+
+    public void CloseSettings()
+    {
+        if (settingsPanel != null)
+            settingsPanel.SetActive(false);
+        if (pauseMenuPanel != null)
+            pauseMenuPanel.SetActive(true);
     }
 
     public void LoadMainMenu()

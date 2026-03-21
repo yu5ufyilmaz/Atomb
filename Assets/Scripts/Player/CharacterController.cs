@@ -183,7 +183,7 @@ namespace StarterAssets
         private UnityEngine.CharacterController _controller;
         private StarterAssetsInputs _input;
         private GameObject _mainCamera;
-
+        private AudioSource _audioSource;
         private const float _threshold = 0.01f;
 
         private bool _hasAnimator;
@@ -214,6 +214,13 @@ namespace StarterAssets
             _cinemachineTargetYaw = CinemachineCameraTarget.transform.rotation.eulerAngles.y;
 
             _hasAnimator = TryGetComponent(out _animator);
+            // Karakterde AudioSource var mı diye bak, yoksa otomatik ekle
+            _audioSource = GetComponent<AudioSource>();
+            if (_audioSource == null)
+            {
+                _audioSource = gameObject.AddComponent<AudioSource>();
+                _audioSource.spatialBlend = 1f; // Sesi 3D (uzamsal) yapar
+            }
             _controller = GetComponent<UnityEngine.CharacterController>();
             _input = GetComponent<StarterAssetsInputs>();
 #if ENABLE_INPUT_SYSTEM
@@ -317,12 +324,23 @@ namespace StarterAssets
             {
                 float deltaTimeMultiplier = IsCurrentDeviceMouse ? 1.0f : Time.deltaTime;
 
-                // Sarhoşluk kontrolü (Eski kodun)
+                // Sarhoşluk kontrolü
                 float controlLag =
                     (drunkIntensity > 0.01f) ? Mathf.Lerp(1f, 0.5f, drunkIntensity) : 1f;
 
-                _cinemachineTargetYaw += _input.look.x * deltaTimeMultiplier * controlLag;
-                _cinemachineTargetPitch += _input.look.y * deltaTimeMultiplier * controlLag;
+                // --- YENİ EKLENEN KISIM: Ayarlardan Hassasiyeti Çek ---
+                float sensitivity = 1f;
+                if (SettingsManager.Instance != null)
+                {
+                    sensitivity = SettingsManager.Instance.currentSettings.mouseSensitivity;
+                }
+                // -------------------------------------------------------
+
+                // sensitivity çarpanını dönüş hızlarına ekliyoruz
+                _cinemachineTargetYaw +=
+                    _input.look.x * deltaTimeMultiplier * controlLag * sensitivity;
+                _cinemachineTargetPitch +=
+                    _input.look.y * deltaTimeMultiplier * controlLag * sensitivity;
             }
 
             // Pitch (Yukarı/Aşağı) Clamp (Eski kodun)
@@ -806,11 +824,12 @@ namespace StarterAssets
                 if (FootstepAudioClips.Length > 0)
                 {
                     var index = Random.Range(0, FootstepAudioClips.Length);
-                    AudioSource.PlayClipAtPoint(
-                        FootstepAudioClips[index],
-                        transform.TransformPoint(_controller.center),
-                        FootstepAudioVolume
-                    );
+
+                    // YENİ KOD: Artık Mixeri yok sayan PlayClipAtPoint KULLANMIYORUZ
+                    if (_audioSource != null)
+                    {
+                        _audioSource.PlayOneShot(FootstepAudioClips[index], FootstepAudioVolume);
+                    }
                 }
             }
         }
@@ -819,11 +838,11 @@ namespace StarterAssets
         {
             if (animationEvent.animatorClipInfo.weight > 0.5f)
             {
-                AudioSource.PlayClipAtPoint(
-                    LandingAudioClip,
-                    transform.TransformPoint(_controller.center),
-                    FootstepAudioVolume
-                );
+                // YENİ KOD
+                if (_audioSource != null)
+                {
+                    _audioSource.PlayOneShot(LandingAudioClip, FootstepAudioVolume);
+                }
             }
         }
 

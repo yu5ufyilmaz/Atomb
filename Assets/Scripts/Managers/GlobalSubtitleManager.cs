@@ -30,6 +30,16 @@ public class GlobalSubtitleManager : MonoBehaviour
         if (database == null)
             return;
 
+        // --- YENİ EKLENEN KISIM: Altyazı kapalıysa işlemi direkt iptal et ---
+        if (
+            SettingsManager.Instance != null
+            && !SettingsManager.Instance.currentSettings.subtitlesEnabled
+        )
+        {
+            return;
+        }
+        // -------------------------------------------------------------------
+
         SubtitleEntry entry = database.GetEntry(id);
         if (entry != null)
         {
