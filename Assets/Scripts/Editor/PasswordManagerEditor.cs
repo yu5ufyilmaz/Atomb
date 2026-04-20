@@ -14,6 +14,8 @@ public class PasswordManagerEditor : Editor
         headerStyle.fontSize = 13;
         headerStyle.normal.textColor = new Color(0.4f, 0.7f, 1f);
 
+        serializedObject.Update(); // ÖNEMLİ: Serialized veriyi güncel tut
+
         // --- 1. TUTORIAL AYARLARI ---
         EditorGUILayout.Space(10);
         EditorGUILayout.LabelField("📘 TUTORIAL AYARLARI", headerStyle);
@@ -59,8 +61,47 @@ public class PasswordManagerEditor : Editor
         EditorGUILayout.Space(10);
         EditorGUILayout.LabelField("🔗 BAĞLANTILAR", headerStyle);
         EditorGUILayout.BeginVertical(EditorStyles.helpBox);
-        base.OnInspectorGUI(); // Diğer standart değişkenleri (Makineler, Listeler vb.) buraya basar
+
+        // DÜZELTME: base.OnInspectorGUI() yerine sadece çizilmeyenleri çizdiriyoruz.
+        // Böylece yukarıda özel olarak tasarladığımız değişkenler aşağıda 2. kez GÖRÜNMEZ.
+        DrawPropertiesExcluding(
+            serializedObject,
+            "m_Script",
+            "tutorialNoteBook",
+            "tutorialPassword",
+            "totalPasswordsNeeded"
+        );
+
         EditorGUILayout.EndVertical();
+
+        // --- 4. DEBUG (SADECE OYUN OYNANIRKEN GÖRÜNÜR) ---
+        if (Application.isPlaying)
+        {
+            EditorGUILayout.Space(10);
+            EditorGUILayout.LabelField("🛠️ CANLI VERİLER (DEBUG)", headerStyle);
+            EditorGUILayout.BeginVertical(EditorStyles.helpBox);
+
+            // Yeni eklediğimiz metotlar sayesinde oyun anında sayılara ulaşabiliyoruz
+            EditorGUILayout.LabelField(
+                $"Bulunan İpuçları (Deftere Yazılan): {manager.GetFoundCount()}"
+            );
+            EditorGUILayout.LabelField(
+                $"Onaylanan Şifreler (Makineler): {manager.GetValidatedPasswordCount()} / {manager.GetTotalRequiredCount()}"
+            );
+
+            if (manager.HasFoundAllRequiredPasswords())
+            {
+                EditorGUILayout.HelpBox(
+                    "Tüm şifreler başarıyla girildi! Oyun bitişe hazır.",
+                    MessageType.Info
+                );
+            }
+
+            EditorGUILayout.EndVertical();
+
+            // Sürekli arayüzü güncellemesi için (Play modunda değerlerin canlı akması için)
+            Repaint();
+        }
 
         serializedObject.ApplyModifiedProperties();
     }

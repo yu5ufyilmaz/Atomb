@@ -1,7 +1,11 @@
 using UnityEngine;
 
-public class ControllableLight : MonoBehaviour, IInteractable
+public class ControllableLight : MonoBehaviour, IInteractable, ISaveable
 {
+    [Header("Save System")]
+    [Tooltip("Bu ışığa özel benzersiz ID (Editor üzerinden otomatik atanır)")]
+    public string uniqueID;
+
     [Header("Light Settings")]
     [SerializeField]
     private Light[] targetLight; // Kontrol edilecek ışıklar
@@ -165,6 +169,49 @@ public class ControllableLight : MonoBehaviour, IInteractable
         if (clip != null && audioSource != null)
         {
             audioSource.PlayOneShot(clip);
+        }
+    }
+
+    // ==========================================
+    // ISAVEABLE ARAYÜZÜ ENTEGRASYONU (ID SİSTEMİ)
+    // ==========================================
+    public void LoadData(GameData data)
+    {
+        // Güvenlik: Eğer ışığın ID'si yoksa işlem yapma
+        if (string.IsNullOrEmpty(uniqueID))
+            return;
+
+        // Kayıt dosyasında bu ID'ye sahip bir ışık var mı?
+        if (data.savedLights.Exists(l => l.lightID == this.uniqueID))
+        {
+            GameData.LightSaveData myData = data.savedLights.Find(l => l.lightID == this.uniqueID);
+            this.desiredStateIsOn = myData.isOn;
+        }
+
+        Invoke(nameof(UpdateLightVisual), 0.1f);
+    }
+
+    public void SaveData(ref GameData data)
+    {
+        if (string.IsNullOrEmpty(uniqueID))
+            return;
+
+        // Bu ID zaten listede var mı?
+        int existingIndex = data.savedLights.FindIndex(l => l.lightID == this.uniqueID);
+
+        GameData.LightSaveData mySaveData = new GameData.LightSaveData
+        {
+            lightID = this.uniqueID, // Işığın benzersiz kimliğini kaydediyoruz
+            isOn = this.desiredStateIsOn,
+        };
+
+        if (existingIndex >= 0)
+        {
+            data.savedLights[existingIndex] = mySaveData;
+        }
+        else
+        {
+            data.savedLights.Add(mySaveData);
         }
     }
 

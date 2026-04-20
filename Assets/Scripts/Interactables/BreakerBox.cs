@@ -284,4 +284,25 @@ public class BreakerBox : MonoBehaviour, IInteractable
 
     public int GetCycleCount() => cycleCount;
     #endregion
+    public void LoadData(GameData data)
+    {
+        // Kaydedilmiş şartel durumunu çek
+        this.isTripped = data.isBreakerTripped;
+        this.cycleCount = data.breakerCycleCount;
+
+        // Şartelin kolunun pozisyonunu (yukarı/aşağı) hemen güncelle
+        if (handleObject != null)
+        {
+            handleObject.localEulerAngles = isTripped ? handleDownRotation : handleUpRotation;
+        }
+
+        Debug.Log($"BreakerBox Yüklendi. Şartel Atık mı? {isTripped} - Döngü: {cycleCount}");
+    }
+
+    public void SaveData(ref GameData data)
+    {
+        // Şartel durumunu kaydet
+        data.isBreakerTripped = this.isTripped;
+        data.breakerCycleCount = this.cycleCount;
+    }
 }

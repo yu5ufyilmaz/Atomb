@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class GlobalEnemyManager : MonoBehaviour
+public class GlobalEnemyManager : MonoBehaviour, ISaveable
 {
     public static GlobalEnemyManager Instance;
 
@@ -66,5 +66,36 @@ public class GlobalEnemyManager : MonoBehaviour
         isAttackInProgress = false;
         currentGlobalCooldown = postAttackCooldown;
         Debug.Log($"GLOBAL: Tehdit geçti. {postAttackCooldown}s huzur.");
+    }
+
+    public void LoadData(GameData data)
+    {
+        // Eğer oyuncu tam saldırı altındayken oyunu kaydettiyse,
+        // geri döndüğünde anında haksızca ölmesin diye saldırıyı iptal edip,
+        // ona 10 saniyelik bir "nefes alma" süresi (grace period) tanıyoruz.
+        if (data.wasAttackInProgress)
+        {
+            this.isAttackInProgress = false;
+            this.currentGlobalCooldown = 10f; // 10 saniye haksızlık payı (istediğin gibi değiştirebilirsin)
+            Debug.Log(
+                "GlobalEnemyManager: Kayıt yüklendi. Oyuncu saldırı altındaydı, 10 saniye nefes alma süresi verildi."
+            );
+        }
+        else
+        {
+            // Eğer huzurlu bir andaysa, kalan süreyi aynen devam ettir
+            this.isAttackInProgress = false;
+            this.currentGlobalCooldown = data.remainingGlobalCooldown;
+            Debug.Log(
+                $"GlobalEnemyManager: Kayıt yüklendi. Kalan huzur süresi: {this.currentGlobalCooldown} saniye."
+            );
+        }
+    }
+
+    public void SaveData(ref GameData data)
+    {
+        // Şu anki saldırı durumunu ve kalan süreyi kaydet
+        data.wasAttackInProgress = this.isAttackInProgress;
+        data.remainingGlobalCooldown = this.currentGlobalCooldown;
     }
 }

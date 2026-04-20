@@ -3373,6 +3373,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5ccb0e2be74c4bb49af29987b7425fb3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  uniqueID: 50a4d8ee-6d15-47d4-87e7-17e6befc1d04
   targetLight:
   - {fileID: 727649217}
   - {fileID: 1129785419}
@@ -9619,6 +9620,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5ccb0e2be74c4bb49af29987b7425fb3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  uniqueID: bed123f8-00d8-477c-94c9-2176644e1881
   targetLight:
   - {fileID: 1519298810}
   - {fileID: 1919592658}
@@ -22026,6 +22028,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5ccb0e2be74c4bb49af29987b7425fb3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  uniqueID: d7fe036e-6de0-4225-979d-396a7b61ed2a
   targetLight:
   - {fileID: 611947309}
   - {fileID: 405801136}
@@ -41074,6 +41077,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5ccb0e2be74c4bb49af29987b7425fb3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  uniqueID: 7fd252b4-32fa-4e9f-9ac8-f5e0a8e0c85a
   targetLight:
   - {fileID: 627280756}
   - {fileID: 371342007}
@@ -41900,6 +41904,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5ccb0e2be74c4bb49af29987b7425fb3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  uniqueID: 8a14ebe8-27df-4bd0-b8ab-edcbde33e2c3
   targetLight:
   - {fileID: 1560473270}
   desiredStateIsOn: 1
@@ -45840,7 +45845,6 @@ MonoBehaviour:
   - {fileID: 584014577}
   - {fileID: 1499679019}
   - {fileID: 2114408553}
-  - {fileID: 0}
   - {fileID: 254541726}
   - {fileID: 195555933}
   - {fileID: 1674332867}
@@ -48808,6 +48812,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5ccb0e2be74c4bb49af29987b7425fb3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  uniqueID: 6ab671f5-a528-446e-9df6-b0491370fca7
   targetLight:
   - {fileID: 392034436}
   - {fileID: 1367097812}
@@ -50733,6 +50738,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5ccb0e2be74c4bb49af29987b7425fb3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  uniqueID: 518e14d4-813c-45b2-963f-3964137a1cec
   targetLight:
   - {fileID: 36592478}
   - {fileID: 2025929080}
@@ -56605,6 +56611,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5ccb0e2be74c4bb49af29987b7425fb3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  uniqueID: ee1763fb-746d-46a5-8458-b23196d18175
   targetLight:
   - {fileID: 928427990}
   - {fileID: 274573609}
@@ -89312,6 +89319,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5ccb0e2be74c4bb49af29987b7425fb3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  uniqueID: a4d2c438-8bf5-4ddd-bac4-010d652ccfca
   targetLight:
   - {fileID: 899735761}
   - {fileID: 1134393897}

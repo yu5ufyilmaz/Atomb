@@ -6,7 +6,7 @@ using UnityEngine.Rendering;
 using UnityEngine.Rendering.HighDefinition;
 using UnityEngine.UI;
 
-public class PressureSystemManager : MonoBehaviour
+public class PressureSystemManager : MonoBehaviour, ISaveable
 {
     public static PressureSystemManager Instance;
 
@@ -231,5 +231,23 @@ public class PressureSystemManager : MonoBehaviour
     public void StopEffectsForJumpscare()
     {
         overridePostProcessing = true;
+    }
+
+    public void LoadData(GameData data)
+    {
+        // Kaydedilmiş basınç değerini çek
+        this.currentPressure = data.savedPressure;
+
+        // Değer değiştiği için UI (HUD) ve Post-Processing efektlerini anında güncelle
+        UpdateHUD();
+        HandlePostProcessing();
+
+        Debug.Log($"[SaveSystem] Basınç Sistemi yüklendi. Mevcut Basınç: %{currentPressure:F1}");
+    }
+
+    public void SaveData(ref GameData data)
+    {
+        // Şu anki basınç değerini kaydet
+        data.savedPressure = this.currentPressure;
     }
 }

@@ -4,7 +4,8 @@ using System.Linq;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-public class PasswordManager : MonoBehaviour
+// ISaveable eklendi!
+public class PasswordManager : MonoBehaviour, ISaveable
 {
     public static PasswordManager Instance;
 
@@ -28,8 +29,6 @@ public class PasswordManager : MonoBehaviour
 
     [Header("Tutorial Ayarları")]
     public string tutorialPassword = "AAAAAAAA_+_999";
-
-    // YENİ: Tutorial notunu buraya sürükleyeceksin
     public InteractableBook tutorialNoteBook;
 
     [Header("Oyun Ayarları")]
@@ -41,6 +40,10 @@ public class PasswordManager : MonoBehaviour
     private List<string> requiredPasswords = new List<string>();
     private List<string> discoveredClues = new List<string>();
     private List<string> validatedPasswords = new List<string>();
+
+    // YENİ: Bu oturumda kime hangi şifreyi atadığımızın günlüğü (Kaydetmek çok kolaylaşacak)
+    private List<GameData.ObjectPasswordPair> currentSessionPasswords =
+        new List<GameData.ObjectPasswordPair>();
 
     public event Action OnGameReadyToFinish;
 
@@ -62,6 +65,7 @@ public class PasswordManager : MonoBehaviour
         discoveredClues.Clear();
         validatedPasswords.Clear();
         requiredPasswords.Clear();
+        currentSessionPasswords.Clear(); // Günlüğü temizle
 
         Debug.Log("PasswordManager: Yeni oyun başlatılıyor...");
 
@@ -76,11 +80,9 @@ public class PasswordManager : MonoBehaviour
             tutorialNoteBook.AssignPassword(tutorialPassword, 0);
         }
 
-        // --- YENİ MANTIK: BULMACA KİTABINI BİR MAKİNE GİBİ BUL VE ŞİFREYİ ÇAK ---
+        // --- BULMACA KİTABI ---
         int activeSymbolID =
             SymbolSpawner.Instance != null ? SymbolSpawner.Instance.spawnedSymbolID : -1;
-
-        // Tüm kitaplar içinde, bizim aktif sembolümüzü bekleyen o özel kitabı bul (Data'sı var mı yok mu bakmadan!)
         InteractableBook puzzleBook = allBooksInLevel.FirstOrDefault(b =>
             b != null && b.isSymbolTargetBook && b.requiredSymbolID == activeSymbolID
         );
@@ -88,21 +90,39 @@ public class PasswordManager : MonoBehaviour
         if (puzzleBook != null)
         {
             string puzzlePass = GenerateRandomPassword();
-            puzzleBook.AssignPuzzlePassword(puzzlePass); // UV istemeyen yeni fonksiyonu kullandık!
+            puzzleBook.AssignPuzzlePassword(puzzlePass);
             requiredPasswords.Add(puzzlePass);
+
+            // HAFIZAYA AL
+            currentSessionPasswords.Add(
+                new GameData.ObjectPasswordPair
+                {
+                    objectName = puzzleBook.gameObject.name,
+                    password = puzzlePass,
+                    locationIndex = 0,
+                    isPuzzleBook = true,
+                }
+            );
             Debug.Log($"[Oyun Şifresi - SEMBOL MAKİNESİ] {puzzleBook.name}: {puzzlePass}");
         }
-        // ----------------------------------------------------------------------
 
         int machineCount = 2; // Osiloskop + Spektrometre
         int bookCount = totalPasswordsNeeded - machineCount;
 
-        // A) DİĞER MAKİNELER
+        // --- DİĞER MAKİNELER ---
         if (oscilloscope != null)
         {
             string pass1 = GenerateRandomPassword();
             oscilloscope.AssignPassword(pass1);
             requiredPasswords.Add(pass1);
+
+            currentSessionPasswords.Add(
+                new GameData.ObjectPasswordPair
+                {
+                    objectName = oscilloscope.gameObject.name,
+                    password = pass1,
+                }
+            );
         }
 
         if (spectrometer != null)
@@ -110,10 +130,17 @@ public class PasswordManager : MonoBehaviour
             string pass2 = GenerateRandomPassword();
             spectrometer.AssignPassword(pass2);
             requiredPasswords.Add(pass2);
+
+            currentSessionPasswords.Add(
+                new GameData.ObjectPasswordPair
+                {
+                    objectName = spectrometer.gameObject.name,
+                    password = pass2,
+                }
+            );
         }
 
-        // B) GERİ KALAN NORMAL KİTAPLAR (Tıklamalı olanlar)
-        // Burada bulmaca kitabını (puzzleBook) listeye katmıyoruz ki ona 2. kez şifre gitmesin
+        // --- NORMAL KİTAPLAR ---
         var eligibleBooks = allBooksInLevel
             .Where(b =>
                 b != null
@@ -125,7 +152,6 @@ public class PasswordManager : MonoBehaviour
             )
             .ToList();
 
-        // Eğer sembol kitabına şifre verdiysek, dağıtılacak rastgele kitap şifresi sayısını 1 düşür
         if (puzzleBook != null)
             bookCount--;
 
@@ -138,9 +164,93 @@ public class PasswordManager : MonoBehaviour
 
             book.AssignPassword(bookPass, randomLocIndex);
             requiredPasswords.Add(bookPass);
+
+            // HAFIZAYA AL
+            currentSessionPasswords.Add(
+                new GameData.ObjectPasswordPair
+                {
+                    objectName = book.gameObject.name,
+                    password = bookPass,
+                    locationIndex = randomLocIndex,
+                    isPuzzleBook = false,
+                }
+            );
             Debug.Log($"[Oyun Şifresi - RASTGELE KİTAP] {book.name}: {bookPass}");
         }
     }
+
+    // ==========================================
+    // ISAVEABLE ARAYÜZÜ ENTEGRASYONU (YENİ)
+    // ==========================================
+
+    public void LoadData(GameData data)
+    {
+        // Eğer kaydedilmiş şifre yoksa (Yeni Oyun ise) Start()'ın ürettiği şifrelerle devam et
+        if (data.savedPasswords == null || data.savedPasswords.Count == 0)
+            return;
+
+        Debug.Log("PasswordManager: Kayıtlı veriler yükleniyor. Rastgele şifreler eziliyor...");
+
+        // 1. Listeleri Kayıttan Çek
+        this.requiredPasswords = new List<string>(data.requiredPasswords);
+        this.discoveredClues = new List<string>(data.discoveredClues);
+        this.validatedPasswords = new List<string>(data.validatePasswords);
+        this.currentSessionPasswords = new List<GameData.ObjectPasswordPair>(data.savedPasswords);
+
+        // 2. Sahnedeki Objeleri Bul ve Doğru Şifreleri Geri Ata
+        foreach (var pair in currentSessionPasswords)
+        {
+            if (oscilloscope != null && oscilloscope.gameObject.name == pair.objectName)
+            {
+                oscilloscope.AssignPassword(pair.password);
+                continue;
+            }
+
+            if (spectrometer != null && spectrometer.gameObject.name == pair.objectName)
+            {
+                spectrometer.AssignPassword(pair.password);
+                continue;
+            }
+
+            // Kitapları isminden bul
+            InteractableBook foundBook = allBooksInLevel.FirstOrDefault(b =>
+                b != null && b.gameObject.name == pair.objectName
+            );
+            if (foundBook != null)
+            {
+                if (pair.isPuzzleBook)
+                    foundBook.AssignPuzzlePassword(pair.password);
+                else
+                    foundBook.AssignPassword(pair.password, pair.locationIndex);
+            }
+        }
+
+        // 3. Defter (Notebook) Arayüzüne Bulunan İpuçlarını Geri Ekle
+        if (NotebookUI.Instance != null)
+        {
+            foreach (string clue in discoveredClues)
+            {
+                NotebookUI.Instance.ShowPasswordNotification(clue);
+            }
+        }
+
+        // 4. Kazanma Durumunu Kontrol Et (Eğer oyunu son şifreyi girip kaydettiyse)
+        if (validatedPasswords.Count >= totalPasswordsNeeded)
+        {
+            OnGameReadyToFinish?.Invoke();
+        }
+    }
+
+    public void SaveData(ref GameData data)
+    {
+        // Elimizdeki tüm listeleri oyunun kayıt dosyasına geçir
+        data.requiredPasswords = new List<string>(this.requiredPasswords);
+        data.discoveredClues = new List<string>(this.discoveredClues);
+        data.validatePasswords = new List<string>(this.validatedPasswords);
+        data.savedPasswords = new List<GameData.ObjectPasswordPair>(this.currentSessionPasswords);
+    }
+
+    // ==========================================
 
     private string GenerateRandomPassword()
     {
@@ -152,13 +262,11 @@ public class PasswordManager : MonoBehaviour
 
     public void DiscoverClue(string passwordID)
     {
-        // Sadece geçerli şifreleri (veya tutorial şifresini) deftere kaydet
         bool isGamePass = requiredPasswords.Contains(passwordID);
         bool isTutorialPass = (passwordID == tutorialPassword);
 
         if (!isGamePass && !isTutorialPass)
             return;
-
         if (discoveredClues.Contains(passwordID))
             return;
 
@@ -177,48 +285,34 @@ public class PasswordManager : MonoBehaviour
             Debug.Log("📘 TUTORIAL ŞİFRESİ GİRİLDİ (Sayaca eklenmiyor).");
             isTutorialPasswordUsed = true;
 
-            // [SES ENTEGRASYONU] Tutorial şifresi çözüldü
             if (MegaphoneSystem.Instance != null)
                 MegaphoneSystem.Instance.OnTutorialSolved();
 
-            // --- ÇÖZÜM BURADA: TUTORIAL MODUNU KAPAT ---
             if (PlayerInteraction.Instance != null)
             {
                 PlayerInteraction.Instance.DisableTutorialMode();
                 Debug.Log("🔓 Tutorial Modu Kapatıldı. Tüm etkileşimler açık.");
             }
-            // -------------------------------------------
-
             return true;
         }
 
-        // 2. DURUM: YANLIŞ ŞİFRE (HATA)
         if (!requiredPasswords.Contains(passwordID))
         {
-            // [SES ENTEGRASYONU] İlk hata yapıldığında çal
             if (MegaphoneSystem.Instance != null)
                 MegaphoneSystem.Instance.OnFirstMistake();
-
-            return false; // Yanlış
+            return false;
         }
 
-        // 3. DURUM: ZATEN GİRİLMİŞ OYUN ŞİFRESİ
         if (validatedPasswords.Contains(passwordID))
-        {
-            return true; // Zaten girilmiş
-        }
+            return true;
 
-        // 4. DURUM: YENİ DOĞRU OYUN ŞİFRESİ
         validatedPasswords.Add(passwordID);
         Debug.Log($"✅ OYUN ŞİFRESİ ONAYLANDI: {validatedPasswords.Count}/{totalPasswordsNeeded}");
 
-        // KAZANMA KONTROLÜ (SON ŞİFRE)
         if (validatedPasswords.Count >= totalPasswordsNeeded)
         {
-            // [SES ENTEGRASYONU] Final şifresi girildi, oyun bitiyor
             if (MegaphoneSystem.Instance != null)
                 MegaphoneSystem.Instance.OnFinalCodeEntered();
-
             OnGameReadyToFinish?.Invoke();
         }
 
@@ -229,7 +323,6 @@ public class PasswordManager : MonoBehaviour
     {
         if (passwordID == tutorialPassword)
             return isTutorialPasswordUsed;
-
         return validatedPasswords.Contains(passwordID);
     }
 
