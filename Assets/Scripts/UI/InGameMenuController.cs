@@ -251,4 +251,51 @@ public class InGameMenuController : MonoBehaviour
 
         canvasGroup.alpha = 1f;
     }
+    // --- YENİ: KAYIT YÜKLENDİĞİNDE MASA SİSTEMİNİ ANINDA İPTAL EDEN FONKSİYON ---
+    public void InstantSetupForLoad()
+    {
+        // 1. Kamera kilit sistemini kapat
+        isCameraLocked = false;
+
+        // 2. Kamerayı masadan alıp tekrar karakterin kafasına (Anchor) bağla
+        if (cameraTarget != null && cameraAnchor != null)
+        {
+            cameraTarget.SetParent(cameraAnchor);
+            cameraTarget.localPosition = Vector3.zero;
+            cameraTarget.localRotation = Quaternion.identity; // Kemik nereye bakıyorsa oraya baksın
+        }
+
+        // 3. Karakterin "Sitting" (Oturma) animasyonunu anında sıfırla ve ayağa kaldır
+        if (playerAnimator != null)
+        {
+            playerAnimator.Rebind(); // Animasyonları varsayılan (ayakta) duruma zorlar
+            playerAnimator.Update(0f);
+        }
+
+        // 4. Masadaki menü yazılarını anında kapat
+        foreach (GameObject obj in menuObjectsToHide)
+        {
+            if (obj != null) obj.SetActive(false);
+        }
+
+        // 5. Oyun içi UI panellerini (Stamina bar vs.) anında aç
+        foreach (GameObject ui in inGameUIPanels)
+        {
+            if (ui != null)
+            {
+                ui.SetActive(true);
+                CanvasGroup cg = ui.GetComponent<CanvasGroup>();
+                if (cg != null) cg.alpha = 1f;
+            }
+        }
+
+        // 6. Menü müziğini anında durdur
+        if (menuMusicSource != null)
+        {
+            menuMusicSource.Stop();
+        }
+
+        // Bu scriptin LateUpdate (Kamera kilitleme) olayını tamamen durdur
+        this.enabled = false;
+    }
 }

@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(BoxCollider))]
-public class RoomManager : MonoBehaviour
+public class RoomManager : MonoBehaviour, ISaveable
 {
     public string roomName = "Oda İsmi";
 
@@ -175,6 +175,25 @@ public class RoomManager : MonoBehaviour
                 ambushSpawnPoint.position,
                 ambushSpawnPoint.position + ambushSpawnPoint.forward * 1f
             );
+        }
+      
+    }
+
+    public void LoadData(GameData data)
+    {
+        // Eğer bu odanın ismi daha önce 'tetiklenen olaylar' listesine eklendiyse
+        if (data.triggeredEvents.Contains(this.roomName))
+        {
+            this.hasEnteredBefore = true; // Anons kilitlenir, bir daha çalmaz
+        }
+    }
+
+    public void SaveData(ref GameData data)
+    {
+        // Eğer bu odaya girildiyse ve listede henüz yoksa, kayda ekle
+        if (this.hasEnteredBefore && !data.triggeredEvents.Contains(this.roomName))
+        {
+            data.triggeredEvents.Add(this.roomName);
         }
     }
 }
