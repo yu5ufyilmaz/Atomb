@@ -119,9 +119,6 @@ public class DeathUIManager : MonoBehaviour
                     uiObj.SetActive(false);
         }
 
-        if (NotebookUI.Instance != null)
-            NotebookUI.Instance.ForceClose();
-
         if (ControlsUIManager.Instance != null)
         {
             ControlsUIManager.Instance.HideControls();

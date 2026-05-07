@@ -21,7 +21,7 @@ public class PasswordManagerEditor : Editor
         EditorGUILayout.LabelField("📘 TUTORIAL AYARLARI", headerStyle);
         EditorGUILayout.BeginVertical(EditorStyles.helpBox);
 
-        SerializedProperty tutorialNoteProp = serializedObject.FindProperty("tutorialNoteBook");
+        SerializedProperty tutorialNoteProp = serializedObject.FindProperty("tutorialNote");
         EditorGUILayout.PropertyField(tutorialNoteProp, new GUIContent("Tutorial Notu (Sürükle)"));
 
         SerializedProperty tutorialPassProp = serializedObject.FindProperty("tutorialPassword");
@@ -67,7 +67,7 @@ public class PasswordManagerEditor : Editor
         DrawPropertiesExcluding(
             serializedObject,
             "m_Script",
-            "tutorialNoteBook",
+            "tutorialNote",
             "tutorialPassword",
             "totalPasswordsNeeded"
         );

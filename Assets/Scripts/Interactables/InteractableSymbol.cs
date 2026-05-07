@@ -128,7 +128,9 @@ public class InteractableSymbol : MonoBehaviour, IInteractable, IForceExitable
                 AudioSource.PlayClipAtPoint(pickupSound, mainCamera.transform.position);
 
             if (NotebookUI.Instance != null)
-                NotebookUI.Instance.AddLorePage(symbolLore);
+            {
+                NotebookUI.Instance.UnlockSymbolResearch(symbolID);
+            }
 
             Debug.Log($"[Oyun Dünyası] Oyuncu {symbolID} ID'li sembolü inceledi ve cebine attı!");
         }

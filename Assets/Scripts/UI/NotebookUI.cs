@@ -1,5 +1,7 @@
+using System;
+using System.Collections;
 using System.Collections.Generic;
-using System.Text;
+using StarterAssets;
 using TMPro;
 using UnityEngine;
 
@@ -7,222 +9,253 @@ public class NotebookUI : MonoBehaviour
 {
     public static NotebookUI Instance;
 
-    [Header("UI Referansları")]
-    [SerializeField]
-    private GameObject notebookPanel;
+    [Header("📄 Data Source")]
+    public NotebookData notebookData;
 
-    [Tooltip("Defterin içindeki ana yazı alanı (Eskiden passwordListText idi)")]
-    [SerializeField]
-    private TextMeshProUGUI pageContentText;
+    [Header("🖼️ UI Elements")]
+    public GameObject notebookPanel;
 
-    [Tooltip("Sayfa numarasını gösterecek ufak yazı (Örn: Sayfa 1 / 3)")]
-    [SerializeField]
-    private TextMeshProUGUI pageNumberText;
+    [Tooltip("Kayma animasyonu için hareket edecek panelin (RectTransform) kendisini sürükle")]
+    public RectTransform notebookRect;
+    public TextMeshProUGUI categoryTitleText;
+    public TextMeshProUGUI contentText;
+    public TextMeshProUGUI controlsHintText;
 
-    [Header("Hareket Ayarları")]
-    [Tooltip("Defter kapalıyken (Ekran Dışı)")]
-    [SerializeField]
-    private Vector2 hiddenPosition = new Vector2(0, -800);
+    [Header("🎬 Animation Settings")]
+    public float slideDuration = 0.35f;
+    public Vector2 hiddenPosition = new Vector2(0, -1200); // Ekran dışı (Aşağıda)
+    public Vector2 visiblePosition = new Vector2(0, 0); // Ekran ortası
 
-    [Tooltip("Defter açıkken (Ekranın yanı - Örneğin X: 400, Y: 0 yapabilirsin)")]
-    [SerializeField]
-    private Vector2 visiblePosition = new Vector2(400, 0);
+    private enum NotebookCategory
+    {
+        Passwords = 0,
+        Research = 1,
+        Logs = 2,
+    }
 
-    [SerializeField]
-    private float moveSpeed = 10f;
+    private int currentCategoryIndex = 0;
+    private int currentTutorialPage = 0;
 
-    [Header("Bildirim Ayarları")]
-    [SerializeField]
-    private GameObject notificationPanel;
+    private string currentSymbolInfo = "No active research found in the field.";
 
-    [SerializeField]
-    private TextMeshProUGUI notificationText;
-
-    [SerializeField]
-    private float notificationDuration = 3.0f;
-
-    // --- YENİ: SAYFA SİSTEMİ DEĞİŞKENLERİ ---
-    private bool isOpen = false;
-    private int currentPage = 0; // 0 = Şifreler Sayfası, 1, 2, 3... = Sembol Notları
-    private List<string> lorePages = new List<string>(); // Toplanan sembollerin hikayeleri/notları
-
-    private RectTransform panelRect;
+    private bool isNotebookOpen = false;
+    private bool isAnimating = false;
 
     private void Awake()
     {
         if (Instance == null)
             Instance = this;
-        else
-            Destroy(gameObject);
-    }
 
-    private void Start()
-    {
-        if (notebookPanel != null)
-        {
-            notebookPanel.SetActive(true);
-            panelRect = notebookPanel.GetComponent<RectTransform>();
-            if (panelRect != null)
-                panelRect.anchoredPosition = hiddenPosition;
-        }
+        // Başlangıçta paneli gizli pozisyona al ve kapat
+        if (notebookRect != null)
+            notebookRect.anchoredPosition = hiddenPosition;
 
-        if (notificationPanel != null)
-            notificationPanel.SetActive(false);
+        notebookPanel.SetActive(false);
     }
 
     private void Update()
     {
-        HandleNotebookInput();
-    }
-
-    private void HandleNotebookInput()
-    {
-        if (panelRect == null)
-            return;
-
-        // 1. AÇMA / KAPATMA MANTIĞI (TOGGLE)
+        // TAB tuşu ile aç/kapat (Animasyon tetikleyici)
         if (Input.GetKeyDown(KeyCode.Tab))
         {
-            isOpen = !isOpen;
-            if (isOpen)
-                UpdatePageDisplay(); // Defter açılınca mevcut sayfayı ekrana bas
+            ToggleNotebook();
         }
 
-        // Hedef konuma yumuşak geçiş
-        Vector2 targetPos = isOpen ? visiblePosition : hiddenPosition;
-        panelRect.anchoredPosition = Vector2.Lerp(
-            panelRect.anchoredPosition,
-            targetPos,
-            Time.deltaTime * moveSpeed
-        );
-
-        // 2. SAYFA ÇEVİRME MANTIĞI (Sadece defter açıkken)
-        if (isOpen)
-        {
-            if (Input.GetKeyDown(KeyCode.E)) // İleri Sayfa
-            {
-                if (currentPage < GetTotalPages() - 1)
-                {
-                    currentPage++;
-                    UpdatePageDisplay();
-                }
-            }
-            else if (Input.GetKeyDown(KeyCode.Q)) // Geri Sayfa
-            {
-                if (currentPage > 0)
-                {
-                    currentPage--;
-                    UpdatePageDisplay();
-                }
-            }
-        }
-    }
-
-    private int GetTotalPages()
-    {
-        // 1 Ana Şifreler Sayfası + Toplanan Hikaye Sayfaları
-        return 1 + lorePages.Count;
-    }
-
-    private void UpdatePageDisplay()
-    {
-        if (pageContentText == null)
+        // Defter tam açık değilse veya animasyon oynuyorsa içerideki tuşları dinleme
+        if (!isNotebookOpen || isAnimating)
             return;
 
-        if (currentPage == 0)
+        HandleInput();
+    }
+
+    public void ToggleNotebook()
+    {
+        // Animasyon sırasında tuşa art arda basılmasını engelle
+        if (isAnimating)
+            return;
+
+        isNotebookOpen = !isNotebookOpen;
+        StartCoroutine(SlideNotebook(isNotebookOpen));
+    }
+
+    private IEnumerator SlideNotebook(bool show)
+    {
+        isAnimating = true;
+
+        if (show)
         {
-            // SAYFA 0: ŞİFRELER EKRANI
-            pageContentText.text = GetPasswordsText();
+            notebookPanel.SetActive(true);
+            //TogglePlayerControls(false); // FPS bakışını kilitle
+            UpdateUI();
+        }
+
+        // GameManager imleç güncellemesi
+        if (GameManager.Instance != null)
+            GameManager.Instance.UpdateCursorState();
+
+        // Pürüzsüz Kayma (Smooth Slide) Animasyonu
+        if (notebookRect != null)
+        {
+            float elapsed = 0f;
+            Vector2 startPos = notebookRect.anchoredPosition;
+            Vector2 targetPos = show ? visiblePosition : hiddenPosition;
+
+            while (elapsed < slideDuration)
+            {
+                elapsed += Time.deltaTime;
+                float t = elapsed / slideDuration;
+
+                // Ease Out (Yumuşak yavaşlama) formülü
+                t = t * t * (3f - 2f * t);
+
+                notebookRect.anchoredPosition = Vector2.Lerp(startPos, targetPos, t);
+                yield return null;
+            }
+
+            notebookRect.anchoredPosition = targetPos;
+        }
+
+        // Kapanış animasyonu bittikten sonra objeyi tamamen kapat
+
+        isAnimating = false;
+    }
+
+    private void HandleInput()
+    {
+        if (Input.GetKeyDown(KeyCode.E))
+            SwitchCategory(1);
+        if (Input.GetKeyDown(KeyCode.Q))
+            SwitchCategory(-1);
+
+        if ((NotebookCategory)currentCategoryIndex == NotebookCategory.Logs)
+        {
+            float scroll = Input.GetAxis("Mouse ScrollWheel");
+            if (scroll < 0f)
+                ChangeTutorialPage(1);
+            else if (scroll > 0f)
+                ChangeTutorialPage(-1);
+        }
+    }
+
+    private void SwitchCategory(int direction)
+    {
+        int count = Enum.GetValues(typeof(NotebookCategory)).Length;
+        currentCategoryIndex = (currentCategoryIndex + direction + count) % count;
+        currentTutorialPage = 0;
+        UpdateUI();
+    }
+
+    private void ChangeTutorialPage(int direction)
+    {
+        if (notebookData == null || notebookData.tutorialPages.Count <= 1)
+            return;
+        int newPage = Mathf.Clamp(
+            currentTutorialPage + direction,
+            0,
+            notebookData.tutorialPages.Count - 1
+        );
+
+        if (newPage != currentTutorialPage)
+        {
+            currentTutorialPage = newPage;
+            UpdateUI();
+        }
+    }
+
+    public void UnlockSymbolResearch(int symbolID)
+    {
+        if (
+            notebookData != null
+            && symbolID >= 0
+            && symbolID < notebookData.symbolDescriptions.Length
+        )
+        {
+            currentSymbolInfo = notebookData.symbolDescriptions[symbolID];
         }
         else
         {
-            // DİĞER SAYFALAR: SEMBOL/HİKAYE EKRANLARI
-            int loreIndex = currentPage - 1;
-            if (loreIndex >= 0 && loreIndex < lorePages.Count)
+            currentSymbolInfo = "Unknown signal detected. Calculations failed.";
+        }
+        if (isNotebookOpen)
+            UpdateUI();
+    }
+
+    public void UpdateUI()
+    {
+        NotebookCategory currentCat = (NotebookCategory)currentCategoryIndex;
+        if (controlsHintText != null)
+            controlsHintText.text = GetHintText(currentCat);
+
+        switch (currentCat)
+        {
+            case NotebookCategory.Passwords:
+                if (categoryTitleText != null)
+                    categoryTitleText.text = "DISCOVERED CLUES";
+                ShowPasswords();
+                break;
+            case NotebookCategory.Research:
+                if (categoryTitleText != null)
+                    categoryTitleText.text = "SYMBOL ANALYSIS";
+                if (contentText != null)
+                    contentText.text = currentSymbolInfo;
+                break;
+            case NotebookCategory.Logs:
+                ShowTutorial();
+                break;
+        }
+    }
+
+    private string GetHintText(NotebookCategory cat)
+    {
+        string baseHint = "[Q][E] Switch Tabs ";
+        if (
+            cat == NotebookCategory.Logs
+            && notebookData != null
+            && notebookData.tutorialPages.Count > 1
+        )
+            return baseHint + " | [Scroll] Browse Logs";
+        return baseHint;
+    }
+
+    private void ShowPasswords()
+    {
+        string list = "";
+        if (PasswordManager.Instance != null)
+        {
+            var clues = PasswordManager.Instance.GetDiscoveredClues();
+            if (clues.Count == 0)
+                list = "No data retrieved from the environment...";
+            else
             {
-                pageContentText.text = lorePages[loreIndex];
+                foreach (var clue in clues)
+                    list += $"> {clue}\n";
             }
         }
+        if (contentText != null)
+            contentText.text = list;
+    }
 
-        // Sayfa numarasını güncelle (Eğer UI'da atadıysan)
-        if (pageNumberText != null)
+    private void ShowTutorial()
+    {
+        if (notebookData == null || notebookData.tutorialPages.Count == 0)
         {
-            pageNumberText.text = $"- Sayfa {currentPage + 1} / {GetTotalPages()} -";
+            if (categoryTitleText != null)
+                categoryTitleText.text = "LOGS EMPTY";
+            if (contentText != null)
+                contentText.text = "No operational data found.";
+            return;
         }
+        var entry = notebookData.tutorialPages[currentTutorialPage];
+        if (categoryTitleText != null)
+            categoryTitleText.text =
+                $"{entry.title.ToUpper()} ({currentTutorialPage + 1}/{notebookData.tutorialPages.Count})";
+        if (contentText != null)
+            contentText.text = entry.content;
     }
 
-    private string GetPasswordsText()
+    public void ShowPasswordNotification(string password)
     {
-        if (PasswordManager.Instance == null)
-            return "Şifre bulunamadı.";
-
-        List<string> passwords = PasswordManager.Instance.GetDiscoveredClues();
-        if (passwords.Count == 0)
-            return "Henüz şifre bulunamadı...";
-
-        StringBuilder sb = new StringBuilder();
-        sb.AppendLine("<size=120%><b>Bulunan Şifreler</b></size>\n");
-
-        foreach (string pw in passwords)
-        {
-            bool isUsed = PasswordManager.Instance.IsPasswordUsed(pw);
-            string displayText = pw.Replace("_", " ");
-
-            if (isUsed)
-                sb.AppendLine($"<s>{displayText}</s> <color=green>✓</color>");
-            else
-                sb.AppendLine(displayText);
-        }
-        return sb.ToString();
-    }
-
-    // --- YENİ EKLENEN: DÜNYADAN SEMBOL ALININCA ÇAĞRILACAK FONKSİYON ---
-    public void AddLorePage(string newLoreText)
-    {
-        lorePages.Add(newLoreText); // Listeye yeni sayfayı ekle
-
-        // Eklendiğine dair bildirim çıkar
-        ShowNotification("YENİ GÜNLÜK SAYFASI EKLENDİ");
-
-        // Eğer oyuncu deftere o an bakıyorsa ekranı anında tazele
-        if (isOpen)
-            UpdatePageDisplay();
-    }
-
-    public void ShowPasswordNotification(string passwordID)
-    {
-        ShowNotification($"YENİ İPUCU:\n{passwordID.Replace("_", " ")}");
-
-        // Şifreler sayfasındayken yeni şifre gelirse anında güncelle
-        if (isOpen && currentPage == 0)
-            UpdatePageDisplay();
-    }
-
-    private void ShowNotification(string message)
-    {
-        if (notificationPanel != null)
-        {
-            notificationPanel.SetActive(true);
-            if (notificationText != null)
-                notificationText.text = message;
-
-            CancelInvoke(nameof(HideNotification));
-            Invoke(nameof(HideNotification), notificationDuration);
-        }
-    }
-
-    public void ForceClose()
-    {
-        isOpen = false;
-        if (panelRect != null)
-            panelRect.anchoredPosition = hiddenPosition;
-        if (notificationPanel != null)
-            notificationPanel.SetActive(false);
-    }
-
-    private void HideNotification()
-    {
-        if (notificationPanel != null)
-            notificationPanel.SetActive(false);
+        if (isNotebookOpen)
+            UpdateUI();
     }
 }

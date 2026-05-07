@@ -1,4 +1,4 @@
-using StarterAssets; // Oyuncu dondurmak için gerekli
+using StarterAssets;
 using UnityEngine;
 
 public class SymbolOverlayManager : MonoBehaviour
@@ -6,20 +6,28 @@ public class SymbolOverlayManager : MonoBehaviour
     public static SymbolOverlayManager Instance { get; private set; }
 
     [Header("Görsel Ayarlar")]
-    [Tooltip("Sahnede belirecek 3D Sembol Prefab'i")]
-    public GameObject symbolPrefab;
-
-    [Tooltip("4 farklı sembolün ID'sine göre atanacak materyaller")]
-    public Material[] symbolMaterials;
+    [Tooltip("Envanterdeki ID'lere karşılık gelen Sembol Prefab'leri (Sırasıyla 0, 1, 2, 3...)")]
+    public GameObject[] symbolPrefabs;
     public float hoverDistance = 0.15f;
 
     [Header("Bulmaca (Kitap) Hareket Ayarları")]
     public float moveSpeed = 0.02f;
-    public float puzzleRotationSpeed = 10f; // Scroll ile dönme hızı
+    public float puzzleRotationSpeed = 10f;
+
+    [Tooltip(
+        "Scroll tekerleğiyle çevirirken modelin hangi eksende döneceğini belirler. Z için (0,0,1), X için (1,0,0), Y için (0,1,0). Tersine dönmesi için eksi değer girin örn: (0,0,-1)"
+    )]
+    public Vector3 scrollRotationAxis = new Vector3(0, 0, 1); // YENİ EKLENEN EKSEN AYARI
 
     [Header("Serbest İnceleme (Inspect) Ayarları")]
-    public float inspectDistance = 0.5f; // Yürürken kameraya uzaklığı
-    public float freeRotationSpeed = 10f; // Fare ile 3D dönme hızı
+    public float inspectDistance = 0.5f;
+    public float freeRotationSpeed = 10f;
+    public Vector3 spawnScaleOffset = Vector3.zero;
+
+    [Tooltip(
+        "Sembol ekrana ilk geldiğinde ters veya yan duruyorsa buradaki X,Y,Z değerleriyle oynayarak düzeltebilirsin (Örn: X:90)"
+    )]
+    public Vector3 spawnRotationOffset = Vector3.zero;
 
     [Header("Çözüm Ayarları (Tolerans)")]
     public float distanceTolerance = 0.1f;
@@ -28,15 +36,15 @@ public class SymbolOverlayManager : MonoBehaviour
     public AudioClip errorSound;
 
     private GameObject activeSymbolInstance;
-    private MeshRenderer symbolRenderer;
     private Camera mainCam;
     private AudioSource audioSource;
 
-    // Oyuncu dondurma referansları
     private UnityEngine.CharacterController playerController;
     private StarterAssets.CharacterController playerGameScript;
     private MonoBehaviour playerLookScript;
     private Animator playerAnimator;
+
+    private int spawnedSymbolID = -1;
 
     private void Awake()
     {
@@ -52,7 +60,6 @@ public class SymbolOverlayManager : MonoBehaviour
     {
         mainCam = Camera.main;
 
-        // Oyuncu referanslarını bul
         playerController = FindObjectOfType<UnityEngine.CharacterController>();
         if (playerController != null)
         {
@@ -65,42 +72,35 @@ public class SymbolOverlayManager : MonoBehaviour
 
     private void Update()
     {
-        // ESC Menüsü vb. açıksa işlem yapma
         if (GameManager.Instance != null && GameManager.Instance.isGamePaused)
             return;
 
         InteractableBook currentBook = GameManager.Instance.activeInteraction as InteractableBook;
 
-        // --- T TUŞU İLE AÇ/KAPA KONTROLÜ ---
         if (Input.GetKeyDown(KeyCode.T))
         {
             if (!PuzzleInventoryManager.Instance.isOverlayActive)
             {
-                // Envanterde sembol varsa aç
                 if (PuzzleInventoryManager.Instance.hasSymbol)
                     ToggleSymbol(true, currentBook);
                 else
-                    PlaySound(errorSound); // Cepte sembol yok!
+                    PlaySound(errorSound);
             }
             else
             {
-                // Zaten ekrandaysa kapat (cebe at)
                 ToggleSymbol(false, currentBook);
             }
         }
 
-        // --- EKRANDA SEMBOL VARSA HAREKETLERİ İŞLE ---
         if (PuzzleInventoryManager.Instance.isOverlayActive && activeSymbolInstance != null)
         {
             if (currentBook != null && currentBook.isOpen)
             {
-                // 1. KİTAP MODU (Bulmaca Çözümü)
                 HandlePuzzleManipulation();
                 CheckSuccess(currentBook);
             }
             else
             {
-                // 2. SERBEST İNCELEME MODU (Yürürken T'ye basıldıysa)
                 HandleFreeInspectManipulation();
             }
         }
@@ -113,26 +113,41 @@ public class SymbolOverlayManager : MonoBehaviour
         {
             PlayerInteraction.Instance.ToggleCrosshair(!state);
         }
+
         if (state)
         {
+            int currentID = PuzzleInventoryManager.Instance.currentSymbolID;
+
+            if (activeSymbolInstance != null && spawnedSymbolID != currentID)
+            {
+                Destroy(activeSymbolInstance);
+                activeSymbolInstance = null;
+            }
+
             if (activeSymbolInstance == null)
             {
-                activeSymbolInstance = Instantiate(symbolPrefab);
-                symbolRenderer = activeSymbolInstance.GetComponentInChildren<MeshRenderer>();
+                if (
+                    currentID >= 0
+                    && currentID < symbolPrefabs.Length
+                    && symbolPrefabs[currentID] != null
+                )
+                {
+                    activeSymbolInstance = Instantiate(symbolPrefabs[currentID]);
+                    spawnedSymbolID = currentID;
+                }
+                else
+                {
+                    Debug.LogError(
+                        $"[SymbolOverlayManager] {currentID} ID'li sembol prefab'i bulunamadı! Inspector'ı kontrol et."
+                    );
+                    return;
+                }
             }
 
             activeSymbolInstance.SetActive(true);
 
-            // Sembolün materyalini ayarla
-            int currentID = PuzzleInventoryManager.Instance.currentSymbolID;
-            if (currentID >= 0 && currentID < symbolMaterials.Length)
-            {
-                symbolRenderer.material = symbolMaterials[currentID];
-            }
-
             if (book != null && book.isOpen)
             {
-                // KİTAP MODU: Kitabın üstünde spawnla
                 Vector3 spawnLocalPos = new Vector3(
                     0,
                     0,
@@ -141,26 +156,30 @@ public class SymbolOverlayManager : MonoBehaviour
                 activeSymbolInstance.transform.position = mainCam.transform.TransformPoint(
                     spawnLocalPos
                 );
-                activeSymbolInstance.transform.rotation = mainCam.transform.rotation;
+
+                // Kitap için de ofsetli rotasyon uygula
+                activeSymbolInstance.transform.rotation =
+                    mainCam.transform.rotation * Quaternion.Euler(spawnRotationOffset);
                 activeSymbolInstance.transform.SetParent(book.transform, true);
             }
             else
             {
-                // SERBEST İNCELEME MODU: Kameranın önünde spawnla ve oyuncuyu dondur
                 FreezePlayer(true);
                 activeSymbolInstance.transform.position =
                     mainCam.transform.position + mainCam.transform.forward * inspectDistance;
-                activeSymbolInstance.transform.rotation = mainCam.transform.rotation; // Yüzü kameraya baksın
+
+                // Serbest inceleme için ofsetli rotasyon uygula
+                activeSymbolInstance.transform.rotation =
+                    mainCam.transform.rotation * Quaternion.Euler(spawnRotationOffset);
                 activeSymbolInstance.transform.SetParent(mainCam.transform, true);
+                activeSymbolInstance.transform.localScale = spawnScaleOffset; // Ölçek ofseti sadece serbest inceleme için uygulanır
             }
         }
         else
         {
-            // Sembolü ekrandan gizle
             if (activeSymbolInstance != null)
                 activeSymbolInstance.SetActive(false);
 
-            // Eğer kitap açık değilse (yani serbest yürüyüşte incelemeyi kapattıysak) oyuncuyu tekrar çöz
             if (book == null || !book.isOpen)
             {
                 FreezePlayer(false);
@@ -168,7 +187,6 @@ public class SymbolOverlayManager : MonoBehaviour
         }
     }
 
-    // --- KİTAP ESNASINDAKİ 2D HAREKETLER ---
     private void HandlePuzzleManipulation()
     {
         if (Input.GetMouseButton(0))
@@ -183,21 +201,22 @@ public class SymbolOverlayManager : MonoBehaviour
         float scroll = Input.mouseScrollDelta.y;
         if (Mathf.Abs(scroll) > 0.01f)
         {
-            activeSymbolInstance.transform.Rotate(0, 0, scroll * puzzleRotationSpeed, Space.Self);
+            // YENİ SİSTEM: Artık senin belirlediğin scrollRotationAxis kullanılıyor
+            activeSymbolInstance.transform.Rotate(
+                scrollRotationAxis * (scroll * puzzleRotationSpeed),
+                Space.Self
+            );
         }
     }
 
-    // --- YÜRÜRKEN EKRANA GELEN 3D İNCELEME HAREKETLERİ ---
     private void HandleFreeInspectManipulation()
     {
-        // Alternatif olarak F ile de çıkabilme
         if (Input.GetKeyDown(KeyCode.F))
         {
             ToggleSymbol(false, null);
             return;
         }
 
-        // Fare ile 3D objeyi çevirme
         if (Input.GetMouseButton(0))
         {
             float mouseX = Input.GetAxis("Mouse X") * freeRotationSpeed;
@@ -208,7 +227,6 @@ public class SymbolOverlayManager : MonoBehaviour
         }
     }
 
-    // --- OYUNCU HAREKETLERİNİ VE ANİMASYONUNU DONDUR/ÇÖZ ---
     private void FreezePlayer(bool freeze)
     {
         if (playerController != null)
@@ -223,7 +241,6 @@ public class SymbolOverlayManager : MonoBehaviour
             playerLookScript.enabled = !freeze;
             if (!freeze)
             {
-                // Çözüldüğünde fareyi merkeze kilitle
                 if (playerLookScript is StarterAssetsInputs inputs)
                     inputs.cursorInputForLook = true;
                 else
@@ -239,7 +256,6 @@ public class SymbolOverlayManager : MonoBehaviour
         Cursor.visible = freeze;
     }
 
-    // --- BAŞARI KONTROLÜ (Değişmedi) ---
     private void CheckSuccess(InteractableBook book)
     {
         if (
@@ -286,8 +302,9 @@ public class SymbolOverlayManager : MonoBehaviour
             activeSymbolInstance = null;
         }
 
-        PuzzleInventoryManager.Instance.RemoveSymbol(); // Envanteri boşalt
-        book.TriggerPasswordFind(); // Şifreyi deftere yaz
+        spawnedSymbolID = -1;
+        PuzzleInventoryManager.Instance.RemoveSymbol();
+        book.TriggerPasswordFind();
     }
 
     private void PlaySound(AudioClip clip)

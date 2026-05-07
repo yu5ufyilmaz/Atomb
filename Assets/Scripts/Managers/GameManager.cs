@@ -23,6 +23,10 @@ public class GameManager : MonoBehaviour
     public List<RoomManager> allRooms = new List<RoomManager>();
     public IForceExitable activeInteraction;
 
+    [Header("Geliştirici Ayarları")]
+    public string secretEndGameCode = "osm"; // Yazılması gereken şifre (Küçük harf olmalı)
+    private string inputBuffer = "";
+
     [Header("Oyun Durumu")]
     public bool isGamePaused = false;
 
@@ -58,6 +62,61 @@ public class GameManager : MonoBehaviour
         {
             // freeze = false, lockCameraInput = false, restrictRotation = false
             player.SetFrozen(false, false, false);
+        }
+    }
+
+    // --- YENİ EKLENEN UPDATE METODU ---
+    // Her saniye klavyeye basılan tuşları dinler
+    private void Update()
+    {
+        HandleCheatCode();
+    }
+
+    private void HandleCheatCode()
+    {
+        // Menüdeyken veya oyun başlamamışken hile kodu çalışmasın
+        if (!isGameStarted)
+            return;
+
+        // Klavyeden basılan karakterleri tek tek al ve hafızaya (inputBuffer) ekle
+        foreach (char c in Input.inputString)
+        {
+            inputBuffer += c;
+
+            // Hafızanın şişmemesi için sadece son 10 karakteri tutuyoruz
+            if (inputBuffer.Length > 10)
+            {
+                inputBuffer = inputBuffer.Substring(inputBuffer.Length - 10);
+            }
+
+            // Girdiğimiz tuşlar "osm" ile bitiyor mu?
+            if (inputBuffer.ToLower().EndsWith(secretEndGameCode))
+            {
+                Debug.Log(
+                    $"🚨 GELİŞTİRİCİ KODU GİRİLDİ ({secretEndGameCode.ToUpper()}) - FİNAL SİNEMATİĞİ BAŞLATILIYOR! 🚨"
+                );
+                TriggerFinalEnding();
+
+                // Şifre üst üste tetiklenmesin diye hafızayı sıfırla
+                inputBuffer = "";
+            }
+        }
+    }
+
+    private void TriggerFinalEnding()
+    {
+        // Sahnede senin yazdığın "EndGameButton" sınıfına sahip objeyi buluyoruz
+        EndGameButton endButton = FindObjectOfType<EndGameButton>();
+
+        if (endButton != null)
+        {
+            // Bulduğumuz butona sanki oyuncu yanına gidip farenin sol tıkına basmış gibi Interact fonksiyonunu çalıştırttırıyoruz.
+            // Bu sayede senin EndGameButton içine yazdığın o muazzam sinematik kamera geçişi ve kapanış aynı şekilde tetiklenecek!
+            endButton.Interact();
+        }
+        else
+        {
+            Debug.LogWarning("Sahnede EndGameButton bulunamadı! Final sinematiği başlatılamıyor.");
         }
     }
 
@@ -101,8 +160,8 @@ public class GameManager : MonoBehaviour
         if (activeInteraction == null)
             return false;
 
-        // 2. Eğer Kitap okuyorsak, fare AÇIK olmalı.
-        if (activeInteraction is InteractableBook)
+        // 2. Eğer Kitap VEYA NOT okuyorsak, fare AÇIK olmalı. (İşte tam burayı güncelledik!)
+        if (activeInteraction is InteractableBook || activeInteraction is InteractableNote)
             return true;
 
         // 3. Eğer Vana (Valve) çeviriyorsak, fare AÇIK olmalı.

@@ -1,15 +1,16 @@
 using UnityEngine;
 
-public class PuzzleInventoryManager : MonoBehaviour
+// ISaveable eklendi!
+public class PuzzleInventoryManager : MonoBehaviour, ISaveable
 {
-    public static PuzzleInventoryManager Instance { get; private set; }
+    public static PuzzleInventoryManager Instance;
 
     [Header("Sembol Envanteri")]
     public bool hasSymbol = false;
-    public int currentSymbolID = -1; // -1: Sembol yok, 0-3: Semboller
+    public int currentSymbolID = -1;
 
     [Header("Overlay Durumu")]
-    public bool isOverlayActive = false; // 3D obje ekranda aktif mi?
+    public bool isOverlayActive = false;
 
     private void Awake()
     {
@@ -19,7 +20,6 @@ public class PuzzleInventoryManager : MonoBehaviour
             Destroy(gameObject);
     }
 
-    // Sembolü dünyadan topladığımızda çağrılacak
     public void PickupSymbol(int symbolID)
     {
         hasSymbol = true;
@@ -27,11 +27,27 @@ public class PuzzleInventoryManager : MonoBehaviour
         Debug.Log($"[PuzzleInventory] Sembol alındı! ID: {symbolID}");
     }
 
-    // Bulmaca çözüldüğünde sembolü silmek için
     public void RemoveSymbol()
     {
         hasSymbol = false;
         currentSymbolID = -1;
         isOverlayActive = false;
+    }
+
+    // ==========================================
+    // ISAVEABLE ARAYÜZÜ ENTEGRASYONU (YENİ)
+    // ==========================================
+    public void LoadData(GameData data)
+    {
+        this.hasSymbol = data.hasSymbol;
+        this.currentSymbolID = data.currentSymbolID;
+        Debug.Log($"[SaveSystem] Envanter Yüklendi. Sembol Var: {hasSymbol} ID: {currentSymbolID}");
+    }
+
+    public void SaveData(ref GameData data)
+    {
+        // Şu anki envanter durumunu kayda yaz
+        data.hasSymbol = this.hasSymbol;
+        data.currentSymbolID = this.currentSymbolID;
     }
 }

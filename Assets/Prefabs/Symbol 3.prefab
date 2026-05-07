@@ -29,8 +29,8 @@ Transform:
   m_GameObject: {fileID: 9018318074293804226}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 22.1865, y: 1.769, z: -0.7706}
-  m_LocalScale: {x: 0.2969, y: 0.028900746, z: 0.032873}
+  m_LocalPosition: {x: 22.1865, y: 1.768977, z: -0.7705742}
+  m_LocalScale: {x: 0.02, y: 0.02, z: 0.02}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -42,7 +42,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 9018318074293804226}
-  m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+  m_Mesh: {fileID: -6713763143423365579, guid: b4f950179623c1a4d9c041084b89b8be, type: 3}
 --- !u!23 &7183481043247707516
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -68,7 +68,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 73c176f402d2c2f4d929aa5da7585d17, type: 2}
+  - {fileID: 2100000, guid: e5ab5ab7e42257441829af5cc301e3d6, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -111,7 +111,7 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
+  m_Size: {x: 10, y: 10, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &9189227101472938332
 MonoBehaviour:
@@ -128,3 +128,8 @@ MonoBehaviour:
   symbolID: 3
   promptText: "Sembol\xFC ve \u0130pucunu Al"
   pickupSound: {fileID: 0}
+  symbolLore: "Bu sembol kadim bir rit\xFCeli temsil ediyor...\n\u015Eifresi \u015Fu
+    kitapta olabilir..."
+  inspectDistance: 0.5
+  rotationSpeed: 10
+  moveDuration: 0.3

@@ -14,6 +14,7 @@ public class GameData
     public List<string> discoveredClues = new List<string>();
     public List<string> requiredPasswords = new List<string>();
     public List<string> validatePasswords = new List<string>();
+    public List<string> savedLorePages = new List<string>();
 
     public List<ObjectPasswordPair> savedPasswords = new List<ObjectPasswordPair>();
 
@@ -22,6 +23,11 @@ public class GameData
     public bool wasAttackInProgress;
     public float remainingGlobalCooldown;
     public float savedPressure;
+
+    // Sembol verileri
+    public bool isSymbolInWorld;
+    public int spawnedSymbolID;
+    public int spawnedSymbolLocationIndex;
 
     // ==========================================
     // YENİ EKLENENLER: ELEKTRİK VE IŞIK SİSTEMİ
@@ -42,6 +48,9 @@ public class GameData
         isBreakerTripped = false;
         breakerCycleCount = 0;
         savedPressure = 0f;
+        isSymbolInWorld = false;
+        spawnedSymbolID = -1;
+        spawnedSymbolLocationIndex = -1;
     }
 
     [System.Serializable]

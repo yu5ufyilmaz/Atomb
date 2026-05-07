@@ -1,17 +1,18 @@
 using UnityEngine;
 
-public class SymbolSpawner : MonoBehaviour
+public class SymbolSpawner : MonoBehaviour, ISaveable
 {
-    public static SymbolSpawner Instance { get; private set; }
+    public static SymbolSpawner Instance;
 
-    [Header("Sembol Objeleri (Prefab veya Sahne Objesi)")]
-    public GameObject[] possibleSymbolObjects;
+    public GameObject[] symbolPrefabs;
+    public Transform[] spawnPoints;
 
-    [Header("Spawn Konumları")]
-    public Transform[] spawnPoints; // Müfettiş panelinden 4 adet boş Transform ekle
+    [Header("Debug/Status")]
+    public int spawnedSymbolID;
+    private int lastSpawnPointIndex = -1;
+    private GameObject currentSpawnedObject;
 
-    [HideInInspector]
-    public int spawnedSymbolID = -1;
+    private bool wasLoaded = false; // Yükleme yapılıp yapılmadığını takip eder
 
     private void Awake()
     {
@@ -21,49 +22,97 @@ public class SymbolSpawner : MonoBehaviour
             Destroy(gameObject);
     }
 
+    private void Start()
+    {
+        // Eğer 0.1 saniye içinde LoadData çalışmadıysa, bu yeni bir oyundur.
+        // Yeni oyunsa rastgele spawn yap.
+        Invoke(nameof(CheckInitialSpawn), 0.1f);
+    }
+
+    private void CheckInitialSpawn()
+    {
+        // Eğer yükleme yapılmadıysa ve sahnede obje yoksa rastgele spawn et
+        if (!wasLoaded && currentSpawnedObject == null)
+        {
+            SpawnRandomSymbol();
+        }
+    }
+
     public void SpawnRandomSymbol()
     {
-        if (possibleSymbolObjects == null || possibleSymbolObjects.Length == 0)
+        if (spawnPoints.Length == 0 || symbolPrefabs.Length == 0)
             return;
 
-        // Önce tüm sembolleri deaktif et
-        foreach (GameObject obj in possibleSymbolObjects)
+        lastSpawnPointIndex = Random.Range(0, spawnPoints.Length);
+        int randomSymbolIndex = Random.Range(0, symbolPrefabs.Length);
+
+        SpawnSpecificSymbol(randomSymbolIndex, lastSpawnPointIndex);
+    }
+
+    private void SpawnSpecificSymbol(int prefabIndex, int pointIndex)
+    {
+        if (currentSpawnedObject != null)
+            Destroy(currentSpawnedObject);
+
+        currentSpawnedObject = Instantiate(
+            symbolPrefabs[prefabIndex],
+            spawnPoints[pointIndex].position,
+            spawnPoints[pointIndex].rotation
+        );
+        currentSpawnedObject.transform.SetParent(spawnPoints[pointIndex]);
+
+        InteractableSymbol symbolScript = currentSpawnedObject.GetComponent<InteractableSymbol>();
+        if (symbolScript != null)
         {
-            if (obj != null)
-                obj.SetActive(false);
+            spawnedSymbolID = symbolScript.symbolID;
+        }
+    }
+
+    // ==========================================
+    // ISAVEABLE ARAYÜZÜ ENTEGRASYONU
+    // ==========================================
+    public void LoadData(GameData data)
+    {
+        wasLoaded = true; // Yükleme işleminin başladığını işaretle
+
+        // 1. Eğer oyuncu sembolü zaten almışsa dünyadaki her şeyi temizle ve çık
+        if (data.hasSymbol)
+        {
+            if (currentSpawnedObject != null)
+                Destroy(currentSpawnedObject);
+            return;
         }
 
-        // 1. Rastgele bir sembol seç
-        int randomSymbolIndex = Random.Range(0, possibleSymbolObjects.Length);
-        GameObject selectedSymbol = possibleSymbolObjects[randomSymbolIndex];
-
-        if (selectedSymbol != null)
+        // 2. Eğer sembol dünyadaysa kayıtlı konuma spawn et
+        if (data.isSymbolInWorld && data.spawnedSymbolLocationIndex != -1)
         {
-            // 2. Rastgele bir konum seç (Eğer spawnPoints doluysa)
-            if (spawnPoints != null && spawnPoints.Length > 0)
-            {
-                int randomPointIndex = Random.Range(0, spawnPoints.Length);
-                Transform targetPoint = spawnPoints[randomPointIndex];
+            this.lastSpawnPointIndex = data.spawnedSymbolLocationIndex;
+            this.spawnedSymbolID = data.spawnedSymbolID;
 
-                // Sembolü seçilen konuma ışınla
-                selectedSymbol.transform.position = targetPoint.position;
-                selectedSymbol.transform.rotation = targetPoint.rotation;
-                selectedSymbol.transform.SetParent(targetPoint);
+            int targetPrefabIndex = -1;
+            for (int i = 0; i < symbolPrefabs.Length; i++)
+            {
+                if (
+                    symbolPrefabs[i].GetComponent<InteractableSymbol>().symbolID
+                    == data.spawnedSymbolID
+                )
+                {
+                    targetPrefabIndex = i;
+                    break;
+                }
             }
 
-            // 3. Sembolü aktif et
-            selectedSymbol.SetActive(true);
-
-            // ID Ataması
-            InteractableSymbol sym = selectedSymbol.GetComponent<InteractableSymbol>();
-            if (sym != null)
-                spawnedSymbolID = sym.symbolID;
-            else
-                spawnedSymbolID = randomSymbolIndex;
-
-            Debug.Log(
-                $"[Spawner] Sembol: {selectedSymbol.name} | Konum ID: {spawnedSymbolID} noktasında oluşturuldu."
-            );
+            if (targetPrefabIndex != -1)
+            {
+                SpawnSpecificSymbol(targetPrefabIndex, lastSpawnPointIndex);
+            }
         }
+    }
+
+    public void SaveData(ref GameData data)
+    {
+        data.isSymbolInWorld = (currentSpawnedObject != null);
+        data.spawnedSymbolID = this.spawnedSymbolID;
+        data.spawnedSymbolLocationIndex = this.lastSpawnPointIndex;
     }
 }

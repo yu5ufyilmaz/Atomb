@@ -29,7 +29,7 @@ public class PasswordManager : MonoBehaviour, ISaveable
 
     [Header("Tutorial Ayarları")]
     public string tutorialPassword = "AAAAAAAA_+_999";
-    public InteractableBook tutorialNoteBook;
+    public InteractableNote tutorialNote;
 
     [Header("Oyun Ayarları")]
     [Tooltip("Kazanmak için gereken RANDOM şifre sayısı (Tutorial hariç)")]
@@ -74,10 +74,9 @@ public class PasswordManager : MonoBehaviour, ISaveable
             SymbolSpawner.Instance.SpawnRandomSymbol();
         }
 
-        if (tutorialNoteBook != null)
+        if (tutorialNote != null)
         {
-            tutorialNoteBook.canContainPassword = true;
-            tutorialNoteBook.AssignPassword(tutorialPassword, 0);
+            tutorialNote.AssignPassword(tutorialPassword); // Sadece şifreyi veriyoruz, sayfa no yok!
         }
 
         // --- BULMACA KİTABI ---
@@ -147,7 +146,7 @@ public class PasswordManager : MonoBehaviour, ISaveable
                 && b.canContainPassword
                 && b.bookIdentity != null
                 && b.bookIdentity.possibleLocations.Count > 0
-                && b != tutorialNoteBook
+                && b != tutorialNote
                 && b != puzzleBook
             )
             .ToList();
