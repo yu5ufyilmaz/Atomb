@@ -2,6 +2,8 @@ using System.Collections;
 using Cinemachine;
 using StarterAssets;
 using UnityEngine;
+using UnityEngine.Animations;
+using UnityEngine.Playables;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.HighDefinition;
 using UnityEngine.SceneManagement;
@@ -133,6 +135,8 @@ public class JumpscareManager : MonoBehaviour
             activeProfile.enemyEyeHeightOffset = 1.3f;
             activeProfile.shakeIntensity = 0.5f;
             activeProfile.shakeFrequency = 20f;
+            activeProfile.cameraLocalOffset = eyeOffset;
+            activeProfile.cameraRotationDelay = 0.35f;
         }
 
         StartCoroutine(JumpscareRoutine(enemy, activeProfile, playTurnAnim, style));
@@ -167,15 +171,40 @@ public class JumpscareManager : MonoBehaviour
                 brain.enabled = false;
         }
 
-        if (headBone != null)
+        bool hasCutscene = settings.cutsceneDirector != null;
+        bool cutsceneControlsEverything = hasCutscene && settings.cutsceneTakesFullControl;
+
+        if (headBone != null && mainCamera != null && !cutsceneControlsEverything)
         {
             mainCamera.transform.SetParent(headBone);
-            mainCamera.transform.localPosition = eyeOffset;
+            mainCamera.transform.localPosition = settings.cameraLocalOffset;
         }
+
+        if (hasCutscene)
+            PlayCutscene(settings.cutsceneDirector);
+
+        bool hasCameraAnimatorTrigger =
+            !string.IsNullOrWhiteSpace(settings.cameraAnimatorTrigger) &&
+            mainCamera != null &&
+            !cutsceneControlsEverything;
+
+        if (hasCameraAnimatorTrigger)
+            TriggerCameraAnimator(settings.cameraAnimatorTrigger);
+
+        bool hasCameraAnimation =
+            settings.cameraAnimationClip != null && mainCamera != null && !cutsceneControlsEverything;
+        bool cameraAnimationControlsTransform =
+            (hasCameraAnimation || hasCameraAnimatorTrigger) &&
+            settings.cameraAnimationOverridesLookAt;
+        PlayableGraph cameraAnimationGraph = default;
+
+        if (hasCameraAnimation)
+            cameraAnimationGraph = PlayCameraAnimation(settings.cameraAnimationClip);
 
         // 2. POZİSYON VE DÖNÜŞ HIZI
         Vector3 targetPos = enemy.position;
         float currentTurnSpeed = fastTurnSpeed;
+        float startFOV = mainCamera != null ? mainCamera.fieldOfView : 60f;
 
         switch (style)
         {
@@ -199,6 +228,9 @@ public class JumpscareManager : MonoBehaviour
                 break;
         }
 
+        if (settings.cameraTurnSpeedOverride > 0f)
+            currentTurnSpeed = settings.cameraTurnSpeedOverride;
+
         // 3. ANİMASYON
         if (playTurnAnim && playerAnimator != null)
         {
@@ -218,52 +250,141 @@ public class JumpscareManager : MonoBehaviour
 
         // 4. DÖNGÜ (AYARLAR ARTIK SETTINGS'DEN GELİYOR)
         float timer = 0f;
-        float rotationDelay = 0.35f;
+        float totalDuration = GetJumpscareDuration(settings);
 
-        while (timer < settings.duration)
+        while (timer < totalDuration)
         {
             timer += Time.deltaTime;
-            float progress = timer / settings.duration;
+            float progress = timer / totalDuration;
 
-            // Profildeki EyeHeightOffset'i kullanıyoruz
-            Vector3 enemyHeadPos = enemy.position + (Vector3.up * settings.enemyEyeHeightOffset);
-            Quaternion targetRot = Quaternion.LookRotation(
-                enemyHeadPos - mainCamera.transform.position
-            );
-
-            if (timer > rotationDelay)
+            if (mainCamera != null && !cameraAnimationControlsTransform && !cutsceneControlsEverything)
             {
-                mainCamera.transform.rotation = Quaternion.Slerp(
-                    mainCamera.transform.rotation,
-                    targetRot,
-                    Time.deltaTime * currentTurnSpeed
+                // Profildeki EyeHeightOffset'i kullanıyoruz
+                Vector3 enemyHeadPos = enemy.position + (Vector3.up * settings.enemyEyeHeightOffset);
+                Quaternion targetRot = Quaternion.LookRotation(
+                    enemyHeadPos - mainCamera.transform.position
                 );
+
+                if (timer > settings.cameraRotationDelay)
+                {
+                    mainCamera.transform.rotation = Quaternion.Slerp(
+                        mainCamera.transform.rotation,
+                        targetRot,
+                        Time.deltaTime * currentTurnSpeed
+                    );
+                }
+
+                // Profildeki Shake ayarlarını kullanıyoruz
+                float shake =
+                    (Mathf.PerlinNoise(Time.time * settings.shakeFrequency, 0f) - 0.5f)
+                    * settings.shakeIntensity;
+
+                // Profildeki Tilt (Eğilme) açısını kullanıyoruz
+                float currentTilt = Mathf.Lerp(0, settings.tiltAngle, progress);
+
+                mainCamera.transform.Rotate(new Vector3(shake, shake * 0.5f, currentTilt));
             }
 
-            // Profildeki Shake ayarlarını kullanıyoruz
-            float shake =
-                (Mathf.PerlinNoise(Time.time * settings.shakeFrequency, 0f) - 0.5f)
-                * settings.shakeIntensity;
+            if (mainCamera != null && !cutsceneControlsEverything)
+                mainCamera.fieldOfView = Mathf.Lerp(startFOV, settings.targetFOV, progress);
 
-            // Profildeki Tilt (Eğilme) açısını kullanıyoruz
-            float currentTilt = Mathf.Lerp(0, settings.tiltAngle, progress);
-
-            mainCamera.transform.Rotate(new Vector3(shake, shake * 0.5f, currentTilt));
-
-            ApplyJumpscareEffects(progress); // Efektleri uygula
+            if (!hasCutscene || settings.applyProfileEffectsDuringCutscene)
+                ApplyJumpscareEffects(progress); // Efektleri uygula
             yield return null;
         }
+
+        if (cameraAnimationGraph.IsValid())
+            cameraAnimationGraph.Destroy();
 
         // --- SON DOKUNUŞ: EFEKTLERİ KİLİTLE ---
         // Döngü bittiğinde efektleri %100'e (maksimum bozukluğa) sabitliyoruz.
         // Böylece Death UI açılıp zaman durduğunda ekran bozuk kalır.
-        ApplyJumpscareEffects(1.0f);
+        if (!hasCutscene || settings.applyProfileEffectsDuringCutscene)
+            ApplyJumpscareEffects(1.0f);
         // --------------------------------------
 
         if (DeathUIManager.Instance != null)
             DeathUIManager.Instance.ShowDeathScreen();
         else
             SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+    }
+
+    private float GetJumpscareDuration(JumpscareProfile settings)
+    {
+        float duration = Mathf.Max(0.01f, settings.duration);
+
+        if (settings.cameraAnimationClip != null)
+            duration = Mathf.Max(duration, settings.cameraAnimationClip.length);
+
+        if (settings.cameraAnimatorClipToWaitFor != null)
+            duration = Mathf.Max(duration, settings.cameraAnimatorClipToWaitFor.length);
+
+        if (settings.enemyAnimationClipToWaitFor != null)
+            duration = Mathf.Max(duration, settings.enemyAnimationClipToWaitFor.length);
+
+        if (settings.cutsceneDirector != null)
+            duration = Mathf.Max(duration, GetPlayableDirectorDuration(settings.cutsceneDirector));
+
+        return duration + Mathf.Max(0f, settings.deathScreenExtraDelay);
+    }
+
+    private void PlayCutscene(PlayableDirector director)
+    {
+        director.time = 0d;
+        director.Play();
+    }
+
+    private float GetPlayableDirectorDuration(PlayableDirector director)
+    {
+        double duration = director.duration;
+
+        if ((double.IsNaN(duration) || double.IsInfinity(duration) || duration <= 0d) &&
+            director.playableAsset != null)
+        {
+            duration = director.playableAsset.duration;
+        }
+
+        if (double.IsNaN(duration) || double.IsInfinity(duration) || duration <= 0d)
+            return 0f;
+
+        return (float)duration;
+    }
+
+    private void TriggerCameraAnimator(string triggerName)
+    {
+        Animator cameraAnimator = mainCamera.GetComponent<Animator>();
+        if (cameraAnimator == null)
+        {
+            Debug.LogWarning("Jumpscare camera trigger verildi ama Main Camera üzerinde Animator yok.");
+            return;
+        }
+
+        cameraAnimator.enabled = true;
+        cameraAnimator.ResetTrigger(triggerName);
+        cameraAnimator.SetTrigger(triggerName);
+    }
+
+    private PlayableGraph PlayCameraAnimation(AnimationClip clip)
+    {
+        PlayableGraph graph = PlayableGraph.Create("Jumpscare Camera Animation");
+        graph.SetTimeUpdateMode(DirectorUpdateMode.GameTime);
+
+        Animator cameraAnimator = mainCamera.GetComponent<Animator>();
+        if (cameraAnimator == null)
+            cameraAnimator = mainCamera.gameObject.AddComponent<Animator>();
+
+        cameraAnimator.enabled = true;
+
+        AnimationClipPlayable playable = AnimationClipPlayable.Create(graph, clip);
+        AnimationPlayableOutput output = AnimationPlayableOutput.Create(
+            graph,
+            "Camera Animation",
+            cameraAnimator
+        );
+        output.SetSourcePlayable(playable);
+        graph.Play();
+
+        return graph;
     }
 
     private Vector3 GetSmartJumpscarePosition(Transform player, float distance)

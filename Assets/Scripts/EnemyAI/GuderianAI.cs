@@ -59,6 +59,10 @@ public class GuderianAI : MonoBehaviour
     public Animator animator; // Animasyon kontrolcüsü
 
     [SerializeField]
+    [Tooltip("Guderian oyuncuyu öldürürken/jumpscare sırasında tetiklenecek Animator trigger adı.")]
+    private string jumpscareAnimationTrigger = "Attack";
+
+    [SerializeField]
     private GameObject guderianModel;
 
     [SerializeField]
@@ -101,7 +105,6 @@ public class GuderianAI : MonoBehaviour
 
     // Animasyon ID'leri (Performans için hashlenmiş)
     private int _animIDSpeed;
-    private int _animIDAttack;
 
     // Performans: Player referansı önbelleği
     private Transform cachedPlayer;
@@ -131,7 +134,6 @@ public class GuderianAI : MonoBehaviour
 
         // Animasyon parametre ID'lerini al
         _animIDSpeed = Animator.StringToHash("Speed");
-        _animIDAttack = Animator.StringToHash("Attack");
 
         // Performans: Player referansını önbelleğe al
         GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
@@ -613,12 +615,7 @@ public class GuderianAI : MonoBehaviour
         }
         if (guderianModel != null)
             guderianModel.SetActive(true);
-        // Animasyon Tetiklemesi
-        if (animator != null)
-        {
-            animator.SetFloat(_animIDSpeed, 0f); // Koşmayı kes
-            animator.SetTrigger(_animIDAttack); // Saldır
-        }
+        PlayJumpscareAnimation();
 
         // Performans: Önbellekteki player referansını kullan
         Transform player = cachedPlayer;
@@ -690,12 +687,7 @@ public class GuderianAI : MonoBehaviour
             audioSource.PlayOneShot(jumpscareSound);
         }
 
-        // Animasyon
-        if (animator != null)
-        {
-            animator.SetFloat(_animIDSpeed, 0f);
-            animator.SetTrigger(_animIDAttack);
-        }
+        PlayJumpscareAnimation();
 
         // Performans: Önbellekteki player referansını kullan
         GameObject player =
@@ -731,6 +723,23 @@ public class GuderianAI : MonoBehaviour
         if (agent != null)
             agent.enabled = false;
         transform.position = finalPos;
+    }
+
+    private void PlayJumpscareAnimation()
+    {
+        if (animator == null)
+            return;
+
+        if (guderianJumpscareProfile != null &&
+            !guderianJumpscareProfile.triggerEnemyAnimationOnStart)
+        {
+            return;
+        }
+
+        animator.SetFloat(_animIDSpeed, 0f);
+
+        if (!string.IsNullOrWhiteSpace(jumpscareAnimationTrigger))
+            animator.SetTrigger(Animator.StringToHash(jumpscareAnimationTrigger));
     }
 
     private void LookAtTargetFlat(Transform target)

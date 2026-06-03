@@ -68,6 +68,10 @@ public class GuderianEditor : Editor
                 serializedObject.FindProperty("animator"),
                 new GUIContent("Animator Controller")
             );
+            EditorGUILayout.PropertyField(
+                serializedObject.FindProperty("jumpscareAnimationTrigger"),
+                new GUIContent("Jumpscare/Ölüm Trigger")
+            );
             // ---------------------------
 
             EditorGUILayout.Space(5);
