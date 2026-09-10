@@ -169,7 +169,6 @@ public class LeesEnemyAI : MonoBehaviour
 #if UNITY_EDITOR
             debugCooldownTimer = currentCooldownTimer;
 #endif
-            return;
         }
 
         if (currentState == LeesState.Hidden && currentRoom != null && currentRoom.isDangerous)

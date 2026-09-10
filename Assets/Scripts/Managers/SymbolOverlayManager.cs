@@ -22,7 +22,7 @@ public class SymbolOverlayManager : MonoBehaviour
     [Header("Serbest İnceleme (Inspect) Ayarları")]
     public float inspectDistance = 0.5f;
     public float freeRotationSpeed = 10f;
-    public Vector3 spawnScaleOffset = Vector3.zero;
+    public Vector3 spawnScaleOffset = Vector3.one;
 
     [Tooltip(
         "Sembol ekrana ilk geldiğinde ters veya yan duruyorsa buradaki X,Y,Z değerleriyle oynayarak düzeltebilirsin (Örn: X:90)"

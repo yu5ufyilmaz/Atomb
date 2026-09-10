@@ -251,6 +251,22 @@ public class BreakerBox : MonoBehaviour, IInteractable
         handleObject.localRotation = endRot;
     }
     #endregion
+    public void ForceTrip()
+    {
+        if (isTripped)
+            return; // Zaten atıksa bir şey yapma
+
+        Debug.LogWarning("DEBUG MENU: Şartel Zorla Attırıldı!");
+        isTripped = true;
+        cycleCount = 0;
+        PlaySound(breakerTripSound);
+        StartHandleAnimation(handleDownRotation);
+
+        if (MegaphoneSystem.Instance != null)
+            MegaphoneSystem.Instance.OnBreakerTripped();
+
+        OnBreakerTripped?.Invoke();
+    }
 
     private void PlaySound(AudioClip clip)
     {

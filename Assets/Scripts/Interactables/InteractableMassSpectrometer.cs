@@ -262,7 +262,7 @@ public class InteractableMassSpectrometer : MonoBehaviour, IInteractable, IForce
             GameManager.Instance.activeInteraction = this;
 
         if (_interactionVC != null)
-            _interactionVC.Priority = 100;
+            _interactionVC.Priority = 102;
 
         if (playerAnimator)
             playerAnimator.SetTrigger(interactAnimTrigger);

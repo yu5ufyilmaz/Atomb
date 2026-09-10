@@ -9,27 +9,37 @@ public class MainMenuManager : MonoBehaviour
     [SerializeField]
     private float fadeDuration = 1.5f;
 
-    [SerializeField] private GameObject settingsPanel;
+    [SerializeField]
+    private GameObject settingsPanel;
+
     [Header("UI Referansları")]
-    [SerializeField] private GameObject mainMenuPanel;
-    [SerializeField] private GameObject creditsPanel;
-    [SerializeField] private Button continueButton;
+    [SerializeField]
+    private GameObject mainMenuPanel;
+
+    [SerializeField]
+    private GameObject creditsPanel;
+
+    [SerializeField]
+    private Button continueButton;
 
     private CanvasGroup _menuCanvasGroup;
 
     private void Start()
     {
         // ... Orijinal Start içeriğin (Hiç dokunmadım) ...
-        if (creditsPanel != null) creditsPanel.SetActive(false);
-        if (settingsPanel != null) settingsPanel.SetActive(false);
+        if (creditsPanel != null)
+            creditsPanel.SetActive(false);
+        if (settingsPanel != null)
+            settingsPanel.SetActive(false);
         if (mainMenuPanel != null)
         {
             mainMenuPanel.SetActive(true);
             _menuCanvasGroup = mainMenuPanel.GetComponent<CanvasGroup>();
-            if (_menuCanvasGroup == null) _menuCanvasGroup = mainMenuPanel.AddComponent<CanvasGroup>();
+            if (_menuCanvasGroup == null)
+                _menuCanvasGroup = mainMenuPanel.AddComponent<CanvasGroup>();
             _menuCanvasGroup.alpha = 1f;
         }
-        
+
         if (continueButton != null)
         {
             if (SaveManager.Instance != null)
@@ -43,7 +53,6 @@ public class MainMenuManager : MonoBehaviour
         }
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
-        
     }
 
     // =========================================================
@@ -58,7 +67,8 @@ public class MainMenuManager : MonoBehaviour
         }
 
         // SaveDatasını sıfırla ki yeni oyun verileriyle başlasın
-        if (SaveManager.Instance != null) SaveManager.Instance.NewGame();
+        if (SaveManager.Instance != null)
+            SaveManager.Instance.NewGame();
 
         // Geçişi başlat (Kayıt Yükleme = FALSE)
         StartCoroutine(StartGameTransitionRoutine(isLoadGame: false));
@@ -80,11 +90,46 @@ public class MainMenuManager : MonoBehaviour
     }
 
     // Diğer UI fonksiyonların (OpenSettings, vs. aynı kalıyor)...
-    public void OpenSettings() { /* Orijinal kodun */ }
-    public void CloseSettings() { /* Orijinal kodun */ }
-    public void OpenCredits() { /* Orijinal kodun */ }
-    public void CloseCredits() { /* Orijinal kodun */ }
-    public void QuitGame() { /* Orijinal kodun */ }
+    public void OpenSettings()
+    {
+        if (settingsPanel != null)
+            settingsPanel.SetActive(true);
+        if (mainMenuPanel != null)
+            mainMenuPanel.SetActive(false);
+    }
+
+    public void CloseSettings()
+    {
+        if (settingsPanel != null)
+            settingsPanel.SetActive(false);
+        if (mainMenuPanel != null)
+            mainMenuPanel.SetActive(true);
+    }
+
+    public void OpenCredits()
+    {
+        if (creditsPanel != null)
+            creditsPanel.SetActive(true);
+        if (mainMenuPanel != null)
+            mainMenuPanel.SetActive(false);
+    }
+
+    public void CloseCredits()
+    {
+        if (creditsPanel != null)
+            creditsPanel.SetActive(false);
+        if (mainMenuPanel != null)
+            mainMenuPanel.SetActive(true);
+    }
+
+    public void QuitGame()
+    {
+#if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false;
+#else
+        Application.Quit();
+#endif
+    }
 
     private IEnumerator StartGameTransitionRoutine(bool isLoadGame)
     {
@@ -102,7 +147,8 @@ public class MainMenuManager : MonoBehaviour
             _menuCanvasGroup.alpha = 0f;
         }
 
-        if (mainMenuPanel != null) mainMenuPanel.SetActive(false);
+        if (mainMenuPanel != null)
+            mainMenuPanel.SetActive(false);
 
         // =======================================================
         // 2. KAYIT YÜKLENİYORSA
@@ -123,13 +169,15 @@ public class MainMenuManager : MonoBehaviour
             }
             else
             {
-                Debug.LogError("HATA: Oyun kaydedildiği yerden başlayacak ama sahnede GameManager objesi yok!");
+                Debug.LogError(
+                    "HATA: Oyun kaydedildiği yerden başlayacak ama sahnede GameManager objesi yok!"
+                );
             }
         }
         // =======================================================
         // 3. YENİ OYUN (Veya eski kayıt yoksa)
         // =======================================================
-        else 
+        else
         {
             InGameMenuController menuController = FindObjectOfType<InGameMenuController>();
             if (menuController != null)
@@ -141,12 +189,16 @@ public class MainMenuManager : MonoBehaviour
             {
                 if (GameManager.Instance != null)
                 {
-                    Debug.LogWarning("UYARI: Masadan kalkma (InGameMenuController) bulunamadı. Direkt oyun başlatılıyor.");
+                    Debug.LogWarning(
+                        "UYARI: Masadan kalkma (InGameMenuController) bulunamadı. Direkt oyun başlatılıyor."
+                    );
                     GameManager.Instance.StartGameMode();
                 }
                 else
                 {
-                    Debug.LogError("KRİTİK HATA: Ne InGameMenuController (Masa) ne de GameManager bulunabildi! Oyun başlayamıyor.");
+                    Debug.LogError(
+                        "KRİTİK HATA: Ne InGameMenuController (Masa) ne de GameManager bulunabildi! Oyun başlayamıyor."
+                    );
                 }
             }
         }

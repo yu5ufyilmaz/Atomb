@@ -103,7 +103,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    private void TriggerFinalEnding()
+    public void TriggerFinalEnding()
     {
         // Sahnede senin yazdığın "EndGameButton" sınıfına sahip objeyi buluyoruz
         EndGameButton endButton = FindObjectOfType<EndGameButton>();

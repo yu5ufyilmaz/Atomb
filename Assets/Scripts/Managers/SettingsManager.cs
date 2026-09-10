@@ -68,11 +68,12 @@ public class SettingsManager : MonoBehaviour
 
     private IEnumerator Start()
     {
+        ApplyGraphicsSettings();
         // Unity'nin AudioMixer'ı tam yükleyebilmesi için çeyrek saniye bekle
         yield return new WaitForSeconds(0.25f);
 
         // Oyun ilk başladığında ayarları sisteme uygula
-        ApplyAllSettings();
+        ApplyAudioSettings();
     }
 
     // --- KAYIT VE YÜKLEME (JSON) ---
@@ -92,11 +93,23 @@ public class SettingsManager : MonoBehaviour
         }
         else
         {
-            // Dosya yoksa varsayılan ayarları oluştur ve kaydet
+            // OYUNCU OYUNA İLK DEFA GİRİYOR (JSON DOSYASI YOK)
             currentSettings = new SettingsData();
 
-            // Varsayılan çözünürlüğü en yüksek olarak ayarla
-            currentSettings.resolutionIndex = availableResolutions.Length - 1;
+            // Varsayılan olarak tam ekran başlasın
+            currentSettings.isFullscreen = true;
+
+            // Listede 1920x1080 çözünürlüğünü ara
+            int targetResIndex = availableResolutions.Length - 1; // Bulamazsa en yükseği seçer
+            for (int i = 0; i < availableResolutions.Length; i++)
+            {
+                if (availableResolutions[i].width == 1920 && availableResolutions[i].height == 1080)
+                {
+                    targetResIndex = i; // 1920x1080 bulundu!
+                }
+            }
+
+            currentSettings.resolutionIndex = targetResIndex;
 
             SaveSettings();
         }
@@ -105,12 +118,15 @@ public class SettingsManager : MonoBehaviour
     // --- AYARLARI SİSTEME UYGULAMA METOTLARI ---
     public void ApplyAllSettings()
     {
-        SetMasterVolume(currentSettings.masterVolume);
-        SetMusicVolume(currentSettings.musicVolume);
-        SetSFXVolume(currentSettings.sfxVolume);
+        ApplyGraphicsSettings();
+        ApplyAudioSettings();
+    }
 
+    private void ApplyGraphicsSettings()
+    {
         SetQuality(currentSettings.qualityIndex);
         SetFullscreen(currentSettings.isFullscreen);
+
         if (
             currentSettings.resolutionIndex >= 0
             && currentSettings.resolutionIndex < availableResolutions.Length
@@ -120,9 +136,15 @@ public class SettingsManager : MonoBehaviour
         }
 
         SetLanguage(currentSettings.languageIndex);
-
-        // YENİ: Parlaklığı uygula
         SetBrightness(currentSettings.brightness);
+    }
+
+    // Sesleri ayırdık ki Start içinde çeyrek saniye bekleyip sorunsuz çalışabilsin
+    private void ApplyAudioSettings()
+    {
+        SetMasterVolume(currentSettings.masterVolume);
+        SetMusicVolume(currentSettings.musicVolume);
+        SetSFXVolume(currentSettings.sfxVolume);
     }
 
     // -- SES AYARLARI -- (AudioMixer'daki parametre isimleri Master, Music, SFX olmalı)

@@ -13,6 +13,9 @@ public class InteractableOscilloscope : MonoBehaviour, IInteractable, IForceExit
     private CinemachineVirtualCamera interactVCam;
 
     [SerializeField]
+    private GameObject _playerFollowCamera;
+
+    [SerializeField]
     private MonoBehaviour playerLookScript;
 
     [SerializeField]
@@ -134,6 +137,9 @@ public class InteractableOscilloscope : MonoBehaviour, IInteractable, IForceExit
                 vcamObj.transform.localRotation = Quaternion.identity;
                 interactVCam = vcamObj.AddComponent<CinemachineVirtualCamera>();
                 interactVCam.Priority = 0;
+                interactVCam.m_Lens.FieldOfView = 60f;
+                interactVCam.m_Lens.NearClipPlane = 0.1f;
+                interactVCam.m_Lens.FarClipPlane = 1000f;
             }
         }
         if (voltsKnob)
@@ -247,7 +253,10 @@ public class InteractableOscilloscope : MonoBehaviour, IInteractable, IForceExit
 
         // VCAM AKTİF ET (Manuel Lerp ve Brain kapatmaya gerek kalmadı, sistem süzülecek)
         if (interactVCam)
-            interactVCam.Priority = 100;
+        {
+            interactVCam.Priority = 102;
+            _playerFollowCamera.SetActive(false);
+        }
 
         yield return new WaitForSeconds(1.5f); // Kameranın süzülmesini bekle
 
@@ -281,7 +290,8 @@ public class InteractableOscilloscope : MonoBehaviour, IInteractable, IForceExit
 
         // VCAM PASİF ET (Kamera yumuşakça karakterin ensesine geri dönecek)
         if (interactVCam)
-            interactVCam.Priority = 0;
+{            interactVCam.Priority = 0;
+            _playerFollowCamera.SetActive(false);}
 
         yield return new WaitForSeconds(1.5f);
 
@@ -367,7 +377,6 @@ public class InteractableOscilloscope : MonoBehaviour, IInteractable, IForceExit
             CheckForSolution();
         }
     }
-
 
     // --- YARDIMCI FONKSİYONLAR ---
     private void UpdateAudioAndWaveform()

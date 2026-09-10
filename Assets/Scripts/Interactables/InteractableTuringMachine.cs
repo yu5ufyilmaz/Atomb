@@ -25,6 +25,9 @@ public class InteractableTuringMachine : MonoBehaviour, IInteractable, IForceExi
     public Transform fixedCameraTransform;
     private CinemachineVirtualCamera interactVCam; // Kod otomatik oluşturacak
 
+    [SerializeField]
+    private GameObject _playerFollowCamera;
+
     [Header("📍 Etkileşim Pozisyonu")]
     public Transform interactionStandPoint;
     public float autoWalkSpeed = 2.0f;
@@ -177,6 +180,9 @@ public class InteractableTuringMachine : MonoBehaviour, IInteractable, IForceExi
                 vcamObj.transform.localRotation = Quaternion.identity;
                 interactVCam = vcamObj.AddComponent<CinemachineVirtualCamera>();
                 interactVCam.Priority = 0; // Başlangıçta pasif
+                interactVCam.m_Lens.FieldOfView = 60f;
+                interactVCam.m_Lens.NearClipPlane = 0.1f;
+                interactVCam.m_Lens.FarClipPlane = 1000f;
             }
         }
         else
@@ -273,7 +279,7 @@ public class InteractableTuringMachine : MonoBehaviour, IInteractable, IForceExi
             saController = playerController.GetComponent<StarterAssets.CharacterController>();
             if (saController != null)
             {
-                saController.enabled = false; // Script kapandı, uyarı verme ihtimali SIFIR!
+                saController.SetFrozen(true, lockCameraInput: true, restrictRotation: false);
             }
         }
 
@@ -353,7 +359,9 @@ public class InteractableTuringMachine : MonoBehaviour, IInteractable, IForceExi
 
         // VCAM AKTİF ET (Cinemachine otomatik ve yumuşakça blend yapacak)
         if (interactVCam)
-            interactVCam.Priority = 100;
+        {
+            interactVCam.Priority = 102;
+        }
 
         // Kameranın yerine geçmesini bekle
         yield return new WaitForSeconds(1.5f);

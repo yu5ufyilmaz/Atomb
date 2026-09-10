@@ -117,6 +117,9 @@ public class InteractablePressureValve : MonoBehaviour, IInteractable, IForceExi
                 vcamObj.transform.localRotation = Quaternion.identity;
                 interactVCam = vcamObj.AddComponent<CinemachineVirtualCamera>();
                 interactVCam.Priority = 0;
+                interactVCam.m_Lens.FieldOfView = 60f;
+                interactVCam.m_Lens.NearClipPlane = 0.1f;
+                interactVCam.m_Lens.FarClipPlane = 1000f;
             }
         }
         else
@@ -220,7 +223,7 @@ public class InteractablePressureValve : MonoBehaviour, IInteractable, IForceExi
 
         // GEÇİŞ (Blend)
         if (interactVCam)
-            interactVCam.Priority = 100;
+            interactVCam.Priority = 102;
         yield return new WaitForSeconds(1.5f);
 
         inValveMode = true;

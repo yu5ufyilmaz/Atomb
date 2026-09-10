@@ -22,6 +22,9 @@ MonoBehaviour:
   - title: 'SURVIVAL PROTOCOL: LEE'
     content: DO NOT RUN. Turn your back, stand completely still, and never look at
       it.
+  - title: 'SURVIVAL PROTOCOL: HANS'
+    content: If you heard footstep you need to hide in hiding spots. Dont forget
+      to close doors.
   symbolDescriptions:
   - '[+] Receive the greeting of the four-eyed man where it all began.'
   - '[-] Subtraction: Destructive interference detected. Use this to bleed off excess

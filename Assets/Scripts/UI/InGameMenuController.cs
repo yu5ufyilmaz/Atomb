@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.Playables; // TİMELİNE İÇİN BU KÜTÜPHANEYİ EKLEDİK
 
 public class InGameMenuController : MonoBehaviour
 {
@@ -7,8 +8,11 @@ public class InGameMenuController : MonoBehaviour
     public Animator playerAnimator;
     public StarterAssets.CharacterController playerController;
 
+    [Header("Cutscene Ayarları")] // TİMELİNE REFERANSIMIZ BURADA
+    [Tooltip("Başlangıçta çalışacak Timeline objesini (StartCutScene) buraya sürükle")]
+    public PlayableDirector introTimeline;
+
     [Header("Menü Objeleri (Masadaki Yazılar)")]
-    [Tooltip("Oyun başlar başlamaz gizlenecek 3D Text veya objeler")]
     public GameObject[] menuObjectsToHide;
 
     [Header("Kamera Bağlama Ayarları")]
@@ -20,21 +24,12 @@ public class InGameMenuController : MonoBehaviour
     public GameObject[] inGameUIPanels;
     public float uiFadeDuration = 1.5f;
 
-    // --- YENİ EKLENEN SES AYARLARI ---
     [Header("Ses Ayarları")]
-    [Tooltip("Menüdeyken çalacak müziğin AudioSource'u")]
     public AudioSource menuMusicSource;
-
-    [Tooltip("Müziğin kaç saniyede yavaşça kısılarak kapanacağı")]
     public float musicFadeDuration = 2.0f;
-
-    [Tooltip("Ayağa kalkma sesi gibi kısa efektleri çalacak AudioSource")]
     public AudioSource sfxSource;
-
-    [Tooltip("Ayağa kalkarken çalacak ses efekti (Sandelye gıcırtısı vs.)")]
     public AudioClip standUpSound;
 
-    // Kamera kilit sistemi
     private Vector3 lockedPosition;
     private bool isCameraLocked = false;
 
@@ -53,17 +48,13 @@ public class InGameMenuController : MonoBehaviour
                     ui.SetActive(false);
             }
 
-            // InGameMenuController.cs Start() metodu içi
             if (cameraTarget != null)
             {
                 lockedPosition = cameraTarget.position;
                 isCameraLocked = true;
-
-                // --- YENİ EKLENEN KOD: Kamerayı kemikten ayır ki titremesin ---
                 cameraTarget.SetParent(null);
             }
 
-            // --- YENİ: MENÜ MÜZİĞİNİ BAŞLAT ---
             if (menuMusicSource != null && !menuMusicSource.isPlaying)
             {
                 menuMusicSource.Play();
@@ -78,6 +69,7 @@ public class InGameMenuController : MonoBehaviour
 
     void LateUpdate()
     {
+        // Kamera kilitliyken hedefi sabit tutar
         if (isCameraLocked && cameraTarget != null)
         {
             cameraTarget.position = lockedPosition;
@@ -91,19 +83,74 @@ public class InGameMenuController : MonoBehaviour
 
     private IEnumerator GameStartRoutine()
     {
-        // --- 1. OYUNCU KİLİDİNİ AÇMA, SADECE FAREYİ GİZLE ---
+        // 1. FAREYİ KİLİTLE VE MENÜ ELEMANLARINI GİZLE
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
 
-        // Masadaki yazıları yavaşça silerek kapat
+        if (MegaphoneSystem.Instance != null)
+        {
+            MegaphoneSystem.Instance.TriggerGameStartAudio();
+        }
+
         foreach (GameObject obj in menuObjectsToHide)
         {
             if (obj != null)
-            {
                 StartCoroutine(FadeOutAndHide(obj, uiFadeDuration));
-            }
         }
 
+        if (menuMusicSource != null)
+        {
+            StartCoroutine(FadeOutMusic(menuMusicSource, musicFadeDuration));
+        }
+
+        // =================================================================
+        // 2. TİMELİNE ÇALIŞSIN VE ROOT OBJESİ GİZLİCE KAMERAYI TAKİP ETSİN!
+        // =================================================================
+        if (introTimeline != null)
+        {
+            isCameraLocked = false;
+
+            introTimeline.Play();
+
+            // 🚨 SİHİRLİ DOKUNUŞ: Timeline oynadığı süre boyunca her kare (frame) çalışır
+
+            float timelineTimer = 0f;
+            float skipTimer = 0f;
+            float skipHoldTime = 1.5f; // Atlamak için E'ye basılı tutulacak süre (saniye)
+            while (timelineTimer < (float)introTimeline.duration)
+            {
+                timelineTimer += Time.deltaTime;
+                if (Input.GetKey(KeyCode.E))
+                {
+                    skipTimer += Time.deltaTime;
+                    if (skipTimer >= skipHoldTime)
+                    {
+                        introTimeline.time = introTimeline.duration; // Timeline'ı sona sar
+                        break; // Döngüden hemen çık
+                    }
+                }
+                else
+                {
+                    skipTimer = 0f; // Tuş bırakılırsa sayacı sıfırla
+                }
+                // Root objesini (0,0,0'da unutulan objeyi) her saniye zorla kameranın içine çekiyoruz
+                if (cameraTarget != null && Camera.main != null)
+                {
+                    cameraTarget.position = Camera.main.transform.position;
+                    cameraTarget.rotation = Camera.main.transform.rotation;
+                    lockedPosition = cameraTarget.position;
+                }
+
+                yield return null; // Bir sonraki frame'e geç
+            }
+
+            // Timeline bittiğinde Root objesi tam olarak son kameranın (yüz kamerasının) olduğu yerde kalır!
+            isCameraLocked = true;
+        }
+
+        // =================================================================
+        // 3. TİMELİNE BİTTİ, STANDUP ANİMASYONU BAŞLIYOR
+        // =================================================================
         if (playerAnimator != null)
         {
             playerAnimator.SetTrigger("StandUp");
@@ -114,12 +161,8 @@ public class InGameMenuController : MonoBehaviour
             sfxSource.PlayOneShot(standUpSound);
         }
 
-        if (menuMusicSource != null)
-        {
-            StartCoroutine(FadeOutMusic(menuMusicSource, musicFadeDuration));
-        }
-
-        // --- KAMERA YUMUŞAK GEÇİŞİ ---
+        // KAMERA YUMUŞAK GEÇİŞİ (Ayağa kalkarken)
+        // Artık lockedPosition kesinlikle 0,0,0 DEĞİL, yüz kamerasının koordinatı!
         if (cameraTarget != null && cameraAnchor != null)
         {
             Vector3 startPos = lockedPosition;
@@ -140,41 +183,34 @@ public class InGameMenuController : MonoBehaviour
 
             isCameraLocked = false;
 
-            // Kamerayı fiziksel olarak Anchor'a (Kafaya) bağla ve İÇ pozisyonunu/rotasyonunu KESİN SIFIRLA
             cameraTarget.SetParent(cameraAnchor);
             cameraTarget.localPosition = Vector3.zero;
-            cameraTarget.localRotation = Quaternion.identity; // Kemik nereye bakıyorsa oraya bak
+            cameraTarget.localRotation = Quaternion.identity;
         }
         else
         {
             yield return new WaitForSeconds(standUpDuration);
         }
 
-        // --- 2. GEÇİŞ BİTTİ: OYUNU ŞİMDİ BAŞLAT (Karakterin kilidini aç) ---
+        // =================================================================
+        // 4. KONTROLLERİ VER VE OYUN İÇİ UI AÇ
+        // =================================================================
         GameManager.Instance.StartGameMode();
 
         if (playerController != null)
         {
             playerController.ResetHeadBobYPos(0f);
 
-            // --- 3. KAMERA AÇILARINI SENKRONİZE ET (Kontrol verildiği an ışınlanmasın) ---
             if (cameraTarget != null)
             {
                 float finalYaw = cameraTarget.eulerAngles.y;
                 float finalPitch = cameraTarget.eulerAngles.x;
 
-                // Pitch (X) açısı Unity'de 360 sarmalına girebilir, düzeltiyoruz:
                 if (finalPitch > 180f)
                     finalPitch -= 360f;
 
-                // CharacterController'a kameranın şu anki açısını öğretiyoruz
                 playerController.ForceCameraRotation(finalYaw, finalPitch);
             }
-        }
-
-        if (MegaphoneSystem.Instance != null)
-        {
-            MegaphoneSystem.Instance.TriggerGameStartAudio();
         }
 
         foreach (GameObject ui in inGameUIPanels)
@@ -188,10 +224,8 @@ public class InGameMenuController : MonoBehaviour
         this.enabled = false;
     }
 
-    // --- YENİ: Objeleri yavaşça şeffaflaştırıp sonra tamamen kapatan fonksiyon ---
     private IEnumerator FadeOutAndHide(GameObject panel, float duration)
     {
-        // Objenin üzerinde CanvasGroup yoksa otomatik ekle
         CanvasGroup canvasGroup = panel.GetComponent<CanvasGroup>();
         if (canvasGroup == null)
             canvasGroup = panel.AddComponent<CanvasGroup>();
@@ -199,7 +233,6 @@ public class InGameMenuController : MonoBehaviour
         float startAlpha = canvasGroup.alpha;
         float elapsedTime = 0f;
 
-        // Zamanla şeffaflığı 0'a (tamamen görünmez) doğru çek
         while (elapsedTime < duration)
         {
             elapsedTime += Time.deltaTime;
@@ -207,26 +240,22 @@ public class InGameMenuController : MonoBehaviour
             yield return null;
         }
 
-        // Garanti olsun diye tam sıfırla ve objeyi kapat (performans için)
         canvasGroup.alpha = 0f;
         panel.SetActive(false);
     }
 
-    // --- YENİ: MÜZİK YUMUŞAKÇA KISMA FONKSİYONU ---
     private IEnumerator FadeOutMusic(AudioSource audioSource, float duration)
     {
-        float startVolume = audioSource.volume; // O anki ses seviyesini al
+        float startVolume = audioSource.volume;
         float elapsedTime = 0f;
 
         while (elapsedTime < duration)
         {
             elapsedTime += Time.deltaTime;
-            // Sesi, başlangıç seviyesinden 0'a doğru yavaşça indir
             audioSource.volume = Mathf.Lerp(startVolume, 0f, elapsedTime / duration);
             yield return null;
         }
 
-        // Tamamen kısıldığında müziği durdur ve sesi sıfırla (garanti olsun diye)
         audioSource.volume = 0f;
         audioSource.Stop();
     }
@@ -234,7 +263,6 @@ public class InGameMenuController : MonoBehaviour
     private IEnumerator FadeInUI(GameObject panel, float duration)
     {
         panel.SetActive(true);
-
         CanvasGroup canvasGroup = panel.GetComponent<CanvasGroup>();
         if (canvasGroup == null)
             canvasGroup = panel.AddComponent<CanvasGroup>();
@@ -251,51 +279,46 @@ public class InGameMenuController : MonoBehaviour
 
         canvasGroup.alpha = 1f;
     }
-    // --- YENİ: KAYIT YÜKLENDİĞİNDE MASA SİSTEMİNİ ANINDA İPTAL EDEN FONKSİYON ---
+
     public void InstantSetupForLoad()
     {
-        // 1. Kamera kilit sistemini kapat
         isCameraLocked = false;
 
-        // 2. Kamerayı masadan alıp tekrar karakterin kafasına (Anchor) bağla
         if (cameraTarget != null && cameraAnchor != null)
         {
             cameraTarget.SetParent(cameraAnchor);
             cameraTarget.localPosition = Vector3.zero;
-            cameraTarget.localRotation = Quaternion.identity; // Kemik nereye bakıyorsa oraya baksın
+            cameraTarget.localRotation = Quaternion.identity;
         }
 
-        // 3. Karakterin "Sitting" (Oturma) animasyonunu anında sıfırla ve ayağa kaldır
         if (playerAnimator != null)
         {
-            playerAnimator.Rebind(); // Animasyonları varsayılan (ayakta) duruma zorlar
+            playerAnimator.Rebind();
             playerAnimator.Update(0f);
         }
 
-        // 4. Masadaki menü yazılarını anında kapat
         foreach (GameObject obj in menuObjectsToHide)
         {
-            if (obj != null) obj.SetActive(false);
+            if (obj != null)
+                obj.SetActive(false);
         }
 
-        // 5. Oyun içi UI panellerini (Stamina bar vs.) anında aç
         foreach (GameObject ui in inGameUIPanels)
         {
             if (ui != null)
             {
                 ui.SetActive(true);
                 CanvasGroup cg = ui.GetComponent<CanvasGroup>();
-                if (cg != null) cg.alpha = 1f;
+                if (cg != null)
+                    cg.alpha = 1f;
             }
         }
 
-        // 6. Menü müziğini anında durdur
         if (menuMusicSource != null)
         {
             menuMusicSource.Stop();
         }
 
-        // Bu scriptin LateUpdate (Kamera kilitleme) olayını tamamen durdur
         this.enabled = false;
     }
 }

@@ -42,7 +42,7 @@ public class PasswordManager : MonoBehaviour, ISaveable
     private List<string> validatedPasswords = new List<string>();
 
     // YENİ: Bu oturumda kime hangi şifreyi atadığımızın günlüğü (Kaydetmek çok kolaylaşacak)
-    private List<GameData.ObjectPasswordPair> currentSessionPasswords =
+    public List<GameData.ObjectPasswordPair> currentSessionPasswords =
         new List<GameData.ObjectPasswordPair>();
 
     public event Action OnGameReadyToFinish;
