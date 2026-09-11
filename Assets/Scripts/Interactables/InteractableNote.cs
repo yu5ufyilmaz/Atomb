@@ -79,7 +79,7 @@ public class InteractableNote : MonoBehaviour, IInteractable, IForceExitable
         if (paperCollider == null)
             paperCollider = GetComponentInChildren<Collider>();
 
-        playerController = FindObjectOfType<UnityEngine.CharacterController>();
+        playerController = Object.FindFirstObjectByType<UnityEngine.CharacterController>();
         if (playerController != null)
         {
             playerGameScript = playerController.GetComponent<StarterAssets.CharacterController>();

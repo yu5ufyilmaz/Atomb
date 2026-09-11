@@ -250,7 +250,7 @@ public class InteractableBook : MonoBehaviour, IInteractable, IForceExitable
             bookAnimator.SetInteger(PageNumber, currentPage);
         }
 
-        playerController = FindObjectOfType<UnityEngine.CharacterController>();
+        playerController = Object.FindFirstObjectByType<UnityEngine.CharacterController>();
         if (playerController != null)
         {
             playerGameScript = playerController.GetComponent<StarterAssets.CharacterController>();

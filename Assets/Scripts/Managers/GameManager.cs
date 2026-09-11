@@ -57,7 +57,7 @@ public class GameManager : MonoBehaviour
 
         // YENİ EKLENEN KISIM: Oyun başladığında karakterin kilitlerini aç
         StarterAssets.CharacterController player =
-            FindObjectOfType<StarterAssets.CharacterController>();
+            Object.FindFirstObjectByType<StarterAssets.CharacterController>();
         if (player != null)
         {
             // freeze = false, lockCameraInput = false, restrictRotation = false
@@ -106,7 +106,7 @@ public class GameManager : MonoBehaviour
     public void TriggerFinalEnding()
     {
         // Sahnede senin yazdığın "EndGameButton" sınıfına sahip objeyi buluyoruz
-        EndGameButton endButton = FindObjectOfType<EndGameButton>();
+        EndGameButton endButton = Object.FindFirstObjectByType<EndGameButton>();
 
         if (endButton != null)
         {
@@ -174,14 +174,14 @@ public class GameManager : MonoBehaviour
 
     public void RefreshReferences()
     {
-        breakerBox = FindObjectOfType<BreakerBox>();
-        passwordManager = FindObjectOfType<PasswordManager>();
+        breakerBox = Object.FindFirstObjectByType<BreakerBox>();
+        passwordManager = Object.FindFirstObjectByType<PasswordManager>();
 
         // YENİ EKLENEN SATIR:
-        pressureManager = FindObjectOfType<PressureSystemManager>();
+        pressureManager = Object.FindFirstObjectByType<PressureSystemManager>();
 
         allRooms.Clear();
-        allRooms.AddRange(FindObjectsOfType<RoomManager>());
+        allRooms.AddRange(Object.FindObjectsByType<RoomManager>(FindObjectsSortMode.None));
         allRooms.Sort((a, b) => a.roomName.CompareTo(b.roomName));
     }
 }

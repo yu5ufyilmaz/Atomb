@@ -60,7 +60,7 @@ public class SymbolOverlayManager : MonoBehaviour
     {
         mainCam = Camera.main;
 
-        playerController = FindObjectOfType<UnityEngine.CharacterController>();
+        playerController = Object.FindFirstObjectByType<UnityEngine.CharacterController>();
         if (playerController != null)
         {
             playerGameScript = playerController.GetComponent<StarterAssets.CharacterController>();

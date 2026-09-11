@@ -40,7 +40,7 @@ public class PlayerReferences : MonoBehaviour
         Instance = this;
 
         // Referansları bir kere bul
-        physicsController = FindObjectOfType<UnityEngine.CharacterController>();
+        physicsController = Object.FindFirstObjectByType<UnityEngine.CharacterController>();
         if (physicsController != null)
         {
             playerTransform = physicsController.transform;
@@ -49,6 +49,6 @@ public class PlayerReferences : MonoBehaviour
             animator = physicsController.GetComponent<Animator>();
         }
         mainCamera = Camera.main;
-        interaction = FindObjectOfType<PlayerInteraction>();
+        interaction = Object.FindFirstObjectByType<PlayerInteraction>();
     }
 }

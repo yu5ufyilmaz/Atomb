@@ -83,7 +83,7 @@ public class InteractableHidingSpot : MonoBehaviour, IInteractable, IForceExitab
 
     private void Start()
     {
-        playerController = FindObjectOfType<UnityEngine.CharacterController>();
+        playerController = Object.FindFirstObjectByType<UnityEngine.CharacterController>();
         if (playerController)
         {
             playerInput = playerController.GetComponent<StarterAssets.StarterAssetsInputs>();

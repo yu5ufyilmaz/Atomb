@@ -102,7 +102,7 @@ public class JumpscareManager : MonoBehaviour
         if (mainCamera == null)
             mainCamera = Camera.main;
         if (globalVolume == null)
-            globalVolume = FindObjectOfType<Volume>();
+            globalVolume = Object.FindFirstObjectByType<Volume>();
 
         if (globalVolume != null && globalVolume.profile != null)
         {

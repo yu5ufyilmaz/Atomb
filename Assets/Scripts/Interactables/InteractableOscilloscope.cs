@@ -29,13 +29,8 @@ public class InteractableOscilloscope : MonoBehaviour, IInteractable, IForceExit
     [Tooltip("Etkileşim başladığında kameranın gidip sabitleneceği nokta.")]
     public Transform fixedCameraTransform;
 
-    [SerializeField]
-    private float cameraTransitionDuration = 1.0f;
-
     [Header("📍 Etkileşim Pozisyonu")]
     public Transform interactionStandPoint;
-    public float autoWalkSpeed = 2.0f;
-    public float autoRotateSpeed = 5.0f;
 
     [SerializeField]
     private string interactAnimTrigger = "InspectScope";
@@ -97,7 +92,7 @@ public class InteractableOscilloscope : MonoBehaviour, IInteractable, IForceExit
     {
         // 1. Player Controller Bul
         if (playerController == null)
-            playerController = FindObjectOfType<UnityEngine.CharacterController>();
+            playerController = Object.FindFirstObjectByType<UnityEngine.CharacterController>();
 
         // 2. Diğer Scriptleri Bul (Özellikle Movement Script)
         if (playerController != null)
@@ -270,7 +265,7 @@ public class InteractableOscilloscope : MonoBehaviour, IInteractable, IForceExit
             ControlsUIManager.Instance.ShowMachineUI(ControlsUIManager.MachineType.Oscilloscope);
         }
 
-        PlayerInteraction playerInt = FindObjectOfType<PlayerInteraction>();
+        PlayerInteraction playerInt = Object.FindFirstObjectByType<PlayerInteraction>();
         if (playerInt != null)
             playerInt.ToggleCrosshair(false);
 
@@ -314,7 +309,7 @@ public class InteractableOscilloscope : MonoBehaviour, IInteractable, IForceExit
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
 
-        PlayerInteraction playerInt = FindObjectOfType<PlayerInteraction>();
+        PlayerInteraction playerInt = Object.FindFirstObjectByType<PlayerInteraction>();
         if (playerInt != null)
             playerInt.ToggleCrosshair(true);
 

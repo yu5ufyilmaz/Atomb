@@ -79,7 +79,7 @@ public class SettingsUIManager : MonoBehaviour
                 + " x "
                 + resolutions[i].height
                 + " @ "
-                + resolutions[i].refreshRate
+                + resolutions[i].refreshRateRatio
                 + "Hz";
             options.Add(option);
 

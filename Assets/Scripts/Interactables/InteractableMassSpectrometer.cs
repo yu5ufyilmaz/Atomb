@@ -164,7 +164,7 @@ public class InteractableMassSpectrometer : MonoBehaviour, IInteractable, IForce
     private void InitializeComponents()
     {
         if (playerPhysicsController == null)
-            playerPhysicsController = FindObjectOfType<UnityEngine.CharacterController>();
+            playerPhysicsController = Object.FindFirstObjectByType<UnityEngine.CharacterController>();
 
         if (playerPhysicsController != null)
         {
@@ -273,7 +273,7 @@ public class InteractableMassSpectrometer : MonoBehaviour, IInteractable, IForce
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
 
-        PlayerInteraction playerInt = FindObjectOfType<PlayerInteraction>();
+        PlayerInteraction playerInt = Object.FindFirstObjectByType<PlayerInteraction>();
         if (playerInt != null)
             playerInt.ToggleCrosshair(false);
 
@@ -311,7 +311,7 @@ public class InteractableMassSpectrometer : MonoBehaviour, IInteractable, IForce
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
 
-        PlayerInteraction playerInt = FindObjectOfType<PlayerInteraction>();
+        PlayerInteraction playerInt = Object.FindFirstObjectByType<PlayerInteraction>();
         if (playerInt != null)
             playerInt.ToggleCrosshair(true);
 

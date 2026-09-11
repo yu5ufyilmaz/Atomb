@@ -34,7 +34,7 @@ public class PauseManager : MonoBehaviour
 
         // Input scriptini otomatik bulmaya çalış
         if (playerInputs == null)
-            playerInputs = FindObjectOfType<StarterAssetsInputs>();
+            playerInputs = Object.FindFirstObjectByType<StarterAssetsInputs>();
     }
 
     private void Update()

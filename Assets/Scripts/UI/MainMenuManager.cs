@@ -156,7 +156,7 @@ public class MainMenuManager : MonoBehaviour
         if (isLoadGame && SaveManager.Instance != null && SaveManager.Instance.LoadGame())
         {
             // YENİ: Masadan kalkma sistemini iptal et ve kamerayı karaktere tak!
-            InGameMenuController menuController = FindObjectOfType<InGameMenuController>();
+            InGameMenuController menuController = Object.FindFirstObjectByType<InGameMenuController>();
             if (menuController != null)
             {
                 menuController.InstantSetupForLoad();
@@ -179,7 +179,7 @@ public class MainMenuManager : MonoBehaviour
         // =======================================================
         else
         {
-            InGameMenuController menuController = FindObjectOfType<InGameMenuController>();
+            InGameMenuController menuController = Object.FindFirstObjectByType<InGameMenuController>();
             if (menuController != null)
             {
                 // Standart masadan kalkma animasyonu

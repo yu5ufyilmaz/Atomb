@@ -71,7 +71,7 @@ public class PressureSystemManager : MonoBehaviour, ISaveable
 
     private void Start()
     {
-        playerController = FindObjectOfType<StarterAssets.CharacterController>();
+        playerController = Object.FindFirstObjectByType<StarterAssets.CharacterController>();
 
         if (globalVolume != null && globalVolume.profile != null)
         {

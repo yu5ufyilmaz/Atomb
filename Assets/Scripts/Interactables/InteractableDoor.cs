@@ -53,7 +53,7 @@ public class InteractableDoor : MonoBehaviour, IInteractable
 
         // Oyuncuyu bul ve bileşenlerini al
         if (playerPhysics == null)
-            playerPhysics = FindObjectOfType<UnityEngine.CharacterController>();
+            playerPhysics = Object.FindFirstObjectByType<UnityEngine.CharacterController>();
 
         if (playerPhysics != null)
         {

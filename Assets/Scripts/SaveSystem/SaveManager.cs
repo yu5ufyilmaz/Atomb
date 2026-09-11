@@ -21,8 +21,7 @@ public class SaveManager : MonoBehaviour
 
     public void RefreshSaveables()
     {
-        IEnumerable<ISaveable> saveables = FindObjectsOfType<MonoBehaviour>(true)
-            .OfType<ISaveable>();
+        IEnumerable<ISaveable> saveables = Object.FindObjectsByType<MonoBehaviour>(FindObjectsSortMode.None).OfType<ISaveable>();
         saveableObjects = new List<ISaveable>(saveables);
     }
 

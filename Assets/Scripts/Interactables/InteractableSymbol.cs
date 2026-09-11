@@ -38,7 +38,7 @@ public class InteractableSymbol : MonoBehaviour, IInteractable, IForceExitable
         mainCamera = Camera.main;
 
         // Oyuncu scriptlerini bul
-        playerController = FindObjectOfType<UnityEngine.CharacterController>();
+        playerController = Object.FindFirstObjectByType<UnityEngine.CharacterController>();
         if (playerController != null)
         {
             playerGameScript = playerController.GetComponent<StarterAssets.CharacterController>();
