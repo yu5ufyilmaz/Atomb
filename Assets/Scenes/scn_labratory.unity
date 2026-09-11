@@ -12531,7 +12531,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &219298612
 Transform:
   m_ObjectHideFlags: 0
@@ -22203,7 +22203,7 @@ Transform:
   m_GameObject: {fileID: 399485381}
   serializedVersion: 2
   m_LocalRotation: {x: -0.013291736, y: -0.68764836, z: 0.012591674, w: -0.7258131}
-  m_LocalPosition: {x: -5.5722065, y: -0.30558062, z: -0.91328335}
+  m_LocalPosition: {x: -0.57, y: -0.49, z: 0.06}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -86374,7 +86374,7 @@ GameObject:
   - component: {fileID: 1626120633}
   - component: {fileID: 1626120634}
   m_Layer: 0
-  m_Name: GameObject
+  m_Name: DebugMenuManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -122465,7 +122465,7 @@ Transform:
   m_GameObject: {fileID: 4527192525794934529}
   serializedVersion: 2
   m_LocalRotation: {x: -0.7071069, y: -0, z: -0, w: 0.7071067}
-  m_LocalPosition: {x: -11.857, y: 1.9418938, z: 13.263386}
+  m_LocalPosition: {x: -11.89, y: 1.9418938, z: 13.263386}
   m_LocalScale: {x: 100, y: 118.43285, z: 90.00315}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -141500,7 +141500,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!328 &4527192525794934530
 VideoPlayer:
   m_ObjectHideFlags: 0

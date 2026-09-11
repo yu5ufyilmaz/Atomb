@@ -211,7 +211,7 @@ MonoBehaviour:
   m_Name: AnimationPlayableAsset(Clone)(Clone)
   m_EditorClassIdentifier: Unity.Timeline::UnityEngine.Timeline.AnimationPlayableAsset
   m_Clip: {fileID: -1272952322207662325, guid: 9b6bee2a7017af24ca97212fa36a6b3b, type: 3}
-  m_Position: {x: 0.3749909, y: 0.79938495, z: 3.3662891}
+  m_Position: {x: 0.37062594, y: 0.516294, z: 3.3710854}
   m_EulerAngles: {x: 0, y: 0, z: 0}
   m_UseTrackMatchFields: 1
   m_MatchTargetFields: 63
@@ -589,11 +589,11 @@ MonoBehaviour:
   m_Name: AnimationPlayableAsset
   m_EditorClassIdentifier: Unity.Timeline::UnityEngine.Timeline.AnimationPlayableAsset
   m_Clip: {fileID: -1272952322207662325, guid: 2cea0a4aea16e854d806bb99d3348ec2, type: 3}
-  m_Position: {x: 0.52855563, y: -0.000000007450581, z: 0.000000111159345}
-  m_EulerAngles: {x: 0, y: 0, z: 0}
+  m_Position: {x: 1.9153161, y: 0.07460527, z: 4.934919}
+  m_EulerAngles: {x: 0, y: -4.835, z: 0}
   m_UseTrackMatchFields: 1
   m_MatchTargetFields: 63
-  m_RemoveStartOffset: 1
+  m_RemoveStartOffset: 0
   m_ApplyFootIK: 0
   m_Loop: 2
   m_Version: 1
@@ -1164,7 +1164,7 @@ MonoBehaviour:
   m_Name: AnimationPlayableAsset
   m_EditorClassIdentifier: Unity.Timeline::UnityEngine.Timeline.AnimationPlayableAsset
   m_Clip: {fileID: -1272952322207662325, guid: 7127f9b711da5d94cbf9de841cd1a054, type: 3}
-  m_Position: {x: 1.1145767, y: -0.15905316, z: 1.0328987}
+  m_Position: {x: 1.0374187, y: -0.085472286, z: 1.0350063}
   m_EulerAngles: {x: 0, y: 0, z: 0}
   m_UseTrackMatchFields: 1
   m_MatchTargetFields: 63

@@ -631,7 +631,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 030f85c3f73729f4f976f66ffb23b875, type: 3}
   m_Name: AnimationPlayableAsset
   m_EditorClassIdentifier: Unity.Timeline::UnityEngine.Timeline.AnimationPlayableAsset
-  m_Clip: {fileID: -1272952322207662325, guid: 1811b93ce4dbf9f43b8c5abc79b57f86, type: 3}
+  m_Clip: {fileID: -1272952322207662325, guid: 9b6bee2a7017af24ca97212fa36a6b3b, type: 3}
   m_Position: {x: 21.603512, y: 0.4480049, z: 0.3872561}
   m_EulerAngles: {x: 0, y: 171.783, z: 0}
   m_UseTrackMatchFields: 1
@@ -1775,9 +1775,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 030f85c3f73729f4f976f66ffb23b875, type: 3}
   m_Name: AnimationPlayableAsset
   m_EditorClassIdentifier: Unity.Timeline::UnityEngine.Timeline.AnimationPlayableAsset
-  m_Clip: {fileID: -1272952322207662325, guid: 890cf76eae845ea4fb665e6f7491d623, type: 3}
-  m_Position: {x: 21.90662, y: 0.5003581, z: -0.3121246}
-  m_EulerAngles: {x: 0, y: -181.144, z: 0}
+  m_Clip: {fileID: -1272952322207662325, guid: 1be99243f2ffbc547a291d3b6c94c440, type: 3}
+  m_Position: {x: 21.765945, y: 0.5003581, z: -3.348368}
+  m_EulerAngles: {x: 0, y: -181.143, z: 0}
   m_UseTrackMatchFields: 1
   m_MatchTargetFields: 63
   m_RemoveStartOffset: 1
