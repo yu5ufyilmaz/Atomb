@@ -11,6 +11,9 @@ public class PauseManager : MonoBehaviour
     [SerializeField]
     private string mainMenuSceneName = "MainMenu"; // Ana menü sahnesinin tam adı
 
+    [SerializeField]
+    private GameObject settingsPanel; // <--- YENİ EKLENDİ
+
     [Header("Oyuncu Referansları")]
     [Tooltip("Karakterin Input Scripti (Mouse kilidini yönetmek için)")]
     [SerializeField]
@@ -23,9 +26,11 @@ public class PauseManager : MonoBehaviour
         // Başlangıçta panel kapalı olsun
         if (pauseMenuPanel != null)
             pauseMenuPanel.SetActive(false);
-
-        // Oyun başladığında zamanın aktığından emin ol
+        if (settingsPanel != null)
+            settingsPanel.SetActive(false); // <--- YENİ EKLENDİ
+        // Oyun başladığında zamanın ve seslerin aktığından emin ol
         Time.timeScale = 1f;
+        AudioListener.pause = false; // <--- GARANTİ OLSUN DİYE EKLENDİ
 
         // Input scriptini otomatik bulmaya çalış
         if (playerInputs == null)
@@ -34,13 +39,25 @@ public class PauseManager : MonoBehaviour
 
     private void Update()
     {
+        // YENİ EKLENEN KONTROL: Oyun henüz başlamadıysa ESC tuşunu tamamen yok say!
+        if (GameManager.Instance != null && !GameManager.Instance.isGameStarted)
+            return;
+
         // ESC tuşuna basılınca
         if (Input.GetKeyDown(KeyCode.Escape))
         {
-            if (isPaused)
+            if (settingsPanel != null && settingsPanel.activeSelf)
+            {
+                CloseSettings();
+            }
+            else if (isPaused)
+            {
                 ResumeGame();
+            }
             else
+            {
                 PauseGame();
+            }
         }
     }
 
@@ -55,22 +72,22 @@ public class PauseManager : MonoBehaviour
         // 2. Zamanı Durdur
         Time.timeScale = 0f;
 
-        // 3. Paneli Aç
+        // 3. SESLERİ DURDUR (YENİ EKLENEN KISIM)
+        AudioListener.pause = true;
+
+        // 4. Paneli Aç
         if (pauseMenuPanel != null)
             pauseMenuPanel.SetActive(true);
 
-        // 4. Mouse'u Serbest Bırak ve Görünür Yap
-        Cursor.lockState = CursorLockMode.None;
-        Cursor.visible = true;
-
-        // 5. Karakterin Kamera Dönüşünü Kilitle (StarterAssets için)
+        GameManager.Instance.UpdateCursorState();
+        // 6. Karakterin Kamera Dönüşünü Kilitle (StarterAssets için)
         if (playerInputs != null)
         {
             playerInputs.cursorInputForLook = false;
             playerInputs.look = Vector2.zero; // Mevcut ivmeyi sıfırla
         }
 
-        Debug.Log("Oyun Duraklatıldı.");
+        Debug.Log("Oyun Duraklatıldı (Sesler Kesildi).");
     }
 
     public void ResumeGame()
@@ -84,47 +101,47 @@ public class PauseManager : MonoBehaviour
         // 2. Zamanı Devam Ettir
         Time.timeScale = 1f;
 
-        // 3. Paneli Kapat
+        // 3. SESLERİ GERİ AÇ (YENİ EKLENEN KISIM)
+        AudioListener.pause = false;
+
+        // 4. Paneli Kapat
         if (pauseMenuPanel != null)
             pauseMenuPanel.SetActive(false);
-
-        // 4. Inputları geri aç
+        if (settingsPanel != null)
+            settingsPanel.SetActive(false); // <--- YENİ: Garantilemek için
+        // 5. Inputları geri aç
         if (playerInputs != null)
             playerInputs.cursorInputForLook = true;
 
         // --- KRİTİK DÜZELTME BURADA ---
         // Körlemesine fareyi kapatmak yerine, duruma göre karar veriyoruz.
 
-        bool cursorNeeded = false;
-        if (GameManager.Instance != null)
-        {
-            cursorNeeded = GameManager.Instance.IsCursorRequired();
-        }
+        GameManager.Instance.UpdateCursorState();
+    }
 
-        if (cursorNeeded)
-        {
-            // Kitapta veya Vanadaysak fare kalsın
-            Cursor.lockState = CursorLockMode.None;
-            Cursor.visible = true;
+    public void OpenSettings()
+    {
+        if (pauseMenuPanel != null)
+            pauseMenuPanel.SetActive(false);
+        if (settingsPanel != null)
+            settingsPanel.SetActive(true);
+    }
 
-            // Eğer karakterin kamerasını kilitlemek gerekiyorsa (Kitap okurken kafa dönmesin diye)
-            if (playerInputs != null)
-                playerInputs.cursorInputForLook = false;
-        }
-        else
-        {
-            // Normal oyun veya diğer makinalardaysak fare gitsin
-            Cursor.lockState = CursorLockMode.Locked;
-            Cursor.visible = false;
-        }
-
-        Debug.Log("Oyun Devam Ediyor. Cursor Durumu: " + (cursorNeeded ? "AÇIK" : "KAPALI"));
+    public void CloseSettings()
+    {
+        if (settingsPanel != null)
+            settingsPanel.SetActive(false);
+        if (pauseMenuPanel != null)
+            pauseMenuPanel.SetActive(true);
     }
 
     public void LoadMainMenu()
     {
         // Sahne değişirken zamanı mutlaka 1 yapmalıyız, yoksa menü donuk başlar!
         Time.timeScale = 1f;
+
+        // Menüye dönünce sesler geri gelmeli (YENİ EKLENEN KISIM)
+        AudioListener.pause = false;
 
         if (GameManager.Instance != null)
             GameManager.Instance.isGamePaused = false;

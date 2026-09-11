@@ -17,8 +17,9 @@ MonoBehaviour:
     supportSSR: 0
     supportSSRTransparent: 0
     supportSSAO: 1
-    supportSSGI: 1
+    supportSSGI: 0
     supportSubsurfaceScattering: 1
+    subsurfaceScatteringAttenuation: 1
     sssSampleBudget:
       m_Values: 140000002800000050000000
       m_SchemaId:
@@ -34,6 +35,7 @@ MonoBehaviour:
     supportWater: 0
     waterSimulationResolution: 128
     supportWaterExclusion: 0
+    supportWaterHorizontalDeformation: 0
     supportWaterDecals: 1
     waterDecalAtlasSize: 1024
     maximumWaterDecalCount: 48
@@ -49,7 +51,9 @@ MonoBehaviour:
     supportTransparentDepthPrepass: 1
     supportTransparentDepthPostpass: 1
     colorBufferFormat: 48
+    depthBufferFormat: 0
     supportCustomPass: 1
+    supportVariableRateShading: 1
     customBufferFormat: 12
     supportedLitShaderMode: 2
     planarReflectionResolution:
@@ -73,7 +77,7 @@ MonoBehaviour:
     supportDitheringCrossFade: 1
     supportRuntimeAOVAPI: 0
     supportTerrainHole: 0
-    lightProbeSystem: 1
+    lightProbeSystem: 0
     oldLightProbeSystem: 1
     probeVolumeMemoryBudget: 1024
     supportProbeVolumeGPUStreaming: 0
@@ -86,7 +90,7 @@ MonoBehaviour:
     supportVFXRayTracing: 0
     supportedRayTracingMode: 3
     lightLoopSettings:
-      cookieAtlasSize: 512
+      cookieAtlasSize: 4096
       cookieFormat: 74
       cookieAtlasLastValidMip: 0
       cookieTexArraySize: 16
@@ -115,20 +119,20 @@ MonoBehaviour:
       maxLocalVolumetricFogSize: 32
       maxLocalVolumetricFogOnScreen: 64
     hdShadowInitParams:
-      maxShadowRequests: 128
+      maxShadowRequests: 2048
       directionalShadowsDepthBits: 32
       punctualShadowFilteringQuality: 2
       directionalShadowFilteringQuality: 2
       areaShadowFilteringQuality: 1
       punctualLightShadowAtlas:
-        shadowAtlasResolution: 4096
+        shadowAtlasResolution: 8192
         shadowAtlasDepthBits: 32
         useDynamicViewportRescale: 1
       areaLightShadowAtlas:
         shadowAtlasResolution: 4096
         shadowAtlasDepthBits: 32
         useDynamicViewportRescale: 1
-      cachedPunctualLightShadowAtlas: 4096
+      cachedPunctualLightShadowAtlas: 8192
       cachedAreaLightShadowAtlas: 4096
       allowDirectionalMixedCachedShadows: 0
       shadowResolutionDirectional:
@@ -144,7 +148,7 @@ MonoBehaviour:
         m_SchemaId:
           m_Id: With4Levels
       maxDirectionalShadowMapResolution: 4096
-      maxPunctualShadowMapResolution: 4096
+      maxPunctualShadowMapResolution: 8192
       maxAreaShadowMapResolution: 4096
       supportScreenSpaceShadows: 0
       maxScreenSpaceShadowSlots: 4
@@ -166,6 +170,7 @@ MonoBehaviour:
       enabled: 0
       useMipBias: 0
       advancedUpscalersByPriority: 
+      advancedUpscalerNames: []
       DLSSPerfQualitySetting: 0
       DLSSInjectionPoint: 0
       TAAUInjectionPoint: 0
@@ -173,6 +178,11 @@ MonoBehaviour:
       defaultInjectionPoint: 2
       DLSSUseOptimalSettings: 0
       DLSSSharpness: 0
+      DLSSRenderPresetForQuality: 0
+      DLSSRenderPresetForBalanced: 0
+      DLSSRenderPresetForPerformance: 0
+      DLSSRenderPresetForUltraPerformance: 0
+      DLSSRenderPresetForDLAA: 0
       FSR2EnableSharpness: 0
       FSR2Sharpness: 0
       FSR2UseOptimalSettings: 0
@@ -350,7 +360,7 @@ MonoBehaviour:
   m_CompositorCustomVolumeComponentsList:
     m_InjectionPoint: 1
     m_CustomPostProcessTypesAsString: []
-  m_Version: 25
+  m_Version: 26
   m_ObsoleteFrameSettings:
     overrides: 0
     enableShadow: 0
@@ -546,3 +556,4 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   m_PrefilterUseLegacyLightmaps: 0
+  m_PrefilterUseLightmapBicubicSampling: 0

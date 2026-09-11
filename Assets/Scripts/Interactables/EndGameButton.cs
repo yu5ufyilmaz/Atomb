@@ -1,51 +1,24 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.Playables; // Timeline (PlayableDirector) için gerekli kütüphane
 using UnityEngine.SceneManagement;
-using UnityEngine.Video;
 
 public class EndGameButton : MonoBehaviour, IInteractable
 {
     [Header("Player Settings")]
-    [Tooltip("Karakterin Ana Objesi")]
     public GameObject player;
-
-    [Tooltip("Karakterin Hareket Scripti (Örn: FirstPersonController)")]
     public MonoBehaviour playerMovementScript;
-
-    [Tooltip("Karakterin Kamera/Mouse Scripti (Varsa buraya at, yoksa boş kalabilir)")]
     public MonoBehaviour playerLookScript;
 
-    [Header("Bitiş Ayarları")]
-    [Tooltip("Kameranın kilitleneceği ekran noktası")]
+    [Header("Final Sinematik Ayarları")]
+    [Tooltip("Oyun sonunda çalışacak Timeline objesini buraya sürükle.")]
     [SerializeField]
-    private Transform screenViewTarget;
+    private PlayableDirector finalTimeline;
 
-    [Tooltip("Final videosunun olduğu Video Player bileşeni")]
-    [SerializeField]
-    private VideoPlayer finalVideoPlayer;
-
-    [Tooltip("Credits sahnesinin tam adı")]
     [SerializeField]
     private string creditsSceneName = "CreditsScene";
 
-    [Header("Kamera Geçişi")]
-    [SerializeField]
-    private float moveDuration = 1.0f;
-
     private bool isTriggered = false;
-    private Transform mainCamera;
-
-    private void Start()
-    {
-        if (Camera.main != null)
-            mainCamera = Camera.main.transform;
-
-        // Videoyu önceden hazırla
-        if (finalVideoPlayer != null)
-        {
-            finalVideoPlayer.Prepare();
-        }
-    }
 
     public void Interact()
     {
@@ -67,88 +40,40 @@ public class EndGameButton : MonoBehaviour, IInteractable
     {
         isTriggered = true;
 
-        // -----------------------------------------------------------
-        // ADIM 1: OYUNCUYU TAMAMEN DEVRE DIŞI BIRAK (FIX)
-        // -----------------------------------------------------------
-
-        // 1. Hareket Scriptini Kapat
-        if (playerMovementScript != null)
-            playerMovementScript.enabled = false;
-
-        // 2. Mouse Look Scriptini Kapat (Dönmeyi engelleyen asıl kısım)
-        if (playerLookScript != null)
-            playerLookScript.enabled = false;
-
-        // 3. Unity Character Controller'ı Kapat (Fizik çakışmasını önler)
-        if (player != null)
-        {
-            var cc = player.GetComponent<UnityEngine.CharacterController>();
-            if (cc != null)
-                cc.enabled = false;
-
-            // Eğer Rigidbody varsa onu da dondur
-            var rb = player.GetComponent<Rigidbody>();
-            if (rb != null)
-                rb.isKinematic = true;
-        }
-
-        // Fareyi kilitle ve gizle (Video izlenirken fare görünmesin)
+        // 1. OYUNCU KONTROLLERİNİ KAPAT VE DONDUR
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
 
-        // -----------------------------------------------------------
-        // ADIM 2: KAMERAYI EKRANA TAŞI
-        // -----------------------------------------------------------
-        if (screenViewTarget != null && mainCamera != null)
+        if (playerMovementScript != null)
+            playerMovementScript.enabled = false;
+        if (playerLookScript != null)
+            playerLookScript.enabled = false;
+
+        if (player != null)
         {
-            // Cinemachine Brain varsa kapat (Kamerayı serbest bırakmak için şart)
-            var brain = mainCamera.GetComponent("CinemachineBrain") as MonoBehaviour;
-            // Not: Cinemachine namespace hatası almamak için string ile çağırdım,
-            // projenin başında "using Cinemachine;" varsa direkt tipi yazabilirsin.
-            if (brain != null)
-                brain.enabled = false;
+            var rbs = player.GetComponentsInChildren<Rigidbody>();
+            foreach (var rb in rbs)
+                rb.isKinematic = true;
 
-            Vector3 startPos = mainCamera.position;
-            Quaternion startRot = mainCamera.rotation;
-            float t = 0f;
-
-            while (t < 1f)
-            {
-                t += Time.deltaTime / moveDuration;
-                float smoothT = Mathf.SmoothStep(0f, 1f, t);
-
-                mainCamera.position = Vector3.Lerp(startPos, screenViewTarget.position, smoothT);
-                mainCamera.rotation = Quaternion.Slerp(
-                    startRot,
-                    screenViewTarget.rotation,
-                    smoothT
-                );
-
-                yield return null;
-            }
+            var ccs = player.GetComponentsInChildren<UnityEngine.CharacterController>();
+            foreach (var cc in ccs)
+                cc.enabled = false;
         }
 
-        // -----------------------------------------------------------
-        // ADIM 3: VİDEOYU OYNAT
-        // -----------------------------------------------------------
-        if (finalVideoPlayer != null)
+        // 2. TIMELINE'I BAŞLAT VE BİTMESİNİ BEKLE
+        if (finalTimeline != null)
         {
-            Debug.Log("Final videosu başlatılıyor...");
-            finalVideoPlayer.Play();
-
-            // Video uzunluğu kadar bekle
-            yield return new WaitForSeconds((float)finalVideoPlayer.length);
+            finalTimeline.Play();
+            // Timeline'ın kendi süresi kadar bekle
+            yield return new WaitForSeconds((float)finalTimeline.duration);
         }
         else
         {
-            Debug.LogWarning("Video Player atanmamış! 5 sn bekleniyor.");
+            Debug.LogWarning("Final Timeline atanmamış! Emniyet için 5 saniye bekleniyor...");
             yield return new WaitForSeconds(5.0f);
         }
 
-        // -----------------------------------------------------------
-        // ADIM 4: SAHNE GEÇİŞİ
-        // -----------------------------------------------------------
-        Debug.Log("Credits yükleniyor...");
+        // 3. JENERİK (CREDITS) SAHNESİNE GEÇİŞ YAP
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
         SceneManager.LoadScene(creditsSceneName);

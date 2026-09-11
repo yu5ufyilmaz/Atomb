@@ -11,8 +11,7 @@ public enum GameLanguage
 [System.Serializable]
 public class SubtitleSegment
 {
-    [Tooltip("Ses başladıktan kaç saniye sonra bu yazı görünsün?")]
-    public float startTime = 0f;
+    // ARTIK START TIME YOK! Kurtuldun :)
 
     [Tooltip("Bu yazı ekranda kaç saniye kalsın?")]
     public float duration = 3f;
@@ -45,10 +44,8 @@ public class SubtitleSegment
 [System.Serializable]
 public class SubtitleEntry
 {
-    public string id; // Çağırmak için kullanacağın ID (örn: Intro_Speech)
-    public string note; // Kendine not (örn: Asansördeki konuşma)
-
-    // Tek bir ses klibi içindeki cümle parçacıkları
+    public string id;
+    public string note;
     public List<SubtitleSegment> segments = new List<SubtitleSegment>();
 }
 

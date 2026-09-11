@@ -95,7 +95,9 @@ public class BreakerBox : MonoBehaviour, IInteractable
 
     private int GetActiveLightCount()
     {
-        return allLights.Count(l => l.IsOn);
+        // IsOn: Açık mı?
+        // ContributesToRisk: Risk grubunda mı?
+        return allLights.Count(l => l.IsOn && l.ContributesToRisk);
     }
     #endregion
 
@@ -104,6 +106,16 @@ public class BreakerBox : MonoBehaviour, IInteractable
     {
         while (true)
         {
+            // YENİ EKLENEN KONTROL: Eğer oyun duraklatıldıysa veya HENÜZ BAŞLAMADIYSA bekle!
+            if (
+                GameManager.Instance != null
+                && (!GameManager.Instance.isGameStarted || GameManager.Instance.isGamePaused)
+            )
+            {
+                yield return null; // Bir sonraki frame'i bekle, zamanlayıcıyı ilerletme.
+                continue; // Döngünün başına dön
+            }
+
             if (isTripped)
             {
                 // ŞARTEL ATIK: Oyuncu düzeltene kadar bekle
@@ -111,9 +123,29 @@ public class BreakerBox : MonoBehaviour, IInteractable
             }
             else
             {
-                // ŞARTEL AÇIK: 180 saniye bekle.
-                yield return new WaitForSeconds(checkInterval);
+                // YENİ EKLENEN KISIM: WaitForSeconds yerine kendi zamanlayıcımızı yazıyoruz.
+                // Çünkü WaitForSeconds arka planda durdurulamaz. Kendi sayacımız duraklamaya saygı duyar.
+                float timer = 0f;
+                while (timer < checkInterval)
+                {
+                    // Oyun durdurulursa sayacı durdur
+                    if (
+                        GameManager.Instance != null
+                        && (
+                            !GameManager.Instance.isGameStarted || GameManager.Instance.isGamePaused
+                        )
+                    )
+                    {
+                        yield return null;
+                    }
+                    else
+                    {
+                        timer += Time.deltaTime; // Sadece oyun akarken saniyeleri say
+                        yield return null;
+                    }
+                }
 
+                // Süre dolduğunda şartel atmamışsa risk kontrolü yap
                 if (!isTripped)
                 {
                     RunRiskCheck();
@@ -124,40 +156,48 @@ public class BreakerBox : MonoBehaviour, IInteractable
 
     private void RunRiskCheck()
     {
-        int activeLights = GetActiveLightCount();
-        int totalLights = allLights.Count;
+        // Sadece risk oluşturanları hesaba kat (Koridor ışıkları hariç)
+        int activeRiskLights = GetActiveLightCount();
+        int totalRiskLights = allLights.Count(l => l.ContributesToRisk); // Toplam riskli cihaz sayısı
 
-        if (activeLights == 0 || totalLights == 0)
+        // Eğer hiç riskli cihaz yoksa (Sadece koridor ışıkları varsa) risk 0'dır.
+        if (activeRiskLights == 0 || totalRiskLights == 0)
         {
             cycleCount = 0;
             return;
         }
 
-        float loadPercentage = (float)activeLights / totalLights;
+        // Yük oranını hesapla (Örn: 3 riskli ışıktan 2'si açık = %66 yük)
+        float loadPercentage = (float)activeRiskLights / totalRiskLights;
+
         float baseRisk = loadPercentage * maxRiskAtFullLoad;
         float cycleRisk = cycleCount * cycleRiskMultiplier;
         float tripChance = Mathf.Clamp01(baseRisk + cycleRisk);
 
         Debug.Log(
-            $"Breaker Check: {activeLights}/{totalLights} ışık (%{loadPercentage * 100:F0} yük). Toplam Trip Şansı: {tripChance * 100:F0}%"
+            $"Breaker Check: {activeRiskLights}/{totalRiskLights} riskli ışık açık. Trip Şansı: %{tripChance * 100:F0}"
         );
 
         if (Random.value < tripChance)
         {
-            // --- SİSTEM TARAFINDAN ŞARTEL ATTIRILIYOR ---
-            Debug.LogWarning("BREAKER TRIPPED! System risk reset.");
+            // ŞARTEL ATTI!
+            // Buradaki kod değişmiyor, çünkü 'isTripped = true' olunca
+            // tüm ışıklar (koridor dahil) zaten kendini kapatıyor.
+            Debug.LogWarning("BREAKER TRIPPED!");
             isTripped = true;
             cycleCount = 0;
 
             PlaySound(breakerTripSound);
-            StartHandleAnimation(handleDownRotation); // <--- ANİMASYON EKLENDİ (AŞAĞI)
+            StartHandleAnimation(handleDownRotation);
+
+            if (MegaphoneSystem.Instance != null)
+                MegaphoneSystem.Instance.OnBreakerTripped();
 
             OnBreakerTripped?.Invoke();
         }
         else
         {
             cycleCount++;
-            Debug.Log("System is stable. Risk increased for next cycle.");
         }
     }
     #endregion
@@ -211,6 +251,22 @@ public class BreakerBox : MonoBehaviour, IInteractable
         handleObject.localRotation = endRot;
     }
     #endregion
+    public void ForceTrip()
+    {
+        if (isTripped)
+            return; // Zaten atıksa bir şey yapma
+
+        Debug.LogWarning("DEBUG MENU: Şartel Zorla Attırıldı!");
+        isTripped = true;
+        cycleCount = 0;
+        PlaySound(breakerTripSound);
+        StartHandleAnimation(handleDownRotation);
+
+        if (MegaphoneSystem.Instance != null)
+            MegaphoneSystem.Instance.OnBreakerTripped();
+
+        OnBreakerTripped?.Invoke();
+    }
 
     private void PlaySound(AudioClip clip)
     {
@@ -244,4 +300,25 @@ public class BreakerBox : MonoBehaviour, IInteractable
 
     public int GetCycleCount() => cycleCount;
     #endregion
+    public void LoadData(GameData data)
+    {
+        // Kaydedilmiş şartel durumunu çek
+        this.isTripped = data.isBreakerTripped;
+        this.cycleCount = data.breakerCycleCount;
+
+        // Şartelin kolunun pozisyonunu (yukarı/aşağı) hemen güncelle
+        if (handleObject != null)
+        {
+            handleObject.localEulerAngles = isTripped ? handleDownRotation : handleUpRotation;
+        }
+
+        Debug.Log($"BreakerBox Yüklendi. Şartel Atık mı? {isTripped} - Döngü: {cycleCount}");
+    }
+
+    public void SaveData(ref GameData data)
+    {
+        // Şartel durumunu kaydet
+        data.isBreakerTripped = this.isTripped;
+        data.breakerCycleCount = this.cycleCount;
+    }
 }

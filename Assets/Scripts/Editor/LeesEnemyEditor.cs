@@ -7,7 +7,7 @@ public class LeesEnemyEditor : Editor
 {
     // Katlanabilir menü durumları
     bool showAnim = true;
-    bool showVision = false;
+    bool showVision = true;
     bool showSpawn = false;
     bool showScenario = true;
     bool showAudio = false;
@@ -34,7 +34,12 @@ public class LeesEnemyEditor : Editor
             script.currentState == LeesEnemyAI.LeesState.Active
                 ? new Color(1f, 0.4f, 0.4f)
                 : Color.green;
-        if (GUILayout.Button($"DURUM: {script.currentState}", GUILayout.Height(25))) { }
+
+        string statusText = $"DURUM: {script.currentState}";
+        if (script.currentState == LeesEnemyAI.LeesState.Active && script.debugHasBeenSpotted)
+            statusText += " (FARK EDİLDİ)";
+
+        if (GUILayout.Button(statusText, GUILayout.Height(25))) { }
         GUI.backgroundColor = Color.white;
         EditorGUILayout.Space(5);
 
@@ -52,19 +57,29 @@ public class LeesEnemyEditor : Editor
         }
         EditorGUILayout.EndFoldoutHeaderGroup();
 
-        // --- 2. SES AYARLARI (YENİ) ---
-        showAudio = EditorGUILayout.BeginFoldoutHeaderGroup(showAudio, "🔊 Ses Efektleri");
-        if (showAudio)
+        // --- 2. GÖRÜŞ & KAMERA ---
+        showVision = EditorGUILayout.BeginFoldoutHeaderGroup(showVision, "👁️ Görüş ve Kamera");
+        if (showVision)
         {
             EditorGUILayout.BeginVertical(EditorStyles.helpBox);
-            EditorGUILayout.PropertyField(serializedObject.FindProperty("audioSource"));
+            EditorGUILayout.LabelField("Referanslar", EditorStyles.miniBoldLabel);
+            EditorGUILayout.PropertyField(serializedObject.FindProperty("playerTransform"));
+            EditorGUILayout.PropertyField(serializedObject.FindProperty("playerCamera"));
+            EditorGUILayout.PropertyField(serializedObject.FindProperty("eyesPosition"));
+
+            EditorGUILayout.Space(5);
+            EditorGUILayout.LabelField("Hassasiyet Ayarları", EditorStyles.miniBoldLabel);
+
+            SerializedProperty bufferProp = serializedObject.FindProperty("screenEdgeBuffer");
+            EditorGUILayout.Slider(bufferProp, 0f, 0.4f, new GUIContent("Dead Zone (Kenar Payı)"));
+
             EditorGUILayout.PropertyField(
-                serializedObject.FindProperty("stareSound"),
-                new GUIContent("Bakışma Sesi (Loop)")
+                serializedObject.FindProperty("obstacleMask"),
+                new GUIContent("Engel Maskesi (Spawn)")
             );
             EditorGUILayout.PropertyField(
-                serializedObject.FindProperty("jumpscareSound"),
-                new GUIContent("Jumpscare Sesi")
+                serializedObject.FindProperty("showDebugLogs"),
+                new GUIContent("Debug Çizgilerini Göster")
             );
             EditorGUILayout.EndVertical();
         }
@@ -78,58 +93,79 @@ public class LeesEnemyEditor : Editor
         if (showScenario)
         {
             EditorGUILayout.BeginVertical(EditorStyles.helpBox);
-            EditorGUILayout.PropertyField(
-                serializedObject.FindProperty("maxIgnoranceTime"),
-                new GUIContent("Fark Edilmeme Süresi (A)")
-            );
-            EditorGUILayout.PropertyField(
-                serializedObject.FindProperty("maxReactionTime"),
-                new GUIContent("Bakışma Limiti (C)")
-            );
-            EditorGUILayout.PropertyField(
-                serializedObject.FindProperty("survivalWaitTime"),
-                new GUIContent("Arkası Dönük Bekleme (D)")
-            );
 
-            EditorGUILayout.Space(5);
-            EditorGUILayout.LabelField("Canlı Sayaçlar (Read-Only)", EditorStyles.miniBoldLabel);
+            EditorGUILayout.LabelField("Temel Süreler", EditorStyles.boldLabel);
+            EditorGUILayout.PropertyField(serializedObject.FindProperty("maxIgnoranceTime"));
+            EditorGUILayout.PropertyField(serializedObject.FindProperty("maxReactionTime"));
+            EditorGUILayout.PropertyField(serializedObject.FindProperty("survivalWaitTime"));
+
+            EditorGUILayout.Space(10);
+            EditorGUILayout.LabelField("Hareket & Tolerans", EditorStyles.boldLabel);
+            EditorGUILayout.PropertyField(serializedObject.FindProperty("movementTolerance"));
+            EditorGUILayout.PropertyField(serializedObject.FindProperty("movementGraceTime"));
+
+            EditorGUILayout.Space(10);
             if (Application.isPlaying && script.currentState == LeesEnemyAI.LeesState.Active)
             {
                 DrawBar(
                     script.debugIgnoranceTimer / script.maxIgnoranceTime,
-                    "Ignorance",
+                    "Ignorance (A)",
                     Color.magenta
                 );
-                DrawBar(script.debugReactionTimer / script.maxReactionTime, "Reaction", Color.red);
+                DrawBar(
+                    script.debugReactionTimer / script.maxReactionTime,
+                    "Reaction (C)",
+                    Color.red
+                );
                 DrawBar(
                     script.debugSurvivalTimer / script.survivalWaitTime,
-                    "Survival",
+                    "Survival (D)",
                     Color.green
                 );
-            }
-            else
-            {
-                EditorGUILayout.HelpBox("Sayaçlar sadece aktifken görünür.", MessageType.None);
             }
             EditorGUILayout.EndVertical();
         }
         EditorGUILayout.EndFoldoutHeaderGroup();
 
-        // --- 4. SPAWN & GÖRÜŞ ---
-        showSpawn = EditorGUILayout.BeginFoldoutHeaderGroup(showSpawn, "📍 Spawn ve Görüş");
+        // --- 4. SES AYARLARI ---
+        showAudio = EditorGUILayout.BeginFoldoutHeaderGroup(showAudio, "🔊 Ses Efektleri");
+        if (showAudio)
+        {
+            EditorGUILayout.BeginVertical(EditorStyles.helpBox);
+            EditorGUILayout.PropertyField(serializedObject.FindProperty("audioSource"));
+            EditorGUILayout.PropertyField(serializedObject.FindProperty("audioFadeDuration"));
+            EditorGUILayout.PropertyField(serializedObject.FindProperty("stareSound"));
+            EditorGUILayout.PropertyField(serializedObject.FindProperty("jumpscareSound"));
+            EditorGUILayout.EndVertical();
+        }
+        EditorGUILayout.EndFoldoutHeaderGroup();
+
+        // --- 5. SPAWN AYARLARI ---
+        showSpawn = EditorGUILayout.BeginFoldoutHeaderGroup(showSpawn, "📍 Spawn Ayarları");
         if (showSpawn)
         {
             EditorGUILayout.BeginVertical(EditorStyles.helpBox);
             EditorGUILayout.PropertyField(serializedObject.FindProperty("baseSpawnChance"));
             EditorGUILayout.PropertyField(serializedObject.FindProperty("chanceIncreasePerSecond"));
+            EditorGUILayout.PropertyField(serializedObject.FindProperty("spawnCheckInterval"));
             EditorGUILayout.PropertyField(
                 serializedObject.FindProperty("spawnCooldownAfterDespawn")
             );
+
             EditorGUILayout.Space(5);
-            EditorGUILayout.PropertyField(serializedObject.FindProperty("playerTransform"));
-            EditorGUILayout.PropertyField(serializedObject.FindProperty("playerCamera"));
-            EditorGUILayout.PropertyField(serializedObject.FindProperty("eyesPosition"));
-            EditorGUILayout.PropertyField(serializedObject.FindProperty("obstacleMask"));
+            EditorGUILayout.LabelField("Jumpscare Pozisyonu", EditorStyles.miniBoldLabel);
+            EditorGUILayout.PropertyField(serializedObject.FindProperty("jumpscareDistance"));
+            EditorGUILayout.PropertyField(serializedObject.FindProperty("jumpscareYOffset"));
+
+            // --- YENİ EKLENEN KISIM ---
+            EditorGUILayout.Space(10);
+            EditorGUILayout.LabelField("Kişisel Jumpscare Ayarları", EditorStyles.boldLabel);
+            EditorGUILayout.PropertyField(
+                serializedObject.FindProperty("leesJumpscareProfile"),
+                true
+            );
+            // ---------------------------
+
             EditorGUILayout.EndVertical();
         }
         EditorGUILayout.EndFoldoutHeaderGroup();

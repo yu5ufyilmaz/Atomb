@@ -25,6 +25,7 @@ public class RoomEditor : Editor
 
     // YENİ: Ses Özelliği
     SerializedProperty onFirstEnterSoundProp;
+    SerializedProperty roomSpeakerTransformProp; // <-- YENİ EKLENDİ
 
     private void OnEnable()
     {
@@ -44,8 +45,9 @@ public class RoomEditor : Editor
         ambushTimeoutProp = serializedObject.FindProperty("ambushTimeout");
         ambushSpawnPointProp = serializedObject.FindProperty("ambushSpawnPoint");
 
-        // YENİ: Ses özelliğini bağla
+        // YENİ: Ses özelliklerini bağla
         onFirstEnterSoundProp = serializedObject.FindProperty("onFirstEnterSound");
+        roomSpeakerTransformProp = serializedObject.FindProperty("roomSpeakerTransform"); // <-- BAĞLANDI
     }
 
     public override void OnInspectorGUI()
@@ -81,15 +83,30 @@ public class RoomEditor : Editor
 
         EditorGUILayout.Space(10);
 
-        // --- 2. SES & ATMOSFER (YENİ EKLENDİ) ---
+        // --- 2. SES & ATMOSFER (GÜNCELLENDİ) ---
         EditorGUILayout.BeginVertical(sectionStyle);
         EditorGUILayout.LabelField("🔊 Ses & Atmosfer", EditorStyles.boldLabel);
-        // DialogueEvent drawer'ı sayesinde burada Dropdown ve Clip alanı çıkacak
+
+        // YENİ KISIM: Hoparlör Konumu
+        EditorGUILayout.PropertyField(roomSpeakerTransformProp, new GUIContent("📢 Oda Hoparlörü"));
+        if (room.roomSpeakerTransform == null)
+        {
+            EditorGUILayout.HelpBox(
+                "Hoparlör atanmazsa sesler oyuncunun kafasının içinde (2D) çalar.",
+                MessageType.Warning
+            );
+        }
+        else
+        {
+            // Sadece görsel geri bildirim için
+            EditorGUILayout.HelpBox(
+                $"Ses kaynağı: {room.roomSpeakerTransform.name}",
+                MessageType.Info
+            );
+        }
+
+        EditorGUILayout.Space(5);
         EditorGUILayout.PropertyField(onFirstEnterSoundProp, new GUIContent("İlk Giriş Tanıtımı"));
-        EditorGUILayout.HelpBox(
-            "Oyuncu odaya ilk girdiğinde çalacak ses ve altyazı.",
-            MessageType.None
-        );
         EditorGUILayout.EndVertical();
 
         EditorGUILayout.Space(10);

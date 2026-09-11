@@ -40,8 +40,7 @@ namespace StarterAssets
         public float exhaustionThreshold = 0.75f;
 
         [Header("Stamina UI")]
-        public Slider staminaSlider; // Editörden sürükle
-        public Image staminaFillImage; // Barın rengini değiştirmek istersen (Opsiyonel)
+        public Image staminaCircularImage;
 
         // Private Stamina Değişkenleri
         private float currentStamina;
@@ -184,7 +183,7 @@ namespace StarterAssets
         private UnityEngine.CharacterController _controller;
         private StarterAssetsInputs _input;
         private GameObject _mainCamera;
-
+        private AudioSource _audioSource;
         private const float _threshold = 0.01f;
 
         private bool _hasAnimator;
@@ -215,6 +214,13 @@ namespace StarterAssets
             _cinemachineTargetYaw = CinemachineCameraTarget.transform.rotation.eulerAngles.y;
 
             _hasAnimator = TryGetComponent(out _animator);
+            // Karakterde AudioSource var mı diye bak, yoksa otomatik ekle
+            _audioSource = GetComponent<AudioSource>();
+            if (_audioSource == null)
+            {
+                _audioSource = gameObject.AddComponent<AudioSource>();
+                _audioSource.spatialBlend = 1f; // Sesi 3D (uzamsal) yapar
+            }
             _controller = GetComponent<UnityEngine.CharacterController>();
             _input = GetComponent<StarterAssetsInputs>();
 #if ENABLE_INPUT_SYSTEM
@@ -225,10 +231,11 @@ namespace StarterAssets
             );
 #endif
             currentStamina = maxStamina;
-            if (staminaSlider != null)
+            if (staminaCircularImage != null)
             {
-                staminaSlider.maxValue = maxStamina;
-                staminaSlider.value = currentStamina;
+                // Slider'da value vardı, Image'de fillAmount var (0 ile 1 arası)
+                staminaCircularImage.fillAmount = currentStamina / maxStamina;
+                staminaCircularImage.color = Color.white;
             }
             AssignAnimationIDs();
 
@@ -238,12 +245,19 @@ namespace StarterAssets
             // Rastgelelik için seed belirle
             if (CinemachineCameraTarget != null)
                 _defaultYPos = CinemachineCameraTarget.transform.localPosition.y;
+            // CharacterController.cs içindeki Start() metodunun en alt kısmı
+            if (GameManager.Instance != null && !GameManager.Instance.isGameStarted)
+            {
+                // Faz 1: Masada Oturuyoruz
+                // freeze = true (Karakter yürüyemez)
+                // lockCameraInput = true (Kamera TAMAMEN kilitli, fare ile etrafa bakamayız)
+                // restrictRotation = false (Artık tam kilitli olduğumuz için boyun kısıtlamasına gerek yok)
+                SetFrozen(true, true, false);
+            }
         }
 
         private void Update()
         {
-            _hasAnimator = TryGetComponent(out _animator);
-
             JumpAndGravity();
             GroundedCheck();
             HandleStamina();
@@ -271,6 +285,12 @@ namespace StarterAssets
             // ----------------------------
         }
 
+        // --- YENİ EKLENEN FONKSİYON: Head Bob Merkezini Sıfırlama ---
+        public void ResetHeadBobYPos(float newYPos)
+        {
+            _defaultYPos = newYPos;
+        }
+
         private void GroundedCheck()
         {
             // set sphere position, with offset
@@ -295,28 +315,59 @@ namespace StarterAssets
 
         private void CameraRotation()
         {
+            // 1. TAM KİLİT (Hiç hareket yok)
+            if (_lockCamera)
+                return;
+
             // Mouse/Gamepad giriş kontrolü
-            if (_input.look.sqrMagnitude >= _threshold && !LockCameraPosition)
+            if (_input.look.sqrMagnitude >= _threshold)
             {
                 float deltaTimeMultiplier = IsCurrentDeviceMouse ? 1.0f : Time.deltaTime;
 
-                // Sarhoşken mouse biraz ağırlaşsın
+                // Sarhoşluk kontrolü
                 float controlLag =
                     (drunkIntensity > 0.01f) ? Mathf.Lerp(1f, 0.5f, drunkIntensity) : 1f;
 
-                _cinemachineTargetYaw += _input.look.x * deltaTimeMultiplier * controlLag;
-                _cinemachineTargetPitch += _input.look.y * deltaTimeMultiplier * controlLag;
+                // --- YENİ EKLENEN KISIM: Ayarlardan Hassasiyeti Çek ---
+                float sensitivity = 1f;
+                if (SettingsManager.Instance != null)
+                {
+                    sensitivity = SettingsManager.Instance.currentSettings.mouseSensitivity;
+                }
+                // -------------------------------------------------------
+
+                // sensitivity çarpanını dönüş hızlarına ekliyoruz
+                _cinemachineTargetYaw +=
+                    _input.look.x * deltaTimeMultiplier * controlLag * sensitivity;
+                _cinemachineTargetPitch +=
+                    _input.look.y * deltaTimeMultiplier * controlLag * sensitivity;
             }
 
+            // Pitch (Yukarı/Aşağı) Clamp (Eski kodun)
+            _cinemachineTargetPitch = ClampAngle(_cinemachineTargetPitch, BottomClamp, TopClamp);
+
+            // Yaw (Sağ/Sol) Clamp (Eski kodun - Ama aşağıda modifiye edeceğiz)
             _cinemachineTargetYaw = ClampAngle(
                 _cinemachineTargetYaw,
                 float.MinValue,
                 float.MaxValue
             );
-            _cinemachineTargetPitch = ClampAngle(_cinemachineTargetPitch, BottomClamp, TopClamp);
 
-            // --- SARHOŞLUK ETKİSİ ---
-            // Sadece kamerayı (kafayı) sallar. Vücuda karışmaz.
+            // --- 2. YENİ KISIM: KISITLI GÖRÜŞ (BOYUN HAREKETİ) ---
+            if (_restrictRotation)
+            {
+                // Şu anki açı ile Merkez açı arasındaki farkı bul (Mathf.DeltaAngle 360 sarmalını doğru hesaplar)
+                float angleDifference = Mathf.DeltaAngle(_centerYaw, _cinemachineTargetYaw);
+
+                // Farkı limitler arasında tut (-50 ile +50 arası)
+                angleDifference = Mathf.Clamp(angleDifference, -_yawLimit, _yawLimit);
+
+                // Açıyı tekrar hesapla
+                _cinemachineTargetYaw = _centerYaw + angleDifference;
+            }
+            // ----------------------------------------------------
+
+            // Sarhoşluk Etkisi (Mevcut kodların)
             float addedYaw = (drunkIntensity > 0.01f) ? currentDrunkYaw : 0f;
             float addedRoll = (drunkIntensity > 0.01f) ? currentDrunkRoll : 0f;
 
@@ -325,23 +376,38 @@ namespace StarterAssets
                 _cinemachineTargetYaw + addedYaw,
                 0.0f + addedRoll
             );
-
-            // DÜZELTME: transform.rotation satırı BURADAN TAMAMEN KALDIRILDI.
         }
+
+        private bool _isFrozen = false; // Hareket kilitli mi?
+        private bool _lockCamera = false; // Kamera kilitli mi?
 
         private void Move()
         {
-            // --- EKLENEN KISIM: Idle (Hareketsizlik) Kontrolü ---
-            // Eğer oyuncu yön tuşlarına basıyorsa (input vector sıfır değilse),
-            // Megafon sistemine "Oyuncu hareket ediyor, fırça atma" diyoruz.
-            if (_input.move != Vector2.zero && MegaphoneSystem.Instance != null)
+            if (_isFrozen)
             {
-                MegaphoneSystem.Instance.ResetIdleTimer();
-            }
-            // ----------------------------------------------------
+                _speed = 0f;
+                _animationBlend = 0f;
 
+                if (_hasAnimator)
+                {
+                    _animator.SetFloat(_animIDSpeed, 0f);
+                    _animator.SetFloat(_animIDMotionSpeed, 0f);
+                    _animator.SetFloat(_animIDVelocityX, 0f); // Kaymayı önleyen asıl kahramanlar
+                    _animator.SetFloat(_animIDVelocityZ, 0f);
+                }
+                return; // Hareket hesaplamasını yapmadan fonksiyondan çık
+            }
+            // 1. Hız Hesaplama
             // 1. Hız Hesaplama
             float targetSpeed = _input.sprint ? SprintSpeed : MoveSpeed;
+
+            // --- YENİ: BİTKİNLİK HİSSİYATI ---
+            // Eğer karakter yorgunluktan tükenmişse (ceza modundaysa), normalden de yavaş yürüsün.
+            if (isExhausted)
+            {
+                targetSpeed = MoveSpeed * 0.65f; // Normal yürüme hızının %65'ine düşer
+            }
+
             if (_input.move == Vector2.zero)
                 targetSpeed = 0.0f;
 
@@ -482,16 +548,13 @@ namespace StarterAssets
                 }
             }
 
-            // UI Güncelleme
-            if (staminaSlider != null)
+            if (staminaCircularImage != null)
             {
-                staminaSlider.value = currentStamina;
-            }
+                // Slider.value yerine fillAmount kullanıyoruz (0 ile 1 arası değer alır)
+                staminaCircularImage.fillAmount = currentStamina / maxStamina;
 
-            // Opsiyonel: Yorgunken bar Kırmızı, normalken Beyaz olsun
-            if (staminaFillImage != null)
-            {
-                staminaFillImage.color = isExhausted ? Color.red : Color.white;
+                // Yorgunken bar Kırmızı, normalken Beyaz olsun
+                staminaCircularImage.color = isExhausted ? Color.red : Color.white;
             }
         }
 
@@ -601,6 +664,41 @@ namespace StarterAssets
             }
         }
 
+        private bool _restrictRotation = false; // Kısıtlı görüş açık mı?
+        private float _centerYaw; // Kilitlendiğimizde baktığımız merkez açı
+        private float _yawLimit = 50f; // Sağa/Sola kaç derece dönebiliriz?
+
+        public void SetFrozen(
+            bool freeze,
+            bool lockCameraInput = false,
+            bool restrictRotation = false
+        )
+        {
+            _isFrozen = freeze;
+            _lockCamera = lockCameraInput;
+            _restrictRotation = restrictRotation;
+
+            if (freeze)
+            {
+                // Inputları sıfırla
+                if (_input != null)
+                {
+                    _input.move = Vector2.zero;
+                    _input.sprint = false;
+                    _input.jump = false;
+                }
+
+                _speed = 0f;
+                _animationBlend = 0f;
+
+                // Eğer kısıtlı görüş istiyorsak, şu an nereye bakıyorsak orayı "MERKEZ" kabul et
+                if (restrictRotation)
+                {
+                    _centerYaw = _cinemachineTargetYaw;
+                }
+            }
+        }
+
         private void HandleHeadBob()
         {
             if (!Grounded)
@@ -613,20 +711,31 @@ namespace StarterAssets
             if (_input.move != Vector2.zero && speed > 0.1f)
             {
                 // Koşuyorsak frekansı artır
+                // Koşuyorsak frekansı artır
                 float freq = _input.sprint ? BobFrequency * 1.3f : BobFrequency;
+
+                // Varsayılan sallantı genliklerini al
+                float currentBobY = BobYAmplitude;
+                float currentBobX = BobXAmplitude;
+
+                // --- YENİ: YORGUNLUK (EXHAUSTED) ETKİSİ ---
+                if (isExhausted)
+                {
+                    // Yorgunken adımlar daha ağır ve dengesiz olur
+                    currentBobY *= 2.0f; // Aşağı/Yukarı sarsıntı 2 katına çıkar (Ağırlaşmış adımlar)
+                    currentBobX *= 1.8f; // Sağa/Sola yalpalanma neredeyse 2 kat artar (Denge kaybı)
+                    freq *= 0.8f; // Adım atma sıklığı %20 yavaşlar (Bitkinlik)
+                }
 
                 _bobTimer += Time.deltaTime * freq;
 
                 // --- DOĞAL YÜRÜME FORMÜLÜ (Lissajous Curve / 8 Çizme) ---
 
                 // 1. Y EKSENİ (Yukarı/Aşağı): Sinüs dalgası (Adım atma)
-                // Mutlak değer (Mathf.Abs) kullanmıyoruz, yumuşak iniş çıkış olsun.
-                float bobYOffset = Mathf.Sin(_bobTimer) * BobYAmplitude;
+                float bobYOffset = Mathf.Sin(_bobTimer) * currentBobY;
 
                 // 2. X EKSENİ (Sağa/Sola): Kosinüs dalgası (Ağırlık verme)
-                // Frekansı yarıya bölüyoruz (_bobTimer / 2f).
-                // Çünkü: İki adımda (Sol-Sağ) bir tam tur sağa-sola sallanırız.
-                float bobXOffset = Mathf.Cos(_bobTimer / 2f) * BobXAmplitude;
+                float bobXOffset = Mathf.Cos(_bobTimer / 2f) * currentBobX;
 
                 // Kameranın pozisyonunu hedef pozisyona doğru yumuşakça (Lerp) kaydır
                 Vector3 currentPos = CinemachineCameraTarget.transform.localPosition;
@@ -641,7 +750,7 @@ namespace StarterAssets
                 CinemachineCameraTarget.transform.localPosition = Vector3.Lerp(
                     currentPos,
                     targetPos,
-                    Time.deltaTime * 15f
+                    Time.deltaTime * 8f
                 );
             }
             else
@@ -658,7 +767,7 @@ namespace StarterAssets
                     CinemachineCameraTarget.transform.localPosition = Vector3.Lerp(
                         currentPos,
                         targetPos,
-                        Time.deltaTime * 6f
+                        Time.deltaTime * 4f
                     );
                 }
             }
@@ -694,6 +803,20 @@ namespace StarterAssets
             );
         }
 
+        // --- BU FONKSİYONU EKLE ---
+        public void ForceCameraRotation(float yaw, float pitch)
+        {
+            // Scriptin hafızasındaki açıları, şu anki gerçek açılara eşitliyoruz
+            _cinemachineTargetYaw = yaw;
+            _cinemachineTargetPitch = pitch;
+
+            // Cinemachine objesini de hemen güncelliyoruz ki "kayma" olmasın
+            if (CinemachineCameraTarget != null)
+            {
+                CinemachineCameraTarget.transform.rotation = Quaternion.Euler(pitch, yaw, 0.0f);
+            }
+        }
+
         private void OnFootstep(AnimationEvent animationEvent)
         {
             if (animationEvent.animatorClipInfo.weight > 0.5f)
@@ -701,11 +824,12 @@ namespace StarterAssets
                 if (FootstepAudioClips.Length > 0)
                 {
                     var index = Random.Range(0, FootstepAudioClips.Length);
-                    AudioSource.PlayClipAtPoint(
-                        FootstepAudioClips[index],
-                        transform.TransformPoint(_controller.center),
-                        FootstepAudioVolume
-                    );
+
+                    // YENİ KOD: Artık Mixeri yok sayan PlayClipAtPoint KULLANMIYORUZ
+                    if (_audioSource != null)
+                    {
+                        _audioSource.PlayOneShot(FootstepAudioClips[index], FootstepAudioVolume);
+                    }
                 }
             }
         }
@@ -714,14 +838,15 @@ namespace StarterAssets
         {
             if (animationEvent.animatorClipInfo.weight > 0.5f)
             {
-                AudioSource.PlayClipAtPoint(
-                    LandingAudioClip,
-                    transform.TransformPoint(_controller.center),
-                    FootstepAudioVolume
-                );
+                // YENİ KOD
+                if (_audioSource != null)
+                {
+                    _audioSource.PlayOneShot(LandingAudioClip, FootstepAudioVolume);
+                }
             }
         }
 
+        // --- DIŞARIDAN STAMINA DOLDURMA (Kitap Okurken vb.) ---
         // --- DIŞARIDAN STAMINA DOLDURMA (Kitap Okurken vb.) ---
         public void ExternalStaminaRegen(float deltaTime)
         {
@@ -740,14 +865,11 @@ namespace StarterAssets
                 isExhausted = false;
             }
 
-            // UI Güncelle (Script kapalı olduğu için Update'te güncellenmez, elle yapıyoruz)
-            if (staminaSlider != null)
+            // UI Güncelle (YUVARLAK BAR İÇİN YENİ KOD)
+            if (staminaCircularImage != null)
             {
-                staminaSlider.value = currentStamina;
-            }
-            if (staminaFillImage != null)
-            {
-                staminaFillImage.color = isExhausted ? Color.red : Color.white;
+                staminaCircularImage.fillAmount = currentStamina / maxStamina;
+                staminaCircularImage.color = isExhausted ? Color.red : Color.white;
             }
         }
     }

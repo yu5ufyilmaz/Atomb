@@ -17,9 +17,9 @@ TagManager:
   - Interactable
   - Enemy
   - Wall
-  - 
-  - 
-  - 
+  - Outline
+  - MenuObj
+  - QuitObj
   - 
   - 
   - 
