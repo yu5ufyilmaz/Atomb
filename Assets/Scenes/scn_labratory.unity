@@ -15259,9 +15259,9 @@ RectTransform:
   m_Children:
   - {fileID: 2094938276}
   - {fileID: 1735270669}
-  - {fileID: 2126680184}
   - {fileID: 2032837738}
   - {fileID: 120310974}
+  - {fileID: 2126680184}
   - {fileID: 1253818054}
   - {fileID: 310412475}
   - {fileID: 2103762615}
@@ -27980,7 +27980,6 @@ Transform:
   - {fileID: 211895211}
   - {fileID: 1360908236}
   - {fileID: 1847027963}
-  - {fileID: 846463804}
   - {fileID: 232295850}
   - {fileID: 88059968}
   - {fileID: 1488042625}
@@ -44820,12 +44819,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 846463803}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 834.16693, y: 275.18774, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 491873391}
+  m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &846463805
 MonoBehaviour:
@@ -170097,6 +170096,7 @@ BoxCollider:
 SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
+  - {fileID: 846463804}
   - {fileID: 543450652787342972}
   - {fileID: 286014759}
   - {fileID: 1048324958}
