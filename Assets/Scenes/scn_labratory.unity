@@ -12531,7 +12531,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &219298612
 Transform:
   m_ObjectHideFlags: 0
@@ -33140,10 +33140,7 @@ MonoBehaviour:
   playerAnimator: {fileID: 919132148867769543}
   playerMovementScript: {fileID: 919132148867769544}
   fixedCameraTransform: {fileID: 2100256641}
-  cameraTransitionDuration: 1
   interactionStandPoint: {fileID: 1757839285}
-  autoWalkSpeed: 2
-  autoRotateSpeed: 5
   interactAnimTrigger: InspectScope
   voltsKnob: {fileID: 4555928858660917575}
   timeKnob: {fileID: 2510160339925185766}
@@ -121110,7 +121107,7 @@ AudioSource:
   m_GameObject: {fileID: 919132147498327385}
   m_Enabled: 1
   serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: 0}
+  OutputAudioMixerGroup: {fileID: -5450689512536956137, guid: eb77e92b6f1d5b840b1b4a3d85cc0cd7, type: 2}
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 0}
   m_PlayOnAwake: 1
@@ -121481,9 +121478,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d84ee166229295e409c9c4611d3f1452, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isTutorialMode: 0
+  isTutorialMode: 1
   allowedTutorialObjects:
-  - {fileID: 1342168771}
+  - {fileID: 919132147498327385}
   - {fileID: 433840398}
   - {fileID: 1134978556}
   - {fileID: 182256108}
