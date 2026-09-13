@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using StarterAssets;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class InteractableBook : MonoBehaviour, IInteractable, IForceExitable
@@ -571,10 +572,11 @@ public class InteractableBook : MonoBehaviour, IInteractable, IForceExitable
 
         if (interactionCollider != null)
             interactionCollider.enabled = true;
-
         currentPage = 0;
         isAnimating = false;
     }
+
+    // Oyuncu notu/kitabı kapattığında fırlatılacak statik event
 
     private void HandlePageInput()
     {

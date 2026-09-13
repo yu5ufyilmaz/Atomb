@@ -33821,7 +33821,6 @@ GameObject:
   - component: {fileID: 605129796}
   - component: {fileID: 605129798}
   - component: {fileID: 605129800}
-  - component: {fileID: 605129799}
   m_Layer: 0
   m_Name: InteractionCondition
   m_TagString: Untagged
@@ -33871,25 +33870,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PrerequisiteCondition
   requiredEvent: {fileID: 1091296238}
---- !u!114 &605129799
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 605129794}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8cc2639615e094a4a93051b15a624d72, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::LookAction
-  focusMode: 0
-  lookTarget: {fileID: 1413967749}
-  headTurnDuration: 1
-  targetVirtualCamera: {fileID: 0}
-  blendOutDuration: 1
-  waitUntilInput: 0
-  autoReleaseTime: 2
 --- !u!114 &605129800
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -33903,6 +33883,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InteractionCondition
   targetInteractable: {fileID: 93539962}
+  completionMode: 0
 --- !u!1 &609495723
 GameObject:
   m_ObjectHideFlags: 0
@@ -40939,6 +40920,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InteractionCondition
   targetInteractable: {fileID: 1413967748}
+  completionMode: 0
 --- !u!114 &734015694
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -54369,6 +54351,7 @@ Transform:
   m_Children:
   - {fileID: 1091296234}
   - {fileID: 605129795}
+  - {fileID: 2080874722}
   - {fileID: 734015692}
   m_Father: {fileID: 2014130988}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -112824,6 +112807,122 @@ Transform:
   - {fileID: 545024550}
   m_Father: {fileID: 971552272}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &2080874721
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2080874722}
+  - component: {fileID: 2080874728}
+  - component: {fileID: 2080874727}
+  - component: {fileID: 2080874726}
+  - component: {fileID: 2080874723}
+  - component: {fileID: 2080874729}
+  m_Layer: 0
+  m_Name: TriggerCondition_2
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2080874722
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2080874721}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: 0.031754658, z: -0, w: 0.9994957}
+  m_LocalPosition: {x: -0.62, y: 0, z: -3.7}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1006456096}
+  m_LocalEulerAnglesHint: {x: 0, y: 3.639, z: 0}
+--- !u!114 &2080874723
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2080874721}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb33f8c8e606a9468246904fc40e08c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PrerequisiteCondition
+  requiredEvent: {fileID: 605129796}
+--- !u!65 &2080874726
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2080874721}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 3.1536026, y: 1, z: 1.9924212}
+  m_Center: {x: -0.16226959, y: 0, z: 0.49621058}
+--- !u!114 &2080874727
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2080874721}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 77a4c4c41e33cc744aaf97db001ce9ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TriggerCondition
+  targetTag: Player
+--- !u!114 &2080874728
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2080874721}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2350ebc7d48054446bec7126651cd467, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EventLogicController
+  requireAllConditions: 1
+  triggerOnlyOnce: 1
+--- !u!114 &2080874729
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2080874721}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8cc2639615e094a4a93051b15a624d72, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LookAction
+  focusMode: 0
+  lookTarget: {fileID: 1413967749}
+  headTurnDuration: 1
+  targetVirtualCamera: {fileID: 0}
+  blendOutDuration: 1
+  waitUntilInput: 0
+  autoReleaseTime: 2
 --- !u!1 &2080975109
 GameObject:
   m_ObjectHideFlags: 0

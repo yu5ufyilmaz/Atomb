@@ -62,6 +62,8 @@ public class PlayerInteraction : MonoBehaviour
     private Camera playerCamera;
     public static event System.Action<GameObject> OnPlayerInteracted;
 
+    // Oyuncu notu/kitabı kapattığında fırlatılacak statik event
+
     // Performans: Collider -> IInteractable önbelleği
     private Dictionary<Collider, IInteractable> interactableCache =
         new Dictionary<Collider, IInteractable>();

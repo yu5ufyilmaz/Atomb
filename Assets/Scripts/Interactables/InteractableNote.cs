@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using StarterAssets;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class InteractableNote : MonoBehaviour, IInteractable, IForceExitable
