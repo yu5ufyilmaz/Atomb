@@ -60,6 +60,7 @@ public class PlayerInteraction : MonoBehaviour
 
     private IInteractable currentInteractable;
     private Camera playerCamera;
+    public static event System.Action<GameObject> OnPlayerInteracted;
 
     // Performans: Collider -> IInteractable önbelleği
     private Dictionary<Collider, IInteractable> interactableCache =
@@ -280,6 +281,11 @@ public class PlayerInteraction : MonoBehaviour
     private void HandleInteractionInput()
     {
         if (currentInteractable != null && Input.GetMouseButtonDown(0))
+        {
             currentInteractable.Interact();
+
+            // Broadcast the interacted object to any listening conditions
+            OnPlayerInteracted?.Invoke(((MonoBehaviour)currentInteractable).gameObject);
+        }
     }
 }

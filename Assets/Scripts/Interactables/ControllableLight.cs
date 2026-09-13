@@ -215,6 +215,12 @@ public class ControllableLight : MonoBehaviour, IInteractable, ISaveable
         }
     }
 
+    public void SetLightState(bool state)
+    {
+        desiredStateIsOn = state;
+        UpdateLightVisual(); // Materyalleri, modeli ve ışıkları günceller
+    }
+
     public void OnFocus() { }
 
     public void OnLoseFocus() { }
