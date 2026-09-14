@@ -13,21 +13,6 @@ MonoBehaviour:
   m_Name: NewNotebookData
   m_EditorClassIdentifier: Assembly-CSharp::NotebookData
   tutorialPages:
-  - title: CORE PRESSURE
-    content: Watch the gauge. If it hits RED, we die. Turn the valves to lower the
-      pressure.
-  - title: POWER GRID
-    content: Blackouts will happen. Find the Breaker Box fast. Do not stay in the
-      dark.
-  - title: 'SURVIVAL PROTOCOL: LEE'
-    content: DO NOT RUN. Turn your back, stand completely still, and never look at
-      it.
-  - title: 'SURVIVAL PROTOCOL: HANS'
-    content: If you heard footstep you need to hide in hiding spots. Dont forget
-      to close doors.
-  symbolDescriptions:
-  - '[+] Receive the greeting of the four-eyed man where it all began.'
-  - '[-] Subtraction: Destructive interference detected. Use this to bleed off excess
-    steam.'
-  - '[/] Division: Signal fragmentation. It divides the pressure load across sub-systems.'
-  - '[+] DONT LOOK BEHIND'
+  - {fileID: 11400000, guid: ff938c8f1b4e19143be86c52149b6f2e, type: 2}
+  symbolDataList:
+  - {fileID: 11400000, guid: 32e8809b6981d3d4cac16e6be17100f6, type: 2}

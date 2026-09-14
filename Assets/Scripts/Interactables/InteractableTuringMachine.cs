@@ -436,6 +436,7 @@ public class InteractableTuringMachine : MonoBehaviour, IInteractable, IForceExi
 
         isInteracting = false;
         isExiting = false;
+        PlayerInteraction.NotifyInteractionExit(gameObject);
     }
 
     private void Update()

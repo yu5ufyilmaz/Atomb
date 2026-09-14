@@ -61,6 +61,7 @@ public class PlayerInteraction : MonoBehaviour
     private IInteractable currentInteractable;
     private Camera playerCamera;
     public static event System.Action<GameObject> OnPlayerInteracted;
+    public static event System.Action<GameObject> OnPlayerInteractionExited;
 
     // Oyuncu notu/kitabı kapattığında fırlatılacak statik event
 
@@ -289,5 +290,10 @@ public class PlayerInteraction : MonoBehaviour
             // Broadcast the interacted object to any listening conditions
             OnPlayerInteracted?.Invoke(((MonoBehaviour)currentInteractable).gameObject);
         }
+    }
+
+    public static void NotifyInteractionExit(GameObject exitedObj)
+    {
+        OnPlayerInteractionExited?.Invoke(exitedObj);
     }
 }

@@ -164,20 +164,36 @@ public class NotebookUI : MonoBehaviour
 
     public void UnlockSymbolResearch(int symbolID)
     {
-        if (
-            notebookData != null
-            && symbolID >= 0
-            && symbolID < notebookData.symbolDescriptions.Length
-        )
+        if (notebookData != null)
         {
-            currentSymbolInfo = notebookData.symbolDescriptions[symbolID];
+            // Artık array index'i değil, ID'yi arayarak çekiyor
+            currentSymbolInfo = notebookData.GetSymbolDescription(symbolID);
         }
-        else
-        {
-            currentSymbolInfo = "Unknown signal detected. Calculations failed.";
-        }
+
         if (isNotebookOpen)
             UpdateUI();
+    }
+
+    private void ShowTutorial()
+    {
+        if (notebookData == null || notebookData.tutorialPages.Count == 0)
+        {
+            if (categoryTitleText != null)
+                categoryTitleText.text = "LOGS EMPTY";
+            if (contentText != null)
+                contentText.text = "No operational data found.";
+            return;
+        }
+
+        // Doğrudan SO referansından okuyoruz
+        TutorialDataSO entry = notebookData.tutorialPages[currentTutorialPage];
+
+        if (categoryTitleText != null)
+            categoryTitleText.text =
+                $"{entry.title.ToUpper()} ({currentTutorialPage + 1}/{notebookData.tutorialPages.Count})";
+
+        if (contentText != null)
+            contentText.text = entry.content;
     }
 
     public void UpdateUI()
@@ -233,24 +249,6 @@ public class NotebookUI : MonoBehaviour
         }
         if (contentText != null)
             contentText.text = list;
-    }
-
-    private void ShowTutorial()
-    {
-        if (notebookData == null || notebookData.tutorialPages.Count == 0)
-        {
-            if (categoryTitleText != null)
-                categoryTitleText.text = "LOGS EMPTY";
-            if (contentText != null)
-                contentText.text = "No operational data found.";
-            return;
-        }
-        var entry = notebookData.tutorialPages[currentTutorialPage];
-        if (categoryTitleText != null)
-            categoryTitleText.text =
-                $"{entry.title.ToUpper()} ({currentTutorialPage + 1}/{notebookData.tutorialPages.Count})";
-        if (contentText != null)
-            contentText.text = entry.content;
     }
 
     public void ShowPasswordNotification(string password)

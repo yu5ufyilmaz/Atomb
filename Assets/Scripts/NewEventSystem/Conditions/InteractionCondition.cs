@@ -5,7 +5,7 @@ public class InteractionCondition : MonoBehaviour, ICondition
 {
     public enum CompletionMode
     {
-        OnInteractStart, // Objeye ilk tıklandığı an
+        OnInteractStart, // Objeye ilk tıklandığında
         OnInteractExit, // Objeyle etkileşim bittiğinde / arayüzden çıkıldığında
     }
 
@@ -14,7 +14,7 @@ public class InteractionCondition : MonoBehaviour, ICondition
     [Tooltip("Hangi objeyle etkileşime girilecek?")]
     public GameObject targetInteractable;
 
-    [Tooltip("Şartın ne zaman tamamlanacağı")]
+    [Tooltip("Koşulun ne zaman tamamlanacağı")]
     public CompletionMode completionMode = CompletionMode.OnInteractStart;
 
     private bool conditionMet = false;
@@ -28,10 +28,9 @@ public class InteractionCondition : MonoBehaviour, ICondition
             targetInteractable = gameObject;
         }
 
-        // Tıklama (Başlangıç) olayını dinle
+        // Tıklama (Başlangıç) ve Çıkış olaylarına abone oluyoruz
         PlayerInteraction.OnPlayerInteracted += HandlePlayerInteracted;
-
-        // Eğer sınıfında çıkış (Exit) event'i varsa buraya abone olabiliriz
+        PlayerInteraction.OnPlayerInteractionExited += HandleInteractionExit;
     }
 
     private void HandlePlayerInteracted(GameObject interactedObj)
@@ -42,13 +41,12 @@ public class InteractionCondition : MonoBehaviour, ICondition
             {
                 TriggerConditionMet();
             }
-            // Eğer mod OnInteractExit ise burada sadece etkileşimin başladığını not alıp, çıkışını bekleyebiliriz.
         }
     }
 
-    // Kitap kapatıldığında veya arayüzden çıkıldığında çağrılacak metot
-    public void NotifyInteractionExit(GameObject exitedObj)
+    private void HandleInteractionExit(GameObject exitedObj)
     {
+        // Kapanan obje hedefimizse ve mod OnInteractExit ise koşulu sağla
         if (
             exitedObj == targetInteractable
             && completionMode == CompletionMode.OnInteractExit
@@ -65,22 +63,10 @@ public class InteractionCondition : MonoBehaviour, ICondition
         OnConditionChanged?.Invoke();
     }
 
-    private void HandleInteractionExit(GameObject exitedObj)
-    {
-        // Eğer kapanan obje bizim hedefimizse ve mod OnInteractExit ise şartı sağla
-        if (
-            exitedObj == targetInteractable
-            && completionMode == CompletionMode.OnInteractExit
-            && !conditionMet
-        )
-        {
-            conditionMet = true;
-            OnConditionChanged?.Invoke();
-        }
-    }
-
     private void OnDestroy()
     {
+        // Hata almamak için abonelikleri iptal et
         PlayerInteraction.OnPlayerInteracted -= HandlePlayerInteracted;
+        PlayerInteraction.OnPlayerInteractionExited -= HandleInteractionExit;
     }
 }

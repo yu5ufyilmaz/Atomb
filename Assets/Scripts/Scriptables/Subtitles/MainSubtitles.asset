@@ -213,3 +213,35 @@ MonoBehaviour:
       textTR: 
       textEN: Your choise Johan.
       textDE: 
+  - id: tut_001
+    note: 
+    segments:
+    - duration: 2
+      textTR: 
+      textEN: Look at that note and take it
+      textDE: 
+  - id: tut_002
+    note: 
+    segments:
+    - duration: 3
+      textTR: 
+      textEN: Now dont forget to lock your doors
+      textDE: 
+  - id: tut_003
+    note: 
+    segments:
+    - duration: 3
+      textTR: "\t\t"
+      textEN: Come on hide on that wardrope hurry.
+      textDE: 
+  - id: tut_004
+    note: 
+    segments:
+    - duration: 3
+      textTR: "\t\t"
+      textEN: 'Now you need to understand what it means. '
+      textDE: 
+    - duration: 2
+      textTR: 
+      textEN: Figure it out somehow.
+      textDE: 

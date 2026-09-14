@@ -1,3 +1,4 @@
+using NaughtyAttributes;
 using UnityEngine;
 
 public class NoteAction : MonoBehaviour, IAction
@@ -8,46 +9,43 @@ public class NoteAction : MonoBehaviour, IAction
         UnlockSymbolResearch,
     }
 
-    [Tooltip("Deftere eklenecek verinin türü.")]
     public NoteOperation operation = NoteOperation.DiscoverClue;
 
-    [Tooltip("Eğer DiscoverClue seçildiyse eklenecek şifre/ipucu ID'si (Örn: START_=_001)")]
-    public string passwordID;
+    [ShowIf("operation", NoteOperation.DiscoverClue)]
+    public PasswordData targetPassword;
 
-    [Tooltip("Eğer UnlockSymbolResearch seçildiyse defterde açılacak sembolün ID'si (0, 1, 2...)")]
-    public int symbolID;
+    [ShowIf("operation", NoteOperation.UnlockSymbolResearch)]
+    public SymbolDataSO targetSymbol;
 
     public void Execute()
     {
         switch (operation)
         {
             case NoteOperation.DiscoverClue:
-                if (PasswordManager.Instance != null && !string.IsNullOrEmpty(passwordID))
+                if (PasswordManager.Instance != null && targetPassword != null)
                 {
-                    // Şifreyi bulduğumuzu PasswordManager'a iletiyoruz
-                    PasswordManager.Instance.DiscoverClue(passwordID);
-                    Debug.Log($"[NoteAction] İpucu/Şifre deftere eklendi: {passwordID}");
+                    // SO'nun içindeki ID'yi okuyup manager'a yolluyoruz
+                    PasswordManager.Instance.DiscoverClue(targetPassword.tutorialPasswordID);
+                    Debug.Log(
+                        $"[NoteAction] İpucu deftere eklendi: {targetPassword.tutorialPasswordID}"
+                    );
                 }
                 else
                 {
-                    Debug.LogWarning(
-                        "[NoteAction] PasswordManager bulunamadı veya passwordID boş!"
-                    );
+                    Debug.LogWarning("[NoteAction] PasswordManager veya targetPassword eksik.");
                 }
                 break;
 
             case NoteOperation.UnlockSymbolResearch:
-                if (NotebookUI.Instance != null)
+                if (NotebookUI.Instance != null && targetSymbol != null)
                 {
-                    // Sembol açıklamasını NotebookUI üzerinden açıyoruz
-                    NotebookUI.Instance.UnlockSymbolResearch(symbolID);
-                    Debug.Log(
-                        $"[NoteAction] Sembol araştırması defterde erişime açıldı. Sembol ID: {symbolID}"
-                    );
+                    // SO'nun içindeki ID'yi okuyup manager'a yolluyoruz
+                    NotebookUI.Instance.UnlockSymbolResearch(targetSymbol.symbolID);
+                    Debug.Log($"[NoteAction] Sembol açıldı. Sembol ID: {targetSymbol.symbolID}");
                 }
                 else
                 {
-                    Debug.LogWarning("[NoteAction] NotebookUI bulunamadı!");
+                    Debug.LogWarning("[NoteAction] NotebookUI veya targetSymbol eksik.");
                 }
                 break;
         }

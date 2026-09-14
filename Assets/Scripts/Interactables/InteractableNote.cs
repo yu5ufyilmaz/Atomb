@@ -252,6 +252,7 @@ public class InteractableNote : MonoBehaviour, IInteractable, IForceExitable
             interactionCollider.enabled = true;
 
         isAnimating = false;
+        PlayerInteraction.NotifyInteractionExit(gameObject);
     }
 
     private void CheckForPasswordClick()

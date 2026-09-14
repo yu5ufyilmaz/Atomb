@@ -33821,8 +33821,11 @@ GameObject:
   - component: {fileID: 605129796}
   - component: {fileID: 605129798}
   - component: {fileID: 605129800}
+  - component: {fileID: 605129802}
+  - component: {fileID: 605129803}
+  - component: {fileID: 605129804}
   m_Layer: 0
-  m_Name: InteractionCondition
+  m_Name: Tutorail_IC_002
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -33883,7 +33886,57 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InteractionCondition
   targetInteractable: {fileID: 93539962}
-  completionMode: 0
+  completionMode: 1
+--- !u!114 &605129802
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 605129794}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eb1423e9569c23148afc04e883b71e34, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerControlAction
+  modifyMovement: 0
+  freezePlayer: 0
+  modifyLook: 0
+  lockCameraInput: 0
+  modifyInteractionRules: 1
+  enableTutorialMode: 1
+  allowedInteractables:
+  - {fileID: 1413967748}
+--- !u!114 &605129803
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 605129794}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 942e52852a30b8d4981b66bc52f37d43, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DialogAction
+  subtitleID: tut_002
+  dialogClip: {fileID: 0}
+  audioSource: {fileID: 0}
+--- !u!114 &605129804
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 605129794}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 53e9cb190b48b41409312e6efa84d77e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::NoteAction
+  operation: 1
+  targetPassword: {fileID: 0}
+  targetSymbol: {fileID: 11400000, guid: 32e8809b6981d3d4cac16e6be17100f6, type: 2}
 --- !u!1 &609495723
 GameObject:
   m_ObjectHideFlags: 0
@@ -40885,8 +40938,11 @@ GameObject:
   - component: {fileID: 734015693}
   - component: {fileID: 734015695}
   - component: {fileID: 734015696}
+  - component: {fileID: 734015697}
+  - component: {fileID: 734015698}
+  - component: {fileID: 734015699}
   m_Layer: 0
-  m_Name: InteractionCondition (1)
+  m_Name: Tutorail_IC_004
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -40963,6 +41019,60 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PrerequisiteCondition
   requiredEvent: {fileID: 605129796}
+--- !u!114 &734015697
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 734015691}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eb1423e9569c23148afc04e883b71e34, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerControlAction
+  modifyMovement: 0
+  freezePlayer: 0
+  modifyLook: 0
+  lockCameraInput: 0
+  modifyInteractionRules: 1
+  enableTutorialMode: 0
+  allowedInteractables: []
+--- !u!114 &734015698
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 734015691}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 942e52852a30b8d4981b66bc52f37d43, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DialogAction
+  subtitleID: tut_003
+  dialogClip: {fileID: 0}
+  audioSource: {fileID: 0}
+--- !u!114 &734015699
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 734015691}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8cc2639615e094a4a93051b15a624d72, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LookAction
+  focusMode: 0
+  lookTarget: {fileID: 454887304}
+  headTurnDuration: 1
+  targetVirtualCamera: {fileID: 0}
+  blendOutDuration: 1
+  freezePlayer: 0
+  waitUntilInput: 1
+  autoReleaseTime: 2
 --- !u!1 &735327049
 GameObject:
   m_ObjectHideFlags: 0
@@ -54353,6 +54463,7 @@ Transform:
   - {fileID: 605129795}
   - {fileID: 2080874722}
   - {fileID: 734015692}
+  - {fileID: 1827608713}
   m_Father: {fileID: 2014130988}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1006697366
@@ -59400,8 +59511,10 @@ GameObject:
   - component: {fileID: 1091296235}
   - component: {fileID: 1091296240}
   - component: {fileID: 1091296241}
+  - component: {fileID: 1091296242}
+  - component: {fileID: 1091296243}
   m_Layer: 0
-  m_Name: TriggerCondition_1
+  m_Name: Tutorial_TC_001
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -59504,8 +59617,44 @@ MonoBehaviour:
   headTurnDuration: 1.5
   targetVirtualCamera: {fileID: 0}
   blendOutDuration: 1
+  freezePlayer: 0
   waitUntilInput: 0
   autoReleaseTime: 2
+--- !u!114 &1091296242
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1091296233}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eb1423e9569c23148afc04e883b71e34, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerControlAction
+  modifyMovement: 0
+  freezePlayer: 0
+  modifyLook: 0
+  lockCameraInput: 0
+  modifyInteractionRules: 1
+  enableTutorialMode: 1
+  allowedInteractables:
+  - {fileID: 93539962}
+--- !u!114 &1091296243
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1091296233}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 942e52852a30b8d4981b66bc52f37d43, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DialogAction
+  subtitleID: tut_001
+  dialogClip: {fileID: 0}
+  audioSource: {fileID: 0}
 --- !u!1 &1091394706
 GameObject:
   m_ObjectHideFlags: 0
@@ -75934,7 +76083,7 @@ Transform:
   m_GameObject: {fileID: 1413967748}
   serializedVersion: 2
   m_LocalRotation: {x: 0.50000006, y: 0.4999999, z: 0.50000006, w: -0.50000006}
-  m_LocalPosition: {x: -0.0024299962, y: 0.0003900004, z: -0.00025031995}
+  m_LocalPosition: {x: 0.00818, y: 0.00149, z: 0.0004}
   m_LocalScale: {x: 1.0430001, y: 1.3499995, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -75977,7 +76126,7 @@ SphereCollider:
   m_Enabled: 1
   serializedVersion: 3
   m_Radius: 0.0010238987
-  m_Center: {x: 0.00046040295, y: 0.007773788, z: 0.0007489268}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &1414593351
 GameObject:
   m_ObjectHideFlags: 0
@@ -97268,6 +97417,117 @@ MonoBehaviour:
     height: 0.2
   hasPasswordBeenFound: 0
   bookCollider: {fileID: 0}
+--- !u!1 &1827608712
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1827608713}
+  - component: {fileID: 1827608719}
+  - component: {fileID: 1827608718}
+  - component: {fileID: 1827608716}
+  - component: {fileID: 1827608715}
+  - component: {fileID: 1827608714}
+  m_Layer: 0
+  m_Name: Tutorail_IC_005
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1827608713
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1827608712}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 9.29, y: 0.48, z: -8.19}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1006456096}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1827608714
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1827608712}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 942e52852a30b8d4981b66bc52f37d43, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DialogAction
+  subtitleID: tut_004
+  dialogClip: {fileID: 0}
+  audioSource: {fileID: 0}
+--- !u!114 &1827608715
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1827608712}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eb1423e9569c23148afc04e883b71e34, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerControlAction
+  modifyMovement: 0
+  freezePlayer: 0
+  modifyLook: 0
+  lockCameraInput: 0
+  modifyInteractionRules: 1
+  enableTutorialMode: 0
+  allowedInteractables: []
+--- !u!114 &1827608716
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1827608712}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb33f8c8e606a9468246904fc40e08c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PrerequisiteCondition
+  requiredEvent: {fileID: 734015694}
+--- !u!114 &1827608718
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1827608712}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 16c36d6ebf880b846880c74234269153, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::InteractionCondition
+  targetInteractable: {fileID: 454887303}
+  completionMode: 1
+--- !u!114 &1827608719
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1827608712}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2350ebc7d48054446bec7126651cd467, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EventLogicController
+  requireAllConditions: 1
+  triggerOnlyOnce: 1
 --- !u!1 &1835875504
 GameObject:
   m_ObjectHideFlags: 0
@@ -112822,7 +113082,7 @@ GameObject:
   - component: {fileID: 2080874723}
   - component: {fileID: 2080874729}
   m_Layer: 0
-  m_Name: TriggerCondition_2
+  m_Name: Tutorail_TC_003
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -112921,6 +113181,7 @@ MonoBehaviour:
   headTurnDuration: 1
   targetVirtualCamera: {fileID: 0}
   blendOutDuration: 1
+  freezePlayer: 0
   waitUntilInput: 0
   autoReleaseTime: 2
 --- !u!1 &2080975109

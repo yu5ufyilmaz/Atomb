@@ -3,16 +3,18 @@ using UnityEngine;
 
 public class HighlightAction : MonoBehaviour, IAction
 {
+
     public enum HighlightMode
     {
-        PermanentOn, // Direkt aç veya kapat
-        TimedPulse, // Belirli bir süre yanıp sön
-        BlinkUntilInteracted, // Etkileşime girilene kadar sürekli yanıp sön
+        PermanentOn,
+        TimedPulse,
+        BlinkUntilInteracted,
     }
 
-    [Tooltip("Parlama çalışma modu")]
+    [Tooltip("Parlama/Yanıp sönme modu")]
     public HighlightMode mode = HighlightMode.PermanentOn;
 
+    
     [Tooltip("Parlatılacak not objesi")]
     public InteractableNote targetNote;
 
@@ -27,10 +29,10 @@ public class HighlightAction : MonoBehaviour, IAction
     public float duration = 5.0f;
 
     private Coroutine activeRoutine;
+    private bool isInteracted = false; // Döngüyü kırmak için global değişken
 
     public void Execute()
     {
-        // Eğer halihazırda çalışan bir coroutine varsa durdur
         if (activeRoutine != null)
         {
             StopCoroutine(activeRoutine);
@@ -40,16 +42,31 @@ public class HighlightAction : MonoBehaviour, IAction
         switch (mode)
         {
             case HighlightMode.PermanentOn:
-                SetHighlight(true); // Kod içindeki bool değerine göre aç/kapat yapabiliriz istersen
+                SetHighlight(true);
                 break;
-
             case HighlightMode.TimedPulse:
                 activeRoutine = StartCoroutine(PulseRoutine(duration));
                 break;
-
             case HighlightMode.BlinkUntilInteracted:
+                isInteracted = false;
+                // Oyuncu bir şeye tıkladığında bizi haberdar etmesi için abone oluyoruz
+                PlayerInteraction.OnPlayerInteracted += HandleInteraction;
                 activeRoutine = StartCoroutine(BlinkUntilInteractedRoutine());
                 break;
+        }
+    }
+
+    private void HandleInteraction(GameObject interactedObj)
+    {
+        // Tıklanan obje bizim parlatmaya çalıştığımız objeyse
+        if (
+            (targetNote != null && interactedObj == targetNote.gameObject)
+            || (targetBook != null && interactedObj == targetBook.gameObject)
+        )
+        {
+            isInteracted = true; // Döngüyü kır
+            PlayerInteraction.OnPlayerInteracted -= HandleInteraction; // İşimizi bitince abonelikten çık
+            SetHighlight(false); // Işığı anında kapat
         }
     }
 
@@ -79,48 +96,47 @@ public class HighlightAction : MonoBehaviour, IAction
 
         while (timer < targetDuration)
         {
-            // Aç
             SetHighlight(true);
             yield return new WaitForSeconds(halfInterval);
-
-            // Kapat
             SetHighlight(false);
             yield return new WaitForSeconds(halfInterval);
-
             timer += pulseSpeed;
         }
 
-        // Süre bitince tamamen kapatarak bırak
         SetHighlight(false);
     }
 
     private IEnumerator BlinkUntilInteractedRoutine()
     {
         float halfInterval = pulseSpeed / 2f;
-        bool isInteracted = false;
 
-        // Burada oyuncunun ilgili objeyle etkileşime girip girmediğini dinleyebiliriz
-        // Örnek olması açısından basit bir döngü kuruyoruz, istersen PlayerInteraction event'lerine de bağlayabilirsin
         while (!isInteracted)
         {
             SetHighlight(true);
             yield return new WaitForSeconds(halfInterval);
 
+            // Eğer saniyenin yarısını beklerken oyuncu objeye tıkladıysa hemen çık
+            if (isInteracted)
+                break;
+
             SetHighlight(false);
             yield return new WaitForSeconds(halfInterval);
-
-            // Örnek: Eğer not okunduysa veya tıklandıysa döngüyü kırabilirsin
-            // Gerçek projede buraya bir kontrol ekleyebiliriz.
         }
+
+        SetHighlight(false); // Garanti kapatma
     }
 
     private void OnDisable()
     {
         if (activeRoutine != null)
-        {
             StopCoroutine(activeRoutine);
-        }
-        // Nesne kapandığında sahnede açık parlama kalmasın
+        PlayerInteraction.OnPlayerInteracted -= HandleInteraction; // Güvenlik için aboneliği kaldır
         SetHighlight(false);
+    }
+
+    private void OnDestroy()
+    {
+        // Obje tamamen silinirse hafıza kaçağı (memory leak) olmasın diye aboneliği kaldır
+        PlayerInteraction.OnPlayerInteracted -= HandleInteraction;
     }
 }

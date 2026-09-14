@@ -574,6 +574,7 @@ public class InteractableBook : MonoBehaviour, IInteractable, IForceExitable
             interactionCollider.enabled = true;
         currentPage = 0;
         isAnimating = false;
+        PlayerInteraction.NotifyInteractionExit(gameObject);
     }
 
     // Oyuncu notu/kitabı kapattığında fırlatılacak statik event

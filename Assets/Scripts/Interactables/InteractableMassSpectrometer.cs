@@ -164,7 +164,8 @@ public class InteractableMassSpectrometer : MonoBehaviour, IInteractable, IForce
     private void InitializeComponents()
     {
         if (playerPhysicsController == null)
-            playerPhysicsController = Object.FindFirstObjectByType<UnityEngine.CharacterController>();
+            playerPhysicsController =
+                Object.FindFirstObjectByType<UnityEngine.CharacterController>();
 
         if (playerPhysicsController != null)
         {
@@ -316,6 +317,7 @@ public class InteractableMassSpectrometer : MonoBehaviour, IInteractable, IForce
             playerInt.ToggleCrosshair(true);
 
         isExiting = false;
+        PlayerInteraction.NotifyInteractionExit(gameObject);
     }
 
     private void Update()

@@ -285,8 +285,10 @@ public class InteractableOscilloscope : MonoBehaviour, IInteractable, IForceExit
 
         // VCAM PASİF ET (Kamera yumuşakça karakterin ensesine geri dönecek)
         if (interactVCam)
-{            interactVCam.Priority = 0;
-            _playerFollowCamera.SetActive(false);}
+        {
+            interactVCam.Priority = 0;
+            _playerFollowCamera.SetActive(false);
+        }
 
         yield return new WaitForSeconds(1.5f);
 
@@ -320,6 +322,7 @@ public class InteractableOscilloscope : MonoBehaviour, IInteractable, IForceExit
 
         isInteracting = false;
         isExiting = false;
+        PlayerInteraction.NotifyInteractionExit(gameObject);
     }
 
     private void Update()

@@ -362,6 +362,7 @@ public class InteractableHidingSpot : MonoBehaviour, IInteractable, IForceExitab
         isOccupied = false;
         isPeeking = false;
         inTransition = false;
+        PlayerInteraction.NotifyInteractionExit(gameObject);
     }
 
     // --- HAREKET ET VE ROTASYONU KİLİTLE ---
