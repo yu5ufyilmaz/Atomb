@@ -1,9 +1,8 @@
 using System.Collections;
 using UnityEngine;
 
-public class HighlightAction : MonoBehaviour, IAction
+public class HighlightAction : ActionBase
 {
-
     public enum HighlightMode
     {
         PermanentOn,
@@ -14,7 +13,6 @@ public class HighlightAction : MonoBehaviour, IAction
     [Tooltip("Parlama/Yanıp sönme modu")]
     public HighlightMode mode = HighlightMode.PermanentOn;
 
-    
     [Tooltip("Parlatılacak not objesi")]
     public InteractableNote targetNote;
 
@@ -31,7 +29,7 @@ public class HighlightAction : MonoBehaviour, IAction
     private Coroutine activeRoutine;
     private bool isInteracted = false; // Döngüyü kırmak için global değişken
 
-    public void Execute()
+    protected override void PerformAction()
     {
         if (activeRoutine != null)
         {

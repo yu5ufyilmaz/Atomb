@@ -4,7 +4,7 @@ using NaughtyAttributes;
 using StarterAssets;
 using UnityEngine;
 
-public class LookAction : MonoBehaviour, IAction
+public class LookAction : ActionBase
 {
     public enum FocusMode
     {
@@ -12,13 +12,31 @@ public class LookAction : MonoBehaviour, IAction
         ActivateVirtualCamera,
     }
 
+    public enum LookOffset
+    {
+        Direct, // Hedefe tam bakar
+        Behind180, // Hedefin tam arkasına (180 derece tersine) bakar
+        Right90, // Hedefin 90 derece sağına bakar
+        Left90, // Hedefin 90 derece soluna bakar
+        Custom, // Manuel açı girilir
+    }
+
     [Tooltip("Kameranın nasıl davranacağı.")]
     public FocusMode focusMode = FocusMode.RotatePlayerHead;
 
     [ShowIf("focusMode", FocusMode.RotatePlayerHead)]
     [Header("Mod: Rotate Player Head")]
-    [Tooltip("Kameranın zorla çevrileceği hedef obje (Sadece RotatePlayerHead modunda çalışır).")]
+    [Tooltip("Kameranın zorla çevrileceği hedef obje.")]
     public Transform lookTarget;
+
+    [ShowIf("focusMode", FocusMode.RotatePlayerHead)]
+    [Header("Açı Sapması (Offset)")]
+    [Tooltip("Hedefe bakarken uygulanacak sapma (Örn: Tam arkasına bakmak için Behind180)")]
+    public LookOffset lookOffset = LookOffset.Direct;
+
+    [ShowIf("lookOffset", LookOffset.Custom)]
+    [Tooltip("Custom seçildiğinde uygulanacak Y ekseni açısı (Örn: 45)")]
+    public float customYAngle = 0f;
 
     [ShowIf("focusMode", FocusMode.RotatePlayerHead)]
     [Tooltip("Kafanın hedefe dönme hızı (Saniye)")]
@@ -26,18 +44,14 @@ public class LookAction : MonoBehaviour, IAction
 
     [ShowIf("focusMode", FocusMode.ActivateVirtualCamera)]
     [Header("Mod: Activate Virtual Camera")]
-    [Tooltip(
-        "Geçiş yapılacak Cinemachine Virtual Camera (Sadece ActivateVirtualCamera modunda çalışır)."
-    )]
+    [Tooltip("Geçiş yapılacak Cinemachine Virtual Camera.")]
     public CinemachineVirtualCamera targetVirtualCamera;
 
     [ShowIf("focusMode", FocusMode.ActivateVirtualCamera)]
-    [Tooltip("Kameranın oyuncuya geri dönerken yapacağı geçiş süresi (Bekleme)")]
+    [Tooltip("Kameranın oyuncuya geri dönerken yapacağı yumuşama süresi")]
     public float blendOutDuration = 1.0f;
 
-    [Tooltip(
-        "Kamera dönerken oyuncu yerinde kilitlensin mi? (Kapatırsan oyuncu yürümeye devam edebilir)"
-    )]
+    [Tooltip("Kamera dönerken oyuncu yerinde kilitlensin mi?")]
     public bool freezePlayer = true;
 
     [Header("Çıkış Ayarları")]
@@ -62,20 +76,48 @@ public class LookAction : MonoBehaviour, IAction
         }
     }
 
-    public void Execute()
+    protected override void PerformAction()
     {
         if (playerMoveScript == null)
             return;
-
+        
         StartCoroutine(FocusRoutine());
+    }
+
+    private Quaternion GetTargetRotation()
+    {
+        if (lookTarget == null || mainCam == null)
+            return Quaternion.identity;
+
+        Vector3 targetDir = (lookTarget.position - mainCam.transform.position).normalized;
+        Quaternion baseRot = Quaternion.LookRotation(targetDir);
+
+        float yOffset = 0f;
+        switch (lookOffset)
+        {
+            case LookOffset.Behind180:
+                yOffset = 180f;
+                break;
+            case LookOffset.Right90:
+                yOffset = 90f;
+                break;
+            case LookOffset.Left90:
+                yOffset = -90f;
+                break;
+            case LookOffset.Custom:
+                yOffset = customYAngle;
+                break;
+        }
+
+        return baseRot * Quaternion.Euler(0f, yOffset, 0f);
     }
 
     private IEnumerator FocusRoutine()
     {
-        // 1. OYUNCU GİRDİLERİNİ VE HAREKETİNİ KES
+        // 1. OYUNCU GİRDİSİNİ VE HAREKETİNİ KES
         if (playerInputs != null)
         {
-            playerInputs.cursorInputForLook = false; // Mouse'u her halükarda kilitliyoruz
+            playerInputs.cursorInputForLook = false;
         }
 
         if (freezePlayer)
@@ -85,24 +127,18 @@ public class LookAction : MonoBehaviour, IAction
                 playerInputs.move = Vector2.zero;
         }
 
-        // 2. KAMERA ODAKLANMASI (Sürekli Takip / Tracking)
+        // 2. KAMERA ODAKLANMASI
         if (focusMode == FocusMode.RotatePlayerHead && lookTarget != null && mainCam != null)
         {
-            // Başlangıç rotasyonunu hafızaya alıyoruz
             Quaternion startRot = mainCam.transform.rotation;
             float t = 0f;
 
-            // --- AŞAMA A: HEDEFE DÖNÜŞ (DİNAMİK) ---
             while (t < 1f)
             {
                 t += Time.deltaTime / headTurnDuration;
                 float smoothT = Mathf.SmoothStep(0f, 1f, t);
 
-                // Oyuncu hareket edebileceği için hedefin yönünü HER KAREDE yeniden hesaplıyoruz
-                Vector3 targetDir = (lookTarget.position - mainCam.transform.position).normalized;
-                Quaternion targetLookRot = Quaternion.LookRotation(targetDir);
-
-                // Kamerayı mevcut durumdan, sürekli güncellenen hedefe doğru Slerp (küresel yumuşatma) ile çeviriyoruz
+                Quaternion targetLookRot = GetTargetRotation();
                 Quaternion currentRot = Quaternion.Slerp(startRot, targetLookRot, smoothT);
 
                 ApplyRotationToPlayer(currentRot);
@@ -114,7 +150,7 @@ public class LookAction : MonoBehaviour, IAction
             targetVirtualCamera.Priority = 100;
         }
 
-        // 3. BEKLEME EVRESİ (Oyuncu hareket etse bile kafa hedefe kitli kalacak)
+        // 3. BEKLEME EVRESİ
         if (focusMode == FocusMode.RotatePlayerHead && lookTarget != null)
         {
             if (waitUntilInput)
@@ -136,7 +172,7 @@ public class LookAction : MonoBehaviour, IAction
                 }
             }
         }
-        else // Virtual Camera modundaysak sadece bekleriz
+        else
         {
             if (waitUntilInput)
             {
@@ -163,21 +199,13 @@ public class LookAction : MonoBehaviour, IAction
 
         if (playerInputs != null)
         {
-            playerInputs.cursorInputForLook = true; // Oyuncuya kontrolü geri ver
+            playerInputs.cursorInputForLook = true;
         }
     }
 
-    // --- YARDIMCI FONKSİYONLAR ---
-
     private void TrackTarget()
     {
-        if (lookTarget == null || mainCam == null)
-            return;
-
-        // Hedefe giden yönü bul
-        Vector3 targetDir = (lookTarget.position - mainCam.transform.position).normalized;
-        Quaternion targetLookRot = Quaternion.LookRotation(targetDir);
-
+        Quaternion targetLookRot = GetTargetRotation();
         ApplyRotationToPlayer(targetLookRot);
     }
 
@@ -185,19 +213,15 @@ public class LookAction : MonoBehaviour, IAction
     {
         float currentYaw = rot.eulerAngles.y;
         float currentPitch = rot.eulerAngles.x;
-
-        // Pitch (X ekseni) ayarını Unity'nin 0-360 mantığından -180 ile 180 mantığına çeviriyoruz
         if (currentPitch > 180f)
             currentPitch -= 360f;
 
-        // 1. KAMERAYI ÇEVİR (Bu iki senaryoda da ortak çalışır)
         playerMoveScript.ForceCameraRotation(currentYaw, currentPitch);
 
-        // 2. EĞER OYUNCU DONDURULMUŞSA VÜCUDUNU DA ÇEVİR (Yalnızca Y ekseninde)
-        // Böylece kafa arkaya dönerken vücut sabit kalıp garip bir görüntü oluşturmaz.
         if (freezePlayer)
         {
-            playerMoveScript.transform.rotation = Quaternion.Euler(0f, currentYaw, 0f);
+            // BU SATIRI DA YORUM SATIRI YAPIN
+            // playerMoveScript.transform.rotation = Quaternion.Euler(0f, currentYaw, 0f);
         }
     }
 }

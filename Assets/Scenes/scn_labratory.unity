@@ -3346,7 +3346,7 @@ Transform:
   m_GameObject: {fileID: 78841228}
   serializedVersion: 2
   m_LocalRotation: {x: 9.313226e-10, y: 0.3546391, z: -0, w: -0.93500334}
-  m_LocalPosition: {x: 6.23, y: 0.575, z: -6.98}
+  m_LocalPosition: {x: 6.86, y: 0.58, z: -5.84}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -3985,7 +3985,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &88059968
 Transform:
   m_ObjectHideFlags: 0
@@ -12494,6 +12494,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1e0f82185dfa4404995fcd061cd7ba56, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isSystemActive: 0
   currentPressure: 0
   pressureIncreaseRate: 0.3
   pressureDecreaseRate: 15
@@ -20495,7 +20496,7 @@ Transform:
   m_GameObject: {fileID: 351811477}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 2.58, y: 1, z: 2.46}
+  m_LocalPosition: {x: -3.14, y: 1, z: 1.02}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -20998,7 +20999,7 @@ Transform:
   m_GameObject: {fileID: 366771449}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -1.641, y: 1, z: 2.644}
+  m_LocalPosition: {x: -1.64, y: 1, z: 2.89}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -25971,6 +25972,7 @@ MonoBehaviour:
   hideSound: {fileID: 8300000, guid: 5345c5b12ec84614aa11cd9ec377b66b, type: 3}
   unhideSound: {fileID: 8300000, guid: a3c6518f71ee459418ba1a2cd277cc92, type: 3}
   peekSound: {fileID: 0}
+  canExit: 1
   doorOpenDelay: 1
 --- !u!65 &454887306
 BoxCollider:
@@ -27987,6 +27989,114 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1962165985}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &487760399
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 487760400}
+  - component: {fileID: 487760405}
+  - component: {fileID: 487760406}
+  - component: {fileID: 487760404}
+  - component: {fileID: 487760402}
+  - component: {fileID: 487760407}
+  m_Layer: 0
+  m_Name: Tutorail_IC_005
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &487760400
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 487760399}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1006456096}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &487760402
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 487760399}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 942e52852a30b8d4981b66bc52f37d43, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DialogAction
+  delay: 0
+  subtitleID: tut_004
+  dialogClip: {fileID: 0}
+  audioSource: {fileID: 0}
+--- !u!114 &487760404
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 487760399}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb33f8c8e606a9468246904fc40e08c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PrerequisiteCondition
+  requiredEvent: {fileID: 734015694}
+--- !u!114 &487760405
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 487760399}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2350ebc7d48054446bec7126651cd467, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EventLogicController
+  requireAllConditions: 1
+  triggerOnlyOnce: 1
+--- !u!114 &487760406
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 487760399}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 16c36d6ebf880b846880c74234269153, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::InteractionCondition
+  targetInteractable: {fileID: 454887303}
+  completionMode: 0
+--- !u!114 &487760407
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 487760399}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 94c302089fc46c14da95ce9bbb054fa3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::HidingSpotControlAction
+  delay: 0
+  hidingSpot: {fileID: 454887305}
+  lockExit: 1
 --- !u!1 &488094470
 GameObject:
   m_ObjectHideFlags: 0
@@ -28434,6 +28544,137 @@ Transform:
   - {fileID: 1119672247}
   m_Father: {fileID: 1885344280}
   m_LocalEulerAnglesHint: {x: -2.0955632, y: -89.99999, z: 0.000000106793124}
+--- !u!1 &498599960
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 498599961}
+  - component: {fileID: 498599966}
+  - component: {fileID: 498599964}
+  - component: {fileID: 498599967}
+  - component: {fileID: 498599963}
+  - component: {fileID: 498599968}
+  - component: {fileID: 498599969}
+  m_Layer: 0
+  m_Name: Tutorail_IC_012
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &498599961
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 498599960}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1006456096}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &498599963
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 498599960}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 942e52852a30b8d4981b66bc52f37d43, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DialogAction
+  delay: 0
+  subtitleID: tut_009
+  dialogClip: {fileID: 0}
+  audioSource: {fileID: 0}
+--- !u!114 &498599964
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 498599960}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb33f8c8e606a9468246904fc40e08c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PrerequisiteCondition
+  requiredEvent: {fileID: 1358310748}
+--- !u!114 &498599966
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 498599960}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2350ebc7d48054446bec7126651cd467, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EventLogicController
+  requireAllConditions: 1
+  triggerOnlyOnce: 1
+--- !u!114 &498599967
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 498599960}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 16c36d6ebf880b846880c74234269153, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::InteractionCondition
+  targetInteractable: {fileID: 1406705564}
+  completionMode: 1
+--- !u!114 &498599968
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 498599960}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 72269f2d85a07a14b84b30ff7bdc7dfe, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LightAction
+  delay: 3
+  operation: 3
+  targetSwitches: []
+--- !u!114 &498599969
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 498599960}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eb1423e9569c23148afc04e883b71e34, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerControlAction
+  delay: 0
+  modifyMovement: 0
+  freezePlayer: 0
+  modifyLook: 0
+  lockCameraInput: 0
+  modifyInteractionRules: 1
+  enableTutorialMode: 1
+  allowedInteractables:
+  - {fileID: 2118506176}
+  - {fileID: 1615095833}
 --- !u!1 &499870386
 GameObject:
   m_ObjectHideFlags: 0
@@ -33822,7 +34063,6 @@ GameObject:
   - component: {fileID: 605129798}
   - component: {fileID: 605129800}
   - component: {fileID: 605129802}
-  - component: {fileID: 605129803}
   - component: {fileID: 605129804}
   m_Layer: 0
   m_Name: Tutorail_IC_002
@@ -33840,7 +34080,7 @@ Transform:
   m_GameObject: {fileID: 605129794}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 9.29, y: 0.48, z: -8.19}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -33899,6 +34139,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eb1423e9569c23148afc04e883b71e34, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerControlAction
+  delay: 0
   modifyMovement: 0
   freezePlayer: 0
   modifyLook: 0
@@ -33907,21 +34148,6 @@ MonoBehaviour:
   enableTutorialMode: 1
   allowedInteractables:
   - {fileID: 1413967748}
---- !u!114 &605129803
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 605129794}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 942e52852a30b8d4981b66bc52f37d43, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::DialogAction
-  subtitleID: tut_002
-  dialogClip: {fileID: 0}
-  audioSource: {fileID: 0}
 --- !u!114 &605129804
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -33934,6 +34160,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 53e9cb190b48b41409312e6efa84d77e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::NoteAction
+  delay: 0
   operation: 1
   targetPassword: {fileID: 0}
   targetSymbol: {fileID: 11400000, guid: 32e8809b6981d3d4cac16e6be17100f6, type: 2}
@@ -38972,7 +39199,7 @@ Transform:
   m_GameObject: {fileID: 708505154}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 3.68, y: 1, z: -0.81}
+  m_LocalPosition: {x: 7.199, y: 1, z: 2.278}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -40957,7 +41184,7 @@ Transform:
   m_GameObject: {fileID: 734015691}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 9.29, y: 0.48, z: -8.19}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -41003,6 +41230,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ac24b3251c7ddea44ab903faba27a763, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyAction
+  delay: 0
   targetEnemy: 1
   command: 0
   targetRoom: {fileID: 1201733591}
@@ -41031,13 +41259,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eb1423e9569c23148afc04e883b71e34, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerControlAction
+  delay: 0
   modifyMovement: 0
   freezePlayer: 0
   modifyLook: 0
   lockCameraInput: 0
   modifyInteractionRules: 1
-  enableTutorialMode: 0
-  allowedInteractables: []
+  enableTutorialMode: 1
+  allowedInteractables:
+  - {fileID: 454887303}
 --- !u!114 &734015698
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -41050,6 +41280,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 942e52852a30b8d4981b66bc52f37d43, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DialogAction
+  delay: 0
   subtitleID: tut_003
   dialogClip: {fileID: 0}
   audioSource: {fileID: 0}
@@ -41065,13 +41296,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8cc2639615e094a4a93051b15a624d72, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LookAction
+  delay: 0
   focusMode: 0
-  lookTarget: {fileID: 454887304}
+  lookTarget: {fileID: 9219600}
+  lookOffset: 0
+  customYAngle: 0
   headTurnDuration: 1
   targetVirtualCamera: {fileID: 0}
   blendOutDuration: 1
   freezePlayer: 0
-  waitUntilInput: 1
+  waitUntilInput: 0
   autoReleaseTime: 2
 --- !u!1 &735327049
 GameObject:
@@ -49399,6 +49633,98 @@ Transform:
   m_Children: []
   m_Father: {fileID: 696236560}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &900385562
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 900385563}
+  - component: {fileID: 900385568}
+  - component: {fileID: 900385570}
+  - component: {fileID: 900385565}
+  - component: {fileID: 900385569}
+  m_Layer: 0
+  m_Name: Tutorail_HC_007
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &900385563
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 900385562}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1006456096}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &900385565
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 900385562}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb33f8c8e606a9468246904fc40e08c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PrerequisiteCondition
+  requiredEvent: {fileID: 1827608719}
+--- !u!114 &900385568
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 900385562}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2350ebc7d48054446bec7126651cd467, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EventLogicController
+  requireAllConditions: 1
+  triggerOnlyOnce: 1
+--- !u!114 &900385569
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 900385562}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ac24b3251c7ddea44ab903faba27a763, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyAction
+  delay: 1
+  targetEnemy: 2
+  command: 0
+  targetRoom: {fileID: 1201733591}
+--- !u!114 &900385570
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 900385562}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7a3a409a02c2f234bbc3d18de54c1274, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::HidingCondition
+  targetHidingSpot: {fileID: 454887305}
+  triggerOnEnter: 0
 --- !u!1 &900716174
 GameObject:
   m_ObjectHideFlags: 0
@@ -54463,7 +54789,15 @@ Transform:
   - {fileID: 605129795}
   - {fileID: 2080874722}
   - {fileID: 734015692}
+  - {fileID: 487760400}
   - {fileID: 1827608713}
+  - {fileID: 900385563}
+  - {fileID: 1052832214}
+  - {fileID: 1052328699}
+  - {fileID: 2108317023}
+  - {fileID: 1358310742}
+  - {fileID: 498599961}
+  - {fileID: 1193203527}
   m_Father: {fileID: 2014130988}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1006697366
@@ -57020,6 +57354,143 @@ Transform:
   - {fileID: 2095633657}
   m_Father: {fileID: 591108805}
   m_LocalEulerAnglesHint: {x: -0.0000000016675266, y: 2.9679075e-24, z: -2.0395305e-13}
+--- !u!1 &1052328698
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1052328699}
+  - component: {fileID: 1052328703}
+  - component: {fileID: 1052328702}
+  - component: {fileID: 1052328701}
+  - component: {fileID: 1052328700}
+  - component: {fileID: 1052328705}
+  - component: {fileID: 1052328706}
+  m_Layer: 0
+  m_Name: Tutorail_LeC_009
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1052328699
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1052328698}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: 0.031754658, z: -0, w: 0.9994957}
+  m_LocalPosition: {x: -1.01, y: 0, z: -9.42}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1006456096}
+  m_LocalEulerAnglesHint: {x: 0, y: 3.639, z: 0}
+--- !u!114 &1052328700
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1052328698}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 942e52852a30b8d4981b66bc52f37d43, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DialogAction
+  delay: 0
+  subtitleID: tut_007
+  dialogClip: {fileID: 0}
+  audioSource: {fileID: 0}
+--- !u!114 &1052328701
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1052328698}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8a9665a5692366d4f8cda53b83dd0953, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LeesCondition
+  targetState: 0
+--- !u!114 &1052328702
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1052328698}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb33f8c8e606a9468246904fc40e08c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PrerequisiteCondition
+  requiredEvent: {fileID: 1052832219}
+--- !u!114 &1052328703
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1052328698}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2350ebc7d48054446bec7126651cd467, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EventLogicController
+  requireAllConditions: 1
+  triggerOnlyOnce: 1
+--- !u!114 &1052328705
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1052328698}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8cc2639615e094a4a93051b15a624d72, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LookAction
+  delay: 0
+  focusMode: 0
+  lookTarget: {fileID: 2120274076800254777}
+  lookOffset: 0
+  customYAngle: 0
+  headTurnDuration: 2
+  targetVirtualCamera: {fileID: 0}
+  blendOutDuration: 1
+  freezePlayer: 0
+  waitUntilInput: 0
+  autoReleaseTime: 2
+--- !u!114 &1052328706
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1052328698}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eb1423e9569c23148afc04e883b71e34, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerControlAction
+  delay: 0
+  modifyMovement: 1
+  freezePlayer: 0
+  modifyLook: 1
+  lockCameraInput: 0
+  modifyInteractionRules: 1
+  enableTutorialMode: 1
+  allowedInteractables:
+  - {fileID: 1596361856750344579}
 --- !u!1 &1052715740
 GameObject:
   m_ObjectHideFlags: 0
@@ -57096,6 +57567,147 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1052715740}
   m_CullTransparentMesh: 1
+--- !u!1 &1052832213
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1052832214}
+  - component: {fileID: 1052832219}
+  - component: {fileID: 1052832218}
+  - component: {fileID: 1052832220}
+  - component: {fileID: 1052832216}
+  - component: {fileID: 1052832221}
+  - component: {fileID: 1052832215}
+  m_Layer: 0
+  m_Name: Tutorail_LoC_008
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1052832214
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1052832213}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: 0.031754658, z: -0, w: 0.9994957}
+  m_LocalPosition: {x: -1.01, y: 0, z: -9.42}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1006456096}
+  m_LocalEulerAnglesHint: {x: 0, y: 3.639, z: 0}
+--- !u!114 &1052832215
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1052832213}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eb1423e9569c23148afc04e883b71e34, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerControlAction
+  delay: 0
+  modifyMovement: 1
+  freezePlayer: 1
+  modifyLook: 1
+  lockCameraInput: 1
+  modifyInteractionRules: 1
+  enableTutorialMode: 1
+  allowedInteractables: []
+--- !u!114 &1052832216
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1052832213}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 942e52852a30b8d4981b66bc52f37d43, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DialogAction
+  delay: 0
+  subtitleID: tut_006
+  dialogClip: {fileID: 0}
+  audioSource: {fileID: 0}
+--- !u!114 &1052832218
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1052832213}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb33f8c8e606a9468246904fc40e08c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PrerequisiteCondition
+  requiredEvent: {fileID: 900385568}
+--- !u!114 &1052832219
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1052832213}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2350ebc7d48054446bec7126651cd467, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EventLogicController
+  requireAllConditions: 1
+  triggerOnlyOnce: 1
+--- !u!114 &1052832220
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1052832213}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5150c747579bca4439ea5d2b8ef9199c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LookCondition
+  targetObject: {fileID: 919132148702601202}
+  requiredLookTime: 0.1
+  maxDistance: 100
+  obstacleMask:
+    serializedVersion: 2
+    m_Bits: 4294967291
+--- !u!114 &1052832221
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1052832213}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8cc2639615e094a4a93051b15a624d72, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LookAction
+  delay: 0
+  focusMode: 0
+  lookTarget: {fileID: 543450652978644296}
+  lookOffset: 1
+  customYAngle: 0
+  headTurnDuration: 1
+  targetVirtualCamera: {fileID: 0}
+  blendOutDuration: 1
+  freezePlayer: 0
+  waitUntilInput: 0
+  autoReleaseTime: 10
 --- !u!1 &1053076322
 GameObject:
   m_ObjectHideFlags: 0
@@ -57828,7 +58440,7 @@ Transform:
   m_GameObject: {fileID: 1070344557}
   serializedVersion: 2
   m_LocalRotation: {x: -9.3132246e-10, y: 0.310183, z: -9.3132246e-10, w: 0.9506769}
-  m_LocalPosition: {x: -2.85, y: 0, z: -7}
+  m_LocalPosition: {x: -4.49, y: -0, z: -7.27}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -59513,6 +60125,7 @@ GameObject:
   - component: {fileID: 1091296241}
   - component: {fileID: 1091296242}
   - component: {fileID: 1091296243}
+  - component: {fileID: 1091296244}
   m_Layer: 0
   m_Name: Tutorial_TC_001
   m_TagString: Untagged
@@ -59595,6 +60208,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 68524a304a124a349ab60c3dd14750e8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::HighlightAction
+  delay: 0
   mode: 2
   targetNote: {fileID: 93539967}
   targetBook: {fileID: 0}
@@ -59612,8 +60226,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8cc2639615e094a4a93051b15a624d72, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LookAction
+  delay: 0
   focusMode: 0
   lookTarget: {fileID: 93539963}
+  lookOffset: 0
+  customYAngle: 0
   headTurnDuration: 1.5
   targetVirtualCamera: {fileID: 0}
   blendOutDuration: 1
@@ -59632,6 +60249,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eb1423e9569c23148afc04e883b71e34, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerControlAction
+  delay: 0
   modifyMovement: 0
   freezePlayer: 0
   modifyLook: 0
@@ -59652,9 +60270,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 942e52852a30b8d4981b66bc52f37d43, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DialogAction
+  delay: 0
   subtitleID: tut_001
   dialogClip: {fileID: 0}
   audioSource: {fileID: 0}
+--- !u!114 &1091296244
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1091296233}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 50a62b32899a0bd4b9afab987f55cc31, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GlobalSystemsAction
+  delay: 0
+  pressureSystem: 1
+  breakerSystem: 1
+  globalEnemyAttacks: 1
 --- !u!1 &1091394706
 GameObject:
   m_ObjectHideFlags: 0
@@ -63956,6 +64591,136 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1192852723}
   m_Mesh: {fileID: -4986671513051883584, guid: 7a43d867f85205b4e92deb7a55edc28f, type: 3}
+--- !u!1 &1193203526
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1193203527}
+  - component: {fileID: 1193203533}
+  - component: {fileID: 1193203532}
+  - component: {fileID: 1193203531}
+  - component: {fileID: 1193203530}
+  - component: {fileID: 1193203528}
+  - component: {fileID: 1193203534}
+  m_Layer: 0
+  m_Name: Tutorail_IC_013
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1193203527
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1193203526}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1006456096}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1193203528
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1193203526}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eb1423e9569c23148afc04e883b71e34, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerControlAction
+  delay: 0
+  modifyMovement: 0
+  freezePlayer: 0
+  modifyLook: 0
+  lockCameraInput: 0
+  modifyInteractionRules: 1
+  enableTutorialMode: 0
+  allowedInteractables: []
+--- !u!114 &1193203530
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1193203526}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 942e52852a30b8d4981b66bc52f37d43, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DialogAction
+  delay: 0
+  subtitleID: tut_010
+  dialogClip: {fileID: 0}
+  audioSource: {fileID: 0}
+--- !u!114 &1193203531
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1193203526}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 16c36d6ebf880b846880c74234269153, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::InteractionCondition
+  targetInteractable: {fileID: 1615095833}
+  completionMode: 0
+--- !u!114 &1193203532
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1193203526}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb33f8c8e606a9468246904fc40e08c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PrerequisiteCondition
+  requiredEvent: {fileID: 498599966}
+--- !u!114 &1193203533
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1193203526}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2350ebc7d48054446bec7126651cd467, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EventLogicController
+  requireAllConditions: 1
+  triggerOnlyOnce: 1
+--- !u!114 &1193203534
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1193203526}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 50a62b32899a0bd4b9afab987f55cc31, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GlobalSystemsAction
+  delay: 0
+  pressureSystem: 0
+  breakerSystem: 0
+  globalEnemyAttacks: 0
 --- !u!1 &1194008049
 GameObject:
   m_ObjectHideFlags: 0
@@ -73262,6 +74027,126 @@ Transform:
   - {fileID: 418798776}
   m_Father: {fileID: 1240219464}
   m_LocalEulerAnglesHint: {x: -2.0955632, y: -89.99999, z: 0.000000106793124}
+--- !u!1 &1358310741
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1358310742}
+  - component: {fileID: 1358310748}
+  - component: {fileID: 1358310747}
+  - component: {fileID: 1358310746}
+  - component: {fileID: 1358310745}
+  - component: {fileID: 1358310744}
+  m_Layer: 0
+  m_Name: Tutorail_TC_011
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1358310742
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1358310741}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
+  m_LocalPosition: {x: -8.941, y: 0, z: -8.907}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1006456096}
+  m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
+--- !u!114 &1358310744
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1358310741}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8cc2639615e094a4a93051b15a624d72, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LookAction
+  delay: 0
+  focusMode: 0
+  lookTarget: {fileID: 1406705567}
+  lookOffset: 0
+  customYAngle: 0
+  headTurnDuration: 1
+  targetVirtualCamera: {fileID: 0}
+  blendOutDuration: 1
+  freezePlayer: 0
+  waitUntilInput: 0
+  autoReleaseTime: 2
+--- !u!114 &1358310745
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1358310741}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb33f8c8e606a9468246904fc40e08c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PrerequisiteCondition
+  requiredEvent: {fileID: 2108317029}
+--- !u!65 &1358310746
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1358310741}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 3.1536026, y: 1, z: 1.9924212}
+  m_Center: {x: -0.16226959, y: 0, z: 0.49621058}
+--- !u!114 &1358310747
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1358310741}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 77a4c4c41e33cc744aaf97db001ce9ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TriggerCondition
+  targetTag: Player
+--- !u!114 &1358310748
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1358310741}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2350ebc7d48054446bec7126651cd467, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EventLogicController
+  requireAllConditions: 1
+  triggerOnlyOnce: 1
 --- !u!1 &1360908235
 GameObject:
   m_ObjectHideFlags: 0
@@ -75586,7 +76471,7 @@ Transform:
   m_GameObject: {fileID: 1409786728}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.09, y: 1, z: -7.54}
+  m_LocalPosition: {x: 6.74, y: 1, z: -6.02}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -77238,6 +78123,7 @@ MonoBehaviour:
   hideSound: {fileID: 8300000, guid: 5345c5b12ec84614aa11cd9ec377b66b, type: 3}
   unhideSound: {fileID: 8300000, guid: a3c6518f71ee459418ba1a2cd277cc92, type: 3}
   peekSound: {fileID: 0}
+  canExit: 1
   doorOpenDelay: 1
 --- !u!65 &1430485573
 BoxCollider:
@@ -77503,7 +78389,7 @@ Transform:
   m_GameObject: {fileID: 1446914977}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0.9649587, z: -0, w: 0.26240185}
-  m_LocalPosition: {x: 5.046, y: 0, z: -1.1}
+  m_LocalPosition: {x: 5.5, y: 0, z: -0.8}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -82288,7 +83174,7 @@ Transform:
   m_GameObject: {fileID: 1525713150}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -1.92, y: 1, z: 5.558}
+  m_LocalPosition: {x: 2.49, y: 1, z: 5.558}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -84031,7 +84917,7 @@ MonoBehaviour:
   footstepInterval: 0.8
   closedDoorBreachTime: 2
   lockedDoorBreachTime: 5
-  walkSpeed: 2.5
+  walkSpeed: 1.75
   doorAnimationDelay: 1
   jumpscareDistance: 1
   lookAtDoorThreshold: 60
@@ -86798,6 +87684,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ec3ea1311d54a4427aea793a7d0ffb41, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isSystemActive: 0
   checkInterval: 100
   maxRiskAtFullLoad: 0.256
   cycleRiskMultiplier: 0.01
@@ -97427,12 +98314,12 @@ GameObject:
   m_Component:
   - component: {fileID: 1827608713}
   - component: {fileID: 1827608719}
-  - component: {fileID: 1827608718}
+  - component: {fileID: 1827608720}
   - component: {fileID: 1827608716}
-  - component: {fileID: 1827608715}
   - component: {fileID: 1827608714}
+  - component: {fileID: 1827608721}
   m_Layer: 0
-  m_Name: Tutorail_IC_005
+  m_Name: Tutorail_GSC_006
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -97447,7 +98334,7 @@ Transform:
   m_GameObject: {fileID: 1827608712}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 9.29, y: 0.48, z: -8.19}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -97465,28 +98352,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 942e52852a30b8d4981b66bc52f37d43, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DialogAction
-  subtitleID: tut_004
+  delay: 0
+  subtitleID: tut_005
   dialogClip: {fileID: 0}
   audioSource: {fileID: 0}
---- !u!114 &1827608715
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1827608712}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: eb1423e9569c23148afc04e883b71e34, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PlayerControlAction
-  modifyMovement: 0
-  freezePlayer: 0
-  modifyLook: 0
-  lockCameraInput: 0
-  modifyInteractionRules: 1
-  enableTutorialMode: 0
-  allowedInteractables: []
 --- !u!114 &1827608716
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -97499,21 +98368,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bbb33f8c8e606a9468246904fc40e08c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PrerequisiteCondition
-  requiredEvent: {fileID: 734015694}
---- !u!114 &1827608718
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1827608712}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 16c36d6ebf880b846880c74234269153, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::InteractionCondition
-  targetInteractable: {fileID: 454887303}
-  completionMode: 1
+  requiredEvent: {fileID: 487760405}
 --- !u!114 &1827608719
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -97528,6 +98383,34 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EventLogicController
   requireAllConditions: 1
   triggerOnlyOnce: 1
+--- !u!114 &1827608720
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1827608712}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a81b630e5ead75c469f36f11a915862f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GuderianStateCondition
+  targetState: 6
+--- !u!114 &1827608721
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1827608712}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 94c302089fc46c14da95ce9bbb054fa3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::HidingSpotControlAction
+  delay: 0
+  hidingSpot: {fileID: 454887305}
+  lockExit: 0
 --- !u!1 &1835875504
 GameObject:
   m_ObjectHideFlags: 0
@@ -113081,6 +113964,8 @@ GameObject:
   - component: {fileID: 2080874726}
   - component: {fileID: 2080874723}
   - component: {fileID: 2080874729}
+  - component: {fileID: 2080874730}
+  - component: {fileID: 2080874731}
   m_Layer: 0
   m_Name: Tutorail_TC_003
   m_TagString: Untagged
@@ -113176,14 +114061,49 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8cc2639615e094a4a93051b15a624d72, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LookAction
+  delay: 0
   focusMode: 0
   lookTarget: {fileID: 1413967749}
+  lookOffset: 0
+  customYAngle: 0
   headTurnDuration: 1
   targetVirtualCamera: {fileID: 0}
   blendOutDuration: 1
   freezePlayer: 0
   waitUntilInput: 0
   autoReleaseTime: 2
+--- !u!114 &2080874730
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2080874721}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 50a62b32899a0bd4b9afab987f55cc31, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GlobalSystemsAction
+  delay: 0
+  pressureSystem: 0
+  breakerSystem: 0
+  globalEnemyAttacks: 0
+--- !u!114 &2080874731
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2080874721}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 942e52852a30b8d4981b66bc52f37d43, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DialogAction
+  delay: 0
+  subtitleID: tut_002
+  dialogClip: {fileID: 0}
+  audioSource: {fileID: 0}
 --- !u!1 &2080975109
 GameObject:
   m_ObjectHideFlags: 0
@@ -114879,6 +115799,162 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2107733559}
   m_Mesh: {fileID: 2923769847099872117, guid: bd1670637738c4cf6837b7383f4c585e, type: 3}
+--- !u!1 &2108317022
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2108317023}
+  - component: {fileID: 2108317029}
+  - component: {fileID: 2108317028}
+  - component: {fileID: 2108317033}
+  - component: {fileID: 2108317030}
+  - component: {fileID: 2108317031}
+  - component: {fileID: 2108317032}
+  - component: {fileID: 2108317034}
+  m_Layer: 0
+  m_Name: Tutorail_PasC_010
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2108317023
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2108317022}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: 0.031754658, z: -0, w: 0.9994957}
+  m_LocalPosition: {x: -1.01, y: 0, z: -9.42}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1006456096}
+  m_LocalEulerAnglesHint: {x: 0, y: 3.639, z: 0}
+--- !u!114 &2108317028
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2108317022}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb33f8c8e606a9468246904fc40e08c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PrerequisiteCondition
+  requiredEvent: {fileID: 1052328703}
+--- !u!114 &2108317029
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2108317022}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2350ebc7d48054446bec7126651cd467, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EventLogicController
+  requireAllConditions: 1
+  triggerOnlyOnce: 1
+--- !u!114 &2108317030
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2108317022}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6db4ba93ab330e24498c08a171b8e8c7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PasswordCondition
+  mode: 0
+  incorrectLimit: 5
+--- !u!114 &2108317031
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2108317022}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8cc2639615e094a4a93051b15a624d72, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LookAction
+  delay: 0
+  focusMode: 0
+  lookTarget: {fileID: 2086769169}
+  lookOffset: 0
+  customYAngle: 0
+  headTurnDuration: 2
+  targetVirtualCamera: {fileID: 0}
+  blendOutDuration: 1
+  freezePlayer: 0
+  waitUntilInput: 0
+  autoReleaseTime: 2
+--- !u!114 &2108317032
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2108317022}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eb1423e9569c23148afc04e883b71e34, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerControlAction
+  delay: 0
+  modifyMovement: 0
+  freezePlayer: 0
+  modifyLook: 0
+  lockCameraInput: 0
+  modifyInteractionRules: 1
+  enableTutorialMode: 1
+  allowedInteractables:
+  - {fileID: 1413967748}
+  - {fileID: 4544747323013909135}
+  - {fileID: 2118506176}
+  - {fileID: 1406705564}
+--- !u!114 &2108317033
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2108317022}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 16c36d6ebf880b846880c74234269153, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::InteractionCondition
+  targetInteractable: {fileID: 1596361856750344579}
+  completionMode: 1
+--- !u!114 &2108317034
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2108317022}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 942e52852a30b8d4981b66bc52f37d43, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DialogAction
+  delay: 0
+  subtitleID: tut_008
+  dialogClip: {fileID: 0}
+  audioSource: {fileID: 0}
 --- !u!1 &2109073171
 GameObject:
   m_ObjectHideFlags: 0
@@ -123678,6 +124754,12 @@ MonoBehaviour:
   analogMovement: 0
   cursorLocked: 1
   cursorInputForLook: 1
+  interact: 0
+  secondaryInteract: 0
+  cancel: 0
+  toggleNotebook: 0
+  pause: 0
+  scroll: {x: 0, y: 0}
 --- !u!114 &919132148867769550
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -123881,7 +124963,7 @@ MonoBehaviour:
   m_OverrideVoxelSize: 0
   m_VoxelSize: 0.10666666
   m_MinRegionArea: 2
-  m_NavMeshData: {fileID: 23800000, guid: 4560d370cc1f7e340a2d7dd725fc874f, type: 2}
+  m_NavMeshData: {fileID: 23800000, guid: 8929f659ae6b3fa4c80f95dd3326d379, type: 2}
   m_BuildHeightMesh: 0
 --- !u!4 &923559952348885622
 Transform:
@@ -150380,8 +151462,8 @@ MonoBehaviour:
   maxIgnoranceTime: 90
   maxReactionTime: 2
   survivalWaitTime: 10
-  movementTolerance: 0.1
-  movementGraceTime: 0.5
+  movementTolerance: 0.5
+  movementGraceTime: 1
   audioSource: {fileID: 5866666021288599349}
   audioFadeDuration: 2
   stareSound: {fileID: 8300000, guid: 0dbfa4fc2491b4344bcd687f50c605c3, type: 3}

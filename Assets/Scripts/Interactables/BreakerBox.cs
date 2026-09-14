@@ -7,6 +7,9 @@ public class BreakerBox : MonoBehaviour, IInteractable
 {
     public static BreakerBox Instance;
 
+    [Header("Sistem Kontrolü")]
+    public bool isSystemActive = false;
+
     [Header("Breaker Ayarları")]
     [SerializeField]
     private float checkInterval = 180f;
@@ -109,11 +112,15 @@ public class BreakerBox : MonoBehaviour, IInteractable
             // YENİ EKLENEN KONTROL: Eğer oyun duraklatıldıysa veya HENÜZ BAŞLAMADIYSA bekle!
             if (
                 GameManager.Instance != null
-                && (!GameManager.Instance.isGameStarted || GameManager.Instance.isGamePaused)
+                && (
+                    !GameManager.Instance.isGameStarted
+                    || GameManager.Instance.isGamePaused
+                    || !isSystemActive
+                )
             )
             {
-                yield return null; // Bir sonraki frame'i bekle, zamanlayıcıyı ilerletme.
-                continue; // Döngünün başına dön
+                yield return null;
+                continue;
             }
 
             if (isTripped)

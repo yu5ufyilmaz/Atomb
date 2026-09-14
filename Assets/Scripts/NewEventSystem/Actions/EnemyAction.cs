@@ -1,9 +1,24 @@
 using UnityEngine;
 
-public class EnemyAction : MonoBehaviour, IAction
+public class EnemyAction : ActionBase
 {
-    public enum EnemyType { Global, Guderian, Lees, Adam }
-    public enum EnemyCommand { Spawn, Ambush, ForceLeave, Jumpscare, StartGlobalAttack, EndGlobalAttack }
+    public enum EnemyType
+    {
+        Global,
+        Guderian,
+        Lees,
+        Adam,
+    }
+
+    public enum EnemyCommand
+    {
+        Spawn,
+        Ambush,
+        ForceLeave,
+        Jumpscare,
+        StartGlobalAttack,
+        EndGlobalAttack,
+    }
 
     [Tooltip("Hangi düşman veya sistem etkilenecek?")]
     public EnemyType targetEnemy = EnemyType.Guderian;
@@ -14,7 +29,7 @@ public class EnemyAction : MonoBehaviour, IAction
     [Tooltip("Guderian'ın Spawn/Pusu atacağı oda (Sadece Guderian için gerekli)")]
     public RoomManager targetRoom;
 
-    public void Execute()
+    protected override void PerformAction()
     {
         switch (targetEnemy)
         {
@@ -26,8 +41,9 @@ public class EnemyAction : MonoBehaviour, IAction
                 break;
 
             case EnemyType.Guderian:
-                if (GuderianAI.Instance == null) return;
-                
+                if (GuderianAI.Instance == null)
+                    return;
+
                 if (command == EnemyCommand.Spawn && targetRoom != null)
                     GuderianAI.Instance.TrySpawnGuderian(targetRoom);
                 else if (command == EnemyCommand.Ambush && targetRoom != null)
@@ -39,8 +55,9 @@ public class EnemyAction : MonoBehaviour, IAction
                 break;
 
             case EnemyType.Lees:
-                if (LeesEnemyAI.Instance == null) return;
-                
+                if (LeesEnemyAI.Instance == null)
+                    return;
+
                 if (command == EnemyCommand.Spawn)
                     LeesEnemyAI.Instance.SpawnLeesInRoom();
                 else if (command == EnemyCommand.ForceLeave)
@@ -50,13 +67,14 @@ public class EnemyAction : MonoBehaviour, IAction
                 break;
 
             case EnemyType.Adam:
-                if (AdamAI.Instance == null) return;
-                
+                if (AdamAI.Instance == null)
+                    return;
+
                 if (command == EnemyCommand.Jumpscare)
                     AdamAI.Instance.KillPlayer();
                 break;
         }
-        
+
         Debug.Log($"[EnemyAction] {targetEnemy} için {command} komutu çalıştırıldı.");
     }
 }

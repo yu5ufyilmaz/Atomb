@@ -225,23 +225,129 @@ MonoBehaviour:
     segments:
     - duration: 3
       textTR: 
-      textEN: Now dont forget to lock your doors
+      textEN: Dont forget to lock your door.
       textDE: 
   - id: tut_003
     note: 
     segments:
     - duration: 3
       textTR: "\t\t"
-      textEN: Come on hide on that wardrope hurry.
+      textEN: Do you hear the step voices.
+      textDE: 
+    - duration: 2
+      textTR: 
+      textEN: Come on hide in that wardrope hurry.
       textDE: 
   - id: tut_004
     note: 
     segments:
     - duration: 3
       textTR: "\t\t"
-      textEN: 'Now you need to understand what it means. '
+      textEN: Just shut up and dont move.
       textDE: 
     - duration: 2
       textTR: 
-      textEN: Figure it out somehow.
+      textEN: Just wait for he is gone.
+      textDE: 
+  - id: tut_005
+    note: 
+    segments:
+    - duration: 3
+      textTR: "\t\t"
+      textEN: Okey it is safe now.
+      textDE: 
+    - duration: 2
+      textTR: 
+      textEN: 'You can go out. '
+      textDE: 
+    - duration: 2
+      textTR: 
+      textEN: Now its time for solve problem
+      textDE: 
+  - id: tut_006
+    note: 
+    segments:
+    - duration: 3
+      textTR: "\t\t"
+      textEN: Fuck this is Lees...
+      textDE: 
+    - duration: 2
+      textTR: 
+      textEN: 'Ju... just  turn around '
+      textDE: 
+    - duration: 2
+      textTR: 
+      textEN: and dont move.
+      textDE: 
+    - duration: 2
+      textTR: 
+      textEN: Dont care his words just dont listen to him
+      textDE: 
+  - id: tut_007
+    note: 
+    segments:
+    - duration: 3
+      textTR: "\t\t"
+      textEN: Allright. I think he is gone.
+      textDE: 
+    - duration: 2
+      textTR: 
+      textEN: Now just write that password...
+      textDE: 
+    - duration: 2
+      textTR: 
+      textEN: into that Machine
+      textDE: 
+  - id: tut_008
+    note: 
+    segments:
+    - duration: 3
+      textTR: "\t\t"
+      textEN: Damn it the pressure...
+      textDE: 
+    - duration: 2
+      textTR: 
+      textEN: Its increase like maniac.
+      textDE: 
+    - duration: 2
+      textTR: 
+      textEN: You need to turn the valve.
+      textDE: 
+  - id: tut_009
+    note: 
+    segments:
+    - duration: 3
+      textTR: "\t\t"
+      textEN: Now the lights...
+      textDE: 
+    - duration: 2
+      textTR: 
+      textEN: what a beauty
+      textDE: 
+    - duration: 2
+      textTR: 
+      textEN: 'pul the level in the fuse room. '
+      textDE: 
+    - duration: 2
+      textTR: 
+      textEN: Which is only room with lights on
+      textDE: 
+  - id: tut_010
+    note: 
+    segments:
+    - duration: 3
+      textTR: "\t\t\t"
+      textEN: You did well proffesor.
+      textDE: 
+    - duration: 2
+      textTR: 
+      textEN: But we start now.
+      textDE: 
+    - duration: 2
+      textTR: 
+      textEN: You learn what you need.
+      textDE: 
+    - duration: 2
+      textTR: 
+      textEN: Now its time to explode to bomb...
       textDE: 

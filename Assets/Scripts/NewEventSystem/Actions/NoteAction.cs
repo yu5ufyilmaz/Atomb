@@ -1,7 +1,7 @@
 using NaughtyAttributes;
 using UnityEngine;
 
-public class NoteAction : MonoBehaviour, IAction
+public class NoteAction : ActionBase
 {
     public enum NoteOperation
     {
@@ -17,7 +17,7 @@ public class NoteAction : MonoBehaviour, IAction
     [ShowIf("operation", NoteOperation.UnlockSymbolResearch)]
     public SymbolDataSO targetSymbol;
 
-    public void Execute()
+    protected override void PerformAction()
     {
         switch (operation)
         {

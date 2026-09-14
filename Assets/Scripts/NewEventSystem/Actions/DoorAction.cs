@@ -1,7 +1,7 @@
 using System.Collections;
 using UnityEngine;
 
-public class DoorAction : MonoBehaviour, IAction
+public class DoorAction : ActionBase
 {
     public enum DoorOperation
     {
@@ -28,7 +28,7 @@ public class DoorAction : MonoBehaviour, IAction
     )]
     public float delayBetweenSteps = 0.4f;
 
-    public void Execute()
+    protected override void PerformAction()
     {
         if (targetDoors == null || targetDoors.Length == 0)
             return;

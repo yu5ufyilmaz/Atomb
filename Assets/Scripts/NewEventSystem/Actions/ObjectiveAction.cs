@@ -1,20 +1,22 @@
 using TMPro;
 using UnityEngine;
 
-public class ObjectiveAction : MonoBehaviour, IAction
+public class ObjectiveAction : ActionBase
 {
     [Header("Görev Arayüzü (UI)")]
     public TextMeshProUGUI objectiveTextUI;
+
     [TextArea]
     public string newObjectiveText;
 
     [Header("Ses ve Altyazı (İsteğe Bağlı)")]
     public string subtitleID;
     public AudioClip voiceClip;
+
     [Tooltip("İç sesin çalacağı AudioSource (Karakterin üzerindeki vb.)")]
     public AudioSource innerVoiceSource;
 
-    public void Execute()
+    protected override void PerformAction()
     {
         // 1. Ekrandaki Görev Yazısını Güncelle
         if (objectiveTextUI != null)

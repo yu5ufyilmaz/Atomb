@@ -41,6 +41,10 @@ public class PasswordManager : MonoBehaviour, ISaveable
     private List<string> discoveredClues = new List<string>();
     private List<string> validatedPasswords = new List<string>();
 
+    // Şifre girildiğinde diğer scriptlere haber verecek eventler
+    public event Action<string> OnPasswordSuccess;
+    public event Action<string> OnPasswordFailed;
+
     // YENİ: Bu oturumda kime hangi şifreyi atadığımızın günlüğü (Kaydetmek çok kolaylaşacak)
     public List<GameData.ObjectPasswordPair> currentSessionPasswords =
         new List<GameData.ObjectPasswordPair>();
@@ -281,17 +285,17 @@ public class PasswordManager : MonoBehaviour, ISaveable
     {
         if (passwordID == tutorialPassword)
         {
-            Debug.Log("📘 TUTORIAL ŞİFRESİ GİRİLDİ (Sayaca eklenmiyor).");
+            Debug.Log("  TUTORIAL ŞİFRESİ (Sayaca eklenmiyor).");
             isTutorialPasswordUsed = true;
-
             if (MegaphoneSystem.Instance != null)
                 MegaphoneSystem.Instance.OnTutorialSolved();
-
             if (PlayerInteraction.Instance != null)
             {
                 PlayerInteraction.Instance.DisableTutorialMode();
-                Debug.Log("🔓 Tutorial Modu Kapatıldı. Tüm etkileşimler açık.");
+                Debug.Log("  Tutorial Modu Kapatıldı, tüm etkileşimler açık.");
             }
+
+            OnPasswordSuccess?.Invoke(passwordID); // <--- BUNU EKLE
             return true;
         }
 
@@ -299,6 +303,8 @@ public class PasswordManager : MonoBehaviour, ISaveable
         {
             if (MegaphoneSystem.Instance != null)
                 MegaphoneSystem.Instance.OnFirstMistake();
+
+            OnPasswordFailed?.Invoke(passwordID); // <--- BUNU EKLE (Yanlış şifre durumu)
             return false;
         }
 
@@ -306,7 +312,7 @@ public class PasswordManager : MonoBehaviour, ISaveable
             return true;
 
         validatedPasswords.Add(passwordID);
-        Debug.Log($"✅ OYUN ŞİFRESİ ONAYLANDI: {validatedPasswords.Count}/{totalPasswordsNeeded}");
+        Debug.Log($"  OYUN ŞİFRESİ ONAYLANDI: {validatedPasswords.Count}/{totalPasswordsNeeded}");
 
         if (validatedPasswords.Count >= totalPasswordsNeeded)
         {
@@ -315,6 +321,7 @@ public class PasswordManager : MonoBehaviour, ISaveable
             OnGameReadyToFinish?.Invoke();
         }
 
+        OnPasswordSuccess?.Invoke(passwordID); // <--- BUNU EKLE (Doğru şifre durumu)
         return true;
     }
 

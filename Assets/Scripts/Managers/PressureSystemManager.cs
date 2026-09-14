@@ -10,6 +10,9 @@ public class PressureSystemManager : MonoBehaviour, ISaveable
 {
     public static PressureSystemManager Instance;
 
+    [Header("Sistem Kontrolü")]
+    public bool isSystemActive = false;
+
     [Header("⚠️ Basınç Ayarları")]
     [Range(0, 100)]
     public float currentPressure = 0f;
@@ -88,7 +91,7 @@ public class PressureSystemManager : MonoBehaviour, ISaveable
 
     private void Update()
     {
-        if (isGameOver)
+        if (isGameOver || !isSystemActive)
             return;
 
         // YENİ EKLENEN KONTROL: Oyun henüz başlamadıysa basınç artışını DONDUR

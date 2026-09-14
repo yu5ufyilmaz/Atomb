@@ -67,6 +67,7 @@ public class InteractableHidingSpot : MonoBehaviour, IInteractable, IForceExitab
     private bool isOccupied = false;
     private bool isPeeking = false;
     private bool inTransition = false;
+    public bool canExit = true;
 
     private UnityEngine.CharacterController playerController;
     private StarterAssets.StarterAssetsInputs playerInput;
@@ -123,7 +124,10 @@ public class InteractableHidingSpot : MonoBehaviour, IInteractable, IForceExitab
         {
             HandlePeeking();
             if (Input.GetKeyDown(KeyCode.F) || Input.GetMouseButtonDown(0))
-                AttemptExit();
+            {
+                if (canExit)
+                    AttemptExit();
+            }
         }
     }
 
