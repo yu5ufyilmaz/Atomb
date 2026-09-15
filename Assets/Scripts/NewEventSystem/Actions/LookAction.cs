@@ -114,6 +114,7 @@ public class LookAction : ActionBase
 
     private IEnumerator FocusRoutine()
     {
+        
         // 1. OYUNCU GİRDİSİNİ VE HAREKETİNİ KES
         if (playerInputs != null)
         {

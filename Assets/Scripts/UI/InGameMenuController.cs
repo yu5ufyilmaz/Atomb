@@ -30,6 +30,9 @@ public class InGameMenuController : MonoBehaviour
     public AudioSource sfxSource;
     public AudioClip standUpSound;
 
+    [Header("Kapatılacak Kafa Modelleri")]
+    public GameObject[] headModelsToHide;
+
     private Vector3 lockedPosition;
     private bool isCameraLocked = false;
 
@@ -106,6 +109,7 @@ public class InGameMenuController : MonoBehaviour
         // =================================================================
         // 2. TİMELİNE ÇALIŞSIN VE ROOT OBJESİ GİZLİCE KAMERAYI TAKİP ETSİN!
         // =================================================================
+        bool wasSkipped = false;
         if (introTimeline != null)
         {
             isCameraLocked = false;
@@ -125,8 +129,10 @@ public class InGameMenuController : MonoBehaviour
                     skipTimer += Time.deltaTime;
                     if (skipTimer >= skipHoldTime)
                     {
-                        introTimeline.time = introTimeline.duration; // Timeline'ı sona sar
-                        break; // Döngüden hemen çık
+                        introTimeline.time = introTimeline.duration;
+                        introTimeline.Evaluate(); // <--- BU SATIRI MUTLAKA EKLE (Kamerayı anında son kareye ışınlar)
+                        wasSkipped = true;
+                        break;
                     }
                 }
                 else
@@ -155,41 +161,35 @@ public class InGameMenuController : MonoBehaviour
         {
             playerAnimator.SetTrigger("StandUp");
         }
-
         if (sfxSource != null && standUpSound != null)
         {
             sfxSource.PlayOneShot(standUpSound);
         }
 
-        // KAMERA YUMUŞAK GEÇİŞİ (Ayağa kalkarken)
-        // Artık lockedPosition kesinlikle 0,0,0 DEĞİL, yüz kamerasının koordinatı!
+        // KAMERA YUMUŞAK GEÇİŞİ (IŞINLANMA YERİNE BURAYI KULLANIYORUZ)
         if (cameraTarget != null && cameraAnchor != null)
         {
-            Vector3 startPos = lockedPosition;
-            Quaternion startRot = cameraTarget.rotation;
-
-            float elapsedTime = 0f;
-
-            while (elapsedTime < standUpDuration)
-            {
-                elapsedTime += Time.deltaTime;
-                float smoothT = Mathf.SmoothStep(0f, 1f, elapsedTime / standUpDuration);
-
-                lockedPosition = Vector3.Lerp(startPos, cameraAnchor.position, smoothT);
-                cameraTarget.rotation = Quaternion.Lerp(startRot, cameraAnchor.rotation, smoothT);
-
-                yield return null;
-            }
-
             isCameraLocked = false;
 
-            cameraTarget.SetParent(cameraAnchor);
-            cameraTarget.localPosition = Vector3.zero;
-            cameraTarget.localRotation = Quaternion.identity;
+            // Eğer E'ye basıp atladıysak kamera hızlıca (örn: 0.5 saniyede) yerine gitsin.
+            // Atlamadıysak, kalkma animasyonu süresi (standUpDuration) kadar sürede gitsin.
+            float transitionTime = wasSkipped ? 0.5f : standUpDuration;
+
+            yield return StartCoroutine(
+                SmoothCameraTransition(cameraTarget, cameraAnchor, transitionTime)
+            );
         }
         else
         {
             yield return new WaitForSeconds(standUpDuration);
+        }
+        if (headModelsToHide != null)
+        {
+            foreach (GameObject head in headModelsToHide)
+            {
+                if (head != null)
+                    head.SetActive(false);
+            }
         }
 
         // =================================================================
@@ -320,5 +320,34 @@ public class InGameMenuController : MonoBehaviour
         }
 
         this.enabled = false;
+    }
+
+    private IEnumerator SmoothCameraTransition(Transform target, Transform anchor, float duration)
+    {
+        // 1. İşlem bitene kadar Parent yapmıyoruz! Dünyadaki koordinatları alıyoruz.
+        target.SetParent(null);
+        Vector3 startPos = target.position;
+        Quaternion startRot = target.rotation;
+
+        float elapsed = 0f;
+
+        while (elapsed < duration)
+        {
+            elapsed += Time.deltaTime;
+            float t = elapsed / duration;
+            t = t * t * (3f - 2f * t); // Yumuşaklık formülü
+
+            // 2. Hedefe (anchor) world space üzerinden gidiyoruz.
+            target.position = Vector3.Lerp(startPos, anchor.position, t);
+
+            // 3. Slerp yerine Lerp kullanıyoruz ki 360 derece sapıtmaları KESİNLİKLE olmasın.
+            target.rotation = Quaternion.Lerp(startRot, anchor.rotation, t);
+            yield return null;
+        }
+
+        // 4. Hedefe ulaştığımızda Parent yapıp değerleri pürüzsüzce sıfırlıyoruz.
+        target.SetParent(anchor);
+        target.localPosition = Vector3.zero;
+        target.localRotation = Quaternion.identity;
     }
 }

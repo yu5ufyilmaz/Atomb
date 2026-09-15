@@ -15,6 +15,7 @@ public class LeesEnemyAI : MonoBehaviour
     }
 
     public LeesState currentState = LeesState.Hidden;
+    public bool ignorePlayer = false;
 
     [Header("Model & Animasyon")]
     public Animator leesAnimator;
@@ -114,6 +115,7 @@ public class LeesEnemyAI : MonoBehaviour
 
     // RAM Optimizasyonu: Spawn noktası shuffle için yeniden kullanılabilir liste
     private List<Transform> shuffleBuffer = new List<Transform>();
+    public bool isSafeSpawn = false;
 
     private void Awake()
     {
@@ -161,8 +163,9 @@ public class LeesEnemyAI : MonoBehaviour
         if (!GameManager.Instance.isGameStarted)
             return;
         if (GlobalEnemyManager.Instance != null && GlobalEnemyManager.Instance.stopAllEnemies)
-            return;
-
+        {
+            return; // Eğer sistem durdurulmuşsa hiçbir sayacı ilerletme, burada kal!
+        }
         if (currentCooldownTimer > 0)
         {
             currentCooldownTimer -= Time.deltaTime;
@@ -335,6 +338,8 @@ public class LeesEnemyAI : MonoBehaviour
 
     public void TriggerDeath(string reason, bool spawnBehind = false)
     {
+        if (isSafeSpawn)
+            return;
         if (currentState == LeesState.Jumpscare)
             return;
 

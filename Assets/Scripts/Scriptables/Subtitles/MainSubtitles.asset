@@ -351,3 +351,18 @@ MonoBehaviour:
       textTR: 
       textEN: Now its time to explode to bomb...
       textDE: 
+  - id: tut_011
+    note: 
+    segments:
+    - duration: 3
+      textTR: "\t\t\t"
+      textEN: Good very good
+      textDE: 
+    - duration: 2
+      textTR: 
+      textEN: Now check your notebook
+      textDE: 
+    - duration: 2
+      textTR: 
+      textEN: You need to write everything you know
+      textDE: 

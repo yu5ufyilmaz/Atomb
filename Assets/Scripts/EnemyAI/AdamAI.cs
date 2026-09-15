@@ -70,8 +70,10 @@ public class AdamAI : MonoBehaviour
 
     private void Update()
     {
-        if (!GameManager.Instance.isGameStarted)
-            return;
+        if (GlobalEnemyManager.Instance != null && GlobalEnemyManager.Instance.stopAllEnemies)
+        {
+            return; // Eğer sistem durdurulmuşsa hiçbir sayacı ilerletme, burada kal!
+        }
         // Debug Güncellemesi
         if (playerCurrentRoom == null)
             currentDetectedRoom = "YOK (Koridor/Boşluk)";

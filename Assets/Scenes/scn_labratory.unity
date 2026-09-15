@@ -28094,7 +28094,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 94c302089fc46c14da95ce9bbb054fa3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::HidingSpotControlAction
-  delay: 0
+  delay: 4
   hidingSpot: {fileID: 454887305}
   lockExit: 1
 --- !u!1 &488094470
@@ -28593,7 +28593,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 942e52852a30b8d4981b66bc52f37d43, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DialogAction
-  delay: 0
+  delay: 3
   subtitleID: tut_009
   dialogClip: {fileID: 0}
   audioSource: {fileID: 0}
@@ -30398,6 +30398,8 @@ PlayableDirector:
     m_References:
     - 89e45786ffa5df04c95d793cfc7a3699: {fileID: 1545211992}
     - 6ed6d1f7760aa5643888624aec27862a: {fileID: 1605783244}
+    - dc5c0d86143dce54499b320b927a2088: {fileID: 1545211992}
+    - 9fa387b535886db48bdff26c3c0159b6: {fileID: 1545211992}
     - 1267ac2309625ff4db1a2775ace5b20a: {fileID: 1538724171}
 --- !u!114 &552896611
 MonoBehaviour:
@@ -34064,6 +34066,8 @@ GameObject:
   - component: {fileID: 605129800}
   - component: {fileID: 605129802}
   - component: {fileID: 605129804}
+  - component: {fileID: 605129805}
+  - component: {fileID: 605129806}
   m_Layer: 0
   m_Name: Tutorail_IC_002
   m_TagString: Untagged
@@ -34161,9 +34165,44 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::NoteAction
   delay: 0
-  operation: 1
-  targetPassword: {fileID: 0}
+  operation: 0
+  targetPassword: {fileID: 11400000, guid: 51515ebaa232ea446892709aafa79e1c, type: 2}
   targetSymbol: {fileID: 11400000, guid: 32e8809b6981d3d4cac16e6be17100f6, type: 2}
+--- !u!114 &605129805
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 605129794}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 52fb0a86f307b8548a28e5bf4dc5f3dc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UIAction
+  delay: 1
+  targetUI: {fileID: 958099256}
+  effectType: 1
+  popupDuration: 2.5
+  pulseScale: 1.2
+  pulseSpeed: 0.5
+  pulseCount: 20
+--- !u!114 &605129806
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 605129794}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 942e52852a30b8d4981b66bc52f37d43, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DialogAction
+  delay: 0
+  subtitleID: tut_011
+  dialogClip: {fileID: 0}
+  audioSource: {fileID: 0}
 --- !u!1 &609495723
 GameObject:
   m_ObjectHideFlags: 0
@@ -41301,7 +41340,7 @@ MonoBehaviour:
   lookTarget: {fileID: 9219600}
   lookOffset: 0
   customYAngle: 0
-  headTurnDuration: 1
+  headTurnDuration: 2
   targetVirtualCamera: {fileID: 0}
   blendOutDuration: 1
   freezePlayer: 0
@@ -49709,7 +49748,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnemyAction
   delay: 1
   targetEnemy: 2
-  command: 0
+  command: 1
   targetRoom: {fileID: 1201733591}
 --- !u!114 &900385570
 MonoBehaviour:
@@ -57459,7 +57498,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8cc2639615e094a4a93051b15a624d72, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LookAction
-  delay: 0
+  delay: 3
   focusMode: 0
   lookTarget: {fileID: 2120274076800254777}
   lookOffset: 0
@@ -57702,7 +57741,7 @@ MonoBehaviour:
   lookTarget: {fileID: 543450652978644296}
   lookOffset: 1
   customYAngle: 0
-  headTurnDuration: 1
+  headTurnDuration: 2.5
   targetVirtualCamera: {fileID: 0}
   blendOutDuration: 1
   freezePlayer: 0
@@ -60236,7 +60275,7 @@ MonoBehaviour:
   blendOutDuration: 1
   freezePlayer: 0
   waitUntilInput: 0
-  autoReleaseTime: 2
+  autoReleaseTime: 1.5
 --- !u!114 &1091296242
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -74080,7 +74119,7 @@ MonoBehaviour:
   lookTarget: {fileID: 1406705567}
   lookOffset: 0
   customYAngle: 0
-  headTurnDuration: 1
+  headTurnDuration: 2
   targetVirtualCamera: {fileID: 0}
   blendOutDuration: 1
   freezePlayer: 0
@@ -84934,7 +84973,7 @@ MonoBehaviour:
   doorHandleSound: {fileID: 8300000, guid: d573912961ca1bf44823ea7deabe4c30, type: 3}
   doorOpenSound: {fileID: 8300000, guid: 89c69006d3e1d3a49b6ace2eac335c70, type: 3}
   jumpscareSound: {fileID: 8300000, guid: f3ddbf121115dcc4b86bc1ff8c094d4b, type: 3}
-  searchHumSound: {fileID: 8300000, guid: 34aeb6150a2deb348b089423c2714f19, type: 3}
+  searchHumSound: {fileID: 8300000, guid: 2cd738cff21fc234f8ba36d6e75d1f8f, type: 3}
   debugStatus: 
   debugSearchProgress: 0
   debugBreachProgress: 0
@@ -113960,12 +113999,11 @@ GameObject:
   m_Component:
   - component: {fileID: 2080874722}
   - component: {fileID: 2080874728}
-  - component: {fileID: 2080874727}
-  - component: {fileID: 2080874726}
+  - component: {fileID: 2080874733}
   - component: {fileID: 2080874723}
   - component: {fileID: 2080874729}
-  - component: {fileID: 2080874730}
-  - component: {fileID: 2080874731}
+  - component: {fileID: 2080874732}
+  - component: {fileID: 2080874734}
   m_Layer: 0
   m_Name: Tutorail_TC_003
   m_TagString: Untagged
@@ -113981,13 +114019,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2080874721}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: 0.031754658, z: -0, w: 0.9994957}
-  m_LocalPosition: {x: -0.62, y: 0, z: -3.7}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1006456096}
-  m_LocalEulerAnglesHint: {x: 0, y: 3.639, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &2080874723
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -114001,40 +114039,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PrerequisiteCondition
   requiredEvent: {fileID: 605129796}
---- !u!65 &2080874726
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2080874721}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 1
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 3.1536026, y: 1, z: 1.9924212}
-  m_Center: {x: -0.16226959, y: 0, z: 0.49621058}
---- !u!114 &2080874727
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2080874721}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 77a4c4c41e33cc744aaf97db001ce9ff, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::TriggerCondition
-  targetTag: Player
 --- !u!114 &2080874728
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -114061,34 +114065,50 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8cc2639615e094a4a93051b15a624d72, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LookAction
-  delay: 0
+  delay: 2
   focusMode: 0
   lookTarget: {fileID: 1413967749}
   lookOffset: 0
   customYAngle: 0
-  headTurnDuration: 1
+  headTurnDuration: 2
   targetVirtualCamera: {fileID: 0}
   blendOutDuration: 1
   freezePlayer: 0
   waitUntilInput: 0
   autoReleaseTime: 2
---- !u!114 &2080874730
+--- !u!114 &2080874732
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2080874721}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 50a62b32899a0bd4b9afab987f55cc31, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GlobalSystemsAction
   delay: 0
-  pressureSystem: 0
-  breakerSystem: 0
+  pressureSystem: 1
+  breakerSystem: 1
   globalEnemyAttacks: 0
---- !u!114 &2080874731
+--- !u!114 &2080874733
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2080874721}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a36937df904df174c9f646893ef333a5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::InputCondition
+  mode: 0
+  targetKey: 9
+  requiredPresses: 5
+  combinationKeys: 00000000
+--- !u!114 &2080874734
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -114100,7 +114120,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 942e52852a30b8d4981b66bc52f37d43, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DialogAction
-  delay: 0
+  delay: 2
   subtitleID: tut_002
   dialogClip: {fileID: 0}
   audioSource: {fileID: 0}
@@ -124789,6 +124809,10 @@ MonoBehaviour:
   musicFadeDuration: 2
   sfxSource: {fileID: 555620814}
   standUpSound: {fileID: 8300000, guid: 3dbfa94600403474cb7fb421a8e428f1, type: 3}
+  headModelsToHide:
+  - {fileID: 1085410607540858363}
+  - {fileID: 1795492764566375225}
+  - {fileID: 4803465846855539074}
 --- !u!82 &919132148867769551
 AudioSource:
   m_ObjectHideFlags: 0
@@ -151448,6 +151472,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   currentState: 0
+  ignorePlayer: 0
   leesAnimator: {fileID: 5866666021288599346}
   obstacleMask:
     serializedVersion: 2
@@ -151466,7 +151491,7 @@ MonoBehaviour:
   movementGraceTime: 1
   audioSource: {fileID: 5866666021288599349}
   audioFadeDuration: 2
-  stareSound: {fileID: 8300000, guid: 0dbfa4fc2491b4344bcd687f50c605c3, type: 3}
+  stareSound: {fileID: 8300000, guid: 6e88301bb41bb8445a84f391b077dcde, type: 3}
   jumpscareSound: {fileID: 8300000, guid: ea6457709cae84244bff3b55a98ebd92, type: 3}
   jumpscareDistance: 1.2
   jumpscareYOffset: 0
@@ -151487,6 +151512,7 @@ MonoBehaviour:
   debugHasBeenSpotted: 0
   playerTransform: {fileID: 543450652787342972}
   playerCamera: {fileID: 326973883}
+  isSafeSpawn: 0
 --- !u!82 &5866666021288599349
 AudioSource:
   m_ObjectHideFlags: 0

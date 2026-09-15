@@ -141,8 +141,10 @@ public class GuderianAI : MonoBehaviour
 
     private void Update()
     {
-        if (!GameManager.Instance.isGameStarted)
-            return;
+        if (GlobalEnemyManager.Instance != null && GlobalEnemyManager.Instance.stopAllEnemies)
+        {
+            return; // Eğer sistem durdurulmuşsa hiçbir sayacı ilerletme, burada kal!
+        }
         // Global Durdurma Kontrolü
         if (GlobalEnemyManager.Instance.stopAllEnemies)
         {

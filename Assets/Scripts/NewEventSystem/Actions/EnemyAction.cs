@@ -13,6 +13,7 @@ public class EnemyAction : ActionBase
     public enum EnemyCommand
     {
         Spawn,
+        SafeSpawn, // <--- YENİ EKLENDİ: Sadece spawn olur, öldürmez
         Ambush,
         ForceLeave,
         Jumpscare,
@@ -59,11 +60,24 @@ public class EnemyAction : ActionBase
                     return;
 
                 if (command == EnemyCommand.Spawn)
+                {
+                    LeesEnemyAI.Instance.isSafeSpawn = false; // Normal spawn, tehlikeli
                     LeesEnemyAI.Instance.SpawnLeesInRoom();
+                }
+                else if (command == EnemyCommand.SafeSpawn) // <--- YENİ EKLENEN KISIM
+                {
+                    LeesEnemyAI.Instance.isSafeSpawn = true; // Tehlikesiz mod açıldı
+                    LeesEnemyAI.Instance.SpawnLeesInRoom();
+                }
                 else if (command == EnemyCommand.ForceLeave)
+                {
+                    LeesEnemyAI.Instance.isSafeSpawn = false; // Giderken şalteri sıfırla ki bug'da kalmasın
                     LeesEnemyAI.Instance.DespawnLees();
+                }
                 else if (command == EnemyCommand.Jumpscare)
+                {
                     LeesEnemyAI.Instance.TriggerDeath("Event Tetikledi", false);
+                }
                 break;
 
             case EnemyType.Adam:
@@ -75,6 +89,6 @@ public class EnemyAction : ActionBase
                 break;
         }
 
-        Debug.Log($"[EnemyAction] {targetEnemy} için {command} komutu çalıştırıldı.");
+        Debug.Log($"[EnemyAction] {targetEnemy} için {command} komutu çalıştı.");
     }
 }
