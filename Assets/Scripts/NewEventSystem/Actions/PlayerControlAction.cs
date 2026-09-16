@@ -55,13 +55,8 @@ public class PlayerControlAction : ActionBase
 
             if (enableTutorialMode)
             {
-                PlayerInteraction.Instance.allowedTutorialObjects.Clear();
-                if (allowedInteractables != null && allowedInteractables.Count > 0)
-                {
-                    PlayerInteraction.Instance.allowedTutorialObjects.AddRange(
-                        allowedInteractables
-                    );
-                }
+                PlayerInteraction.Instance.UpdateTutorialWhitelist(allowedInteractables);
+
                 Debug.Log(
                     $"[PlayerControlAction] Kısıtlı Etkileşim Aktif. İzin verilen obje sayısı: {allowedInteractables.Count}"
                 );

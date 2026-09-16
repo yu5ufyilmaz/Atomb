@@ -68,12 +68,16 @@ public class DoorAction : ActionBase
     {
         door.SetLocked(false);
 
+        // Bekleme objesini döngü dışında BİR KERE yaratıyoruz
+        WaitForSeconds wait = new WaitForSeconds(delayBetweenSteps);
+
         for (int i = 0; i < repeatCount; i++)
         {
             door.SetOpen(true);
-            yield return new WaitForSeconds(delayBetweenSteps);
+            yield return wait; // Hafızadaki objeyi kullan
+
             door.SetOpen(false);
-            yield return new WaitForSeconds(delayBetweenSteps);
+            yield return wait; // Hafızadaki objeyi kullan
         }
     }
 
@@ -82,14 +86,17 @@ public class DoorAction : ActionBase
         if (door.isOpen)
             door.SetOpen(false);
 
+        // Bekleme objesini BİR KERE yarat
+        WaitForSeconds wait = new WaitForSeconds(delayBetweenSteps);
+
         for (int i = 0; i < repeatCount; i++)
         {
             door.SetLocked(true);
-            yield return new WaitForSeconds(delayBetweenSteps);
-            door.SetLocked(false);
-            yield return new WaitForSeconds(delayBetweenSteps);
-        }
+            yield return wait; // Hafızadaki objeyi kullan
 
+            door.SetLocked(false);
+            yield return wait; // Hafızadaki objeyi kullan
+        }
         // Panik yaratmak için en son kapıyı kilitli bırakıyoruz
         door.SetLocked(true);
     }

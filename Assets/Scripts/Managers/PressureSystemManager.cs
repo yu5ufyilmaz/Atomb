@@ -72,6 +72,22 @@ public class PressureSystemManager : MonoBehaviour, ISaveable
             Destroy(gameObject);
     }
 
+    private void OnEnable()
+    {
+        if (SaveManager.Instance != null)
+        {
+            SaveManager.Instance.RegisterSaveable(this);
+        }
+    }
+
+    private void OnDisable()
+    {
+        if (SaveManager.Instance != null)
+        {
+            SaveManager.Instance.UnregisterSaveable(this);
+        }
+    }
+
     private void Start()
     {
         playerController = Object.FindFirstObjectByType<StarterAssets.CharacterController>();

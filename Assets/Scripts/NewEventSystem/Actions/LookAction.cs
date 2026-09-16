@@ -80,7 +80,7 @@ public class LookAction : ActionBase
     {
         if (playerMoveScript == null)
             return;
-        
+
         StartCoroutine(FocusRoutine());
     }
 
@@ -114,11 +114,11 @@ public class LookAction : ActionBase
 
     private IEnumerator FocusRoutine()
     {
-        
         // 1. OYUNCU GİRDİSİNİ VE HAREKETİNİ KES
         if (playerInputs != null)
         {
             playerInputs.cursorInputForLook = false;
+            playerInputs.look = Vector2.zero; // <-- BURASI KRİTİK: Freeze kapalı olsa bile ivmeyi sıfırlar!
         }
 
         if (freezePlayer)
@@ -127,7 +127,6 @@ public class LookAction : ActionBase
             if (playerInputs != null)
                 playerInputs.move = Vector2.zero;
         }
-
         // 2. KAMERA ODAKLANMASI
         if (focusMode == FocusMode.RotatePlayerHead && lookTarget != null && mainCam != null)
         {
@@ -187,6 +186,7 @@ public class LookAction : ActionBase
         }
 
         // 4. ÇIKIŞ VE SERBEST BIRAKMA
+        // 4. ÇIKIŞ VE SERBEST BIRAKMA
         if (focusMode == FocusMode.ActivateVirtualCamera && targetVirtualCamera != null)
         {
             targetVirtualCamera.Priority = 0;
@@ -200,6 +200,7 @@ public class LookAction : ActionBase
 
         if (playerInputs != null)
         {
+            playerInputs.look = Vector2.zero; // <-- Çıkarken de her ihtimale karşı temizle
             playerInputs.cursorInputForLook = true;
         }
     }

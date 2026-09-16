@@ -9,10 +9,27 @@ public class PlayerSaveHandler : MonoBehaviour, ISaveable
         playerController = GetComponent<StarterAssets.CharacterController>();
     }
 
+    private void OnEnable()
+    {
+        if (SaveManager.Instance != null)
+        {
+            SaveManager.Instance.RegisterSaveable(this);
+        }
+    }
+
+    private void OnDisable()
+    {
+        if (SaveManager.Instance != null)
+        {
+            SaveManager.Instance.UnregisterSaveable(this);
+        }
+    }
+
     public void LoadData(GameData data)
     {
         // Eğer kayıt verisi boşsa (0,0,0) işlem yapma
-        if (data.playerPosition == Vector3.zero) return;
+        if (data.playerPosition == Vector3.zero)
+            return;
 
         Debug.Log("Oyuncu ışınlanıyor, Kollar ve Kamera senkronize ediliyor...");
 
@@ -21,7 +38,8 @@ public class PlayerSaveHandler : MonoBehaviour, ISaveable
         gameObject.SetActive(false);
 
         // 2. ADIM: Güvenlik için Controller'ı da kapat
-        if (playerController != null) playerController.enabled = false;
+        if (playerController != null)
+            playerController.enabled = false;
 
         // 3. ADIM: Yeni konuma ve rotasyona taşı
         transform.position = data.playerPosition;
@@ -31,7 +49,8 @@ public class PlayerSaveHandler : MonoBehaviour, ISaveable
         Physics.SyncTransforms();
 
         // 5. ADIM: Controller'ı aç
-        if (playerController != null) playerController.enabled = true;
+        if (playerController != null)
+            playerController.enabled = true;
 
         // 6. ADIM: Oyuncu objesini yeni yerinde tekrar uyandır!
         // Kamera ve kollar bu noktada kök objenin yeni yerinde kusursuz olarak doğar.

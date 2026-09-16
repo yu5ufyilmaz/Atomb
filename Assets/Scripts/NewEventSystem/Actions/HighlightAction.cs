@@ -92,15 +92,19 @@ public class HighlightAction : ActionBase
         float timer = 0f;
         float halfInterval = pulseSpeed / 2f;
 
+        // Objemizi önceden yaratıyoruz
+        WaitForSeconds waitHalf = new WaitForSeconds(halfInterval);
+
         while (timer < targetDuration)
         {
             SetHighlight(true);
-            yield return new WaitForSeconds(halfInterval);
+            yield return waitHalf; // Hazır objeyi çağır
+
             SetHighlight(false);
-            yield return new WaitForSeconds(halfInterval);
+            yield return waitHalf; // Hazır objeyi çağır
+
             timer += pulseSpeed;
         }
-
         SetHighlight(false);
     }
 
@@ -108,19 +112,21 @@ public class HighlightAction : ActionBase
     {
         float halfInterval = pulseSpeed / 2f;
 
+        // Objemizi önceden yaratıyoruz
+        WaitForSeconds waitHalf = new WaitForSeconds(halfInterval);
+
         while (!isInteracted)
         {
             SetHighlight(true);
-            yield return new WaitForSeconds(halfInterval);
+            yield return waitHalf;
 
-            // Eğer saniyenin yarısını beklerken oyuncu objeye tıkladıysa hemen çık
+            // Eğer saniyenin yarısı kadar beklerken oyuncu objeye tıkladıysa hemen çık
             if (isInteracted)
                 break;
 
             SetHighlight(false);
-            yield return new WaitForSeconds(halfInterval);
+            yield return waitHalf;
         }
-
         SetHighlight(false); // Garanti kapatma
     }
 

@@ -1,7 +1,5 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using StarterAssets;
 using TMPro;
 using UnityEngine;
 
@@ -9,22 +7,18 @@ public class NotebookUI : MonoBehaviour
 {
     public static NotebookUI Instance;
 
-    [Header("📄 Data Source")]
+    [Header("  Data Source")]
     public NotebookData notebookData;
 
-    [Header("🖼️ UI Elements")]
+    [Header("  UI Elements (World Space)")]
     public GameObject notebookPanel;
-
-    [Tooltip("Kayma animasyonu için hareket edecek panelin (RectTransform) kendisini sürükle")]
-    public RectTransform notebookRect;
     public TextMeshProUGUI categoryTitleText;
     public TextMeshProUGUI contentText;
     public TextMeshProUGUI controlsHintText;
 
-    [Header("🎬 Animation Settings")]
-    public float slideDuration = 0.35f;
-    public Vector2 hiddenPosition = new Vector2(0, -1200); // Ekran dışı (Aşağıda)
-    public Vector2 visiblePosition = new Vector2(0, 0); // Ekran ortası
+    [Header("  Animation Settings")]
+    public Animator playerAnimator;
+    public string animatorParameterName = "IsNotebookOpen";
 
     private enum NotebookCategory
     {
@@ -35,34 +29,39 @@ public class NotebookUI : MonoBehaviour
 
     private int currentCategoryIndex = 0;
     private int currentTutorialPage = 0;
-
     private string currentSymbolInfo = "No active research found in the field.";
 
-    private bool isNotebookOpen = false;
-    private bool isAnimating = false;
+    public bool isNotebookOpen = false;
+    public bool isOnMachine = false;
 
     private void Awake()
     {
         if (Instance == null)
             Instance = this;
+    }
 
-        // Başlangıçta paneli gizli pozisyona al ve kapat
-        if (notebookRect != null)
-            notebookRect.anchoredPosition = hiddenPosition;
+    private void Start()
+    {
+        if (playerAnimator == null)
+        {
+            var player = GameObject.FindGameObjectWithTag("Player");
+            if (player != null)
+                playerAnimator = player.GetComponent<Animator>();
+        }
 
-        notebookPanel.SetActive(false);
+        if (notebookPanel != null)
+            notebookPanel.SetActive(false);
     }
 
     private void Update()
     {
-        // TAB tuşu ile aç/kapat (Animasyon tetikleyici)
-        if (Input.GetKeyDown(KeyCode.Tab))
+        // Tuşa basıldığında sadece animatörü tetikler, modeli gösterme/gizleme işini EVENT'e bırakır.
+        if (Input.GetKeyDown(KeyCode.Tab) && !isOnMachine)
         {
             ToggleNotebook();
         }
 
-        // Defter tam açık değilse veya animasyon oynuyorsa içerideki tuşları dinleme
-        if (!isNotebookOpen || isAnimating)
+        if (!isNotebookOpen && !isOnMachine)
             return;
 
         HandleInput();
@@ -70,54 +69,40 @@ public class NotebookUI : MonoBehaviour
 
     public void ToggleNotebook()
     {
-        // Animasyon sırasında tuşa art arda basılmasını engelle
-        if (isAnimating)
-            return;
-
         isNotebookOpen = !isNotebookOpen;
-        StartCoroutine(SlideNotebook(isNotebookOpen));
-    }
 
-    private IEnumerator SlideNotebook(bool show)
-    {
-        isAnimating = true;
+        if (playerAnimator != null)
+            playerAnimator.SetBool(animatorParameterName, isNotebookOpen);
 
-        if (show)
-        {
-            notebookPanel.SetActive(true);
-            //TogglePlayerControls(false); // FPS bakışını kilitle
+        if (isNotebookOpen)
             UpdateUI();
-        }
 
-        // GameManager imleç güncellemesi
         if (GameManager.Instance != null)
             GameManager.Instance.UpdateCursorState();
+    }
 
-        // Pürüzsüz Kayma (Smooth Slide) Animasyonu
-        if (notebookRect != null)
+    // EVENT'LERİN KULLANACAĞI FONKSİYON
+    public void SetNotebookVisibility(bool isVisible)
+    {
+        // Eğer makinede değilse görünürlüğü değiştir (Makinedeyken defter elde olmamalı)
+        if (!isOnMachine && notebookPanel != null)
         {
-            float elapsed = 0f;
-            Vector2 startPos = notebookRect.anchoredPosition;
-            Vector2 targetPos = show ? visiblePosition : hiddenPosition;
-
-            while (elapsed < slideDuration)
-            {
-                elapsed += Time.deltaTime;
-                float t = elapsed / slideDuration;
-
-                // Ease Out (Yumuşak yavaşlama) formülü
-                t = t * t * (3f - 2f * t);
-
-                notebookRect.anchoredPosition = Vector2.Lerp(startPos, targetPos, t);
-                yield return null;
-            }
-
-            notebookRect.anchoredPosition = targetPos;
+            notebookPanel.SetActive(isVisible);
         }
+    }
 
-        // Kapanış animasyonu bittikten sonra objeyi tamamen kapat
+    public void PutArmDown()
+    {
+        isNotebookOpen = false;
+        if (playerAnimator != null)
+            playerAnimator.SetBool(animatorParameterName, false);
+    }
 
-        isAnimating = false;
+    public void ForceClose()
+    {
+        PutArmDown();
+        if (notebookPanel != null)
+            notebookPanel.SetActive(false);
     }
 
     private void HandleInput()
@@ -129,10 +114,10 @@ public class NotebookUI : MonoBehaviour
 
         if ((NotebookCategory)currentCategoryIndex == NotebookCategory.Logs)
         {
-            float scroll = Input.GetAxis("Mouse ScrollWheel");
-            if (scroll < 0f)
+            float scroll = Input.mouseScrollDelta.y;
+            if (scroll < -0.1f)
                 ChangeTutorialPage(1);
-            else if (scroll > 0f)
+            else if (scroll > 0.1f)
                 ChangeTutorialPage(-1);
         }
     }
@@ -154,7 +139,6 @@ public class NotebookUI : MonoBehaviour
             0,
             notebookData.tutorialPages.Count - 1
         );
-
         if (newPage != currentTutorialPage)
         {
             currentTutorialPage = newPage;
@@ -165,12 +149,8 @@ public class NotebookUI : MonoBehaviour
     public void UnlockSymbolResearch(int symbolID)
     {
         if (notebookData != null)
-        {
-            // Artık array index'i değil, ID'yi arayarak çekiyor
             currentSymbolInfo = notebookData.GetSymbolDescription(symbolID);
-        }
-
-        if (isNotebookOpen)
+        if (isNotebookOpen || isOnMachine)
             UpdateUI();
     }
 
@@ -185,13 +165,10 @@ public class NotebookUI : MonoBehaviour
             return;
         }
 
-        // Doğrudan SO referansından okuyoruz
         TutorialDataSO entry = notebookData.tutorialPages[currentTutorialPage];
-
         if (categoryTitleText != null)
             categoryTitleText.text =
                 $"{entry.title.ToUpper()} ({currentTutorialPage + 1}/{notebookData.tutorialPages.Count})";
-
         if (contentText != null)
             contentText.text = entry.content;
     }
@@ -242,10 +219,8 @@ public class NotebookUI : MonoBehaviour
             if (clues.Count == 0)
                 list = "No data retrieved from the environment...";
             else
-            {
                 foreach (var clue in clues)
                     list += $"> {clue}\n";
-            }
         }
         if (contentText != null)
             contentText.text = list;
@@ -253,7 +228,7 @@ public class NotebookUI : MonoBehaviour
 
     public void ShowPasswordNotification(string password)
     {
-        if (isNotebookOpen)
+        if (isNotebookOpen || isOnMachine)
             UpdateUI();
     }
 }

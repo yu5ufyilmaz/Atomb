@@ -63,6 +63,8 @@ public class PlayerInteraction : MonoBehaviour
     public static event System.Action<GameObject> OnPlayerInteracted;
     public static event System.Action<GameObject> OnPlayerInteractionExited;
 
+    private HashSet<GameObject> allowedTutorialSet = new HashSet<GameObject>();
+
     // Oyuncu notu/kitabı kapattığında fırlatılacak statik event
 
     // Performans: Collider -> IInteractable önbelleği
@@ -115,7 +117,11 @@ public class PlayerInteraction : MonoBehaviour
         CheckForInteractable();
         HandleInteractionInput();
     }
-
+public void UpdateTutorialWhitelist(List<GameObject> newObjects)
+{
+    allowedTutorialObjects = newObjects;
+    allowedTutorialSet = new HashSet<GameObject>(newObjects);
+}
     private void CheckForInteractable()
     {
         if (raycastOrigin == null)
@@ -138,17 +144,15 @@ public class PlayerInteraction : MonoBehaviour
             {
                 // --- WHITELIST (TUTORIAL) KONTROLÜ ---
                 if (isTutorialMode)
-                {
-                    MonoBehaviour interactableScript = newInteractable as MonoBehaviour;
-                    if (
-                        interactableScript != null
-                        && !allowedTutorialObjects.Contains(interactableScript.gameObject)
-                    )
-                    {
-                        ClearCurrentInteractable();
-                        return;
-                    }
-                }
+{
+    MonoBehaviour interactableScript = newInteractable as MonoBehaviour;
+    // Artık liste yerine HashSet'ten bakıyoruz (Çok daha hızlı)
+    if (interactableScript != null && !allowedTutorialSet.Contains(interactableScript.gameObject))
+    {
+        ClearCurrentInteractable();
+        return;
+    }
+}
                 // -------------------------------------
 
                 // Yeni objeye odaklanma durumu
