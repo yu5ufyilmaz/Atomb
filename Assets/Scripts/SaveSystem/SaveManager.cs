@@ -7,9 +7,9 @@ public class SaveManager : MonoBehaviour
 {
     public static SaveManager Instance { get; private set; }
 
-    private GameData gameData;
-    private List<ISaveable> saveableObjects;
-    private string saveFileName = "SenzoraLocalSave.json";
+private GameData gameData;
+private List<ISaveable> saveableObjects = new List<ISaveable>(); // Liste artık hazır!
+private string saveFileName = "SenzoraLocalSave.json";
 
     private void Awake()
     {

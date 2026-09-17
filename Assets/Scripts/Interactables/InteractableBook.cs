@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using NaughtyAttributes; // BUNU EKLEDİK
 using StarterAssets;
 using TMPro;
 using Unity.VisualScripting;
@@ -7,6 +8,12 @@ using UnityEngine;
 
 public class InteractableBook : MonoBehaviour, IInteractable, IForceExitable
 {
+    public enum BookInitialState
+    {
+        Closed,
+        Open,
+    }
+
     // --- EDİTÖRDE GÖRÜNMESİ GEREKENLER (AYARLAR) ---
 
     [Header("📖 Kitap Ayarları")]
@@ -14,6 +21,35 @@ public class InteractableBook : MonoBehaviour, IInteractable, IForceExitable
     public float pageFlipDuration = 0.8f;
     public int totalPages = 8;
     public bool allowLoop = false;
+
+    // BURAYI EKLE:
+    [Header("  Başlangıç Durumu")]
+    [Tooltip("Kitap sahneye dizilirken ve oyun başlarken açık mı olsun?")]
+    public bool startOpen = false;
+
+    [Header("  Başlangıç Durumu")]
+    [Tooltip("Kitap sahneye dizilirken ve oyun başlarken nasıl dursun?")]
+    public BookInitialState initialState = BookInitialState.Closed;
+
+    private DropdownList<int> GetPagePairs()
+    {
+        return new DropdownList<int>()
+        {
+            { "Sayfa 1 - 2", 0 },
+            { "Sayfa 3 - 4", 2 },
+            { "Sayfa 5 - 6", 4 },
+            { "Sayfa 7 - 8", 6 },
+            { "Sayfa 9 - 10", 8 },
+            { "Sayfa 11 - 12", 10 },
+            { "Sayfa 13 - 14", 12 },
+            { "Sayfa 15 - 16", 14 },
+        };
+    }
+
+    [ShowIf("initialState", BookInitialState.Open)]
+    [Dropdown("GetPagePairs")]
+    [Tooltip("Kitap açık başlarken hangi sayfalarda olsun?")]
+    public int startPageIndex = 0;
 
     [Header("🎨 Görsel & Materyal")]
     [Tooltip("Kitabın olduğu Skinned Mesh Renderer (Tek parça model)")]
@@ -62,7 +98,8 @@ public class InteractableBook : MonoBehaviour, IInteractable, IForceExitable
     public bool isSymbolTargetBook = false;
     public int requiredSymbolID = 0; // Bu kitabı hangi sembol açar?
     public int symbolPuzzlePage = -1; // Çözümün yapılacağı sayfa indeksi
-    public Transform targetSymbolAnchor; // Doğru konum ve açıyı referans alacağımız boş obje
+    public Transform targetSymbolAnchor;
+
 
     // --- YENİ: OUTLINE & HIGHLIGHT AYARLARI ---
     [Header("✨ Vurgu (Highlight) Ayarları")]
@@ -112,7 +149,7 @@ public class InteractableBook : MonoBehaviour, IInteractable, IForceExitable
 
     [HideInInspector]
     public bool hasPasswordBeenFound = false;
-
+    private MaterialPropertyBlock pagePropertyBlock;
     private UnityEngine.CharacterController playerController;
     private StarterAssets.CharacterController playerGameScript;
     private MonoBehaviour playerLookScript;
@@ -129,11 +166,13 @@ public class InteractableBook : MonoBehaviour, IInteractable, IForceExitable
 
     private Vector3 originalLocalPosition;
     private Quaternion originalLocalRotation;
+    private Vector3 originalLocalScale; // BUNU EKLE
     private Transform originalParent;
     private static readonly int OpenTrigger = Animator.StringToHash("Open");
     private static readonly int CloseTrigger = Animator.StringToHash("Close");
     private static readonly int IsOpenBool = Animator.StringToHash("IsOpen");
     private static readonly int PageNumber = Animator.StringToHash("PageNumber");
+
     private int pageIndexL;
     private int pageIndexR;
     private int currentSoundIndex = 0;
@@ -179,6 +218,11 @@ public class InteractableBook : MonoBehaviour, IInteractable, IForceExitable
 
     private void Start()
     {
+        pagePropertyBlock = new MaterialPropertyBlock();
+        originalParent = transform.parent;
+        originalLocalPosition = transform.localPosition;
+        originalLocalRotation = transform.localRotation;
+        originalLocalScale = transform.localScale;
         if (outlineController == null)
             outlineController = GetComponentInChildren<HDRPOutlineController>();
 
@@ -245,10 +289,17 @@ public class InteractableBook : MonoBehaviour, IInteractable, IForceExitable
 
         if (bookAnimator == null)
             bookAnimator = GetComponent<Animator>();
+        // Kitabın mevcut durumunu Inspector'daki duruma eşitle
+        // ESKİ: isOpen = startOpen;
+        isOpen = (initialState == BookInitialState.Open); // YENİ
+
         if (bookAnimator != null)
         {
             bookAnimator.SetBool(IsOpenBool, isOpen);
             bookAnimator.SetInteger(PageNumber, currentPage);
+
+            // Oyun başlar başlamaz animasyonun direkt o karede (açık/kapalı) başlaması için:
+            bookAnimator.Update(0f);
         }
 
         playerController = Object.FindFirstObjectByType<UnityEngine.CharacterController>();
@@ -272,17 +323,75 @@ public class InteractableBook : MonoBehaviour, IInteractable, IForceExitable
         InitializePages();
     }
 
+    // ==========================================
+    // LEVEL DESIGN & EDITOR GÖRÜNÜMÜ İÇİN
+    // ==========================================
+#if UNITY_EDITOR
+    [Button("Kitabı Editörde Ön İzle (Level Design)")]
+    public void PreviewBookInEditor()
+    {
+        int pL = (startPageIndex % 2 == 0) ? startPageIndex : startPageIndex - 1;
+        int pR = pL + 1;
+
+        // 2. Sayfa Materyali (GÜNCELLENDİ)
+        if (bookSkinnedMeshRenderer != null && bookPagesMaterial != null)
+        {
+            // YENİ: Editörde kitabın gerçek materyalini üstüne zorla giydiriyoruz ki sayfalar gözüksün!
+            Material[] sharedMats = bookSkinnedMeshRenderer.sharedMaterials;
+            if (bookMaterialIndex >= 0 && bookMaterialIndex < sharedMats.Length)
+            {
+                if (sharedMats[bookMaterialIndex] != bookPagesMaterial)
+                {
+                    sharedMats[bookMaterialIndex] = bookPagesMaterial;
+                    bookSkinnedMeshRenderer.sharedMaterials = sharedMats;
+                }
+            }
+
+            MaterialPropertyBlock mpb = new MaterialPropertyBlock();
+            bookSkinnedMeshRenderer.GetPropertyBlock(mpb, bookMaterialIndex);
+            mpb.SetFloat("_PageIndexL", pL);
+            mpb.SetFloat("_PageIndexR", pR);
+            mpb.SetFloat("_PageCount", totalPages);
+            bookSkinnedMeshRenderer.SetPropertyBlock(mpb, bookMaterialIndex);
+            UnityEditor.EditorUtility.SetDirty(bookSkinnedMeshRenderer);
+        }
+
+        // 3. KİTABI FİZİKSEL OLARAK AÇ/KAPAT
+        if (bookAnimator != null && bookAnimator.runtimeAnimatorController != null)
+        {
+            bool editorIsOpen = (initialState == BookInitialState.Open);
+
+            bookAnimator.Rebind();
+            bookAnimator.SetBool("IsOpen", editorIsOpen);
+
+            string stateName = editorIsOpen ? "newBookOpened" : "newBookClose";
+            bookAnimator.Play(stateName, 0, 1f);
+            bookAnimator.Update(0f);
+        }
+
+        if (UnityEditor.SceneView.lastActiveSceneView != null)
+        {
+            UnityEditor.SceneView.lastActiveSceneView.Repaint();
+        }
+
+        Debug.Log(
+            $"[Level Design] Kitap durumu: {(initialState == BookInitialState.Open ? "AÇIK" : "KAPALI")} | Sayfalar: {pL}-{pR} Yüklendi!"
+        );
+    }
+#endif
+
     private void InitializePages()
     {
-        pageIndexL = 0;
-        pageIndexR = 1;
+        // İstenen sayfa tek sayıysa (örn 3), sol sayfayı 2, sağ sayfayı 3 yap.
+        pageIndexL = (startPageIndex % 2 == 0) ? startPageIndex : startPageIndex - 1;
+        pageIndexR = pageIndexL + 1;
+
         if (bookPagesMaterial != null)
         {
             bookPagesMaterial.SetFloat("_PageCount", totalPages);
             bookPagesMaterial.SetFloat("_PageIndexL", pageIndexL);
             bookPagesMaterial.SetFloat("_PageIndexR", pageIndexR);
         }
-
         if (pageTurnMaterial != null)
             pageTurnMaterial.SetFloat("_PageCount", totalPages);
     }
@@ -291,18 +400,25 @@ public class InteractableBook : MonoBehaviour, IInteractable, IForceExitable
     {
         if (isOpen && !isAnimating)
         {
-            HandlePageInput();
-            if (isPasswordBook && !hasPasswordBeenFound && Input.GetMouseButtonDown(0))
-                CheckForPasswordClick();
+            // YENİ: Sadece GameManager'da aktif olan (oyuncunun tuttuğu) kitap bu tuşları dinlesin!
+            if (
+                GameManager.Instance != null
+                && GameManager.Instance.activeInteraction == (IInteractable)this
+            )
+            {
+                HandlePageInput();
 
-            if (playerGameScript != null)
-                playerGameScript.ExternalStaminaRegen(Time.deltaTime);
-        }
+                if (isPasswordBook && !hasPasswordBeenFound && Input.GetMouseButtonDown(0))
+                    CheckForPasswordClick();
 
-        if (isOpen && Input.GetKeyDown(KeyCode.F))
-        {
-            if (!isAnimating)
-                StartCoroutine(CloseBook());
+                if (Input.GetKeyDown(KeyCode.F))
+                {
+                    StartCoroutine(CloseBook());
+                }
+
+                if (playerGameScript != null)
+                    playerGameScript.ExternalStaminaRegen(Time.deltaTime);
+            }
         }
     }
 
@@ -352,9 +468,18 @@ public class InteractableBook : MonoBehaviour, IInteractable, IForceExitable
 
     public void Interact()
     {
-        if (isAnimating || isOpen)
+        if (isAnimating)
             return;
-        OnLoseFocus(); // Etkileşime girince söndür
+
+        // Eğer kitap halihazırda açıksa ama bizim elimizde değilse alabilelim!
+        if (
+            isOpen
+            && GameManager.Instance != null
+            && GameManager.Instance.activeInteraction == (IInteractable)this
+        )
+            return;
+
+        OnLoseFocus();
         StartCoroutine(OpenBook());
     }
 
@@ -398,6 +523,7 @@ public class InteractableBook : MonoBehaviour, IInteractable, IForceExitable
         originalParent = transform.parent;
         originalLocalPosition = transform.localPosition;
         originalLocalRotation = transform.localRotation;
+        originalLocalScale = transform.localScale; // BUNU EKLEs
         transform.SetParent(cameraTransform, true);
 
         float t = 0f;
@@ -439,10 +565,10 @@ public class InteractableBook : MonoBehaviour, IInteractable, IForceExitable
                 stateInfo = bookAnimator.GetCurrentAnimatorStateInfo(0);
             }
         }
-
-        pageIndexL = 0;
-        pageIndexR = 1;
-        currentPage = 1;
+        // Kitap açıldığında belirlediğin sayfadan başlasın
+        pageIndexL = (startPageIndex % 2 == 0) ? startPageIndex : startPageIndex - 1;
+        pageIndexR = pageIndexL + 1;
+        currentPage = startPageIndex;
 
         UpdateBookPagesMaterial();
         if (bookUI != null)
@@ -542,6 +668,7 @@ public class InteractableBook : MonoBehaviour, IInteractable, IForceExitable
         transform.SetParent(originalParent, true);
         transform.localPosition = originalLocalPosition;
         transform.localRotation = originalLocalRotation;
+        transform.localScale = originalLocalScale; // BUNU EKLE
 
         // --- KONTROLLERİ GERİ AÇMA (DÜZELTİLEN KISIM) ---
         if (playerAnimator != null)
@@ -691,32 +818,25 @@ public class InteractableBook : MonoBehaviour, IInteractable, IForceExitable
 
     private void UpdateBookPagesMaterial()
     {
-        // 1. Senin elindeki değişkeni güncelle (Hafızadaki referans)
+        // 1. Orijinal materyal referansını güncelle
         if (bookPagesMaterial != null)
         {
             bookPagesMaterial.SetFloat("_PageIndexL", pageIndexL);
             bookPagesMaterial.SetFloat("_PageIndexR", pageIndexR);
         }
 
-        // 2. ASIL ÇÖZÜM: O an Renderer'ın üzerinde takılı olan "CANLI" materyali bul ve güncelle
-        // Çünkü Highlight sistemi materyalleri sök-tak yaparken referans kopmuş olabilir.
-        if (bookSkinnedMeshRenderer != null)
+        // 2. OPTİMİZASYON: Bellekte yeni materyal yaratmadan değerleri doğrudan GPU'ya ilet
+        if (bookSkinnedMeshRenderer != null && pagePropertyBlock != null)
         {
-            // .materials çağrısı o anki güncel kopyaları getirir
-            Material[] currentMats = bookSkinnedMeshRenderer.materials;
+            // Mevcut özellikleri bloğa çek
+            bookSkinnedMeshRenderer.GetPropertyBlock(pagePropertyBlock, bookMaterialIndex);
 
-            // İndeks hatası olmasın diye kontrol
-            if (bookMaterialIndex >= 0 && bookMaterialIndex < currentMats.Length)
-            {
-                Material liveMaterial = currentMats[bookMaterialIndex];
+            // Sadece değişen sayfa numaralarını bloğa yaz
+            pagePropertyBlock.SetFloat("_PageIndexL", pageIndexL);
+            pagePropertyBlock.SetFloat("_PageIndexR", pageIndexR);
 
-                // Eğer canlı materyal boş değilse, değerleri ona da bas
-                if (liveMaterial != null)
-                {
-                    liveMaterial.SetFloat("_PageIndexL", pageIndexL);
-                    liveMaterial.SetFloat("_PageIndexR", pageIndexR);
-                }
-            }
+            // Bloğu renderera geri ver (yeni materyal kopyası oluşmaz)
+            bookSkinnedMeshRenderer.SetPropertyBlock(pagePropertyBlock, bookMaterialIndex);
         }
     }
 

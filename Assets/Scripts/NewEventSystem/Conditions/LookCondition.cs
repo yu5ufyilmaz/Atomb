@@ -25,9 +25,9 @@ public class LookCondition : MonoBehaviour, ICondition
     private float currentLookTime = 0f;
     private Camera mainCam;
 
-private float checkInterval = 0.1f; // Saniyede 10 kez kontrol
-private float nextCheckTime = 0f;
-private bool isCurrentlyLooking = false;
+    private float checkInterval = 0.1f; // Saniyede 10 kez kontrol
+    private float nextCheckTime = 0f;
+    private bool isCurrentlyLooking = false;
 
     public bool IsMet() => conditionMet;
 
@@ -41,31 +41,32 @@ private bool isCurrentlyLooking = false;
         }
     }
 
-   private void Update()
-{
-    if (conditionMet) return;
-
-    // Raycast'i her kare yerine 0.1 saniyede bir atıyoruz
-    if (Time.time >= nextCheckTime)
+    private void Update()
     {
-        isCurrentlyLooking = IsLookingAtTarget();
-        nextCheckTime = Time.time + checkInterval;
-    }
+        if (conditionMet)
+            return;
 
-    if (isCurrentlyLooking)
-    {
-        currentLookTime += Time.deltaTime;
-        if (currentLookTime >= requiredLookTime)
+        // Raycast'i her kare yerine 0.1 saniyede bir atıyoruz
+        if (Time.time >= nextCheckTime)
         {
-            conditionMet = true;
-            OnConditionChanged?.Invoke(); 
+            isCurrentlyLooking = IsLookingAtTarget();
+            nextCheckTime = Time.time + checkInterval;
+        }
+
+        if (isCurrentlyLooking)
+        {
+            currentLookTime += Time.deltaTime;
+            if (currentLookTime >= requiredLookTime)
+            {
+                conditionMet = true;
+                OnConditionChanged?.Invoke();
+            }
+        }
+        else
+        {
+            currentLookTime = 0f;
         }
     }
-    else
-    {
-        currentLookTime = 0f;
-    }
-}
 
     private bool IsLookingAtTarget()
     {

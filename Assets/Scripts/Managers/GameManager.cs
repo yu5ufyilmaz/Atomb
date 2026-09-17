@@ -29,7 +29,8 @@ public class GameManager : MonoBehaviour
 
     [Header("Oyun Durumu")]
     public bool isGamePaused = false;
-private Queue<char> inputQueue = new Queue<char>();
+    private Queue<char> inputQueue = new Queue<char>();
+
     private void Awake()
     {
         if (Instance == null)
@@ -72,35 +73,37 @@ private Queue<char> inputQueue = new Queue<char>();
         HandleCheatCode();
     }
 
-   private void HandleCheatCode()
-{
-    if (!isGameStarted || string.IsNullOrEmpty(Input.inputString)) 
-        return;
-
-    foreach (char c in Input.inputString)
+    private void HandleCheatCode()
     {
-        // Karakteri küçük harfe çevirip kuyruğa ekle
-        inputQueue.Enqueue(char.ToLower(c));
+        if (!isGameStarted || string.IsNullOrEmpty(Input.inputString))
+            return;
 
-        // Kuyruk boyutu şifremizi ("osm") geçerse en eskisini at
-        if (inputQueue.Count > secretEndGameCode.Length)
+        foreach (char c in Input.inputString)
         {
-            inputQueue.Dequeue(); 
-        }
+            // Karakteri küçük harfe çevirip kuyruğa ekle
+            inputQueue.Enqueue(char.ToLower(c));
 
-        // Boyut tam eşleşiyorsa kontrol et
-        if (inputQueue.Count == secretEndGameCode.Length)
-        {
-            string currentInput = new string(inputQueue.ToArray());
-            if (currentInput == secretEndGameCode)
+            // Kuyruk boyutu şifremizi ("osm") geçerse en eskisini at
+            if (inputQueue.Count > secretEndGameCode.Length)
             {
-                Debug.Log($"GİZLİ KOD GİRİLDİ ({secretEndGameCode.ToUpper()}) - FİNAL SİNEMATİĞİ BAŞLATILIYOR!");
-                TriggerFinalEnding();
-                inputQueue.Clear(); // Şifre tekrar tetiklenmesin diye temizle
+                inputQueue.Dequeue();
+            }
+
+            // Boyut tam eşleşiyorsa kontrol et
+            if (inputQueue.Count == secretEndGameCode.Length)
+            {
+                string currentInput = new string(inputQueue.ToArray());
+                if (currentInput == secretEndGameCode)
+                {
+                    Debug.Log(
+                        $"GİZLİ KOD GİRİLDİ ({secretEndGameCode.ToUpper()}) - FİNAL SİNEMATİĞİ BAŞLATILIYOR!"
+                    );
+                    TriggerFinalEnding();
+                    inputQueue.Clear(); // Şifre tekrar tetiklenmesin diye temizle
+                }
             }
         }
     }
-}
 
     public void TriggerFinalEnding()
     {
