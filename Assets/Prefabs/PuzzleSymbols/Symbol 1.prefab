@@ -125,7 +125,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cf11031dce0a45e41864830c9f6183d6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InteractableSymbol
-  symbolID: 1
+  itemData: {fileID: 11400000, guid: ce8e2235a26d3e74bbee6c9dcf92a81d, type: 2}
+  notebookResearchID: 0
   promptText: "Sembol\xFC ve \u0130pucunu Al"
   pickupSound: {fileID: 0}
   symbolLore: "Bu sembol kadim bir rit\xFCeli temsil ediyor...\n\u015Eifresi \u015Fu

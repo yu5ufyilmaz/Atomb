@@ -9,7 +9,7 @@ public struct PasswordLocationEntry
     public Rect hotspotUV;
 }
 
-[CreateAssetMenu(fileName = "PasswordData", menuName = "Atomb/Password Data", order = 0)]
+[CreateAssetMenu(fileName = "PasswordData", menuName = "Senzora/Password Data", order = 0)]
 public class PasswordData : ScriptableObject
 {
     [Header("Görsel Kimlik")]

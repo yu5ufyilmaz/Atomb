@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "NotebookDatabase", menuName = "Atomb/Notebook/Database")]
+[CreateAssetMenu(fileName = "NotebookDatabase", menuName = "Senzora/Notebook/Database")]
 public class NotebookData : ScriptableObject
 {
     [Header("  Tutorials (Bağımsız SO'lar)")]

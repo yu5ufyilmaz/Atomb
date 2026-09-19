@@ -25,7 +25,6 @@ public class PuzzleBookGenerator : MonoBehaviour
         currentBookInstance.transform.position = transform.position;
         currentBookInstance.name = "GENERATOR_BOOK_PREVIEW";
 
-        // Editörde kitabın kapağını açalım ki içine rahatça sembolü yerleştirelim
         InteractableBook bookScript = currentBookInstance.GetComponent<InteractableBook>();
         if (bookScript != null)
         {
@@ -52,21 +51,28 @@ public class PuzzleBookGenerator : MonoBehaviour
             Debug.LogWarning("Lütfen listeden bir sembol seçin!");
             return;
         }
+
         if (currentSymbolInstance != null)
             DestroyImmediate(currentSymbolInstance);
 
         currentSymbolInstance = PrefabUtility.InstantiatePrefab(selectedSymbolPrefab) as GameObject;
-        currentSymbolInstance.transform.SetParent(currentBookInstance.transform, false);
-        currentSymbolInstance.name = "TEMP_SYMBOL_PREVIEW";
 
+        // Sembolü PuzzleAnchor içine veya kitabın içine yerleştir
+        Transform existingAnchor = currentBookInstance.transform.Find("PuzzleAnchor");
+        if (existingAnchor != null)
+            currentSymbolInstance.transform.SetParent(existingAnchor, false);
+        else
+            currentSymbolInstance.transform.SetParent(currentBookInstance.transform, false);
+
+        currentSymbolInstance.name = "TEMP_SYMBOL_PREVIEW";
         Debug.Log(
-            "Sembol oluşturuldu. Lütfen sahne üzerinde sembolü istediğiniz yere taşıyıp döndürün."
+            "Sembol oluşturuldu. Lütfen sahne üzerinde sembolü istediğiniz yere taşıyıp boyutlandırın."
         );
     }
 
     [Header("3. Bulmaca Verileri & Kayıt")]
     public int targetPage = 4;
-    public string puzzlePasswordID = "SYMBOL_01";
+    public string puzzlePasswordID = "symbol_01";
 
     [ReadOnly]
     public GameObject currentBookInstance;
@@ -75,87 +81,110 @@ public class PuzzleBookGenerator : MonoBehaviour
     public GameObject currentSymbolInstance;
 
     [Button("3. Prefab Olarak Kaydet", EButtonEnableMode.Editor)]
-    public void SavePrefab()
+    private void GeneratePuzzleObject()
     {
-        if (currentBookInstance == null || currentSymbolInstance == null)
+        if (currentBookInstance == null)
         {
-            Debug.LogWarning(
-                "Kayıt yapabilmek için hem kitabın hem de sembolün spawn edilmiş olması gerekir!"
-            );
+            Debug.LogWarning("Önce kitabı spawn etmelisiniz!");
             return;
         }
 
+        // 1. PuzzleReceiver'ı bul veya ekle
+        PuzzleReceiver receiver = currentBookInstance.GetComponent<PuzzleReceiver>();
+        if (receiver == null)
+        {
+            receiver = currentBookInstance.AddComponent<PuzzleReceiver>();
+        }
+
+        // 2. Anchor objesini ayarla
+        Transform existingAnchor = currentBookInstance.transform.Find("PuzzleAnchor");
+        if (existingAnchor == null)
+        {
+            GameObject anchorObj = new GameObject("PuzzleAnchor");
+            anchorObj.transform.SetParent(currentBookInstance.transform);
+            anchorObj.transform.localPosition = Vector3.zero;
+            anchorObj.transform.localRotation = Quaternion.identity;
+            receiver.puzzleAnchor = anchorObj.transform;
+        }
+        else
+        {
+            receiver.puzzleAnchor = existingAnchor;
+        }
+
+        // 3. Verileri Receiver'a aktar
+        receiver.requiredItemID = puzzlePasswordID;
+
+        // DÜZELTME 1: Artık -1 yazmıyoruz, senin Inspector'dan girdiğin sayfayı alıyor!
+        receiver.targetPage = targetPage;
+
+        // 4. Eğer oyuncu sembolü eliyle yerleştirdiyse, koordinatları ve boyutları direkt al
+        if (currentSymbolInstance != null)
+        {
+            receiver.targetLocalPosition = currentSymbolInstance.transform.localPosition;
+            receiver.targetLocalRotation = currentSymbolInstance.transform.localEulerAngles;
+
+            // Kaydettikten sonra geçici sembolü sil
+            DestroyImmediate(currentSymbolInstance);
+            currentSymbolInstance = null;
+        }
+
+        // DÜZELTME 2: KAYDETMEDEN ÖNCE KİTABI OTOMATİK KAPAT VE SIFIRLA
         InteractableBook bookScript = currentBookInstance.GetComponent<InteractableBook>();
         if (bookScript != null)
         {
-            // Anchor yoksa otomatik oluştur
-            if (bookScript.targetSymbolAnchor == null)
-            {
-                GameObject anchorObj = new GameObject("SymbolAnchor");
-                anchorObj.transform.SetParent(currentBookInstance.transform);
-                bookScript.targetSymbolAnchor = anchorObj.transform;
-            }
-
-            // EŞİTLEME (MÜKEMMEL MANTIK): Anchor'ın pozisyon ve açısını senin ayarladığın sembolle aynı yapıyoruz.
-            bookScript.targetSymbolAnchor.position = currentSymbolInstance.transform.position;
-            bookScript.targetSymbolAnchor.rotation = currentSymbolInstance.transform.rotation;
-
-            // Kitap ayarlarını yapıyoruz
-            bookScript.isSymbolTargetBook = true;
-            bookScript.symbolPuzzlePage = targetPage;
-            bookScript.AssignPuzzlePassword(puzzlePasswordID);
+            bookScript.initialState = InteractableBook.BookInitialState.Closed;
+            bookScript.startPageIndex = 0; // Varsayılan kapalı duruma getirir
+            bookScript.PreviewBookInEditor();
         }
 
-        // Sembolü siliyoruz, çünkü oyunda zaten runtime'da spawn olacak.
-        DestroyImmediate(currentSymbolInstance);
-
-        // Klasör kontrolü
+        // 5. Prefab olarak kaydet
         string folderPath = "Assets/Prefabs/GeneratedPuzzles";
         if (!AssetDatabase.IsValidFolder(folderPath))
         {
-            string parentFolder = "Assets/Prefabs";
-            if (!AssetDatabase.IsValidFolder(parentFolder))
-                AssetDatabase.CreateFolder("Assets", "Prefabs");
-            AssetDatabase.CreateFolder(parentFolder, "GeneratedPuzzles");
+            System.IO.Directory.CreateDirectory(folderPath);
+            AssetDatabase.Refresh();
         }
 
-        // Kaydet
-        string savePath =
-            $"{folderPath}/{selectedBookPrefab.name}_Page{targetPage}_{puzzlePasswordID}.prefab";
-        savePath = AssetDatabase.GenerateUniqueAssetPath(savePath);
-
+        string localPath = AssetDatabase.GenerateUniqueAssetPath(
+            $"{folderPath}/{currentBookInstance.name}_{puzzlePasswordID}.prefab"
+        );
+        bool success;
         PrefabUtility.SaveAsPrefabAssetAndConnect(
             currentBookInstance,
-            savePath,
-            InteractionMode.UserAction
+            localPath,
+            InteractionMode.UserAction,
+            out success
         );
-        Debug.Log(
-            $"<color=green>Başarılı!</color> Yeni puzzle kitabı şuraya kaydedildi: {savePath}"
-        );
+
+        if (success)
+        {
+            Debug.Log(
+                $"[Jeneratör] Başarılı! Yeni bulmaca kitabı kapalı halde kaydedildi: {localPath}"
+            );
+        }
+        else
+        {
+            Debug.LogError("[Jeneratör] Kayıt sırasında bir hata oluştu.");
+        }
     }
 
     [Button("Sahneyi Temizle (Clear Scene)", EButtonEnableMode.Editor)]
     public void ClearScene()
     {
-        // Önce sembolü sil
         if (currentSymbolInstance != null)
         {
             DestroyImmediate(currentSymbolInstance);
             currentSymbolInstance = null;
         }
-
-        // Sonra kitabı sil
         if (currentBookInstance != null)
         {
             DestroyImmediate(currentBookInstance);
             currentBookInstance = null;
         }
-
         Debug.Log("Sahnedeki geçici jeneratör objeleri temizlendi.");
     }
 
     #region Otomatik Klasör Okuma (Dropdown Listeleri)
-
     private DropdownList<GameObject> GetBookPrefabs()
     {
         return LoadPrefabsFromFolder("Assets/Prefabs/Interactables");
@@ -169,8 +198,7 @@ public class PuzzleBookGenerator : MonoBehaviour
     private DropdownList<GameObject> LoadPrefabsFromFolder(string folderPath)
     {
         DropdownList<GameObject> list = new DropdownList<GameObject>();
-        list.Add("Seçiniz...", null); // Boş seçenek
-
+        list.Add("Seçiniz...", null);
         if (!AssetDatabase.IsValidFolder(folderPath))
             return list;
 
@@ -186,7 +214,6 @@ public class PuzzleBookGenerator : MonoBehaviour
         }
         return list;
     }
-
     #endregion
 }
 #endif

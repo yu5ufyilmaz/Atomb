@@ -93,14 +93,6 @@ public class InteractableBook : MonoBehaviour, IInteractable, IForceExitable
     public PasswordData bookIdentity;
     public bool canContainPassword = true;
 
-    // --- YENİ: SEMBOL BULMACASI AYARLARI ---
-    [Header("🧩 3D Sembol Bulmacası Ayarları")]
-    public bool isSymbolTargetBook = false;
-    public int requiredSymbolID = 0; // Bu kitabı hangi sembol açar?
-    public int symbolPuzzlePage = -1; // Çözümün yapılacağı sayfa indeksi
-    public Transform targetSymbolAnchor;
-
-
     // --- YENİ: OUTLINE & HIGHLIGHT AYARLARI ---
     [Header("✨ Vurgu (Highlight) Ayarları")]
     [Tooltip("HDRP Outline Scripti (Varsa Emission yerine bu çalışır)")]
@@ -400,19 +392,31 @@ public class InteractableBook : MonoBehaviour, IInteractable, IForceExitable
     {
         if (isOpen && !isAnimating)
         {
-            // YENİ: Sadece GameManager'da aktif olan (oyuncunun tuttuğu) kitap bu tuşları dinlesin!
             if (
                 GameManager.Instance != null
                 && GameManager.Instance.activeInteraction == (IInteractable)this
             )
             {
-                HandlePageInput();
+                HandlePageInput(); // A ve D ile sayfa çevirme her zaman serbest
 
                 if (isPasswordBook && !hasPasswordBeenFound && Input.GetMouseButtonDown(0))
                     CheckForPasswordClick();
 
+                // T TUŞU: Oyuncu sembolü sayfaya koyar veya kaldırır
+                if (Input.GetKeyDown(KeyCode.T))
+                {
+                    PuzzleReceiver receiver = GetComponent<PuzzleReceiver>();
+                    if (receiver != null)
+                        receiver.ToggleSymbolMode();
+                }
+
+                // F TUŞU: Önce sembolü kaldırır (açıksa), hemen ardından kitabı kapatır
                 if (Input.GetKeyDown(KeyCode.F))
                 {
+                    PuzzleReceiver receiver = GetComponent<PuzzleReceiver>();
+                    if (receiver != null)
+                        receiver.CloseSymbol();
+
                     StartCoroutine(CloseBook());
                 }
 
@@ -1043,11 +1047,7 @@ public class InteractableBook : MonoBehaviour, IInteractable, IForceExitable
         isPasswordBook = true;
         passwordID = newPasswordID;
         hasPasswordBeenFound = false;
-
-        // UV veya Hotspot atamasına gerek yok, çünkü tıklamayla değil Q tuşu (sembol) ile çözülecek!
-        Debug.Log(
-            $"[InteractableBook] SEMBOL PUZZLE ŞİFRESİ ATANDI: {passwordID} (Sayfa: {symbolPuzzlePage})"
-        );
+        Debug.Log($"[InteractableBook] SEMBOL PUZZLE ŞİFRESİ ATANDI: {passwordID}");
     }
 
     public void ClearPassword()
@@ -1066,7 +1066,14 @@ public class InteractableBook : MonoBehaviour, IInteractable, IForceExitable
     public void ForceExit()
     {
         if (isOpen && !isAnimating)
+        {
+            // Kaçış durumunda sembol de temizlensin
+            PuzzleReceiver receiver = GetComponent<PuzzleReceiver>();
+            if (receiver != null)
+                receiver.CloseSymbol();
+
             StartCoroutine(CloseBook());
+        }
     }
 
     private void OnDrawGizmosSelected()

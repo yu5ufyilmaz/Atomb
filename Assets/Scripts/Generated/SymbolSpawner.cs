@@ -8,7 +8,7 @@ public class SymbolSpawner : MonoBehaviour, ISaveable
     public Transform[] spawnPoints;
 
     [Header("Debug/Status")]
-    public int spawnedSymbolID;
+    public string spawnedItemID = "";
     private int lastSpawnPointIndex = -1;
     private GameObject currentSpawnedObject;
 
@@ -62,9 +62,9 @@ public class SymbolSpawner : MonoBehaviour, ISaveable
         currentSpawnedObject.transform.SetParent(spawnPoints[pointIndex]);
 
         InteractableSymbol symbolScript = currentSpawnedObject.GetComponent<InteractableSymbol>();
-        if (symbolScript != null)
+        if (symbolScript != null && symbolScript.itemData != null)
         {
-            spawnedSymbolID = symbolScript.symbolID;
+            spawnedItemID = symbolScript.itemData.itemID;
         }
     }
 
@@ -76,32 +76,34 @@ public class SymbolSpawner : MonoBehaviour, ISaveable
         wasLoaded = true; // Yükleme işleminin başladığını işaretle
 
         // 1. Eğer oyuncu sembolü zaten almışsa dünyadaki her şeyi temizle ve çık
-        if (data.hasSymbol)
+        // ESKİ: if (data.hasSymbol)
+        if (data.inventoryItemIDs != null && data.inventoryItemIDs.Count > 0)
         {
             if (currentSpawnedObject != null)
                 Destroy(currentSpawnedObject);
             return;
         }
-
         // 2. Eğer sembol dünyadaysa kayıtlı konuma spawn et
+        // LoadData İçinde Şurayı Bul ve Değiştir:
         if (data.isSymbolInWorld && data.spawnedSymbolLocationIndex != -1)
         {
             this.lastSpawnPointIndex = data.spawnedSymbolLocationIndex;
-            this.spawnedSymbolID = data.spawnedSymbolID;
-
+            this.spawnedItemID = data.spawnedItemID;
             int targetPrefabIndex = -1;
             for (int i = 0; i < symbolPrefabs.Length; i++)
             {
+                // YENİ KOD:
+                var interactable = symbolPrefabs[i].GetComponent<InteractableSymbol>();
                 if (
-                    symbolPrefabs[i].GetComponent<InteractableSymbol>().symbolID
-                    == data.spawnedSymbolID
+                    interactable != null
+                    && interactable.itemData != null
+                    && interactable.itemData.itemID == data.spawnedItemID
                 )
                 {
                     targetPrefabIndex = i;
                     break;
                 }
             }
-
             if (targetPrefabIndex != -1)
             {
                 SpawnSpecificSymbol(targetPrefabIndex, lastSpawnPointIndex);
@@ -112,7 +114,7 @@ public class SymbolSpawner : MonoBehaviour, ISaveable
     public void SaveData(ref GameData data)
     {
         data.isSymbolInWorld = (currentSpawnedObject != null);
-        data.spawnedSymbolID = this.spawnedSymbolID;
+        data.spawnedItemID = this.spawnedItemID;
         data.spawnedSymbolLocationIndex = this.lastSpawnPointIndex;
     }
 }

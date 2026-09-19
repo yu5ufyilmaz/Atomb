@@ -100,10 +100,10 @@ public class PasswordManager : MonoBehaviour, ISaveable
         }
 
         // --- BULMACA KİTABI ---
-        int activeSymbolID =
-            SymbolSpawner.Instance != null ? SymbolSpawner.Instance.spawnedSymbolID : -1;
+        // Artık kitaptaki kutucukları işaretlemene gerek yok.
+        // Üzerinde PuzzleReceiver scripti olan kitabı otomatik olarak bulur!
         InteractableBook puzzleBook = allBooksInLevel.FirstOrDefault(b =>
-            b != null && b.isSymbolTargetBook && b.requiredSymbolID == activeSymbolID
+            b != null && b.GetComponent<PuzzleReceiver>() != null
         );
 
         if (puzzleBook != null)
@@ -112,7 +112,6 @@ public class PasswordManager : MonoBehaviour, ISaveable
             puzzleBook.AssignPuzzlePassword(puzzlePass);
             requiredPasswords.Add(puzzlePass);
 
-            // HAFIZAYA AL
             currentSessionPasswords.Add(
                 new GameData.ObjectPasswordPair
                 {
@@ -122,7 +121,7 @@ public class PasswordManager : MonoBehaviour, ISaveable
                     isPuzzleBook = true,
                 }
             );
-            Debug.Log($"[Oyun Şifresi - SEMBOL MAKİNESİ] {puzzleBook.name}: {puzzlePass}");
+            Debug.Log($"[Oyun Şifresi - SEMBOL KİTABI] {puzzleBook.name}: {puzzlePass}");
         }
 
         int machineCount = 2; // Osiloskop + Spektrometre

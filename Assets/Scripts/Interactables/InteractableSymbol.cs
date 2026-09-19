@@ -4,9 +4,9 @@ using UnityEngine;
 
 public class InteractableSymbol : MonoBehaviour, IInteractable, IForceExitable
 {
-    [Header("Sembol Kimliği")]
-    [Tooltip("Bu sembol hangi ID'ye sahip? (0, 1, 2, 3)")]
-    public int symbolID;
+    [Header("Eşya Verisi")]
+    public PuzzleItemSO itemData;
+    public int notebookResearchID = 0; // NotebookUI hata vermesin diye geçici tutuyoruz
 
     [Header("Etkileşim Ayarları")]
     public string promptText = "Sembolü İncele";
@@ -122,17 +122,19 @@ public class InteractableSymbol : MonoBehaviour, IInteractable, IForceExitable
 
         if (PuzzleInventoryManager.Instance != null)
         {
-            PuzzleInventoryManager.Instance.PickupSymbol(symbolID);
+            PuzzleInventoryManager.Instance.PickupItem(itemData);
 
             if (pickupSound != null)
                 AudioSource.PlayClipAtPoint(pickupSound, mainCamera.transform.position);
 
+            // YENİ:
+            PuzzleInventoryManager.Instance.PickupItem(itemData);
             if (NotebookUI.Instance != null)
-            {
-                NotebookUI.Instance.UnlockSymbolResearch(symbolID);
-            }
+                NotebookUI.Instance.UnlockSymbolResearch(notebookResearchID);
 
-            Debug.Log($"[Oyun Dünyası] Oyuncu {symbolID} ID'li sembolü inceledi ve cebine attı!");
+            Debug.Log(
+                $"[Oyun Dünyası] Oyuncu {itemData.itemID} ID'li eşyayı inceledi ve cebine attı!"
+            );
         }
 
         if (

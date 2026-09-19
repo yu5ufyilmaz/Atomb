@@ -7054,6 +7054,67 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 129536458}
   m_CullTransparentMesh: 1
+--- !u!1001 &130249158
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 8170603485305471530, guid: 47ea034f8d7cb8148aa30fc0134e3e66, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 20.897
+      objectReference: {fileID: 0}
+    - target: {fileID: 8170603485305471530, guid: 47ea034f8d7cb8148aa30fc0134e3e66, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 1.929
+      objectReference: {fileID: 0}
+    - target: {fileID: 8170603485305471530, guid: 47ea034f8d7cb8148aa30fc0134e3e66, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -0.18
+      objectReference: {fileID: 0}
+    - target: {fileID: 8170603485305471530, guid: 47ea034f8d7cb8148aa30fc0134e3e66, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8170603485305471530, guid: 47ea034f8d7cb8148aa30fc0134e3e66, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8170603485305471530, guid: 47ea034f8d7cb8148aa30fc0134e3e66, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8170603485305471530, guid: 47ea034f8d7cb8148aa30fc0134e3e66, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8170603485305471530, guid: 47ea034f8d7cb8148aa30fc0134e3e66, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8170603485305471530, guid: 47ea034f8d7cb8148aa30fc0134e3e66, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8170603485305471530, guid: 47ea034f8d7cb8148aa30fc0134e3e66, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9018318074293804226, guid: 47ea034f8d7cb8148aa30fc0134e3e66, type: 3}
+      propertyPath: m_Name
+      value: Symbol 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 9018318074293804226, guid: 47ea034f8d7cb8148aa30fc0134e3e66, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 47ea034f8d7cb8148aa30fc0134e3e66, type: 3}
 --- !u!1 &130348777
 GameObject:
   m_ObjectHideFlags: 0
@@ -7811,10 +7872,6 @@ MonoBehaviour:
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: 2633f89b3a7c9c24d9891c9441650338, type: 2}
   canContainPassword: 1
-  isSymbolTargetBook: 0
-  requiredSymbolID: 0
-  symbolPuzzlePage: -1
-  targetSymbolAnchor: {fileID: 0}
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -10776,10 +10833,6 @@ MonoBehaviour:
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: 18f4c2f2e786f504085a2ca1bc9ebfd9, type: 2}
   canContainPassword: 0
-  isSymbolTargetBook: 1
-  requiredSymbolID: 0
-  symbolPuzzlePage: 0
-  targetSymbolAnchor: {fileID: 344478638}
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -11886,10 +11939,6 @@ MonoBehaviour:
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: 2a0f195687fb3034f9280cd43ec4cf0a, type: 2}
   canContainPassword: 1
-  isSymbolTargetBook: 0
-  requiredSymbolID: 0
-  symbolPuzzlePage: -1
-  targetSymbolAnchor: {fileID: 0}
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -13066,7 +13115,6 @@ Transform:
   - {fileID: 195555929}
   - {fileID: 1666612827}
   - {fileID: 1109607866}
-  - {fileID: 1825376492}
   - {fileID: 1256292137}
   - {fileID: 753543259}
   - {fileID: 1962715669}
@@ -14216,10 +14264,6 @@ MonoBehaviour:
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
   canContainPassword: 0
-  isSymbolTargetBook: 0
-  requiredSymbolID: 0
-  symbolPuzzlePage: -1
-  targetSymbolAnchor: {fileID: 0}
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -19613,10 +19657,6 @@ MonoBehaviour:
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
   canContainPassword: 0
-  isSymbolTargetBook: 0
-  requiredSymbolID: 0
-  symbolPuzzlePage: -1
-  targetSymbolAnchor: {fileID: 0}
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -20393,10 +20433,6 @@ MonoBehaviour:
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
   canContainPassword: 0
-  isSymbolTargetBook: 0
-  requiredSymbolID: 0
-  symbolPuzzlePage: -1
-  targetSymbolAnchor: {fileID: 0}
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -22503,10 +22539,6 @@ MonoBehaviour:
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
   canContainPassword: 0
-  isSymbolTargetBook: 1
-  requiredSymbolID: 0
-  symbolPuzzlePage: 0
-  targetSymbolAnchor: {fileID: 1654305758}
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -28443,10 +28475,6 @@ MonoBehaviour:
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: 07341820b2684904898940bff856a3e3, type: 2}
   canContainPassword: 1
-  isSymbolTargetBook: 0
-  requiredSymbolID: 0
-  symbolPuzzlePage: -1
-  targetSymbolAnchor: {fileID: 0}
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -29450,6 +29478,7 @@ Transform:
   - {fileID: 1488042625}
   - {fileID: 732131667}
   - {fileID: 866179817}
+  - {fileID: 909353072}
   - {fileID: 555620813}
   - {fileID: 1530810478}
   - {fileID: 1214201492}
@@ -31519,8 +31548,7 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 909353072}
+  m_Children: []
   m_Father: {fileID: 491873391}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!82 &555620814
@@ -32628,10 +32656,6 @@ MonoBehaviour:
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
   canContainPassword: 0
-  isSymbolTargetBook: 0
-  requiredSymbolID: 0
-  symbolPuzzlePage: -1
-  targetSymbolAnchor: {fileID: 0}
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -33555,10 +33579,6 @@ MonoBehaviour:
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
   canContainPassword: 0
-  isSymbolTargetBook: 0
-  requiredSymbolID: 0
-  symbolPuzzlePage: -1
-  targetSymbolAnchor: {fileID: 0}
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -34908,6 +34928,8 @@ Transform:
   - {fileID: 1342168772}
   - {fileID: 938416271}
   - {fileID: 698574203}
+  - {fileID: 1184031333}
+  - {fileID: 1400128190}
   m_Father: {fileID: 679974355}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &603693742
@@ -37616,10 +37638,6 @@ MonoBehaviour:
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
   canContainPassword: 0
-  isSymbolTargetBook: 0
-  requiredSymbolID: 0
-  symbolPuzzlePage: -1
-  targetSymbolAnchor: {fileID: 0}
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -38143,10 +38161,6 @@ MonoBehaviour:
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
   canContainPassword: 0
-  isSymbolTargetBook: 0
-  requiredSymbolID: 0
-  symbolPuzzlePage: -1
-  targetSymbolAnchor: {fileID: 0}
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -38563,10 +38577,6 @@ MonoBehaviour:
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: edb514d172dfc2e49acc780fede64633, type: 2}
   canContainPassword: 1
-  isSymbolTargetBook: 0
-  requiredSymbolID: 0
-  symbolPuzzlePage: -1
-  targetSymbolAnchor: {fileID: 0}
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -39713,10 +39723,6 @@ MonoBehaviour:
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: 725e301b34f00429ca9064b7d0eaa616, type: 2}
   canContainPassword: 1
-  isSymbolTargetBook: 0
-  requiredSymbolID: 0
-  symbolPuzzlePage: -1
-  targetSymbolAnchor: {fileID: 0}
   outlineController: {fileID: 0}
   highlightColor: {r: 0.2, g: 0.2, b: 0.1, a: 1}
   emissionIntensity: 10
@@ -41288,10 +41294,6 @@ MonoBehaviour:
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
   canContainPassword: 0
-  isSymbolTargetBook: 1
-  requiredSymbolID: 2
-  symbolPuzzlePage: 0
-  targetSymbolAnchor: {fileID: 83496114}
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -42093,10 +42095,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 732131667}
-  - component: {fileID: 732131669}
   - component: {fileID: 732131668}
   - component: {fileID: 732131670}
   - component: {fileID: 732131671}
+  - component: {fileID: 732131672}
   m_Layer: 0
   m_Name: SymbolManager
   m_TagString: Untagged
@@ -42216,33 +42218,6 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
---- !u!114 &732131669
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 732131666}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cb358ea69e64af644b81cc47387a3175, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::SymbolOverlayManager
-  symbolPrefabs:
-  - {fileID: 3348829901132193419, guid: 26751fb8ec58b724ba6b5e142a3f26ea, type: 3}
-  - {fileID: 9018318074293804226, guid: 47ea034f8d7cb8148aa30fc0134e3e66, type: 3}
-  hoverDistance: 0.55
-  moveSpeed: 0.005
-  puzzleRotationSpeed: 10
-  scrollRotationAxis: {x: 0, y: 1, z: 0}
-  inspectDistance: 0.2
-  freeRotationSpeed: 10
-  spawnScaleOffset: {x: 0.7, y: 0.7, z: 0.7}
-  spawnRotationOffset: {x: 90, y: 0, z: 180}
-  distanceTolerance: 0.01
-  angleTolerance: 5
-  successSound: {fileID: 0}
-  errorSound: {fileID: 0}
 --- !u!114 &732131670
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -42255,8 +42230,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d1c87ea3a48d9194b9cad42c2c8cddb9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PuzzleInventoryManager
-  hasSymbol: 0
-  currentSymbolID: 0
+  allItemsDatabase:
+  - {fileID: 11400000, guid: 2bb1f20effcebfe41b024289569060e7, type: 2}
+  - {fileID: 11400000, guid: ce8e2235a26d3e74bbee6c9dcf92a81d, type: 2}
+  inventoryItems: []
+  activeItem: {fileID: 0}
   isOverlayActive: 0
 --- !u!114 &732131671
 MonoBehaviour:
@@ -42271,11 +42249,27 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SymbolSpawner
   symbolPrefabs:
+  - {fileID: 9018318074293804226, guid: 47ea034f8d7cb8148aa30fc0134e3e66, type: 3}
   - {fileID: 3348829901132193419, guid: 26751fb8ec58b724ba6b5e142a3f26ea, type: 3}
   spawnPoints:
   - {fileID: 1211442166}
   - {fileID: 534758935}
-  spawnedSymbolID: -1
+  spawnedItemID: 
+--- !u!114 &732131672
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 732131666}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cb358ea69e64af644b81cc47387a3175, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SymbolOverlayManager
+  inspectDistance: 0.5
+  freeRotationSpeed: 10
+  errorSound: {fileID: 0}
 --- !u!1001 &732777726
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -43817,10 +43811,6 @@ MonoBehaviour:
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
   canContainPassword: 0
-  isSymbolTargetBook: 0
-  requiredSymbolID: 0
-  symbolPuzzlePage: -1
-  targetSymbolAnchor: {fileID: 0}
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -51704,7 +51694,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 555620813}
+  m_Father: {fileID: 491873391}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &909353073
 MonoBehaviour:
@@ -51958,7 +51948,6 @@ MonoBehaviour:
   - {fileID: 1086956341}
   - {fileID: 1318469514}
   - {fileID: 1109607870}
-  - {fileID: 1825376496}
   - {fileID: 1379879204}
   - {fileID: 1737783710}
   - {fileID: 1712195291}
@@ -51988,6 +51977,8 @@ MonoBehaviour:
   - {fileID: 179452384}
   - {fileID: 938416276}
   - {fileID: 1342168775}
+  - {fileID: 1694777847}
+  - {fileID: 1668555094}
   tutorialPassword: AAAAAAAA_+_999
   tutorialNote: {fileID: 919132147498327389}
   totalPasswordsNeeded: 3
@@ -52994,10 +52985,6 @@ MonoBehaviour:
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: 725e301b34f00429ca9064b7d0eaa616, type: 2}
   canContainPassword: 1
-  isSymbolTargetBook: 0
-  requiredSymbolID: 0
-  symbolPuzzlePage: -1
-  targetSymbolAnchor: {fileID: 0}
   outlineController: {fileID: 0}
   highlightColor: {r: 0.2, g: 0.2, b: 0.1, a: 1}
   emissionIntensity: 10
@@ -59828,10 +59815,6 @@ MonoBehaviour:
   animationDuration: 1
   bookIdentity: {fileID: 0}
   canContainPassword: 0
-  isSymbolTargetBook: 0
-  requiredSymbolID: 0
-  symbolPuzzlePage: -1
-  targetSymbolAnchor: {fileID: 0}
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -60304,10 +60287,6 @@ MonoBehaviour:
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: e8e70f6881874c346a915ed2051a4797, type: 2}
   canContainPassword: 1
-  isSymbolTargetBook: 0
-  requiredSymbolID: 0
-  symbolPuzzlePage: -1
-  targetSymbolAnchor: {fileID: 0}
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -61420,10 +61399,6 @@ MonoBehaviour:
   animationDuration: 1
   bookIdentity: {fileID: 0}
   canContainPassword: 0
-  isSymbolTargetBook: 0
-  requiredSymbolID: 0
-  symbolPuzzlePage: -1
-  targetSymbolAnchor: {fileID: 0}
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -62441,7 +62416,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1109607866
 Transform:
   m_ObjectHideFlags: 0
@@ -62646,10 +62621,6 @@ MonoBehaviour:
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
   canContainPassword: 0
-  isSymbolTargetBook: 1
-  requiredSymbolID: 0
-  symbolPuzzlePage: 1
-  targetSymbolAnchor: {fileID: 1946379272}
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -65451,6 +65422,68 @@ Transform:
   m_Children: []
   m_Father: {fileID: 845063109}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1001 &1184031332
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 602412423}
+    m_Modifications:
+    - target: {fileID: 2849696930274904267, guid: 8682d31396f60b04193ee5cbf1e52904, type: 3}
+      propertyPath: m_Name
+      value: P_Book_Puzzle_symbol_01
+      objectReference: {fileID: 0}
+    - target: {fileID: 5164744945074545203, guid: 8682d31396f60b04193ee5cbf1e52904, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 21.375
+      objectReference: {fileID: 0}
+    - target: {fileID: 5164744945074545203, guid: 8682d31396f60b04193ee5cbf1e52904, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 1.33
+      objectReference: {fileID: 0}
+    - target: {fileID: 5164744945074545203, guid: 8682d31396f60b04193ee5cbf1e52904, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -0.86
+      objectReference: {fileID: 0}
+    - target: {fileID: 5164744945074545203, guid: 8682d31396f60b04193ee5cbf1e52904, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.9828831
+      objectReference: {fileID: 0}
+    - target: {fileID: 5164744945074545203, guid: 8682d31396f60b04193ee5cbf1e52904, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0.0035939629
+      objectReference: {fileID: 0}
+    - target: {fileID: 5164744945074545203, guid: 8682d31396f60b04193ee5cbf1e52904, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0.18343961
+      objectReference: {fileID: 0}
+    - target: {fileID: 5164744945074545203, guid: 8682d31396f60b04193ee5cbf1e52904, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0.016668616
+      objectReference: {fileID: 0}
+    - target: {fileID: 5164744945074545203, guid: 8682d31396f60b04193ee5cbf1e52904, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 179.245
+      objectReference: {fileID: 0}
+    - target: {fileID: 5164744945074545203, guid: 8682d31396f60b04193ee5cbf1e52904, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 201.132
+      objectReference: {fileID: 0}
+    - target: {fileID: 5164744945074545203, guid: 8682d31396f60b04193ee5cbf1e52904, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 178.198
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 8682d31396f60b04193ee5cbf1e52904, type: 3}
+--- !u!4 &1184031333 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 5164744945074545203, guid: 8682d31396f60b04193ee5cbf1e52904, type: 3}
+  m_PrefabInstance: {fileID: 1184031332}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1184448350
 GameObject:
   m_ObjectHideFlags: 0
@@ -65989,10 +66022,6 @@ MonoBehaviour:
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
   canContainPassword: 0
-  isSymbolTargetBook: 0
-  requiredSymbolID: 0
-  symbolPuzzlePage: -1
-  targetSymbolAnchor: {fileID: 0}
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -66736,10 +66765,6 @@ MonoBehaviour:
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
   canContainPassword: 0
-  isSymbolTargetBook: 0
-  requiredSymbolID: 0
-  symbolPuzzlePage: -1
-  targetSymbolAnchor: {fileID: 0}
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -67957,10 +67982,6 @@ MonoBehaviour:
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
   canContainPassword: 0
-  isSymbolTargetBook: 0
-  requiredSymbolID: 0
-  symbolPuzzlePage: -1
-  targetSymbolAnchor: {fileID: 0}
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -70220,10 +70241,6 @@ MonoBehaviour:
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: 4784611e90dfbfc4c9ca6a2f2d182815, type: 2}
   canContainPassword: 1
-  isSymbolTargetBook: 0
-  requiredSymbolID: 0
-  symbolPuzzlePage: -1
-  targetSymbolAnchor: {fileID: 0}
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -70803,10 +70820,6 @@ MonoBehaviour:
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
   canContainPassword: 0
-  isSymbolTargetBook: 0
-  requiredSymbolID: 0
-  symbolPuzzlePage: -1
-  targetSymbolAnchor: {fileID: 0}
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -73676,10 +73689,6 @@ MonoBehaviour:
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
   canContainPassword: 0
-  isSymbolTargetBook: 0
-  requiredSymbolID: 0
-  symbolPuzzlePage: -1
-  targetSymbolAnchor: {fileID: 0}
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -75106,10 +75115,6 @@ MonoBehaviour:
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: 51515ebaa232ea446892709aafa79e1c, type: 2}
   canContainPassword: 0
-  isSymbolTargetBook: 0
-  requiredSymbolID: 0
-  symbolPuzzlePage: -1
-  targetSymbolAnchor: {fileID: 0}
   outlineController: {fileID: 0}
   highlightColor: {r: 0.2, g: 0.2, b: 0.1, a: 0.53333336}
   emissionIntensity: 1
@@ -75485,99 +75490,6 @@ Transform:
   - {fileID: 2074940517}
   m_Father: {fileID: 1036709156}
   m_LocalEulerAnglesHint: {x: -0.0000000016675266, y: 2.9679075e-24, z: -2.0395305e-13}
---- !u!1001 &1350035990
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 2215098813098016948, guid: 959de0e9aa4616b4eaad6dfbf5e05639, type: 3}
-      propertyPath: initialState
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2494778377501964735, guid: 959de0e9aa4616b4eaad6dfbf5e05639, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 0.7069886
-      objectReference: {fileID: 0}
-    - target: {fileID: 2494778377501964735, guid: 959de0e9aa4616b4eaad6dfbf5e05639, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: -0.012930311
-      objectReference: {fileID: 0}
-    - target: {fileID: 2494778377501964735, guid: 959de0e9aa4616b4eaad6dfbf5e05639, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: -0.7069886
-      objectReference: {fileID: 0}
-    - target: {fileID: 2494778377501964735, guid: 959de0e9aa4616b4eaad6dfbf5e05639, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: -0.012930309
-      objectReference: {fileID: 0}
-    - target: {fileID: 4357193489571933958, guid: 959de0e9aa4616b4eaad6dfbf5e05639, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 20.702
-      objectReference: {fileID: 0}
-    - target: {fileID: 4357193489571933958, guid: 959de0e9aa4616b4eaad6dfbf5e05639, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 1.471
-      objectReference: {fileID: 0}
-    - target: {fileID: 4357193489571933958, guid: 959de0e9aa4616b4eaad6dfbf5e05639, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: -1.021
-      objectReference: {fileID: 0}
-    - target: {fileID: 4357193489571933958, guid: 959de0e9aa4616b4eaad6dfbf5e05639, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 0.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 4357193489571933958, guid: 959de0e9aa4616b4eaad6dfbf5e05639, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 4357193489571933958, guid: 959de0e9aa4616b4eaad6dfbf5e05639, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: -0.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 4357193489571933958, guid: 959de0e9aa4616b4eaad6dfbf5e05639, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 4357193489571933958, guid: 959de0e9aa4616b4eaad6dfbf5e05639, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 90
-      objectReference: {fileID: 0}
-    - target: {fileID: 4357193489571933958, guid: 959de0e9aa4616b4eaad6dfbf5e05639, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 90
-      objectReference: {fileID: 0}
-    - target: {fileID: 4357193489571933958, guid: 959de0e9aa4616b4eaad6dfbf5e05639, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 180
-      objectReference: {fileID: 0}
-    - target: {fileID: 6653831019683333630, guid: 959de0e9aa4616b4eaad6dfbf5e05639, type: 3}
-      propertyPath: m_Name
-      value: P_Book_Page2_SYMBOL_01
-      objectReference: {fileID: 0}
-    - target: {fileID: 7144778864726976597, guid: 959de0e9aa4616b4eaad6dfbf5e05639, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 0.6937998
-      objectReference: {fileID: 0}
-    - target: {fileID: 7144778864726976597, guid: 959de0e9aa4616b4eaad6dfbf5e05639, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0.720168
-      objectReference: {fileID: 0}
-    - target: {fileID: 7144778864726976597, guid: 959de0e9aa4616b4eaad6dfbf5e05639, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0.0000000011525928
-      objectReference: {fileID: 0}
-    - target: {fileID: 7144778864726976597, guid: 959de0e9aa4616b4eaad6dfbf5e05639, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0.0000000011525928
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 959de0e9aa4616b4eaad6dfbf5e05639, type: 3}
 --- !u!1 &1352755890
 GameObject:
   m_ObjectHideFlags: 0
@@ -77072,10 +76984,6 @@ MonoBehaviour:
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
   canContainPassword: 0
-  isSymbolTargetBook: 0
-  requiredSymbolID: 0
-  symbolPuzzlePage: -1
-  targetSymbolAnchor: {fileID: 0}
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -77875,6 +77783,68 @@ Transform:
   - {fileID: 902465201}
   m_Father: {fileID: 2006143333}
   m_LocalEulerAnglesHint: {x: -89.99999, y: 0, z: 0}
+--- !u!1001 &1400128189
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 602412423}
+    m_Modifications:
+    - target: {fileID: 4681326211205600835, guid: b4338c8d0bad8a3468f8fa8d904d95b4, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 20.978
+      objectReference: {fileID: 0}
+    - target: {fileID: 4681326211205600835, guid: b4338c8d0bad8a3468f8fa8d904d95b4, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 1.436
+      objectReference: {fileID: 0}
+    - target: {fileID: 4681326211205600835, guid: b4338c8d0bad8a3468f8fa8d904d95b4, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -0.917
+      objectReference: {fileID: 0}
+    - target: {fileID: 4681326211205600835, guid: b4338c8d0bad8a3468f8fa8d904d95b4, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.9770288
+      objectReference: {fileID: 0}
+    - target: {fileID: 4681326211205600835, guid: b4338c8d0bad8a3468f8fa8d904d95b4, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0.01061548
+      objectReference: {fileID: 0}
+    - target: {fileID: 4681326211205600835, guid: b4338c8d0bad8a3468f8fa8d904d95b4, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0.21283026
+      objectReference: {fileID: 0}
+    - target: {fileID: 4681326211205600835, guid: b4338c8d0bad8a3468f8fa8d904d95b4, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0.0023124143
+      objectReference: {fileID: 0}
+    - target: {fileID: 4681326211205600835, guid: b4338c8d0bad8a3468f8fa8d904d95b4, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 181.245
+      objectReference: {fileID: 0}
+    - target: {fileID: 4681326211205600835, guid: b4338c8d0bad8a3468f8fa8d904d95b4, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 204.578
+      objectReference: {fileID: 0}
+    - target: {fileID: 4681326211205600835, guid: b4338c8d0bad8a3468f8fa8d904d95b4, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 180
+      objectReference: {fileID: 0}
+    - target: {fileID: 6571600041120973274, guid: b4338c8d0bad8a3468f8fa8d904d95b4, type: 3}
+      propertyPath: m_Name
+      value: P_Book_Puzzle_symbol_02
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: b4338c8d0bad8a3468f8fa8d904d95b4, type: 3}
+--- !u!4 &1400128190 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 4681326211205600835, guid: b4338c8d0bad8a3468f8fa8d904d95b4, type: 3}
+  m_PrefabInstance: {fileID: 1400128189}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1400466091
 GameObject:
   m_ObjectHideFlags: 0
@@ -79203,10 +79173,6 @@ MonoBehaviour:
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
   canContainPassword: 0
-  isSymbolTargetBook: 0
-  requiredSymbolID: 0
-  symbolPuzzlePage: -1
-  targetSymbolAnchor: {fileID: 0}
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -81735,10 +81701,6 @@ MonoBehaviour:
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
   canContainPassword: 0
-  isSymbolTargetBook: 0
-  requiredSymbolID: 0
-  symbolPuzzlePage: -1
-  targetSymbolAnchor: {fileID: 0}
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -81979,10 +81941,6 @@ MonoBehaviour:
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
   canContainPassword: 0
-  isSymbolTargetBook: 0
-  requiredSymbolID: 0
-  symbolPuzzlePage: -1
-  targetSymbolAnchor: {fileID: 0}
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -82796,10 +82754,6 @@ MonoBehaviour:
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
   canContainPassword: 0
-  isSymbolTargetBook: 0
-  requiredSymbolID: 0
-  symbolPuzzlePage: -1
-  targetSymbolAnchor: {fileID: 0}
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -83846,10 +83800,6 @@ MonoBehaviour:
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
   canContainPassword: 0
-  isSymbolTargetBook: 0
-  requiredSymbolID: 0
-  symbolPuzzlePage: -1
-  targetSymbolAnchor: {fileID: 0}
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -87659,119 +87609,6 @@ Light:
   m_CorrespondingSourceObject: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
   m_PrefabInstance: {fileID: 1560473268}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &1562037268
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1562037269}
-  - component: {fileID: 1562037272}
-  - component: {fileID: 1562037271}
-  - component: {fileID: 1562037270}
-  m_Layer: 0
-  m_Name: Plane
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1562037269
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1562037268}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 8.6, y: -0.869, z: -9.29}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 543450653286249272}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!64 &1562037270
-MeshCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1562037268}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 5
-  m_Convex: 0
-  m_CookingOptions: 30
-  m_Mesh: {fileID: 10209, guid: 0000000000000000e000000000000000, type: 0}
---- !u!23 &1562037271
-MeshRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1562037268}
-  m_Enabled: 1
-  m_CastShadows: 1
-  m_ReceiveShadows: 1
-  m_DynamicOccludee: 1
-  m_StaticShadowCaster: 0
-  m_MotionVectors: 1
-  m_LightProbeUsage: 1
-  m_ReflectionProbeUsage: 1
-  m_RayTracingMode: 2
-  m_RayTraceProcedural: 0
-  m_RayTracingAccelStructBuildFlagsOverride: 0
-  m_RayTracingAccelStructBuildFlags: 1
-  m_SmallMeshCulling: 1
-  m_ForceMeshLod: -1
-  m_MeshLodSelectionBias: 0
-  m_RenderingLayerMask: 1
-  m_RendererPriority: 0
-  m_Materials:
-  - {fileID: 2100000, guid: 73c176f402d2c2f4d929aa5da7585d17, type: 2}
-  m_StaticBatchInfo:
-    firstSubMesh: 0
-    subMeshCount: 0
-  m_StaticBatchRoot: {fileID: 0}
-  m_ProbeAnchor: {fileID: 0}
-  m_LightProbeVolumeOverride: {fileID: 0}
-  m_ScaleInLightmap: 1
-  m_ReceiveGI: 1
-  m_PreserveUVs: 0
-  m_IgnoreNormalsForChartDetection: 0
-  m_ImportantGI: 0
-  m_StitchLightmapSeams: 1
-  m_SelectedEditorRenderState: 3
-  m_MinimumChartSize: 4
-  m_AutoUVMaxDistance: 0.5
-  m_AutoUVMaxAngle: 89
-  m_LightmapParameters: {fileID: 0}
-  m_GlobalIlluminationMeshLod: 0
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 0
-  m_MaskInteraction: 0
-  m_AdditionalVertexStreams: {fileID: 0}
---- !u!33 &1562037272
-MeshFilter:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1562037268}
-  m_Mesh: {fileID: 10209, guid: 0000000000000000e000000000000000, type: 0}
 --- !u!1 &1563285370
 GameObject:
   m_ObjectHideFlags: 0
@@ -88027,10 +87864,6 @@ MonoBehaviour:
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
   canContainPassword: 0
-  isSymbolTargetBook: 0
-  requiredSymbolID: 0
-  symbolPuzzlePage: -1
-  targetSymbolAnchor: {fileID: 0}
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -93329,10 +93162,6 @@ MonoBehaviour:
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
   canContainPassword: 0
-  isSymbolTargetBook: 0
-  requiredSymbolID: 0
-  symbolPuzzlePage: -1
-  targetSymbolAnchor: {fileID: 0}
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -94344,10 +94173,6 @@ MonoBehaviour:
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
   canContainPassword: 0
-  isSymbolTargetBook: 0
-  requiredSymbolID: 0
-  symbolPuzzlePage: -1
-  targetSymbolAnchor: {fileID: 0}
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -94455,6 +94280,17 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1667101513}
   m_Mesh: {fileID: -2827933424102347068, guid: 7a43d867f85205b4e92deb7a55edc28f, type: 3}
+--- !u!114 &1668555094 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3119297342112569157, guid: b4338c8d0bad8a3468f8fa8d904d95b4, type: 3}
+  m_PrefabInstance: {fileID: 1400128189}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d6775fb5f02f5984ea6433bf26c93612, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1671178384
 GameObject:
   m_ObjectHideFlags: 0
@@ -94817,10 +94653,6 @@ MonoBehaviour:
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
   canContainPassword: 0
-  isSymbolTargetBook: 0
-  requiredSymbolID: 0
-  symbolPuzzlePage: -1
-  targetSymbolAnchor: {fileID: 0}
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -95365,63 +95197,6 @@ Transform:
   - {fileID: 924632601}
   m_Father: {fileID: 671194132}
   m_LocalEulerAnglesHint: {x: 87.86329, y: -179.99998, z: -179.99998}
---- !u!1001 &1687818445
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 8170603485305471530, guid: 47ea034f8d7cb8148aa30fc0134e3e66, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 21.985111
-      objectReference: {fileID: 0}
-    - target: {fileID: 8170603485305471530, guid: 47ea034f8d7cb8148aa30fc0134e3e66, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 1.284
-      objectReference: {fileID: 0}
-    - target: {fileID: 8170603485305471530, guid: 47ea034f8d7cb8148aa30fc0134e3e66, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: -0.4557667
-      objectReference: {fileID: 0}
-    - target: {fileID: 8170603485305471530, guid: 47ea034f8d7cb8148aa30fc0134e3e66, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 8170603485305471530, guid: 47ea034f8d7cb8148aa30fc0134e3e66, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8170603485305471530, guid: 47ea034f8d7cb8148aa30fc0134e3e66, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8170603485305471530, guid: 47ea034f8d7cb8148aa30fc0134e3e66, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8170603485305471530, guid: 47ea034f8d7cb8148aa30fc0134e3e66, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8170603485305471530, guid: 47ea034f8d7cb8148aa30fc0134e3e66, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8170603485305471530, guid: 47ea034f8d7cb8148aa30fc0134e3e66, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 9018318074293804226, guid: 47ea034f8d7cb8148aa30fc0134e3e66, type: 3}
-      propertyPath: m_Name
-      value: Symbol 1
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 47ea034f8d7cb8148aa30fc0134e3e66, type: 3}
 --- !u!1 &1691631869
 GameObject:
   m_ObjectHideFlags: 0
@@ -95454,6 +95229,17 @@ Transform:
   - {fileID: 1465634680}
   m_Father: {fileID: 985319555}
   m_LocalEulerAnglesHint: {x: 87.86329, y: -179.99998, z: -179.99998}
+--- !u!114 &1694777847 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7306699995835862401, guid: 8682d31396f60b04193ee5cbf1e52904, type: 3}
+  m_PrefabInstance: {fileID: 1184031332}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d6775fb5f02f5984ea6433bf26c93612, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1696590422
 GameObject:
   m_ObjectHideFlags: 0
@@ -96114,10 +95900,6 @@ MonoBehaviour:
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: a7f2861ca145c7e409e842cae9482924, type: 2}
   canContainPassword: 1
-  isSymbolTargetBook: 0
-  requiredSymbolID: 0
-  symbolPuzzlePage: -1
-  targetSymbolAnchor: {fileID: 0}
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -97316,10 +97098,6 @@ MonoBehaviour:
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
   canContainPassword: 0
-  isSymbolTargetBook: 0
-  requiredSymbolID: 0
-  symbolPuzzlePage: -1
-  targetSymbolAnchor: {fileID: 0}
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -97592,10 +97370,6 @@ MonoBehaviour:
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
   canContainPassword: 0
-  isSymbolTargetBook: 0
-  requiredSymbolID: 0
-  symbolPuzzlePage: -1
-  targetSymbolAnchor: {fileID: 0}
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -100241,7 +100015,7 @@ GameObject:
   - component: {fileID: 1811037174}
   - component: {fileID: 1811037175}
   m_Layer: 0
-  m_Name: GameObject
+  m_Name: SI_Lambs
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -100625,22 +100399,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1825281813}
   m_CullTransparentMesh: 1
---- !u!4 &1825376492 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 5290462083467779654, guid: c01b6fa30d688ca48a70422278da5b86, type: 3}
-  m_PrefabInstance: {fileID: 1832334465183490502}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &1825376496 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 7755550379576242676, guid: c01b6fa30d688ca48a70422278da5b86, type: 3}
-  m_PrefabInstance: {fileID: 1832334465183490502}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d6775fb5f02f5984ea6433bf26c93612, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &1827608712
 GameObject:
   m_ObjectHideFlags: 0
@@ -106518,10 +106276,6 @@ MonoBehaviour:
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
   canContainPassword: 0
-  isSymbolTargetBook: 0
-  requiredSymbolID: 0
-  symbolPuzzlePage: -1
-  targetSymbolAnchor: {fileID: 0}
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -108270,10 +108024,6 @@ MonoBehaviour:
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: d8450f206ca080d45a4fee43aaad03ce, type: 2}
   canContainPassword: 1
-  isSymbolTargetBook: 0
-  requiredSymbolID: 0
-  symbolPuzzlePage: -1
-  targetSymbolAnchor: {fileID: 0}
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -108716,10 +108466,6 @@ MonoBehaviour:
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
   canContainPassword: 0
-  isSymbolTargetBook: 0
-  requiredSymbolID: 0
-  symbolPuzzlePage: -1
-  targetSymbolAnchor: {fileID: 0}
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -109162,10 +108908,6 @@ MonoBehaviour:
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: eb8cfc1405e5cca4399af1013ce54b9c, type: 2}
   canContainPassword: 1
-  isSymbolTargetBook: 0
-  requiredSymbolID: 0
-  symbolPuzzlePage: -1
-  targetSymbolAnchor: {fileID: 0}
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -109228,9 +108970,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PuzzleBookGenerator
   selectedBookPrefab: {fileID: 2975625187789255870, guid: c01b6fa30d688ca48a70422278da5b86, type: 3}
-  selectedSymbolPrefab: {fileID: 9018318074293804226, guid: 7dff596009815a04ea2ba55dbebf3f4e, type: 3}
-  targetPage: 2
-  puzzlePasswordID: SYMBOL_01
+  selectedSymbolPrefab: {fileID: 9018318074293804226, guid: 47ea034f8d7cb8148aa30fc0134e3e66, type: 3}
+  targetPage: 1
+  puzzlePasswordID: sym_002
   currentBookInstance: {fileID: 0}
   currentSymbolInstance: {fileID: 0}
 --- !u!1 &1972073139
@@ -110550,10 +110292,6 @@ MonoBehaviour:
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
   canContainPassword: 0
-  isSymbolTargetBook: 0
-  requiredSymbolID: 0
-  symbolPuzzlePage: -1
-  targetSymbolAnchor: {fileID: 0}
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -111672,10 +111410,6 @@ MonoBehaviour:
   animationDuration: 1
   bookIdentity: {fileID: 0}
   canContainPassword: 0
-  isSymbolTargetBook: 0
-  requiredSymbolID: 0
-  symbolPuzzlePage: -1
-  targetSymbolAnchor: {fileID: 0}
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -116463,10 +116197,6 @@ MonoBehaviour:
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: a7f2861ca145c7e409e842cae9482924, type: 2}
   canContainPassword: 1
-  isSymbolTargetBook: 0
-  requiredSymbolID: 0
-  symbolPuzzlePage: -1
-  targetSymbolAnchor: {fileID: 0}
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -117819,10 +117549,6 @@ MonoBehaviour:
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
   canContainPassword: 0
-  isSymbolTargetBook: 1
-  requiredSymbolID: 1
-  symbolPuzzlePage: 0
-  targetSymbolAnchor: {fileID: 1196805567}
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -119213,10 +118939,6 @@ MonoBehaviour:
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
   canContainPassword: 0
-  isSymbolTargetBook: 0
-  requiredSymbolID: 0
-  symbolPuzzlePage: -1
-  targetSymbolAnchor: {fileID: 0}
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -123761,7 +123483,6 @@ Transform:
   - {fileID: 3863956416915400782}
   - {fileID: 940276076324865036}
   - {fileID: 1811037174}
-  - {fileID: 1562037269}
   m_Father: {fileID: 1327619677}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &547456115032996957
@@ -132615,67 +132336,6 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!1001 &1832334465183490502
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 217911125}
-    m_Modifications:
-    - target: {fileID: 2975625187789255870, guid: c01b6fa30d688ca48a70422278da5b86, type: 3}
-      propertyPath: m_Name
-      value: P_Book
-      objectReference: {fileID: 0}
-    - target: {fileID: 5290462083467779654, guid: c01b6fa30d688ca48a70422278da5b86, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 2.98
-      objectReference: {fileID: 0}
-    - target: {fileID: 5290462083467779654, guid: c01b6fa30d688ca48a70422278da5b86, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 6.32
-      objectReference: {fileID: 0}
-    - target: {fileID: 5290462083467779654, guid: c01b6fa30d688ca48a70422278da5b86, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 8.86
-      objectReference: {fileID: 0}
-    - target: {fileID: 5290462083467779654, guid: c01b6fa30d688ca48a70422278da5b86, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 0.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 5290462083467779654, guid: c01b6fa30d688ca48a70422278da5b86, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 5290462083467779654, guid: c01b6fa30d688ca48a70422278da5b86, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: -0.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 5290462083467779654, guid: c01b6fa30d688ca48a70422278da5b86, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 5290462083467779654, guid: c01b6fa30d688ca48a70422278da5b86, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 90
-      objectReference: {fileID: 0}
-    - target: {fileID: 5290462083467779654, guid: c01b6fa30d688ca48a70422278da5b86, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 90
-      objectReference: {fileID: 0}
-    - target: {fileID: 5290462083467779654, guid: c01b6fa30d688ca48a70422278da5b86, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 180
-      objectReference: {fileID: 0}
-    - target: {fileID: 7755550379576242676, guid: c01b6fa30d688ca48a70422278da5b86, type: 3}
-      propertyPath: cameraTransform
-      value: 
-      objectReference: {fileID: 198386370}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: c01b6fa30d688ca48a70422278da5b86, type: 3}
 --- !u!23 &1832613677339354385
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -175873,5 +175533,4 @@ SceneRoots:
   - {fileID: 957235636}
   - {fileID: 2014130988}
   - {fileID: 1971313516}
-  - {fileID: 1350035990}
-  - {fileID: 1687818445}
+  - {fileID: 130249158}

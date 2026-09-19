@@ -1,7 +1,7 @@
 using UnityEngine;
 
 // Her bir sembol için ayrı oluşturacağın dosya
-[CreateAssetMenu(fileName = "NewSymbol", menuName = "Atomb/Notebook/Symbol Data")]
+[CreateAssetMenu(fileName = "NewSymbol", menuName = "Senzora/Notebook/Symbol Data")]
 public class SymbolDataSO : ScriptableObject
 {
     [Tooltip("Bu sembolün benzersiz ID'si")]
