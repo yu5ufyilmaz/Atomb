@@ -16,6 +16,6 @@ public class NotebookData : ScriptableObject
         SymbolDataSO foundSymbol = symbolDataList.Find(s => s.symbolID == id);
         return foundSymbol != null
             ? foundSymbol.description
-            : "Unknown signal detected. Calculations failed.";
+            : "...";
     }
 }

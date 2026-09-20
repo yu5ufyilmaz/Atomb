@@ -13,6 +13,9 @@ GameObject:
   - component: {fileID: 8648531337563890113}
   - component: {fileID: 4408600090889812958}
   - component: {fileID: 6003526442469358398}
+  - component: {fileID: 626278585226388781}
+  - component: {fileID: 3859814206694593660}
+  - component: {fileID: -8479012215806634456}
   m_Layer: 0
   m_Name: Symbol_P
   m_TagString: Untagged
@@ -133,3 +136,47 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 2.842832, y: 1.4612281, z: 2.4759505}
   m_Center: {x: -0.08685151, y: -0.17482814, z: -0.071131185}
+--- !u!114 &626278585226388781
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3348829901132193419}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2350ebc7d48054446bec7126651cd467, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EventLogicController
+  requireAllConditions: 1
+  triggerOnlyOnce: 1
+--- !u!114 &3859814206694593660
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3348829901132193419}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 16c36d6ebf880b846880c74234269153, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::InteractionCondition
+  targetInteractable: {fileID: 3348829901132193419}
+  completionMode: 0
+--- !u!114 &-8479012215806634456
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3348829901132193419}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 53e9cb190b48b41409312e6efa84d77e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::NoteAction
+  delay: 0
+  operation: 1
+  targetPassword: {fileID: 0}
+  targetSymbol: {fileID: 11400000, guid: 3931f28d2b8d3fb4ebf31b04c541c9f7, type: 2}

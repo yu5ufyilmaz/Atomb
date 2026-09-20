@@ -16,7 +16,7 @@ public class EndGameButton : MonoBehaviour, IInteractable
     private PlayableDirector finalTimeline;
 
     [SerializeField]
-    private string creditsSceneName = "CreditsScene";
+    private string creditsSceneName = "scn_CreditsScene";
 
     private bool isTriggered = false;
 

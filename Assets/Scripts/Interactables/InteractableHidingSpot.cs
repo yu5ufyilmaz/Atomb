@@ -75,7 +75,7 @@ public class InteractableHidingSpot : MonoBehaviour, IInteractable, IForceExitab
     private Transform mainCamera;
     private CinemachineBrain cinemachineBrain;
     private Transform headBone;
-
+    private Transform originalCameraParent;
     public bool IsOccupied => isOccupied;
 
     [Tooltip("Kapı açılırken karakterin ne kadar bekleyeceği (Animasyon süresi kadar yap)")]
@@ -97,6 +97,7 @@ public class InteractableHidingSpot : MonoBehaviour, IInteractable, IForceExitab
         if (Camera.main != null)
         {
             mainCamera = Camera.main.transform;
+            originalCameraParent = mainCamera.parent; // Eski ebeveyni kaydet
             cinemachineBrain = mainCamera.GetComponent<CinemachineBrain>();
         }
     }
@@ -240,7 +241,7 @@ public class InteractableHidingSpot : MonoBehaviour, IInteractable, IForceExitab
         yield return new WaitForSeconds(safeWaitDuration);
 
         // Kamera Yerleşimi
-        mainCamera.SetParent(null);
+        mainCamera.SetParent(originalCameraParent);
         if (hideCameraPosition)
         {
             Vector3 startDockPos = mainCamera.position;
@@ -346,7 +347,7 @@ public class InteractableHidingSpot : MonoBehaviour, IInteractable, IForceExitab
         if (propAnimator)
             propAnimator.SetTrigger(propCloseTrigger);
 
-        mainCamera.SetParent(null);
+        mainCamera.SetParent(originalCameraParent);
 
         // KAMERA YÖNÜNÜ DÜZELT (Yüzünü görmemen için)
         if (playerMoveScript != null)

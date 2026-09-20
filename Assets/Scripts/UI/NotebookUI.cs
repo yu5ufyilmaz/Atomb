@@ -146,12 +146,22 @@ public class NotebookUI : MonoBehaviour
         }
     }
 
+    private List<string> unlockedSymbols = new List<string>();
+
     public void UnlockSymbolResearch(int symbolID)
     {
         if (notebookData != null)
-            currentSymbolInfo = notebookData.GetSymbolDescription(symbolID);
-        if (isNotebookOpen || isOnMachine)
-            UpdateUI();
+        {
+            string newInfo = notebookData.GetSymbolDescription(symbolID);
+            // Listeye ekleme mantığımız (önceki düzeltmeden gelen)
+            if (!unlockedSymbols.Contains(newInfo))
+            {
+                unlockedSymbols.Add(newInfo);
+            }
+        }
+
+        // 1 = Research (Sembol) kategorisi
+        OpenNotebookToCategory(1);
     }
 
     private void ShowTutorial()
@@ -189,13 +199,57 @@ public class NotebookUI : MonoBehaviour
             case NotebookCategory.Research:
                 if (categoryTitleText != null)
                     categoryTitleText.text = "SYMBOL ANALYSIS";
+
                 if (contentText != null)
-                    contentText.text = currentSymbolInfo;
+                {
+                    if (unlockedSymbols.Count == 0)
+                    {
+                        contentText.text = "No active research found in the field.";
+                    }
+                    else
+                    {
+                        string allSymbols = "";
+                        foreach (var sym in unlockedSymbols)
+                        {
+                            allSymbols += "> " + sym + "\n\n";
+                        }
+                        contentText.text = allSymbols;
+                    }
+                }
                 break;
             case NotebookCategory.Logs:
                 ShowTutorial();
                 break;
         }
+    }
+
+    public void OpenNotebookToCategory(int categoryIndex)
+    {
+        // Eğer oyuncu makinedeyse (osiloskop vb.) defter fiziksel olarak ele gelmesin, sadece arkaplanda sayfa değişsin.
+        if (isOnMachine)
+        {
+            currentCategoryIndex = categoryIndex;
+            UpdateUI();
+            return;
+        }
+
+        // İstenen kategoriye geç
+        currentCategoryIndex = categoryIndex;
+        currentTutorialPage = 0; // Yeni bir sekmeye geçtiğimiz için alt sayfayı sıfırla
+
+        // Eğer defter zaten açık değilse, aç!
+        if (!isNotebookOpen)
+        {
+            isNotebookOpen = true;
+            if (playerAnimator != null)
+                playerAnimator.SetBool(animatorParameterName, true);
+
+            // Fare imlecini (cursor) defter moduna göre güncelle
+            if (GameManager.Instance != null)
+                GameManager.Instance.UpdateCursorState();
+        }
+
+        UpdateUI();
     }
 
     private string GetHintText(NotebookCategory cat)
@@ -228,7 +282,7 @@ public class NotebookUI : MonoBehaviour
 
     public void ShowPasswordNotification(string password)
     {
-        if (isNotebookOpen || isOnMachine)
-            UpdateUI();
+        // 0 = Passwords kategorisi
+        OpenNotebookToCategory(0);
     }
 }

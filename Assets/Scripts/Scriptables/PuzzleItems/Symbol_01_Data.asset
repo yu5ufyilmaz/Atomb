@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PuzzleItemSO
   itemID: symbol_01
   itemName: symbol
+  notebookSymbolID: 40003
   itemLore: 
   worldPrefab: {fileID: 3348829901132193419, guid: 26751fb8ec58b724ba6b5e142a3f26ea, type: 3}
   overlayPrefab: {fileID: 3348829901132193419, guid: 26751fb8ec58b724ba6b5e142a3f26ea, type: 3}
   defaultRotationOffset: {x: 0, y: 0, z: 0}
-  defaultScale: {x: 1, y: 1, z: 1}

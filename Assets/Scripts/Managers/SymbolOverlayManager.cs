@@ -68,7 +68,13 @@ public class SymbolOverlayManager : MonoBehaviour
         // Oyuncunun fare ile kamerayı döndürmesini sağlayan girdiyi aç/kapat
         var inputs = Object.FindFirstObjectByType<StarterAssets.StarterAssetsInputs>();
         if (inputs != null)
+        {
             inputs.cursorInputForLook = !state;
+
+            // EKSİK OLAN KRİTİK SATIR BURASI: Kamera kilitlendiğinde ivmeyi sıfırla!
+            if (state)
+                inputs.look = Vector2.zero;
+        }
         // ----------------------------------
 
         if (state)

@@ -34,7 +34,10 @@ public class PuzzleInventoryManager : MonoBehaviour, ISaveable
         {
             inventoryItems.Add(item);
         }
-
+        if (item.notebookSymbolID != -1 && NotebookUI.Instance != null)
+        {
+            NotebookUI.Instance.UnlockSymbolResearch(item.notebookSymbolID);
+        }
         // Şimdilik tek kapasite mantığında çalıştığı için aldığımızı direkt eline veriyoruz
         activeItem = item;
         Debug.Log($"[PuzzleInventory] Eşya alındı: {item.itemName}");

@@ -100,28 +100,27 @@ public class PasswordManager : MonoBehaviour, ISaveable
         }
 
         // --- BULMACA KİTABI ---
-        // Artık kitaptaki kutucukları işaretlemene gerek yok.
-        // Üzerinde PuzzleReceiver scripti olan kitabı otomatik olarak bulur!
-        InteractableBook puzzleBook = allBooksInLevel.FirstOrDefault(b =>
-            b != null && b.GetComponent<PuzzleReceiver>() != null
-        );
+        var puzzleBooks = allBooksInLevel
+            .Where(b => b != null && b.GetComponent<PuzzleReceiver>() != null)
+            .ToList();
 
-        if (puzzleBook != null)
+        // Bulunan her bir kitaba ayrı ayrı şifre ata
+        foreach (var pBook in puzzleBooks)
         {
             string puzzlePass = GenerateRandomPassword();
-            puzzleBook.AssignPuzzlePassword(puzzlePass);
+            pBook.AssignPuzzlePassword(puzzlePass);
             requiredPasswords.Add(puzzlePass);
 
             currentSessionPasswords.Add(
                 new GameData.ObjectPasswordPair
                 {
-                    objectName = puzzleBook.gameObject.name,
+                    objectName = pBook.gameObject.name,
                     password = puzzlePass,
                     locationIndex = 0,
                     isPuzzleBook = true,
                 }
             );
-            Debug.Log($"[Oyun Şifresi - SEMBOL KİTABI] {puzzleBook.name}: {puzzlePass}");
+            Debug.Log($"[Oyun Şifresi - SEMBOL KİTABI] {pBook.name}: {puzzlePass}");
         }
 
         int machineCount = 2; // Osiloskop + Spektrometre
@@ -166,12 +165,12 @@ public class PasswordManager : MonoBehaviour, ISaveable
                 && b.bookIdentity != null
                 && b.bookIdentity.possibleLocations.Count > 0
                 && b != tutorialNote
-                && b != puzzleBook
+                && !puzzleBooks.Contains(b) // DÜZELTME 2: Bulmaca kitaplarının HEPSİNİ hariç tut
             )
             .ToList();
 
-        if (puzzleBook != null)
-            bookCount--;
+        // DÜZELTME 3: Sahnede kaç bulmaca kitabı varsa, rastgele dağıtılacak kitap sayısından o kadar düş
+        bookCount -= puzzleBooks.Count;
 
         var selectedBooks = eligibleBooks.OrderBy(x => Random.value).Take(bookCount).ToList();
 

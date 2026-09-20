@@ -132,6 +132,14 @@ public class PressureSystemManager : MonoBehaviour, ISaveable
         CheckMegaphone();
     }
 
+    public void ChangePressure(float amount)
+    {
+        if (!isGameOver)
+            currentPressure = Mathf.Clamp(currentPressure + amount, 0f, 100f);
+             UpdateHUD();
+             HandlePostProcessing();
+    }
+
     private void UpdateHUD()
     {
         if (pressureBarImage != null)

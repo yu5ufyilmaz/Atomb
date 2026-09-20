@@ -8,6 +8,7 @@ public class PuzzleItemSO : ScriptableObject
 
     [Tooltip("Eşyanın ekranda görünecek ismi")]
     public string itemName = "Bilinmeyen Eşya";
+    public int notebookSymbolID = -1;
 
     [TextArea(2, 4)]
     public string itemLore;

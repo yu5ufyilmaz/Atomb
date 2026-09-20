@@ -50,9 +50,24 @@ public class InteractableSymbol : MonoBehaviour, IInteractable, IForceExitable
 
     public void Interact()
     {
-        if (isInspecting || isAnimating)
-            return;
-        StartCoroutine(StartInspectMode());
+        // 1. Eşyayı doğrudan envantere ekle
+        if (PuzzleInventoryManager.Instance != null)
+        {
+            PuzzleInventoryManager.Instance.PickupItem(itemData);
+
+            // 2. Alma sesini çal
+            if (pickupSound != null)
+                AudioSource.PlayClipAtPoint(pickupSound, transform.position);
+
+            // 3. Not defterindeki araştırmayı kilidini aç
+            if (NotebookUI.Instance != null)
+                NotebookUI.Instance.UnlockSymbolResearch(notebookResearchID);
+
+            Debug.Log($"[Oyun Dünyası] Oyuncu {itemData.itemID} sembolünü doğrudan aldı.");
+        }
+
+        // 4. Dünyadaki 3D objeyi yok et
+        Destroy(gameObject);
     }
 
     private IEnumerator StartInspectMode()

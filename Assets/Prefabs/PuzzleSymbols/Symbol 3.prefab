@@ -13,6 +13,9 @@ GameObject:
   - component: {fileID: 7183481043247707516}
   - component: {fileID: 3987978948579569684}
   - component: {fileID: 9189227101472938332}
+  - component: {fileID: 7212727201370144253}
+  - component: {fileID: 5599975424440949657}
+  - component: {fileID: 6528197907999975717}
   m_Layer: 6
   m_Name: Symbol 3
   m_TagString: Untagged
@@ -125,7 +128,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cf11031dce0a45e41864830c9f6183d6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InteractableSymbol
-  symbolID: 3
+  itemData: {fileID: 0}
+  notebookResearchID: 0
   promptText: "Sembol\xFC ve \u0130pucunu Al"
   pickupSound: {fileID: 0}
   symbolLore: "Bu sembol kadim bir rit\xFCeli temsil ediyor...\n\u015Eifresi \u015Fu
@@ -133,3 +137,47 @@ MonoBehaviour:
   inspectDistance: 0.5
   rotationSpeed: 10
   moveDuration: 0.3
+--- !u!114 &7212727201370144253
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9018318074293804226}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2350ebc7d48054446bec7126651cd467, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EventLogicController
+  requireAllConditions: 1
+  triggerOnlyOnce: 1
+--- !u!114 &5599975424440949657
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9018318074293804226}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 16c36d6ebf880b846880c74234269153, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::InteractionCondition
+  targetInteractable: {fileID: 9018318074293804226}
+  completionMode: 0
+--- !u!114 &6528197907999975717
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9018318074293804226}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 53e9cb190b48b41409312e6efa84d77e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::NoteAction
+  delay: 0
+  operation: 1
+  targetPassword: {fileID: 0}
+  targetSymbol: {fileID: 0}

@@ -283,11 +283,13 @@ public class InteractableOscilloscope : MonoBehaviour, IInteractable, IForceExit
 
         FadeAudio(false, 0.5f);
 
-        // VCAM PASİF ET (Kamera yumuşakça karakterin ensesine geri dönecek)
         if (interactVCam)
         {
             interactVCam.Priority = 0;
-            _playerFollowCamera.SetActive(false);
+            if (_playerFollowCamera != null)
+            {
+                _playerFollowCamera.SetActive(true); // KAMERAYI GERİ AÇIYORUZ
+            }
         }
 
         yield return new WaitForSeconds(1.5f);
@@ -498,7 +500,7 @@ public class InteractableOscilloscope : MonoBehaviour, IInteractable, IForceExit
                 stableAudioSource.volume = 1f;
                 stableAudioSource.pitch = 1f;
             }
-            StartCoroutine(AutoExit(3.0f));
+            StartCoroutine(AutoExit(1.5f));
         }
     }
 

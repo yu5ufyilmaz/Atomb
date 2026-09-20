@@ -107,7 +107,7 @@ public class PuzzleReceiver : MonoBehaviour
             debugPreviewSymbol = preview.transform;
             Selection.activeGameObject = preview;
 
-            // ÖNİZLEME YÜKLENDİĞİ AN KİTABI OTOMATİK OLARAK AÇAR
+            // ÖNİZLEME YÜKLENDİĞİ AN KİTABI EN SON KAYDEDİLEN SAYFADA AÇAR
             InteractableBook bookScript = GetComponent<InteractableBook>();
             if (bookScript != null)
             {
@@ -121,12 +121,10 @@ public class PuzzleReceiver : MonoBehaviour
     [Button("💾 2. Mevcut Prefabı Güncelle (Save)", EButtonEnableMode.Editor)]
     private void SaveExistingPrefab()
     {
-        RecordAndClean(); // Koordinatları al ve sembolü sil
-        ForceCloseBook(); // KİTABI ZORLA KAPAT
+        RecordAndClean(); // TIKLADIĞIN AN SAYFAYI OKUR, SEMBOLÜ SİLER VE KİTABI KAPATIR
 
         string localPath = PrefabUtility.GetPrefabAssetPathOfNearestInstanceRoot(gameObject);
 
-        // Eğer obje bir prefab değilse veya orijinal base prefab ise engelle!
         if (string.IsNullOrEmpty(localPath) || !localPath.Contains("GeneratedPuzzles"))
         {
             Debug.LogError(
@@ -147,8 +145,7 @@ public class PuzzleReceiver : MonoBehaviour
     [Button("🆕 3. Yeni Prefab Olarak Çıkart (Save As)", EButtonEnableMode.Editor)]
     private void SaveAsNewPrefab()
     {
-        RecordAndClean(); // Koordinatları al ve sembolü sil
-        ForceCloseBook(); // KİTABI ZORLA KAPAT
+        RecordAndClean(); // TIKLADIĞIN AN SAYFAYI OKUR, SEMBOLÜ SİLER VE KİTABI KAPATIR
 
         string folderPath = "Assets/Prefabs/GeneratedPuzzles";
         if (!AssetDatabase.IsValidFolder(folderPath))
@@ -187,7 +184,18 @@ public class PuzzleReceiver : MonoBehaviour
 
     private void RecordAndClean()
     {
-        // Eğer sahnede bir sembol varsa konumunu kaydet ve onu sil
+        InteractableBook bookScript = GetComponent<InteractableBook>();
+
+        // 1. ÖNCE KİTAPTAN AÇIK OLAN SAYFAYI OKU VE HEDEF SAYFA (TARGET PAGE) OLARAK KAYDET
+        if (bookScript != null)
+        {
+            Undo.RecordObject(this, "Save Target Page");
+            // Not: Kitapta sayfayı ayarlarken Inspector'da 'startPageIndex' değerini
+            // değiştirdiğini varsayıyorum. Bu sayede ayarladığın sayfa otomatik alınacak.
+            targetPage = bookScript.startPageIndex;
+        }
+
+        // 2. SONRA SEMBOLÜN KOORDİNATLARINI KAYDET VE GEÇİCİ SEMBOLÜ SİL
         if (debugPreviewSymbol != null)
         {
             Undo.RecordObject(this, "Save Puzzle Target Pos");
@@ -198,25 +206,14 @@ public class PuzzleReceiver : MonoBehaviour
             debugPreviewSymbol = null;
             DestroyImmediate(previewObj);
         }
-    }
 
-    private void ForceCloseBook()
-    {
-        // Kitabı bul
-        InteractableBook bookScript = GetComponent<InteractableBook>();
+        // 3. EN SON KİTABIN KAPAĞINI KAPAT, SAYFAYI SIFIRLA VE KAYDETMEYE HAZIR HALE GETİR
         if (bookScript != null)
         {
-            // --- HARİKA DOKUNUŞ BURADA ---
-            // Kitabı kapatmadan hemen önce o anki açık olan sayfayı Hedef Sayfa (targetPage) olarak otomatik kaydet!
-            Undo.RecordObject(this, "Save Target Page");
-            targetPage = bookScript.startPageIndex;
-
-            // Sonra kitabı kapalı hale getirip sıfırla
             bookScript.initialState = InteractableBook.BookInitialState.Closed;
             bookScript.startPageIndex = 0;
             bookScript.PreviewBookInEditor();
 
-            // Unity'nin bu değişikliği algılayıp kaydetmesini garantile
             EditorUtility.SetDirty(bookScript);
             EditorUtility.SetDirty(this);
         }

@@ -281,7 +281,7 @@ MonoBehaviour:
       textDE: 
     - duration: 2
       textTR: 
-      textEN: Dont care his words just dont listen to him
+      textEN: Be calm and wait until he is gone.
       textDE: 
   - id: tut_007
     note: 
@@ -365,4 +365,19 @@ MonoBehaviour:
     - duration: 2
       textTR: 
       textEN: You need to write everything you know
+      textDE: 
+  - id: tut_012
+    note: 
+    segments:
+    - duration: 1.5
+      textTR: "\t\t\t"
+      textEN: Be slow mate
+      textDE: 
+    - duration: 2
+      textTR: 
+      textEN: Dont Forget to close your doors
+      textDE: 
+    - duration: 2
+      textTR: 
+      textEN: never ever.
       textDE: 
