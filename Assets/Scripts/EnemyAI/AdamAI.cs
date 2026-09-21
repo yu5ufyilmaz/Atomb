@@ -209,7 +209,13 @@ public class AdamAI : MonoBehaviour
         if (audioSource)
             audioSource.PlayOneShot(killSound);
         if (JumpscareManager.Instance != null)
-            JumpscareManager.Instance.StartJumpscare(transform, adamJumpscareProfile, true);
+            JumpscareManager.Instance.StartJumpscare(
+                transform,
+                adamJumpscareProfile,
+                true,
+                JumpscareStyle.Direct,
+                "Too long in darkness."
+            );
     }
 
     private void PlaySound(AudioClip clip)

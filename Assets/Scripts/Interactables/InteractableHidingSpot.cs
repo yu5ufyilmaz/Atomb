@@ -241,7 +241,7 @@ public class InteractableHidingSpot : MonoBehaviour, IInteractable, IForceExitab
         yield return new WaitForSeconds(safeWaitDuration);
 
         // Kamera Yerleşimi
-        mainCamera.SetParent(originalCameraParent);
+        mainCamera.SetParent(null);
         if (hideCameraPosition)
         {
             Vector3 startDockPos = mainCamera.position;

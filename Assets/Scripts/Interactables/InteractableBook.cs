@@ -496,6 +496,8 @@ public class InteractableBook : MonoBehaviour, IInteractable, IForceExitable
 
     private IEnumerator OpenBook()
     {
+        if (NotebookUI.Instance != null)
+            NotebookUI.Instance.SetNotebookVisibility(false);
         isAnimating = true;
         isOpen = true;
 

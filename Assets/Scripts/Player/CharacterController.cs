@@ -477,23 +477,15 @@ namespace StarterAssets
             if (drunkIntensity > 0.01f)
                 rotationWithDrunk += currentDrunkYaw;
 
-            // 1. Kamera ile vücudun mevcut açısı arasındaki farkı hesapla
-            float angleDifference = Mathf.Abs(
-                Mathf.DeltaAngle(transform.eulerAngles.y, rotationWithDrunk)
-            );
+            // Hedef rotasyonu Quaternion olarak oluştur
+            Quaternion targetRotation = Quaternion.Euler(0.0f, rotationWithDrunk, 0.0f);
 
-            // 2. Eğer açı farkı 50 dereceden büyükse (ani bir dönüş yapıldıysa) süreyi sıfıra yaklaştır (hızlı dön)
-            // Fark küçükse kendi belirlediğin RotationSmoothTime'ı kullan
-            float dynamicSmoothTime = (angleDifference > 50f) ? 0.01f : RotationSmoothTime;
-
-            // 3. Dönüşü uygula
-            float rotation = Mathf.SmoothDampAngle(
-                transform.eulerAngles.y,
-                rotationWithDrunk,
-                ref _rotationVelocity,
-                dynamicSmoothTime
+            // Slerp ile mevcut dönüşten hedefe kusursuzca ak (15f hızını zevkine göre değiştirebilirsin)
+            transform.rotation = Quaternion.Slerp(
+                transform.rotation,
+                targetRotation,
+                Time.deltaTime * 15f
             );
-            transform.rotation = Quaternion.Euler(0.0f, rotation, 0.0f);
 
             // HAREKET YÖNÜ: Input'u (WASD) kamera açısına göre ayarla.
             Vector3 inputDirection = new Vector3(_input.move.x, 0.0f, _input.move.y).normalized;

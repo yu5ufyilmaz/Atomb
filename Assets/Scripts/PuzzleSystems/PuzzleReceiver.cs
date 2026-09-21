@@ -291,36 +291,56 @@ public class PuzzleReceiver : MonoBehaviour
 
     private void HandleManipulation()
     {
-        float mouseX = Input.GetAxis("Mouse X");
-        float mouseY = Input.GetAxis("Mouse Y");
+        // 1. SÜREKLEME İŞLEMİ (Sadece Sol Tıka Basılıyken)
+        if (Input.GetMouseButton(0))
+        {
+            float mouseX = Input.GetAxis("Mouse X");
+            float mouseY = Input.GetAxis("Mouse Y");
+            Vector3 currentLocalPos = activeSymbolInstance.transform.localPosition;
+
+            // Düzlem seçimine göre eksen hareketi ve kilitleme
+            if (puzzlePlane == SurfacePlane.Dikey_Pano_XY)
+            {
+                // İŞARETLERİ -= YAPARAK HAREKETİ TERSİNE ÇEVİRDİK
+                currentLocalPos.x -= mouseX * moveSpeed;
+                currentLocalPos.y -= mouseY * moveSpeed;
+
+                currentLocalPos.x = Mathf.Clamp(
+                    currentLocalPos.x,
+                    -movementLimits.x,
+                    movementLimits.x
+                );
+                currentLocalPos.y = Mathf.Clamp(
+                    currentLocalPos.y,
+                    -movementLimits.y,
+                    movementLimits.y
+                );
+                currentLocalPos.z = hoverDistance; // Z Kilitli
+            }
+            else // Yatay_Masa_XZ
+            {
+                // İŞARETLERİ -= YAPARAK HAREKETİ TERSİNE ÇEVİRDİK
+                currentLocalPos.x -= mouseX * moveSpeed;
+                currentLocalPos.z -= mouseY * moveSpeed;
+
+                currentLocalPos.x = Mathf.Clamp(
+                    currentLocalPos.x,
+                    -movementLimits.x,
+                    movementLimits.x
+                );
+                currentLocalPos.z = Mathf.Clamp(
+                    currentLocalPos.z,
+                    -movementLimits.y,
+                    movementLimits.y
+                );
+                currentLocalPos.y = hoverDistance; // Y Kilitli
+            }
+
+            activeSymbolInstance.transform.localPosition = currentLocalPos;
+        }
+
+        // 2. DÖNDÜRME İŞLEMİ (Fare Tekerleği ile - Sürüklemeden bağımsız çalışır)
         float scroll = Input.mouseScrollDelta.y;
-
-        Vector3 currentLocalPos = activeSymbolInstance.transform.localPosition;
-
-        // Düzlem seçimine göre eksen hareketi ve kilitleme
-        if (puzzlePlane == SurfacePlane.Dikey_Pano_XY)
-        {
-            currentLocalPos.x += mouseX * moveSpeed;
-            currentLocalPos.y += mouseY * moveSpeed;
-
-            currentLocalPos.x = Mathf.Clamp(currentLocalPos.x, -movementLimits.x, movementLimits.x);
-            currentLocalPos.y = Mathf.Clamp(currentLocalPos.y, -movementLimits.y, movementLimits.y);
-
-            currentLocalPos.z = hoverDistance; // Z Kilitli
-        }
-        else // Yatay_Masa_XZ
-        {
-            currentLocalPos.x += mouseX * moveSpeed;
-            currentLocalPos.z += mouseY * moveSpeed; // Farenin yukarı/aşağı hareketi Z ekseninde (derinlikte) kaydırır
-
-            currentLocalPos.x = Mathf.Clamp(currentLocalPos.x, -movementLimits.x, movementLimits.x);
-            currentLocalPos.z = Mathf.Clamp(currentLocalPos.z, -movementLimits.y, movementLimits.y);
-
-            currentLocalPos.y = hoverDistance; // Y Kilitli
-        }
-
-        activeSymbolInstance.transform.localPosition = currentLocalPos;
-
         if (scroll != 0)
         {
             activeSymbolInstance.transform.Rotate(
@@ -339,26 +359,39 @@ public class PuzzleReceiver : MonoBehaviour
         if (linkedBook != null && targetPage >= 0 && !linkedBook.IsOnPage(targetPage))
             return;
 
-        // Vector3.Distance her iki düzlem için de doğru sonucu verir
         float distance = Vector3.Distance(
             activeSymbolInstance.transform.localPosition,
             targetLocalPosition
         );
-
         Quaternion currentRot = activeSymbolInstance.transform.localRotation;
         Quaternion targetRot = Quaternion.Euler(targetLocalRotation);
         float angleDiff = Quaternion.Angle(currentRot, targetRot);
 
         if (distance <= distanceTolerance && angleDiff <= angleTolerance)
         {
+            // Sembol yerine oturdu, kontrolü senden alıyoruz
             isSolved = true;
-            CloseSymbol();
-            OnPuzzleSolved?.Invoke();
 
-            if (linkedBook != null && linkedBook.isPasswordBook)
-            {
-                linkedBook.TriggerPasswordFind();
-            }
+            // Anında yok etmek yerine gecikmeli rutini başlatıyoruz
+            StartCoroutine(DelaySuccessRoutine());
+        }
+    }
+
+    // YENİ EKLENEN FONKSİYON
+    private System.Collections.IEnumerator DelaySuccessRoutine()
+    {
+        // 1. Önce başarı olayını tetikle (Varsa "çıt" diye oturma sesi veya ışık yanması anında çalışır)
+        OnPuzzleSolved?.Invoke();
+
+        // 2. Sembolün ekranda sabit kilitli kalacağı süre (1.5 saniye bekle)
+        yield return new WaitForSeconds(1.5f);
+
+        // 3. Bekleme bittikten sonra sembolü ekrandan kaldır ve defteri/şifreyi çalıştır
+        CloseSymbol();
+
+        if (linkedBook != null && linkedBook.isPasswordBook)
+        {
+            linkedBook.TriggerPasswordFind();
         }
     }
 }

@@ -132,12 +132,41 @@ public class PressureSystemManager : MonoBehaviour, ISaveable
         CheckMegaphone();
     }
 
-    public void ChangePressure(float amount)
+    public void ChangePressure(float targetPressure)
     {
         if (!isGameOver)
-            currentPressure = Mathf.Clamp(currentPressure + amount, 0f, 100f);
-             UpdateHUD();
-             HandlePostProcessing();
+        {
+            // 1.5 saniye içinde yumuşakça uygula (süreyi istediğin gibi değiştirebilirsin)
+            StartCoroutine(SmoothPressureChange(targetPressure, 1.5f));
+        }
+    }
+
+    private IEnumerator SmoothPressureChange(float targetPressure, float duration)
+    {
+        float startPressure = currentPressure; // Harekete başladığımız anki basıncı kaydet
+        float elapsed = 0f;
+
+        // Hedefi 0 ile 100 arasında sınırla (güvenlik için)
+        targetPressure = Mathf.Clamp(targetPressure, 0f, 100f);
+
+        while (elapsed < duration && !isGameOver)
+        {
+            elapsed += Time.deltaTime;
+
+            // Lerp, başlangıç değerinden hedef değere belirlediğimiz sürede pürüzsüzce kaydırır
+            currentPressure = Mathf.Lerp(startPressure, targetPressure, elapsed / duration);
+
+            // Sistem kapalıyken bile barın dolduğunu görmek için UI ve Efekt güncellemeleri
+            UpdateHUD();
+            HandlePostProcessing();
+
+            yield return null;
+        }
+
+        // Süre bitince milimetrik olarak tam hedefe oturt (küsürat kalmasını önler)
+        currentPressure = targetPressure;
+        UpdateHUD();
+        HandlePostProcessing();
     }
 
     private void UpdateHUD()
@@ -193,7 +222,10 @@ public class PressureSystemManager : MonoBehaviour, ISaveable
         else
         {
             if (m_LensDistortion != null)
+            {
                 m_LensDistortion.intensity.Override(0f);
+                m_LensDistortion.scale.Override(1f); // Bunu mutlaka ekle!
+            }
             if (m_Aberration != null)
                 m_Aberration.intensity.Override(0f);
         }

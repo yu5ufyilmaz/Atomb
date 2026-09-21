@@ -119,7 +119,8 @@ public class JumpscareManager : MonoBehaviour
         Transform enemy,
         JumpscareProfile profile,
         bool playTurnAnim = true,
-        JumpscareStyle style = JumpscareStyle.Direct
+        JumpscareStyle style = JumpscareStyle.Direct,
+        string deathMessage = ""
     )
     {
         // Eğer profil gönderilmediyse varsayılanı kullan
@@ -135,14 +136,15 @@ public class JumpscareManager : MonoBehaviour
             activeProfile.shakeFrequency = 20f;
         }
 
-        StartCoroutine(JumpscareRoutine(enemy, activeProfile, playTurnAnim, style));
+        StartCoroutine(JumpscareRoutine(enemy, activeProfile, playTurnAnim, style, deathMessage));
     }
 
     private IEnumerator JumpscareRoutine(
         Transform enemy,
         JumpscareProfile settings,
         bool playTurnAnim,
-        JumpscareStyle style
+        JumpscareStyle style,
+        string deathMessage
     )
     {
         // --- BU SATIRI EN BAŞA EKLE ---
@@ -261,7 +263,7 @@ public class JumpscareManager : MonoBehaviour
         // --------------------------------------
 
         if (DeathUIManager.Instance != null)
-            DeathUIManager.Instance.ShowDeathScreen();
+            DeathUIManager.Instance.ShowDeathScreen(deathMessage); // Mesajı UI'a gönderdik
         else
             SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
@@ -311,6 +313,4 @@ public class JumpscareManager : MonoBehaviour
         }
         return null;
     }
-
-   
 }
