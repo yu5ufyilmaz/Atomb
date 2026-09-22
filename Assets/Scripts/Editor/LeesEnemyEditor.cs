@@ -12,9 +12,33 @@ public class LeesEnemyEditor : Editor
     bool showScenario = true;
     bool showAudio = false;
 
+    // Şok Efekti Değişkenleri
+    private SerializedProperty useShockEffect;
+    private SerializedProperty shockDuration;
+    private SerializedProperty peakFOVOffset;
+    private SerializedProperty peakVignette;
+    private SerializedProperty peakLensDistortion;
+    private SerializedProperty peakAberration;
+    private SerializedProperty shockSound;
+
+    // YENİ EKLENEN KISIM: Değişkenleri ana koddakilerle eşleştiriyoruz
+    private void OnEnable()
+    {
+        useShockEffect = serializedObject.FindProperty("useShockEffect");
+        shockDuration = serializedObject.FindProperty("shockDuration");
+        peakFOVOffset = serializedObject.FindProperty("peakFOVOffset");
+        peakVignette = serializedObject.FindProperty("peakVignette");
+        peakLensDistortion = serializedObject.FindProperty("peakLensDistortion");
+        peakAberration = serializedObject.FindProperty("peakAberration");
+        shockSound = serializedObject.FindProperty("shockSound");
+    }
+
     public override void OnInspectorGUI()
     {
         LeesEnemyAI script = (LeesEnemyAI)target;
+
+        // ScriptableObject'ten verileri çek
+        serializedObject.Update();
 
         // --- BAŞLIK ---
         GUIStyle titleStyle = new GUIStyle(EditorStyles.boldLabel)
@@ -23,13 +47,14 @@ public class LeesEnemyEditor : Editor
             alignment = TextAnchor.MiddleCenter,
             normal = { textColor = new Color(0.8f, 0.7f, 1f) },
         };
+
         EditorGUILayout.Space(10);
         Rect r = EditorGUILayout.GetControlRect(false, 30);
         EditorGUI.DrawRect(r, new Color(0.15f, 0.1f, 0.2f));
-        EditorGUI.LabelField(r, "👻 LEES AI KONTROL", titleStyle);
+        EditorGUI.LabelField(r, "  LEES AI KONTROL", titleStyle);
         EditorGUILayout.Space(5);
 
-        // --- DURUM ÇUBUĞU ---
+        // --- DURUM KUTUSU ---
         GUI.backgroundColor =
             script.currentState == LeesEnemyAI.LeesState.Active
                 ? new Color(1f, 0.4f, 0.4f)
@@ -44,7 +69,7 @@ public class LeesEnemyEditor : Editor
         EditorGUILayout.Space(5);
 
         // --- 1. MODEL & ANİMASYON ---
-        showAnim = EditorGUILayout.BeginFoldoutHeaderGroup(showAnim, "🎬 Model ve Animasyon");
+        showAnim = EditorGUILayout.BeginFoldoutHeaderGroup(showAnim, "  Model ve Animasyon");
         if (showAnim)
         {
             EditorGUILayout.BeginVertical(EditorStyles.helpBox);
@@ -58,7 +83,7 @@ public class LeesEnemyEditor : Editor
         EditorGUILayout.EndFoldoutHeaderGroup();
 
         // --- 2. GÖRÜŞ & KAMERA ---
-        showVision = EditorGUILayout.BeginFoldoutHeaderGroup(showVision, "👁️ Görüş ve Kamera");
+        showVision = EditorGUILayout.BeginFoldoutHeaderGroup(showVision, "  Görme ve Kamera");
         if (showVision)
         {
             EditorGUILayout.BeginVertical(EditorStyles.helpBox);
@@ -69,7 +94,6 @@ public class LeesEnemyEditor : Editor
 
             EditorGUILayout.Space(5);
             EditorGUILayout.LabelField("Hassasiyet Ayarları", EditorStyles.miniBoldLabel);
-
             SerializedProperty bufferProp = serializedObject.FindProperty("screenEdgeBuffer");
             EditorGUILayout.Slider(bufferProp, 0f, 0.4f, new GUIContent("Dead Zone (Kenar Payı)"));
 
@@ -81,6 +105,24 @@ public class LeesEnemyEditor : Editor
                 serializedObject.FindProperty("showDebugLogs"),
                 new GUIContent("Debug Çizgilerini Göster")
             );
+            
+            // YENİ EKLENEN KISIM: ŞOK EFEKTİ ARAYÜZÜ
+            EditorGUILayout.Space(10);
+            EditorGUILayout.LabelField("Şok (Fark Edilme) Efekti", EditorStyles.boldLabel);
+            EditorGUILayout.PropertyField(useShockEffect, new GUIContent("Fark Edilme Şokunu Aç"));
+
+            if (useShockEffect.boolValue)
+            {
+                EditorGUI.indentLevel++;
+                EditorGUILayout.PropertyField(shockDuration, new GUIContent("Süre (sn)"));
+                EditorGUILayout.PropertyField(peakFOVOffset, new GUIContent("FOV Zoom Açısı"));
+                EditorGUILayout.PropertyField(peakVignette, new GUIContent("Vignette Yoğunluğu"));
+                EditorGUILayout.PropertyField(peakLensDistortion, new GUIContent("Lens Bükülmesi"));
+                EditorGUILayout.PropertyField(peakAberration, new GUIContent("Renk Ayrışması (Glitch)"));
+                EditorGUILayout.PropertyField(shockSound, new GUIContent("Şok Sesi"));
+                EditorGUI.indentLevel--;
+            }
+
             EditorGUILayout.EndVertical();
         }
         EditorGUILayout.EndFoldoutHeaderGroup();
@@ -88,12 +130,11 @@ public class LeesEnemyEditor : Editor
         // --- 3. SENARYO VE ZAMANLAMA ---
         showScenario = EditorGUILayout.BeginFoldoutHeaderGroup(
             showScenario,
-            "⏳ Senaryo Zamanlamaları"
+            "  Senaryo Zamanlamaları"
         );
         if (showScenario)
         {
             EditorGUILayout.BeginVertical(EditorStyles.helpBox);
-
             EditorGUILayout.LabelField("Temel Süreler", EditorStyles.boldLabel);
             EditorGUILayout.PropertyField(serializedObject.FindProperty("maxIgnoranceTime"));
             EditorGUILayout.PropertyField(serializedObject.FindProperty("maxReactionTime"));
@@ -128,7 +169,7 @@ public class LeesEnemyEditor : Editor
         EditorGUILayout.EndFoldoutHeaderGroup();
 
         // --- 4. SES AYARLARI ---
-        showAudio = EditorGUILayout.BeginFoldoutHeaderGroup(showAudio, "🔊 Ses Efektleri");
+        showAudio = EditorGUILayout.BeginFoldoutHeaderGroup(showAudio, "  Ses Efektleri");
         if (showAudio)
         {
             EditorGUILayout.BeginVertical(EditorStyles.helpBox);
@@ -141,7 +182,7 @@ public class LeesEnemyEditor : Editor
         EditorGUILayout.EndFoldoutHeaderGroup();
 
         // --- 5. SPAWN AYARLARI ---
-        showSpawn = EditorGUILayout.BeginFoldoutHeaderGroup(showSpawn, "📍 Spawn Ayarları");
+        showSpawn = EditorGUILayout.BeginFoldoutHeaderGroup(showSpawn, "  Spawn Ayarları");
         if (showSpawn)
         {
             EditorGUILayout.BeginVertical(EditorStyles.helpBox);
@@ -157,19 +198,18 @@ public class LeesEnemyEditor : Editor
             EditorGUILayout.PropertyField(serializedObject.FindProperty("jumpscareDistance"));
             EditorGUILayout.PropertyField(serializedObject.FindProperty("jumpscareYOffset"));
 
-            // --- YENİ EKLENEN KISIM ---
             EditorGUILayout.Space(10);
             EditorGUILayout.LabelField("Kişisel Jumpscare Ayarları", EditorStyles.boldLabel);
             EditorGUILayout.PropertyField(
                 serializedObject.FindProperty("leesJumpscareProfile"),
                 true
             );
-            // ---------------------------
 
             EditorGUILayout.EndVertical();
         }
         EditorGUILayout.EndFoldoutHeaderGroup();
 
+        // Değişiklikleri kaydet
         serializedObject.ApplyModifiedProperties();
     }
 

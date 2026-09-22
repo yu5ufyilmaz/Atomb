@@ -180,7 +180,7 @@ public class InteractableTuringMachine : MonoBehaviour, IInteractable, IForceExi
                 vcamObj.transform.localRotation = Quaternion.identity;
                 interactVCam = vcamObj.AddComponent<CinemachineVirtualCamera>();
                 interactVCam.Priority = 0; // Başlangıçta pasif
-                interactVCam.m_Lens.FieldOfView = 60f;
+                interactVCam.m_Lens.FieldOfView = 90f;
                 interactVCam.m_Lens.NearClipPlane = 0.1f;
                 interactVCam.m_Lens.FarClipPlane = 1000f;
             }

@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using StarterAssets;
 using UnityEngine;
+using UnityEngine.Rendering; // YENİ EKLENDİ
+using UnityEngine.Rendering.HighDefinition; // YENİ EKLENDİ
 
 public class LeesEnemyAI : MonoBehaviour
 {
@@ -117,6 +119,22 @@ public class LeesEnemyAI : MonoBehaviour
     private List<Transform> shuffleBuffer = new List<Transform>();
     public bool isSafeSpawn = false;
 
+    [Header("Şok (Fark Edilme) Efekti")]
+    public bool useShockEffect = true;
+    public float shockDuration = 0.5f;
+    public float peakFOVOffset = -15f; // FOV'u daraltıp ani zoom yapar
+    public float peakVignette = 0.65f;
+    public float peakLensDistortion = -0.7f;
+    public float peakAberration = 1f;
+    public AudioClip shockSound;
+    private Volume globalVolume;
+    private Vignette m_Vignette;
+    private LensDistortion m_LensDistortion;
+    private ChromaticAberration m_Aberration;
+    private float baseVignette;
+    private float baseLens;
+    private float baseAberration;
+
     private void Awake()
     {
         if (Instance == null)
@@ -151,7 +169,20 @@ public class LeesEnemyAI : MonoBehaviour
             audioSource.loop = true;
             audioSource.volume = 0f;
         }
+        globalVolume = Object.FindFirstObjectByType<Volume>();
+        if (globalVolume != null && globalVolume.profile != null)
+        {
+            globalVolume.profile.TryGet(out m_Vignette);
+            globalVolume.profile.TryGet(out m_LensDistortion);
+            globalVolume.profile.TryGet(out m_Aberration);
 
+            if (m_Vignette != null)
+                baseVignette = m_Vignette.intensity.value;
+            if (m_LensDistortion != null)
+                baseLens = m_LensDistortion.intensity.value;
+            if (m_Aberration != null)
+                baseAberration = m_Aberration.intensity.value;
+        }
         visionLayerMask = ~LayerMask.GetMask("Player", "UI", "IgnoreRaycast", "TransparentFX");
 
         DespawnLees();
@@ -225,7 +256,8 @@ public class LeesEnemyAI : MonoBehaviour
 
                 if (audioSource && stareSound)
                     StartFadeAudio(stareSound, true);
-
+                if (useShockEffect)
+                    StartCoroutine(ShockRoutine());
                 Debug.Log("Lees: FARK EDİLDİ!");
             }
             else
@@ -277,6 +309,58 @@ public class LeesEnemyAI : MonoBehaviour
                 }
             }
         }
+    }
+
+    private IEnumerator ShockRoutine()
+    {
+        // 1. Sesi Patlat (Eğer atandıysa)
+        if (shockSound != null && audioSource != null)
+        {
+            // Orijinal sesi kesmemesi için PlayOneShot kullanıyoruz
+            audioSource.PlayOneShot(shockSound);
+        }
+
+        float elapsed = 0f;
+        float baseFOV = playerCamera != null ? playerCamera.fieldOfView : 60f;
+        float targetFOV = baseFOV + peakFOVOffset;
+
+        while (elapsed < shockDuration)
+        {
+            // Zaman durdurmalarından etkilenmemesi için unscaledDeltaTime
+            elapsed += Time.unscaledDeltaTime;
+
+            // Mathf.Sin ile 0'dan 1'e ulaşıp tekrar 0'a inen pürüzsüz bir dalga (glitch) yaratıyoruz
+            float t = elapsed / shockDuration;
+            float shockCurve = Mathf.Sin(t * Mathf.PI);
+
+            // FOV Sarsıntısı (Ani zoom)
+            if (playerCamera != null)
+                playerCamera.fieldOfView = Mathf.Lerp(baseFOV, targetFOV, shockCurve);
+
+            // Post Process Bükülmeleri
+            if (m_Vignette != null)
+                m_Vignette.intensity.Override(Mathf.Lerp(baseVignette, peakVignette, shockCurve));
+            if (m_LensDistortion != null)
+                m_LensDistortion.intensity.Override(
+                    Mathf.Lerp(baseLens, peakLensDistortion, shockCurve)
+                );
+            if (m_Aberration != null)
+                m_Aberration.intensity.Override(
+                    Mathf.Lerp(baseAberration, peakAberration, shockCurve)
+                );
+
+            yield return null;
+        }
+
+        // 2. Garanti Sıfırlama (Her şeyi asıl değerlerine geri koy)
+        if (playerCamera != null)
+            playerCamera.fieldOfView = baseFOV;
+        if (m_Vignette != null)
+            m_Vignette.intensity.Override(baseVignette);
+        if (m_LensDistortion != null)
+            m_LensDistortion.intensity.Override(baseLens);
+        if (m_Aberration != null)
+            m_Aberration.intensity.Override(baseAberration);
     }
 
     private bool CheckIfVisible()
@@ -340,6 +424,10 @@ public class LeesEnemyAI : MonoBehaviour
             return;
         if (currentState == LeesState.Jumpscare)
             return;
+
+        // ÇÖZÜM BURADA: Ölüm tetiklendiği an durumu Jumpscare'e alıyoruz ki
+        // Update() içindeki HandleActiveLogic her frame'de burayı tekrar çağırmasın.
+        currentState = LeesState.Jumpscare;
 
         if (targetCharacterController != null && !targetCharacterController.enabled)
         {

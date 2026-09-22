@@ -79,6 +79,9 @@ public class GuderianAI : MonoBehaviour
     [SerializeField]
     private AudioClip searchHumSound;
 
+    [SerializeField]
+    private AudioClip[] rummageSounds;
+
     [HideInInspector]
     public string debugStatus;
 
@@ -435,6 +438,8 @@ public class GuderianAI : MonoBehaviour
         calculatedSearchDuration = baseSearchDuration + (activeLights * timePerLight);
         currentSearchTimer = calculatedSearchDuration;
         debugStatus = $"Arıyor... ({activeLights} Işık)";
+
+        // Uğultu/Nefes sesi arka planda sürekli çalmaya devam eder
         FadeAudio(searchHumSound, 1.0f, true);
 
         while (currentState == GuderianState.Searching)
@@ -444,9 +449,33 @@ public class GuderianAI : MonoBehaviour
                 Transform targetPoint = activeRoom.guderianPatrolPoints[
                     Random.Range(0, activeRoom.guderianPatrolPoints.Count)
                 ];
+
+                // 1. Hedefe yürü (Bu sırada daha önce yazdığımız ayak sesleri çalacak)
                 yield return StartCoroutine(MoveToTarget(targetPoint.position));
+
+                // 2. Hedefe ulaştı, durup etrafı karıştıracak
+                if (currentState == GuderianState.Searching)
+                {
+                    float searchWaitTime = Random.Range(2.0f, 4.0f); // Ses yoksa varsayılan 2-4 sn bekle
+
+                    // Eğer karıştırma (çekmece) sesleri atandıysa birini seçip çal
+                    if (rummageSounds != null && rummageSounds.Length > 0 && audioSource != null)
+                    {
+                        audioSource.PlayOneShot(searchHumSound); // Arama uğultusu devam ederken karıştırma sesi çal
+
+                        // Bekleme süresini tam olarak sesin uzunluğuna eşitle!
+                        // Böylece ses bitmeden yürümeye başlamaz.
+                    }
+
+                    // Karıştırma işlemi boyunca o noktada bekle
+                    yield return new WaitForSeconds(searchWaitTime);
+                }
             }
-            yield return new WaitForSeconds(1f);
+            else
+            {
+                // Odada devriye noktası yoksa olduğu yerde bekler
+                yield return new WaitForSeconds(1f);
+            }
         }
     }
 
@@ -454,12 +483,15 @@ public class GuderianAI : MonoBehaviour
     {
         currentState = GuderianState.Exiting;
         debugStatus = "Çıkıyor...";
+
+        // ---> DÜZELTME BURADA: Guderian pes edip çıkışa yöneldiği an arama sesini anında sönümleyerek kapatıyoruz.
+        FadeAudio(null, 0.5f, false);
+
         if (activeRoom != null && activeRoom.doorInsidePoint != null)
         {
             yield return StartCoroutine(MoveToTarget(activeRoom.doorInsidePoint.position));
             if (activeRoom.doorOutsidePoint != null)
                 yield return StartCoroutine(MoveToTarget(activeRoom.doorOutsidePoint.position));
-
             if (activeRoom.roomDoor != null && activeRoom.roomDoor.isOpen)
                 activeRoom.roomDoor.SetOpen(false);
         }
@@ -472,11 +504,12 @@ public class GuderianAI : MonoBehaviour
         if (agent != null)
             agent.enabled = false;
 
-        FadeAudio(null, 2.0f, false);
         currentState = GuderianState.Hidden;
         debugStatus = "Gitti.";
+
         if (GlobalEnemyManager.Instance != null)
             GlobalEnemyManager.Instance.RegisterAttackEnd();
+
         cooldownTimer = minTimeBetweenAttacks;
         activeRoom = null;
     }
@@ -490,7 +523,10 @@ public class GuderianAI : MonoBehaviour
         if (!agent.enabled)
             agent.enabled = true;
 
-        // 2. Yere ışınla (Warp)
+        // ---> YENİ: Ayak sesi zamanlayıcısını başlat
+        float stepTimer = footstepInterval;
+
+        // 2. Yere Işınla (Warp)
         if (agent.Warp(transform.position))
         {
             agent.isStopped = false;
@@ -500,7 +536,6 @@ public class GuderianAI : MonoBehaviour
         {
             Debug.LogWarning("Guderian NavMesh'e oturtulamadı! Transform ile gidiyor.");
             agent.enabled = false;
-
             while (Vector3.Distance(transform.position, target) > 0.1f)
             {
                 transform.position = Vector3.MoveTowards(
@@ -508,9 +543,18 @@ public class GuderianAI : MonoBehaviour
                     target,
                     walkSpeed * Time.deltaTime
                 );
-                // NavMesh dışında elle taşırken de animasyon hızını verelim
+
                 if (animator != null)
                     animator.SetFloat(_animIDSpeed, walkSpeed);
+
+                // ---> YENİ: Manuel yürürken ayak sesi çal
+                stepTimer -= Time.deltaTime;
+                if (stepTimer <= 0f)
+                {
+                    PlayGuderianFootstep();
+                    stepTimer = footstepInterval;
+                }
+
                 yield return null;
             }
             yield break;
@@ -524,7 +568,19 @@ public class GuderianAI : MonoBehaviour
         while (agent.enabled && agent.remainingDistance > agent.stoppingDistance + 0.1f)
         {
             if (agent.isStopped)
+            {
                 yield return null;
+                continue;
+            }
+
+            // ---> YENİ: NavMesh ile odada devriye atarken ayak sesi çal
+            stepTimer -= Time.deltaTime;
+            if (stepTimer <= 0f)
+            {
+                PlayGuderianFootstep();
+                stepTimer = footstepInterval; // Scriptin başındaki 0.8 saniyelik süreyi kullanır
+            }
+
             yield return null;
         }
 
@@ -534,6 +590,19 @@ public class GuderianAI : MonoBehaviour
             agent.velocity = Vector3.zero;
             if (animator != null)
                 animator.SetFloat(_animIDSpeed, 0f);
+        }
+    }
+
+    // ---> YENİ: Ayak seslerini Guderian'ın kendi üzerinden çalan metot
+    private void PlayGuderianFootstep()
+    {
+        if (footstepSounds != null && footstepSounds.Length > 0 && audioSource != null)
+        {
+            // 4 sesten birini rastgele seç
+            AudioClip clip = footstepSounds[Random.Range(0, footstepSounds.Length)];
+
+            // Sesi direkt Guderian'ın üzerindeki AudioSource'dan çal (3D Ses)
+            audioSource.PlayOneShot(clip);
         }
     }
 

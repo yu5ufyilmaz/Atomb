@@ -94,7 +94,7 @@ public class ControlsUIManager : MonoBehaviour
         {
             case MachineType.Generic:
                 currentActivePanel = genericTextPanel;
-                DoFManager.Instance.SetFocus(0.32f);
+                DoFManager.Instance.SetFocus(0.28f);
                 if (genericText != null)
                     genericText.text = optionalText;
                 break;
