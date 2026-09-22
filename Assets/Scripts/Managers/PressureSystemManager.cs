@@ -51,6 +51,11 @@ public class PressureSystemManager : MonoBehaviour, ISaveable
     // --- YENİ EKLENEN KİLİT ---
     [HideInInspector]
     public bool overridePostProcessing = false; // Jumpscare sırasında True yapacağız
+    private float baseVignette;
+    private float baseAberration;
+    private float baseLensIntensity;
+    private float baseLensScale;
+    private float baseSaturation;
 
     // --------------------------
 
@@ -94,14 +99,25 @@ public class PressureSystemManager : MonoBehaviour, ISaveable
 
         if (globalVolume != null && globalVolume.profile != null)
         {
-            globalVolume.profile.TryGet(out m_Vignette);
-            globalVolume.profile.TryGet(out m_Aberration);
-            globalVolume.profile.TryGet(out m_LensDistortion);
-            globalVolume.profile.TryGet(out m_ColorAdjustments);
+            if (globalVolume.profile.TryGet(out m_Vignette))
+                baseVignette = m_Vignette.intensity.value;
+
+            if (globalVolume.profile.TryGet(out m_Aberration))
+                baseAberration = m_Aberration.intensity.value;
+
+            if (globalVolume.profile.TryGet(out m_LensDistortion))
+            {
+                baseLensIntensity = m_LensDistortion.intensity.value;
+                baseLensScale = m_LensDistortion.scale.value;
+            }
+
+            if (globalVolume.profile.TryGet(out m_ColorAdjustments))
+                baseSaturation = m_ColorAdjustments.saturation.value;
         }
 
         if (warningUI != null)
             warningUI.SetActive(false);
+
         HandlePostProcessing();
     }
 
@@ -194,16 +210,15 @@ public class PressureSystemManager : MonoBehaviour, ISaveable
 
     private void HandlePostProcessing()
     {
-        // --- DÜZELTME BURADA ---
         // Eğer Jumpscare Manager kontrolü devraldıysa, burası çalışmasın!
         if (overridePostProcessing)
             return;
-        // -----------------------
 
         if (m_Vignette != null)
         {
             float ratio = (currentPressure > 50f) ? (currentPressure - 50f) / 50f : 0f;
-            m_Vignette.intensity.Override(ratio * 0.5f);
+            // 0f yerine baseVignette üzerine ekleme yapıyoruz
+            m_Vignette.intensity.Override(baseVignette + (ratio * 0.5f));
         }
 
         if (currentPressure > 60f)
@@ -213,28 +228,31 @@ public class PressureSystemManager : MonoBehaviour, ISaveable
 
             if (m_LensDistortion != null)
             {
-                m_LensDistortion.intensity.Override(-0.5f * ratio * pulse);
-                m_LensDistortion.scale.Override(1f - (ratio * 0.1f));
+                // Sabit 0'dan değil, base değerden eksiltiyoruz
+                m_LensDistortion.intensity.Override(baseLensIntensity + (-0.5f * ratio * pulse));
+                m_LensDistortion.scale.Override(baseLensScale - (ratio * 0.1f));
             }
             if (m_Aberration != null)
-                m_Aberration.intensity.Override(ratio * 1f);
+                m_Aberration.intensity.Override(baseAberration + (ratio * 1f));
         }
         else
         {
+            // Basınç düşükken 0'a değil, senin belirlediğin Inspector ayarlarına geri dönüyor
             if (m_LensDistortion != null)
             {
-                m_LensDistortion.intensity.Override(0f);
-                m_LensDistortion.scale.Override(1f); // Bunu mutlaka ekle!
+                m_LensDistortion.intensity.Override(baseLensIntensity);
+                m_LensDistortion.scale.Override(baseLensScale);
             }
             if (m_Aberration != null)
-                m_Aberration.intensity.Override(0f);
+                m_Aberration.intensity.Override(baseAberration);
         }
 
         if (m_ColorAdjustments != null)
         {
             float satVal =
                 (currentPressure > 75f) ? Mathf.Lerp(0f, -100f, (currentPressure - 75f) / 25f) : 0f;
-            m_ColorAdjustments.saturation.Override(satVal);
+            // Sıfırdan değil, kendi temel doygunluğundan azaltıyor
+            m_ColorAdjustments.saturation.Override(baseSaturation + satVal);
         }
 
         if (playerController != null)

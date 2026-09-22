@@ -94,27 +94,33 @@ public class ControlsUIManager : MonoBehaviour
         {
             case MachineType.Generic:
                 currentActivePanel = genericTextPanel;
+                DoFManager.Instance.SetFocus(0.32f);
                 if (genericText != null)
                     genericText.text = optionalText;
                 break;
 
             case MachineType.MassSpectrometer:
                 currentActivePanel = massSpectrometerPanel;
+                DoFManager.Instance.SetFocus(0.95f);
                 break;
 
             case MachineType.TuringMachine:
+                DoFManager.Instance.SetFocus(0.77f);
                 currentActivePanel = turingMachinePanel;
                 break;
 
             case MachineType.Oscilloscope:
+                DoFManager.Instance.SetFocus(0.69f);
                 currentActivePanel = oscilloscopePanel;
                 break;
 
             case MachineType.PressureValve:
+                DoFManager.Instance.SetFocus(1.3f);
                 currentActivePanel = pressureValvePanel;
                 break;
 
             case MachineType.Book:
+                DoFManager.Instance.SetFocus(0.32f);
                 currentActivePanel = bookPanel;
                 break;
 
@@ -144,6 +150,7 @@ public class ControlsUIManager : MonoBehaviour
         ToggleHUD(true);
 
         // 2. Fade Out başlat
+        DoFManager.Instance.ResetFocus();
         StopAllCoroutines();
         StartCoroutine(FadeRoutine(0f));
     }

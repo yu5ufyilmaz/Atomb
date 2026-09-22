@@ -1,7 +1,10 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Rendering;
+using UnityEngine.Rendering.HighDefinition;
 
 public class NotebookUI : MonoBehaviour
 {
@@ -19,6 +22,20 @@ public class NotebookUI : MonoBehaviour
     [Header("  Animation Settings")]
     public Animator playerAnimator;
     public string animatorParameterName = "IsNotebookOpen";
+
+    [Header("Depth of Field Ayarları")]
+    [SerializeField]
+    private Volume globalVolume;
+
+    [SerializeField]
+    private float notebookFocusDistance = 0.3f;
+
+    [SerializeField]
+    private float dofTransitionDuration = 0.25f;
+
+    private DepthOfField m_DepthOfField;
+    private float baseFocusDistance = 10f;
+    private Coroutine dofCoroutine;
 
     private enum NotebookCategory
     {
@@ -48,7 +65,13 @@ public class NotebookUI : MonoBehaviour
             if (player != null)
                 playerAnimator = player.GetComponent<Animator>();
         }
-
+        if (globalVolume != null && globalVolume.profile != null)
+        {
+            if (globalVolume.profile.TryGet(out m_DepthOfField))
+            {
+                baseFocusDistance = m_DepthOfField.focusDistance.value;
+            }
+        }
         if (notebookPanel != null)
             notebookPanel.SetActive(false);
     }
@@ -75,7 +98,14 @@ public class NotebookUI : MonoBehaviour
             playerAnimator.SetBool(animatorParameterName, isNotebookOpen);
 
         if (isNotebookOpen)
+        {
+            DoFManager.Instance.SetFocus(0.3f);
             UpdateUI();
+        }
+        else
+        {
+            DoFManager.Instance.ResetFocus();
+        }
 
         if (GameManager.Instance != null)
             GameManager.Instance.UpdateCursorState();
