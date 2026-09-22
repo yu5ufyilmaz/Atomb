@@ -3,6 +3,7 @@ using System.IO;
 using UnityEngine;
 using UnityEngine.Audio;
 using UnityEngine.Rendering; // Post-Processing için gerekli
+using UnityEngine.SceneManagement;
 
 // 1. Ayarlarımızı JSON olarak kaydedebilmek için bir veri sınıfı oluşturuyoruz
 [System.Serializable]
@@ -73,6 +74,31 @@ public class SettingsManager : MonoBehaviour
         yield return new WaitForSeconds(0.25f);
 
         // Oyun ilk başladığında ayarları sisteme uygula
+        ApplyAudioSettings();
+    }
+
+    private void OnEnable()
+    {
+        // Script aktif olduğunda sahne yüklenme olayına abone ol
+        SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+
+    private void OnDisable()
+    {
+        // Script kapandığında abonelikten çık
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        // Sahne her baştan yüklendiğinde (öldükten sonra vb.) sesleri tekrar uygula
+        StartCoroutine(ReapplyAudioRoutine());
+    }
+
+    private IEnumerator ReapplyAudioRoutine()
+    {
+        // AudioMixer'ın yeni sahneye tam oturması için çok kısa bir süre bekle
+        yield return new WaitForSeconds(0.1f);
         ApplyAudioSettings();
     }
 

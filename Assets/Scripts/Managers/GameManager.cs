@@ -29,6 +29,7 @@ public class GameManager : MonoBehaviour
 
     [Header("Oyun Durumu")]
     public bool isGamePaused = false;
+    private Queue<char> inputQueue = new Queue<char>();
 
     private void Awake()
     {
@@ -57,7 +58,7 @@ public class GameManager : MonoBehaviour
 
         // YENİ EKLENEN KISIM: Oyun başladığında karakterin kilitlerini aç
         StarterAssets.CharacterController player =
-            FindObjectOfType<StarterAssets.CharacterController>();
+            Object.FindFirstObjectByType<StarterAssets.CharacterController>();
         if (player != null)
         {
             // freeze = false, lockCameraInput = false, restrictRotation = false
@@ -74,31 +75,32 @@ public class GameManager : MonoBehaviour
 
     private void HandleCheatCode()
     {
-        // Menüdeyken veya oyun başlamamışken hile kodu çalışmasın
-        if (!isGameStarted)
+        if (!isGameStarted || string.IsNullOrEmpty(Input.inputString))
             return;
 
-        // Klavyeden basılan karakterleri tek tek al ve hafızaya (inputBuffer) ekle
         foreach (char c in Input.inputString)
         {
-            inputBuffer += c;
+            // Karakteri küçük harfe çevirip kuyruğa ekle
+            inputQueue.Enqueue(char.ToLower(c));
 
-            // Hafızanın şişmemesi için sadece son 10 karakteri tutuyoruz
-            if (inputBuffer.Length > 10)
+            // Kuyruk boyutu şifremizi ("osm") geçerse en eskisini at
+            if (inputQueue.Count > secretEndGameCode.Length)
             {
-                inputBuffer = inputBuffer.Substring(inputBuffer.Length - 10);
+                inputQueue.Dequeue();
             }
 
-            // Girdiğimiz tuşlar "osm" ile bitiyor mu?
-            if (inputBuffer.ToLower().EndsWith(secretEndGameCode))
+            // Boyut tam eşleşiyorsa kontrol et
+            if (inputQueue.Count == secretEndGameCode.Length)
             {
-                Debug.Log(
-                    $"🚨 GELİŞTİRİCİ KODU GİRİLDİ ({secretEndGameCode.ToUpper()}) - FİNAL SİNEMATİĞİ BAŞLATILIYOR! 🚨"
-                );
-                TriggerFinalEnding();
-
-                // Şifre üst üste tetiklenmesin diye hafızayı sıfırla
-                inputBuffer = "";
+                string currentInput = new string(inputQueue.ToArray());
+                if (currentInput == secretEndGameCode)
+                {
+                    Debug.Log(
+                        $"GİZLİ KOD GİRİLDİ ({secretEndGameCode.ToUpper()}) - FİNAL SİNEMATİĞİ BAŞLATILIYOR!"
+                    );
+                    TriggerFinalEnding();
+                    inputQueue.Clear(); // Şifre tekrar tetiklenmesin diye temizle
+                }
             }
         }
     }
@@ -106,7 +108,7 @@ public class GameManager : MonoBehaviour
     public void TriggerFinalEnding()
     {
         // Sahnede senin yazdığın "EndGameButton" sınıfına sahip objeyi buluyoruz
-        EndGameButton endButton = FindObjectOfType<EndGameButton>();
+        EndGameButton endButton = Object.FindFirstObjectByType<EndGameButton>();
 
         if (endButton != null)
         {
@@ -167,21 +169,22 @@ public class GameManager : MonoBehaviour
         // 3. Eğer Vana (Valve) çeviriyorsak, fare AÇIK olmalı.
         if (activeInteraction is InteractablePressureValve)
             return true;
-
+        if (activeInteraction is PuzzleReceiver)
+            return true;
         // 4. Diğer makinalarda (Turing, Osiloskop vb.) fare GİZLİ olmalı.
         return false;
     }
 
     public void RefreshReferences()
     {
-        breakerBox = FindObjectOfType<BreakerBox>();
-        passwordManager = FindObjectOfType<PasswordManager>();
+        breakerBox = Object.FindFirstObjectByType<BreakerBox>();
+        passwordManager = Object.FindFirstObjectByType<PasswordManager>();
 
         // YENİ EKLENEN SATIR:
-        pressureManager = FindObjectOfType<PressureSystemManager>();
+        pressureManager = Object.FindFirstObjectByType<PressureSystemManager>();
 
         allRooms.Clear();
-        allRooms.AddRange(FindObjectsOfType<RoomManager>());
+        allRooms.AddRange(Object.FindObjectsByType<RoomManager>(FindObjectsSortMode.None));
         allRooms.Sort((a, b) => a.roomName.CompareTo(b.roomName));
     }
 }

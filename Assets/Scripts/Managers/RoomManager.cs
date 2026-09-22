@@ -55,6 +55,22 @@ public class RoomManager : MonoBehaviour, ISaveable
             box.isTrigger = true;
     }
 
+    private void OnEnable()
+    {
+        if (SaveManager.Instance != null)
+        {
+            SaveManager.Instance.RegisterSaveable(this);
+        }
+    }
+
+    private void OnDisable()
+    {
+        if (SaveManager.Instance != null)
+        {
+            SaveManager.Instance.UnregisterSaveable(this);
+        }
+    }
+
     private void Update()
     {
         // Koridorsa veya Guderian yoksa veya pusu kapalıysa işlem yapma
@@ -176,7 +192,6 @@ public class RoomManager : MonoBehaviour, ISaveable
                 ambushSpawnPoint.position + ambushSpawnPoint.forward * 1f
             );
         }
-      
     }
 
     public void LoadData(GameData data)

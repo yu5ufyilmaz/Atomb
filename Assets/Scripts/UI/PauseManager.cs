@@ -34,18 +34,20 @@ public class PauseManager : MonoBehaviour
 
         // Input scriptini otomatik bulmaya çalış
         if (playerInputs == null)
-            playerInputs = FindObjectOfType<StarterAssetsInputs>();
+            playerInputs = Object.FindFirstObjectByType<StarterAssetsInputs>();
     }
 
     private void Update()
     {
-        // YENİ EKLENEN KONTROL: Oyun henüz başlamadıysa ESC tuşunu tamamen yok say!
+        // Oyun henüz başlamadıysa menü tuşunu yok say
         if (GameManager.Instance != null && !GameManager.Instance.isGameStarted)
             return;
 
-        // ESC tuşuna basılınca
-        if (Input.GetKeyDown(KeyCode.Escape))
+        // YENİ: Input.GetKeyDown(KeyCode.Escape) yerine
+        if (playerInputs != null && playerInputs.pause)
         {
+            playerInputs.pause = false; // Tüketimi onayla ki menü sürekli açılıp kapanmasın
+
             if (settingsPanel != null && settingsPanel.activeSelf)
             {
                 CloseSettings();

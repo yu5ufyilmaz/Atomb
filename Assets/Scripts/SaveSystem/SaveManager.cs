@@ -7,9 +7,9 @@ public class SaveManager : MonoBehaviour
 {
     public static SaveManager Instance { get; private set; }
 
-    private GameData gameData;
-    private List<ISaveable> saveableObjects;
-    private string saveFileName = "SenzoraLocalSave.json";
+private GameData gameData;
+private List<ISaveable> saveableObjects = new List<ISaveable>(); // Liste artık hazır!
+private string saveFileName = "SenzoraLocalSave.json";
 
     private void Awake()
     {
@@ -19,11 +19,22 @@ public class SaveManager : MonoBehaviour
             Destroy(gameObject);
     }
 
-    public void RefreshSaveables()
+    // Obje aktif olduğunda listeye yazdırılacak
+    public void RegisterSaveable(ISaveable saveable)
     {
-        IEnumerable<ISaveable> saveables = FindObjectsOfType<MonoBehaviour>(true)
-            .OfType<ISaveable>();
-        saveableObjects = new List<ISaveable>(saveables);
+        if (!saveableObjects.Contains(saveable))
+        {
+            saveableObjects.Add(saveable);
+        }
+    }
+
+    // Obje silindiğinde veya pasife düştüğünde listeden çıkacak
+    public void UnregisterSaveable(ISaveable saveable)
+    {
+        if (saveableObjects.Contains(saveable))
+        {
+            saveableObjects.Remove(saveable);
+        }
     }
 
     public void NewGame()
@@ -46,7 +57,6 @@ public class SaveManager : MonoBehaviour
 
     public bool LoadGame()
     {
-        RefreshSaveables();
         string path = Path.Combine(Application.persistentDataPath, saveFileName);
 
         // Gelecekte buraya Steamworks Load mantığı eklenecek
@@ -71,7 +81,6 @@ public class SaveManager : MonoBehaviour
 
     public void SaveGame()
     {
-        RefreshSaveables();
         if (gameData == null)
             gameData = new GameData();
 

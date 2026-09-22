@@ -41,6 +41,10 @@ public class PasswordManager : MonoBehaviour, ISaveable
     private List<string> discoveredClues = new List<string>();
     private List<string> validatedPasswords = new List<string>();
 
+    // Şifre girildiğinde diğer scriptlere haber verecek eventler
+    public event Action<string> OnPasswordSuccess;
+    public event Action<string> OnPasswordFailed;
+
     // YENİ: Bu oturumda kime hangi şifreyi atadığımızın günlüğü (Kaydetmek çok kolaylaşacak)
     public List<GameData.ObjectPasswordPair> currentSessionPasswords =
         new List<GameData.ObjectPasswordPair>();
@@ -53,6 +57,22 @@ public class PasswordManager : MonoBehaviour, ISaveable
             Instance = this;
         else
             Destroy(gameObject);
+    }
+
+    private void OnEnable()
+    {
+        if (SaveManager.Instance != null)
+        {
+            SaveManager.Instance.RegisterSaveable(this);
+        }
+    }
+
+    private void OnDisable()
+    {
+        if (SaveManager.Instance != null)
+        {
+            SaveManager.Instance.UnregisterSaveable(this);
+        }
     }
 
     private void Start()
@@ -80,29 +100,27 @@ public class PasswordManager : MonoBehaviour, ISaveable
         }
 
         // --- BULMACA KİTABI ---
-        int activeSymbolID =
-            SymbolSpawner.Instance != null ? SymbolSpawner.Instance.spawnedSymbolID : -1;
-        InteractableBook puzzleBook = allBooksInLevel.FirstOrDefault(b =>
-            b != null && b.isSymbolTargetBook && b.requiredSymbolID == activeSymbolID
-        );
+        var puzzleBooks = allBooksInLevel
+            .Where(b => b != null && b.GetComponent<PuzzleReceiver>() != null)
+            .ToList();
 
-        if (puzzleBook != null)
+        // Bulunan her bir kitaba ayrı ayrı şifre ata
+        foreach (var pBook in puzzleBooks)
         {
             string puzzlePass = GenerateRandomPassword();
-            puzzleBook.AssignPuzzlePassword(puzzlePass);
+            pBook.AssignPuzzlePassword(puzzlePass);
             requiredPasswords.Add(puzzlePass);
 
-            // HAFIZAYA AL
             currentSessionPasswords.Add(
                 new GameData.ObjectPasswordPair
                 {
-                    objectName = puzzleBook.gameObject.name,
+                    objectName = pBook.gameObject.name,
                     password = puzzlePass,
                     locationIndex = 0,
                     isPuzzleBook = true,
                 }
             );
-            Debug.Log($"[Oyun Şifresi - SEMBOL MAKİNESİ] {puzzleBook.name}: {puzzlePass}");
+            Debug.Log($"[Oyun Şifresi - SEMBOL KİTABI] {pBook.name}: {puzzlePass}");
         }
 
         int machineCount = 2; // Osiloskop + Spektrometre
@@ -147,12 +165,12 @@ public class PasswordManager : MonoBehaviour, ISaveable
                 && b.bookIdentity != null
                 && b.bookIdentity.possibleLocations.Count > 0
                 && b != tutorialNote
-                && b != puzzleBook
+                && !puzzleBooks.Contains(b) // DÜZELTME 2: Bulmaca kitaplarının HEPSİNİ hariç tut
             )
             .ToList();
 
-        if (puzzleBook != null)
-            bookCount--;
+        // DÜZELTME 3: Sahnede kaç bulmaca kitabı varsa, rastgele dağıtılacak kitap sayısından o kadar düş
+        bookCount -= puzzleBooks.Count;
 
         var selectedBooks = eligibleBooks.OrderBy(x => Random.value).Take(bookCount).ToList();
 
@@ -281,17 +299,17 @@ public class PasswordManager : MonoBehaviour, ISaveable
     {
         if (passwordID == tutorialPassword)
         {
-            Debug.Log("📘 TUTORIAL ŞİFRESİ GİRİLDİ (Sayaca eklenmiyor).");
+            Debug.Log("  TUTORIAL ŞİFRESİ (Sayaca eklenmiyor).");
             isTutorialPasswordUsed = true;
-
             if (MegaphoneSystem.Instance != null)
                 MegaphoneSystem.Instance.OnTutorialSolved();
-
             if (PlayerInteraction.Instance != null)
             {
                 PlayerInteraction.Instance.DisableTutorialMode();
-                Debug.Log("🔓 Tutorial Modu Kapatıldı. Tüm etkileşimler açık.");
+                Debug.Log("  Tutorial Modu Kapatıldı, tüm etkileşimler açık.");
             }
+
+            OnPasswordSuccess?.Invoke(passwordID); // <--- BUNU EKLE
             return true;
         }
 
@@ -299,6 +317,8 @@ public class PasswordManager : MonoBehaviour, ISaveable
         {
             if (MegaphoneSystem.Instance != null)
                 MegaphoneSystem.Instance.OnFirstMistake();
+
+            OnPasswordFailed?.Invoke(passwordID); // <--- BUNU EKLE (Yanlış şifre durumu)
             return false;
         }
 
@@ -306,7 +326,7 @@ public class PasswordManager : MonoBehaviour, ISaveable
             return true;
 
         validatedPasswords.Add(passwordID);
-        Debug.Log($"✅ OYUN ŞİFRESİ ONAYLANDI: {validatedPasswords.Count}/{totalPasswordsNeeded}");
+        Debug.Log($"  OYUN ŞİFRESİ ONAYLANDI: {validatedPasswords.Count}/{totalPasswordsNeeded}");
 
         if (validatedPasswords.Count >= totalPasswordsNeeded)
         {
@@ -315,6 +335,7 @@ public class PasswordManager : MonoBehaviour, ISaveable
             OnGameReadyToFinish?.Invoke();
         }
 
+        OnPasswordSuccess?.Invoke(passwordID); // <--- BUNU EKLE (Doğru şifre durumu)
         return true;
     }
 

@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using StarterAssets;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class InteractableNote : MonoBehaviour, IInteractable, IForceExitable
@@ -79,7 +80,7 @@ public class InteractableNote : MonoBehaviour, IInteractable, IForceExitable
         if (paperCollider == null)
             paperCollider = GetComponentInChildren<Collider>();
 
-        playerController = FindObjectOfType<UnityEngine.CharacterController>();
+        playerController = Object.FindFirstObjectByType<UnityEngine.CharacterController>();
         if (playerController != null)
         {
             playerGameScript = playerController.GetComponent<StarterAssets.CharacterController>();
@@ -251,6 +252,7 @@ public class InteractableNote : MonoBehaviour, IInteractable, IForceExitable
             interactionCollider.enabled = true;
 
         isAnimating = false;
+        PlayerInteraction.NotifyInteractionExit(gameObject);
     }
 
     private void CheckForPasswordClick()

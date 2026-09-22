@@ -70,8 +70,10 @@ public class AdamAI : MonoBehaviour
 
     private void Update()
     {
-        if (!GameManager.Instance.isGameStarted)
-            return;
+        if (GlobalEnemyManager.Instance != null && GlobalEnemyManager.Instance.stopAllEnemies)
+        {
+            return; // Eğer sistem durdurulmuşsa hiçbir sayacı ilerletme, burada kal!
+        }
         // Debug Güncellemesi
         if (playerCurrentRoom == null)
             currentDetectedRoom = "YOK (Koridor/Boşluk)";
@@ -207,7 +209,13 @@ public class AdamAI : MonoBehaviour
         if (audioSource)
             audioSource.PlayOneShot(killSound);
         if (JumpscareManager.Instance != null)
-            JumpscareManager.Instance.StartJumpscare(transform, adamJumpscareProfile, true);
+            JumpscareManager.Instance.StartJumpscare(
+                transform,
+                adamJumpscareProfile,
+                true,
+                JumpscareStyle.Direct,
+                "Too long in darkness."
+            );
     }
 
     private void PlaySound(AudioClip clip)

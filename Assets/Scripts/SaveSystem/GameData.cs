@@ -17,9 +17,6 @@ public class GameData
     public List<string> savedLorePages = new List<string>();
 
     public List<ObjectPasswordPair> savedPasswords = new List<ObjectPasswordPair>();
-
-    public bool hasSymbol;
-    public int currentSymbolID;
     public bool wasAttackInProgress;
     public float remainingGlobalCooldown;
     public float savedPressure;
@@ -36,13 +33,16 @@ public class GameData
     public int breakerCycleCount;
     public List<LightSaveData> savedLights = new List<LightSaveData>();
 
+    public List<string> inventoryItemIDs = new List<string>();
+
+    // ESKİ: public int spawnedSymbolID;
+    public string spawnedItemID = "";
+
     public GameData()
     {
         playerPosition = Vector3.zero;
         playerRotation = Quaternion.identity;
         lastSavedTime = "";
-        hasSymbol = false;
-        currentSymbolID = -1;
         wasAttackInProgress = false;
         remainingGlobalCooldown = 0f;
         isBreakerTripped = false;

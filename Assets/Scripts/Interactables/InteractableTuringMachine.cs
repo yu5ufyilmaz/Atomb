@@ -149,7 +149,7 @@ public class InteractableTuringMachine : MonoBehaviour, IInteractable, IForceExi
     {
         // 1. Karakter Referanslarını Bul
         if (playerController == null)
-            playerController = FindObjectOfType<UnityEngine.CharacterController>();
+            playerController = Object.FindFirstObjectByType<UnityEngine.CharacterController>();
 
         if (playerController != null)
         {
@@ -164,7 +164,7 @@ public class InteractableTuringMachine : MonoBehaviour, IInteractable, IForceExi
                 playerMovementScript = p.GetComponent("ThirdPersonController") as MonoBehaviour;
 
             if (playerInteractionScript == null)
-                playerInteractionScript = FindObjectOfType<PlayerInteraction>();
+                playerInteractionScript = Object.FindFirstObjectByType<PlayerInteraction>();
         }
 
         // 2. Sanal Kamera (VCam) Oluşturma/Bulma
@@ -436,6 +436,7 @@ public class InteractableTuringMachine : MonoBehaviour, IInteractable, IForceExi
 
         isInteracting = false;
         isExiting = false;
+        PlayerInteraction.NotifyInteractionExit(gameObject);
     }
 
     private void Update()

@@ -67,6 +67,7 @@ public class InteractableHidingSpot : MonoBehaviour, IInteractable, IForceExitab
     private bool isOccupied = false;
     private bool isPeeking = false;
     private bool inTransition = false;
+    public bool canExit = true;
 
     private UnityEngine.CharacterController playerController;
     private StarterAssets.StarterAssetsInputs playerInput;
@@ -74,7 +75,7 @@ public class InteractableHidingSpot : MonoBehaviour, IInteractable, IForceExitab
     private Transform mainCamera;
     private CinemachineBrain cinemachineBrain;
     private Transform headBone;
-
+    private Transform originalCameraParent;
     public bool IsOccupied => isOccupied;
 
     [Tooltip("Kapı açılırken karakterin ne kadar bekleyeceği (Animasyon süresi kadar yap)")]
@@ -83,7 +84,7 @@ public class InteractableHidingSpot : MonoBehaviour, IInteractable, IForceExitab
 
     private void Start()
     {
-        playerController = FindObjectOfType<UnityEngine.CharacterController>();
+        playerController = Object.FindFirstObjectByType<UnityEngine.CharacterController>();
         if (playerController)
         {
             playerInput = playerController.GetComponent<StarterAssets.StarterAssetsInputs>();
@@ -96,6 +97,7 @@ public class InteractableHidingSpot : MonoBehaviour, IInteractable, IForceExitab
         if (Camera.main != null)
         {
             mainCamera = Camera.main.transform;
+            originalCameraParent = mainCamera.parent; // Eski ebeveyni kaydet
             cinemachineBrain = mainCamera.GetComponent<CinemachineBrain>();
         }
     }
@@ -123,7 +125,10 @@ public class InteractableHidingSpot : MonoBehaviour, IInteractable, IForceExitab
         {
             HandlePeeking();
             if (Input.GetKeyDown(KeyCode.F) || Input.GetMouseButtonDown(0))
-                AttemptExit();
+            {
+                if (canExit)
+                    AttemptExit();
+            }
         }
     }
 
@@ -342,7 +347,7 @@ public class InteractableHidingSpot : MonoBehaviour, IInteractable, IForceExitab
         if (propAnimator)
             propAnimator.SetTrigger(propCloseTrigger);
 
-        mainCamera.SetParent(null);
+        mainCamera.SetParent(originalCameraParent);
 
         // KAMERA YÖNÜNÜ DÜZELT (Yüzünü görmemen için)
         if (playerMoveScript != null)
@@ -362,6 +367,7 @@ public class InteractableHidingSpot : MonoBehaviour, IInteractable, IForceExitab
         isOccupied = false;
         isPeeking = false;
         inTransition = false;
+        PlayerInteraction.NotifyInteractionExit(gameObject);
     }
 
     // --- HAREKET ET VE ROTASYONU KİLİTLE ---

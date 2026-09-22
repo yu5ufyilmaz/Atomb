@@ -25,13 +25,31 @@ public class GlobalEnemyManager : MonoBehaviour, ISaveable
             Destroy(gameObject);
     }
 
+    private void OnEnable()
+    {
+        if (SaveManager.Instance != null)
+        {
+            SaveManager.Instance.RegisterSaveable(this);
+        }
+    }
+
+    private void OnDisable()
+    {
+        if (SaveManager.Instance != null)
+        {
+            SaveManager.Instance.UnregisterSaveable(this);
+        }
+    }
+
     private void Update()
     {
+        // YENİ: Oyun başlamadıysa süreleri dondur, hiçbir düşman harekete geçemesin!
+        if (GameManager.Instance != null && !GameManager.Instance.isGameStarted)
+            return;
+
         // --- DÜZELTME: TEST MODU KONTROLÜ ---
         if (stopAllEnemies)
         {
-            // Eğer test modundaysak, saldırı bayrağını indir.
-            // Yoksa testi kapattığında sistem "Hala saldırı var" sanıp kilitli kalır.
             if (isAttackInProgress)
             {
                 isAttackInProgress = false;
@@ -49,8 +67,13 @@ public class GlobalEnemyManager : MonoBehaviour, ISaveable
 
     public bool CanAttack()
     {
+        // YENİ: Oyun başlamadıysa kimse saldıramaz!
+        if (GameManager.Instance != null && !GameManager.Instance.isGameStarted)
+            return false;
+
         if (stopAllEnemies)
             return false;
+
         return !isAttackInProgress && currentGlobalCooldown <= 0;
     }
 

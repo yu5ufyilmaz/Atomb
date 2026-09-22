@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "NewWordPool", menuName = "Atomb/Word Pool")]
+[CreateAssetMenu(fileName = "NewWordPool", menuName = "Senzora/Word Pool")]
 public class WordPool : ScriptableObject
 {
     [Header("Kelime Havuzu")]

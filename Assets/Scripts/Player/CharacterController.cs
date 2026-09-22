@@ -387,7 +387,6 @@ namespace StarterAssets
             {
                 _speed = 0f;
                 _animationBlend = 0f;
-
                 if (_hasAnimator)
                 {
                     _animator.SetFloat(_animIDSpeed, 0f);
@@ -395,8 +394,31 @@ namespace StarterAssets
                     _animator.SetFloat(_animIDVelocityX, 0f); // Kaymayı önleyen asıl kahramanlar
                     _animator.SetFloat(_animIDVelocityZ, 0f);
                 }
-                return; // Hareket hesaplamasını yapmadan fonksiyondan çık
+
+                // --- YENİ EKLENEN KISIM: Dondurulmuşken Yumuşak Dönüş ---
+                if (_mainCamera != null)
+                {
+                    _targetRotation = _mainCamera.transform.eulerAngles.y;
+
+                    // Mevcut sarhoşluk etkinizi bozmuyoruz
+                    float rotationWithDrun = _targetRotation;
+                    if (drunkIntensity > 0.01f)
+                        rotationWithDrun += currentDrunkYaw;
+
+                    // Bedenin kameraya doğru kendi orijinal hızında (SmoothDamp) dönmesini sağlıyoruz
+                    float rotationk = Mathf.SmoothDampAngle(
+                        transform.eulerAngles.y,
+                        rotationWithDrun,
+                        ref _rotationVelocity,
+                        RotationSmoothTime
+                    );
+                    transform.rotation = Quaternion.Euler(0.0f, rotationk, 0.0f);
+                }
+                // --------------------------------------------------------
+
+                return; // Hareket (yürüme/koşma) hesaplaması yapmadan fonksiyondan çık
             }
+
             // 1. Hız Hesaplama
             // 1. Hız Hesaplama
             float targetSpeed = _input.sprint ? SprintSpeed : MoveSpeed;
@@ -455,14 +477,15 @@ namespace StarterAssets
             if (drunkIntensity > 0.01f)
                 rotationWithDrunk += currentDrunkYaw;
 
-            // Karakterin gövdesini kamera açısına yumuşakça döndür
-            float rotation = Mathf.SmoothDampAngle(
-                transform.eulerAngles.y,
-                rotationWithDrunk,
-                ref _rotationVelocity,
-                RotationSmoothTime
+            // Hedef rotasyonu Quaternion olarak oluştur
+            Quaternion targetRotation = Quaternion.Euler(0.0f, rotationWithDrunk, 0.0f);
+
+            // Slerp ile mevcut dönüşten hedefe kusursuzca ak (15f hızını zevkine göre değiştirebilirsin)
+            transform.rotation = Quaternion.Slerp(
+                transform.rotation,
+                targetRotation,
+                Time.deltaTime * 15f
             );
-            transform.rotation = Quaternion.Euler(0.0f, rotation, 0.0f);
 
             // HAREKET YÖNÜ: Input'u (WASD) kamera açısına göre ayarla.
             Vector3 inputDirection = new Vector3(_input.move.x, 0.0f, _input.move.y).normalized;
@@ -806,7 +829,7 @@ namespace StarterAssets
         // --- BU FONKSİYONU EKLE ---
         public void ForceCameraRotation(float yaw, float pitch)
         {
-            // Scriptin hafızasındaki açıları, şu anki gerçek açılara eşitliyoruz
+            // Scriptin hafızasındaki açıları şu anki gerçek açılara eşitliyoruz
             _cinemachineTargetYaw = yaw;
             _cinemachineTargetPitch = pitch;
 
@@ -815,6 +838,9 @@ namespace StarterAssets
             {
                 CinemachineCameraTarget.transform.rotation = Quaternion.Euler(pitch, yaw, 0.0f);
             }
+
+            // AŞAĞIDAKİ SATIR İPTAL EDİLMELİ (Hareketi sertleştiren kısım)
+            // transform.rotation = Quaternion.Euler(0.0f, yaw, 0.0f);
         }
 
         private void OnFootstep(AnimationEvent animationEvent)

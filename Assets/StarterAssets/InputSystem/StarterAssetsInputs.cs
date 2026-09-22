@@ -20,6 +20,13 @@ namespace StarterAssets
         public bool cursorLocked = true;
         public bool cursorInputForLook = true;
 
+        [Header("Custom Interaction Inputs")]
+        public bool interact; // Sol Tık / E
+        public bool secondaryInteract; // Sağ Tık (Peek)
+        public bool cancel; // F tuşu (Çıkış)
+        public bool toggleNotebook; // Tab tuşu
+        public bool pause; // Escape tuşu
+        public Vector2 scroll; // Fare tekerleği
 #if ENABLE_INPUT_SYSTEM
         public void OnMove(InputValue value)
         {
@@ -63,6 +70,36 @@ namespace StarterAssets
         public void SprintInput(bool newSprintState)
         {
             sprint = newSprintState;
+        }
+
+        public void OnInteract(InputValue value)
+        {
+            interact = value.isPressed;
+        }
+
+        public void OnSecondaryInteract(InputValue value)
+        {
+            secondaryInteract = value.isPressed;
+        }
+
+        public void OnCancel(InputValue value)
+        {
+            cancel = value.isPressed;
+        }
+
+        public void OnToggleNotebook(InputValue value)
+        {
+            toggleNotebook = value.isPressed;
+        }
+
+        public void OnScroll(InputValue value)
+        {
+            scroll = value.Get<Vector2>();
+        }
+
+        public void OnPause(InputValue value)
+        {
+            pause = value.isPressed;
         }
 
         private void OnApplicationFocus(bool hasFocus)

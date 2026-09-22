@@ -85,7 +85,8 @@ public class InteractablePressureValve : MonoBehaviour, IInteractable, IForceExi
 
         // 1. Scriptleri Bul
         if (playerPhysicsController == null)
-            playerPhysicsController = FindObjectOfType<UnityEngine.CharacterController>();
+            playerPhysicsController =
+                Object.FindFirstObjectByType<UnityEngine.CharacterController>();
 
         if (playerPhysicsController != null)
         {
@@ -270,6 +271,7 @@ public class InteractablePressureValve : MonoBehaviour, IInteractable, IForceExi
             ControlsUIManager.Instance.HideControls();
 
         isExiting = false;
+        PlayerInteraction.NotifyInteractionExit(gameObject);
     }
 
     private void Update()

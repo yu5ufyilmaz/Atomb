@@ -32,6 +32,10 @@ public class DeathUIManager : MonoBehaviour
     [Tooltip("Öldükten kaç saniye sonra belirsin?")]
     [SerializeField]
     private float fadeDelay = 1.0f;
+    public TMPro.TextMeshProUGUI deathReasonText;
+
+    [Header("Daktilo Ayarları")]
+    public float typeSpeed = 0.05f;
 
     // ----------------------------------------------
 
@@ -58,7 +62,7 @@ public class DeathUIManager : MonoBehaviour
         }
     }
 
-    public void ShowDeathScreen()
+    public void ShowDeathScreen(string reason = "")
     {
         Debug.Log("Ölüm Ekranı Açılıyor...");
 
@@ -76,9 +80,28 @@ public class DeathUIManager : MonoBehaviour
 
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
+        if (deathReasonText != null)
+        {
+            // Eski kod (direkt yazan): deathReasonText.text = reason;
 
+            // Yeni kod (daktilo efekti):
+            StartCoroutine(TypeTextRoutine(reason));
+        }
         Time.timeScale = 0f; // Zamanı durdur
     }
+
+   private IEnumerator TypeTextRoutine(string textToType)
+{
+    deathReasonText.text = ""; // Önce metni tamamen temizle
+    
+    foreach (char letter in textToType) // Kelimedeki her bir harfi tek tek al
+    {
+        deathReasonText.text += letter; // Ekrana bir harf daha ekle
+        
+        // Zaman dursun ya da durmasın, gerçek zamanlı olarak bekle:
+        yield return new WaitForSecondsRealtime(typeSpeed); 
+    }
+}
 
     private IEnumerator FadeInImageColorRoutine()
     {

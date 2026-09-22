@@ -141,8 +141,10 @@ public class GuderianAI : MonoBehaviour
 
     private void Update()
     {
-        if (!GameManager.Instance.isGameStarted)
-            return;
+        if (GlobalEnemyManager.Instance != null && GlobalEnemyManager.Instance.stopAllEnemies)
+        {
+            return; // Eğer sistem durdurulmuşsa hiçbir sayacı ilerletme, burada kal!
+        }
         // Global Durdurma Kontrolü
         if (GlobalEnemyManager.Instance.stopAllEnemies)
         {
@@ -259,7 +261,7 @@ public class GuderianAI : MonoBehaviour
             return;
 
         guderianModel.SetActive(true);
-        TriggerPositionedJumpscare(JumpscareType.InFrontOfPlayer);
+        TriggerPositionedJumpscare(JumpscareType.InFrontOfPlayer, "Walked into an ambush.");
     }
 
     private void AttemptSpawn()
@@ -594,7 +596,7 @@ public class GuderianAI : MonoBehaviour
         InFrontOfPlayer,
     }
 
-    private void TriggerPositionedJumpscare(JumpscareType type)
+    private void TriggerPositionedJumpscare(JumpscareType type, string reason = "You didn't hide.")
     {
         currentState = GuderianState.Jumpscare;
         debugStatus = "JUMPSCARE!";
@@ -666,7 +668,9 @@ public class GuderianAI : MonoBehaviour
             JumpscareManager.Instance.StartJumpscare(
                 transform,
                 guderianJumpscareProfile,
-                shouldPlayAnim
+                shouldPlayAnim,
+                JumpscareStyle.Direct,
+                reason
             );
         else
             StartCoroutine(ExitSequence());
@@ -720,7 +724,13 @@ public class GuderianAI : MonoBehaviour
 
         guderianModel.SetActive(true);
         if (JumpscareManager.Instance != null)
-            JumpscareManager.Instance.StartJumpscare(transform, guderianJumpscareProfile, false);
+            JumpscareManager.Instance.StartJumpscare(
+                transform,
+                guderianJumpscareProfile,
+                false,
+                JumpscareStyle.Direct,
+                "You left too early."
+            );
     }
 
     private void SetPositionWithOffset(Vector3 targetPos, bool useSpawnOffset = true)

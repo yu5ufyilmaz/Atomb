@@ -120,7 +120,7 @@ public class GlobalEnemyManagerEditor : Editor
     // --- LEES ---
     void DrawLeesSection(GUIStyle headerStyle, GUIStyle sectionStyle)
     {
-        LeesEnemyAI lees = FindObjectOfType<LeesEnemyAI>();
+        LeesEnemyAI lees = Object.FindFirstObjectByType<LeesEnemyAI>();
         GUI.backgroundColor = new Color(0.9f, 0.85f, 1f);
         EditorGUILayout.BeginVertical(sectionStyle);
         GUI.backgroundColor = Color.white;
@@ -229,7 +229,7 @@ public class GlobalEnemyManagerEditor : Editor
     // --- GUDERIAN ---
     void DrawGuderianSection(GUIStyle headerStyle, GUIStyle sectionStyle)
     {
-        GuderianAI guderian = FindObjectOfType<GuderianAI>();
+        GuderianAI guderian = Object.FindFirstObjectByType<GuderianAI>();
         GUI.backgroundColor = new Color(1f, 0.9f, 0.8f);
         EditorGUILayout.BeginVertical(sectionStyle);
         GUI.backgroundColor = Color.white;
@@ -337,7 +337,7 @@ public class GlobalEnemyManagerEditor : Editor
     // --- ADAM ---
     void DrawAdamSection(GUIStyle headerStyle, GUIStyle sectionStyle)
     {
-        AdamAI adam = FindObjectOfType<AdamAI>();
+        AdamAI adam = Object.FindFirstObjectByType<AdamAI>();
         GUI.backgroundColor = new Color(0.2f, 0.2f, 0.2f);
         EditorGUILayout.BeginVertical(sectionStyle);
         GUI.backgroundColor = Color.white;

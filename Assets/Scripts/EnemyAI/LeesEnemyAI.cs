@@ -15,6 +15,7 @@ public class LeesEnemyAI : MonoBehaviour
     }
 
     public LeesState currentState = LeesState.Hidden;
+    public bool ignorePlayer = false;
 
     [Header("Model & Animasyon")]
     public Animator leesAnimator;
@@ -114,6 +115,7 @@ public class LeesEnemyAI : MonoBehaviour
 
     // RAM Optimizasyonu: Spawn noktası shuffle için yeniden kullanılabilir liste
     private List<Transform> shuffleBuffer = new List<Transform>();
+    public bool isSafeSpawn = false;
 
     private void Awake()
     {
@@ -161,8 +163,9 @@ public class LeesEnemyAI : MonoBehaviour
         if (!GameManager.Instance.isGameStarted)
             return;
         if (GlobalEnemyManager.Instance != null && GlobalEnemyManager.Instance.stopAllEnemies)
-            return;
-
+        {
+            return; // Eğer sistem durdurulmuşsa hiçbir sayacı ilerletme, burada kal!
+        }
         if (currentCooldownTimer > 0)
         {
             currentCooldownTimer -= Time.deltaTime;
@@ -199,7 +202,7 @@ public class LeesEnemyAI : MonoBehaviour
 
         if (currentRoom != spawnRoom)
         {
-            TriggerDeath("Scenario B: Odadan dışarı kaçıldı!", true);
+            TriggerDeath("There is no escape.", true);
             return;
         }
 
@@ -229,7 +232,7 @@ public class LeesEnemyAI : MonoBehaviour
             {
                 currentIgnoranceTimer += Time.deltaTime;
                 if (currentIgnoranceTimer >= maxIgnoranceTime)
-                    TriggerDeath("Scenario A: Süre doldu (Ignorance)");
+                    TriggerDeath("You ignored him.");
             }
         }
         else
@@ -238,14 +241,14 @@ public class LeesEnemyAI : MonoBehaviour
             {
                 if (hasTurnedAway)
                 {
-                    TriggerDeath("HATA: Arkasını döndükten sonra tekrar baktı!");
+                    TriggerDeath("You look him again.");
                     return;
                 }
                 currentReactionTimer += Time.deltaTime;
                 currentSurvivalTimer = 0f;
 
                 if (currentReactionTimer >= maxReactionTime)
-                    TriggerDeath("Scenario C: Çok uzun süre baktın!");
+                    TriggerDeath("You stared too long.");
             }
             else
             {
@@ -257,9 +260,7 @@ public class LeesEnemyAI : MonoBehaviour
                     currentMovementGraceTimer += Time.deltaTime;
                     if (currentMovementGraceTimer >= movementGraceTime)
                     {
-                        TriggerDeath(
-                            $"Scenario D: Arkasını döndün ve {movementGraceTime} saniye boyunca hareket ettin!"
-                        );
+                        TriggerDeath("You moved.");
                     }
                 }
                 else
@@ -335,6 +336,8 @@ public class LeesEnemyAI : MonoBehaviour
 
     public void TriggerDeath(string reason, bool spawnBehind = false)
     {
+        if (isSafeSpawn)
+            return;
         if (currentState == LeesState.Jumpscare)
             return;
 
@@ -370,10 +373,8 @@ public class LeesEnemyAI : MonoBehaviour
     private void ExecuteDeathNow(string reason, bool spawnBehind)
     {
         Debug.LogError($"ÖLÜM: {reason}");
-
         if (audioFadeRoutine != null)
             StopCoroutine(audioFadeRoutine);
-
         if (audioSource)
         {
             audioSource.Stop();
@@ -381,14 +382,14 @@ public class LeesEnemyAI : MonoBehaviour
             if (jumpscareSound)
                 audioSource.PlayOneShot(jumpscareSound);
         }
-
         if (leesAnimator != null)
             leesAnimator.SetTrigger(JumpscareTrigger);
 
+        // REASON PARAMETRESİNİ İÇERİ YOLLUYORUZ
         if (spawnBehind)
-            StartCoroutine(ExecuteBehindJumpscare());
+            StartCoroutine(ExecuteBehindJumpscare(reason));
         else
-            StartCoroutine(ExecuteSmartJumpscare());
+            StartCoroutine(ExecuteSmartJumpscare(reason));
     }
 
     private void StartFadeAudio(AudioClip clip, bool fadeIn)
@@ -425,35 +426,39 @@ public class LeesEnemyAI : MonoBehaviour
     }
 
     // --- JUMPSCARE GÜNCELLEMELERİ ---
-    private IEnumerator ExecuteBehindJumpscare()
+    // STRING REASON PARAMETRESİNİ EKLİYORUZ
+    private IEnumerator ExecuteBehindJumpscare(string reason)
     {
         currentState = LeesState.Jumpscare;
         ShowModel(true);
         if (JumpscareManager.Instance != null)
         {
-            // Yeni Profil sistemini kullanıyor
+            // REASON'I JUMPSCARE MANAGER'A İLETİYORUZ
             JumpscareManager.Instance.StartJumpscare(
                 transform,
                 leesJumpscareProfile,
                 true,
-                JumpscareStyle.ForcedBehind
+                JumpscareStyle.ForcedBehind,
+                reason
             );
         }
         yield return null;
     }
 
-    private IEnumerator ExecuteSmartJumpscare()
+    // STRING REASON PARAMETRESİNİ EKLİYORUZ
+    private IEnumerator ExecuteSmartJumpscare(string reason)
     {
         currentState = LeesState.Jumpscare;
         ShowModel(true);
         if (JumpscareManager.Instance != null)
         {
-            // Yeni Profil sistemini kullanıyor
+            // REASON'I JUMPSCARE MANAGER'A İLETİYORUZ
             JumpscareManager.Instance.StartJumpscare(
                 transform,
                 leesJumpscareProfile,
                 true,
-                JumpscareStyle.SmartDisplacement
+                JumpscareStyle.SmartDisplacement,
+                reason
             );
         }
         yield return null;
