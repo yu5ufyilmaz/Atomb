@@ -105,7 +105,7 @@ public class LeesEnemyEditor : Editor
                 serializedObject.FindProperty("showDebugLogs"),
                 new GUIContent("Debug Çizgilerini Göster")
             );
-            
+
             // YENİ EKLENEN KISIM: ŞOK EFEKTİ ARAYÜZÜ
             EditorGUILayout.Space(10);
             EditorGUILayout.LabelField("Şok (Fark Edilme) Efekti", EditorStyles.boldLabel);
@@ -118,7 +118,10 @@ public class LeesEnemyEditor : Editor
                 EditorGUILayout.PropertyField(peakFOVOffset, new GUIContent("FOV Zoom Açısı"));
                 EditorGUILayout.PropertyField(peakVignette, new GUIContent("Vignette Yoğunluğu"));
                 EditorGUILayout.PropertyField(peakLensDistortion, new GUIContent("Lens Bükülmesi"));
-                EditorGUILayout.PropertyField(peakAberration, new GUIContent("Renk Ayrışması (Glitch)"));
+                EditorGUILayout.PropertyField(
+                    peakAberration,
+                    new GUIContent("Renk Ayrışması (Glitch)")
+                );
                 EditorGUILayout.PropertyField(shockSound, new GUIContent("Şok Sesi"));
                 EditorGUI.indentLevel--;
             }
@@ -186,6 +189,12 @@ public class LeesEnemyEditor : Editor
         if (showSpawn)
         {
             EditorGUILayout.BeginVertical(EditorStyles.helpBox);
+            EditorGUILayout.PropertyField(
+                serializedObject.FindProperty("timelineJumpscare"),
+                new GUIContent("Ölüm Timeline'ı")
+            );
+            EditorGUILayout.PropertyField(serializedObject.FindProperty("playerMovementScript"));
+            EditorGUILayout.PropertyField(serializedObject.FindProperty("playerLookScript"));
             EditorGUILayout.PropertyField(serializedObject.FindProperty("baseSpawnChance"));
             EditorGUILayout.PropertyField(serializedObject.FindProperty("chanceIncreasePerSecond"));
             EditorGUILayout.PropertyField(serializedObject.FindProperty("spawnCheckInterval"));
