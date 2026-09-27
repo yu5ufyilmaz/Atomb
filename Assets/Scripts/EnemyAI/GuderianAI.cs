@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.Playables;
 
 [RequireComponent(typeof(NavMeshAgent))]
 public class GuderianAI : MonoBehaviour
@@ -21,6 +22,11 @@ public class GuderianAI : MonoBehaviour
         Ambush,
     }
 
+    [Header("Timeline Jumpscare Sistemleri")]
+    public PlayableDirector timelineAtDoor; // Kapıyı kırdığında
+    public PlayableDirector timelineBehindPlayer; // Pusuya düşüp arkadan yakaladığında
+    public PlayableDirector timelineInFront; // Odanın ortasında dümdüz yakaladığında
+    public PlayableDirector timelineLocker; // Dolaptan erken çıkınca
     public GuderianState currentState = GuderianState.Hidden;
 
     [Header("Hareket (NavMesh)")]
@@ -78,6 +84,9 @@ public class GuderianAI : MonoBehaviour
 
     [SerializeField]
     private AudioClip searchHumSound;
+
+    [SerializeField]
+    private AudioClip[] rummageSounds;
 
     [HideInInspector]
     public string debugStatus;
@@ -435,6 +444,8 @@ public class GuderianAI : MonoBehaviour
         calculatedSearchDuration = baseSearchDuration + (activeLights * timePerLight);
         currentSearchTimer = calculatedSearchDuration;
         debugStatus = $"Arıyor... ({activeLights} Işık)";
+
+        // Uğultu/Nefes sesi arka planda sürekli çalmaya devam eder
         FadeAudio(searchHumSound, 1.0f, true);
 
         while (currentState == GuderianState.Searching)
@@ -444,9 +455,33 @@ public class GuderianAI : MonoBehaviour
                 Transform targetPoint = activeRoom.guderianPatrolPoints[
                     Random.Range(0, activeRoom.guderianPatrolPoints.Count)
                 ];
+
+                // 1. Hedefe yürü (Bu sırada daha önce yazdığımız ayak sesleri çalacak)
                 yield return StartCoroutine(MoveToTarget(targetPoint.position));
+
+                // 2. Hedefe ulaştı, durup etrafı karıştıracak
+                if (currentState == GuderianState.Searching)
+                {
+                    float searchWaitTime = Random.Range(2.0f, 4.0f); // Ses yoksa varsayılan 2-4 sn bekle
+
+                    // Eğer karıştırma (çekmece) sesleri atandıysa birini seçip çal
+                    if (rummageSounds != null && rummageSounds.Length > 0 && audioSource != null)
+                    {
+                        audioSource.PlayOneShot(searchHumSound); // Arama uğultusu devam ederken karıştırma sesi çal
+
+                        // Bekleme süresini tam olarak sesin uzunluğuna eşitle!
+                        // Böylece ses bitmeden yürümeye başlamaz.
+                    }
+
+                    // Karıştırma işlemi boyunca o noktada bekle
+                    yield return new WaitForSeconds(searchWaitTime);
+                }
             }
-            yield return new WaitForSeconds(1f);
+            else
+            {
+                // Odada devriye noktası yoksa olduğu yerde bekler
+                yield return new WaitForSeconds(1f);
+            }
         }
     }
 
@@ -454,12 +489,15 @@ public class GuderianAI : MonoBehaviour
     {
         currentState = GuderianState.Exiting;
         debugStatus = "Çıkıyor...";
+
+        // ---> DÜZELTME BURADA: Guderian pes edip çıkışa yöneldiği an arama sesini anında sönümleyerek kapatıyoruz.
+        FadeAudio(null, 0.5f, false);
+
         if (activeRoom != null && activeRoom.doorInsidePoint != null)
         {
             yield return StartCoroutine(MoveToTarget(activeRoom.doorInsidePoint.position));
             if (activeRoom.doorOutsidePoint != null)
                 yield return StartCoroutine(MoveToTarget(activeRoom.doorOutsidePoint.position));
-
             if (activeRoom.roomDoor != null && activeRoom.roomDoor.isOpen)
                 activeRoom.roomDoor.SetOpen(false);
         }
@@ -472,11 +510,12 @@ public class GuderianAI : MonoBehaviour
         if (agent != null)
             agent.enabled = false;
 
-        FadeAudio(null, 2.0f, false);
         currentState = GuderianState.Hidden;
         debugStatus = "Gitti.";
+
         if (GlobalEnemyManager.Instance != null)
             GlobalEnemyManager.Instance.RegisterAttackEnd();
+
         cooldownTimer = minTimeBetweenAttacks;
         activeRoom = null;
     }
@@ -490,7 +529,10 @@ public class GuderianAI : MonoBehaviour
         if (!agent.enabled)
             agent.enabled = true;
 
-        // 2. Yere ışınla (Warp)
+        // ---> YENİ: Ayak sesi zamanlayıcısını başlat
+        float stepTimer = footstepInterval;
+
+        // 2. Yere Işınla (Warp)
         if (agent.Warp(transform.position))
         {
             agent.isStopped = false;
@@ -500,7 +542,6 @@ public class GuderianAI : MonoBehaviour
         {
             Debug.LogWarning("Guderian NavMesh'e oturtulamadı! Transform ile gidiyor.");
             agent.enabled = false;
-
             while (Vector3.Distance(transform.position, target) > 0.1f)
             {
                 transform.position = Vector3.MoveTowards(
@@ -508,9 +549,18 @@ public class GuderianAI : MonoBehaviour
                     target,
                     walkSpeed * Time.deltaTime
                 );
-                // NavMesh dışında elle taşırken de animasyon hızını verelim
+
                 if (animator != null)
                     animator.SetFloat(_animIDSpeed, walkSpeed);
+
+                // ---> YENİ: Manuel yürürken ayak sesi çal
+                stepTimer -= Time.deltaTime;
+                if (stepTimer <= 0f)
+                {
+                    PlayGuderianFootstep();
+                    stepTimer = footstepInterval;
+                }
+
                 yield return null;
             }
             yield break;
@@ -524,7 +574,19 @@ public class GuderianAI : MonoBehaviour
         while (agent.enabled && agent.remainingDistance > agent.stoppingDistance + 0.1f)
         {
             if (agent.isStopped)
+            {
                 yield return null;
+                continue;
+            }
+
+            // ---> YENİ: NavMesh ile odada devriye atarken ayak sesi çal
+            stepTimer -= Time.deltaTime;
+            if (stepTimer <= 0f)
+            {
+                PlayGuderianFootstep();
+                stepTimer = footstepInterval; // Scriptin başındaki 0.8 saniyelik süreyi kullanır
+            }
+
             yield return null;
         }
 
@@ -534,6 +596,19 @@ public class GuderianAI : MonoBehaviour
             agent.velocity = Vector3.zero;
             if (animator != null)
                 animator.SetFloat(_animIDSpeed, 0f);
+        }
+    }
+
+    // ---> YENİ: Ayak seslerini Guderian'ın kendi üzerinden çalan metot
+    private void PlayGuderianFootstep()
+    {
+        if (footstepSounds != null && footstepSounds.Length > 0 && audioSource != null)
+        {
+            // 4 sesten birini rastgele seç
+            AudioClip clip = footstepSounds[Random.Range(0, footstepSounds.Length)];
+
+            // Sesi direkt Guderian'ın üzerindeki AudioSource'dan çal (3D Ses)
+            audioSource.PlayOneShot(clip);
         }
     }
 
@@ -555,6 +630,53 @@ public class GuderianAI : MonoBehaviour
         {
             transform.position = position;
         }
+    }
+
+    private IEnumerator ExecuteTimelineJumpscareRoutine(PlayableDirector director, string reason)
+    {
+        if (guderianModel != null)
+            guderianModel.SetActive(false);
+
+        // 1. OYUNCU SCRİPTLERİNİ GARANTİ BUL VE FİŞİNİ ÇEK (Asla dönemez)
+        var moveScript = Object.FindFirstObjectByType<StarterAssets.CharacterController>();
+        if (moveScript != null)
+        {
+            moveScript.SetFrozen(true, lockCameraInput: true, restrictRotation: false);
+            moveScript.enabled = false;
+        }
+
+        var inputs = Object.FindFirstObjectByType<StarterAssets.StarterAssetsInputs>();
+        if (inputs != null)
+        {
+            inputs.cursorInputForLook = false;
+            inputs.move = Vector2.zero;
+            inputs.enabled = false;
+        }
+
+        var physics = Object.FindFirstObjectByType<UnityEngine.CharacterController>();
+        if (physics != null)
+            physics.enabled = false;
+
+        // 2. ÇÖZÜM BURADA: KAMERA BEYNİNİ AÇ VE YUMUŞAK DÖNMEYİ (BLEND) İPTAL ET
+        if (Camera.main != null)
+        {
+            var brain = Camera.main.GetComponent<Cinemachine.CinemachineBrain>();
+            if (brain != null)
+            {
+                brain.enabled = true;
+                // Kameranın yavaşça dönmesini engelle, anında Timeline kamerasına geç (Cut)!
+                brain.m_DefaultBlend.m_Style = Cinemachine.CinemachineBlendDefinition.Style.Cut;
+                brain.m_DefaultBlend.m_Time = 0f;
+            }
+        }
+
+        // 3. TIMELINE'I BAŞLAT
+        director.Play();
+        // 4. BİTMESİNİ BEKLE VE ÖLÜM EKRANINA GEÇ
+        yield return new WaitForSeconds((float)director.duration);
+
+        if (DeathUIManager.Instance != null)
+            DeathUIManager.Instance.ShowDeathScreen(reason);
     }
 
     private void FadeAudio(AudioClip clip, float duration, bool fadeIn)
@@ -607,73 +729,98 @@ public class GuderianAI : MonoBehaviour
 
         if (audioFadeRoutine != null)
             StopCoroutine(audioFadeRoutine);
-        if (audioSource)
+
+        // --- YENİ: Hangi Timeline'ın oynayacağını seçiyoruz ---
+        PlayableDirector selectedTimeline = null;
+        switch (type)
         {
-            audioSource.Stop();
-            audioSource.volume = 1f;
-            audioSource.PlayOneShot(jumpscareSound);
-        }
-        if (guderianModel != null)
-            guderianModel.SetActive(true);
-        // Animasyon Tetiklemesi
-        if (animator != null)
-        {
-            animator.SetFloat(_animIDSpeed, 0f); // Koşmayı kes
-            animator.SetTrigger(_animIDAttack); // Saldır
+            case JumpscareType.AtDoor:
+                selectedTimeline = timelineAtDoor;
+                break;
+            case JumpscareType.BehindPlayer:
+                selectedTimeline = timelineBehindPlayer;
+                break;
+            case JumpscareType.InFrontOfPlayer:
+                selectedTimeline = timelineInFront;
+                break;
         }
 
-        // Performans: Önbellekteki player referansını kullan
-        Transform player = cachedPlayer;
-        if (player == null)
+        // Eğer Inspector'dan bu durum için bir Timeline atanmışsa YENİ SİSTEMİ KULLAN
+        if (selectedTimeline != null)
         {
-            GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
-            if (playerObj != null)
-            {
-                cachedPlayer = playerObj.transform;
-                player = cachedPlayer;
-            }
-        }
-        bool shouldPlayAnim = false; // Bu Player'ın animasyonudur
-
-        if (activeRoom == null)
-        {
-            SetPositionWithOffset(player.position + (player.forward * 1.0f), true);
-            LookAtTargetFlat(player);
+            StartCoroutine(ExecuteTimelineJumpscareRoutine(selectedTimeline, reason));
         }
         else
         {
-            switch (type)
+            // --- ESKİ SİSTEM (Eğer Timeline atanmamışsa normal jumpscare çalışır) ---[cite: 8]
+            if (audioSource)
             {
-                case JumpscareType.AtDoor:
-                    if (activeRoom.doorOutsidePoint != null)
-                        SetPositionWithOffset(activeRoom.doorOutsidePoint.position, false);
-                    LookAtTargetFlat(player);
-                    break;
-                case JumpscareType.BehindPlayer:
-                    Vector3 behindPos = player.position - (player.forward * jumpscareDistance);
-                    SetPositionWithOffset(
-                        new Vector3(behindPos.x, player.position.y, behindPos.z),
-                        true
-                    );
-                    LookAtTargetFlat(player);
-                    shouldPlayAnim = true;
-                    break;
-                case JumpscareType.InFrontOfPlayer:
-                    LookAtTargetFlat(player);
-                    break;
+                audioSource.Stop();
+                audioSource.volume = 1f;
+                audioSource.PlayOneShot(jumpscareSound);
             }
-        }
+            if (guderianModel != null)
+                guderianModel.SetActive(true);
 
-        if (JumpscareManager.Instance != null)
-            JumpscareManager.Instance.StartJumpscare(
-                transform,
-                guderianJumpscareProfile,
-                shouldPlayAnim,
-                JumpscareStyle.Direct,
-                reason
-            );
-        else
-            StartCoroutine(ExitSequence());
+            if (animator != null)
+            {
+                animator.SetFloat(_animIDSpeed, 0f);
+                animator.SetTrigger(_animIDAttack);
+            }
+
+            // Performans: Önbellekteki player referansını kullan
+            Transform player = cachedPlayer;
+            if (player == null)
+            {
+                GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
+                if (playerObj != null)
+                {
+                    cachedPlayer = playerObj.transform;
+                    player = cachedPlayer;
+                }
+            }
+            bool shouldPlayAnim = false; // Bu Player'ın animasyonudur
+
+            if (activeRoom == null)
+            {
+                SetPositionWithOffset(player.position + (player.forward * 1.0f), true);
+                LookAtTargetFlat(player);
+            }
+            else
+            {
+                switch (type)
+                {
+                    case JumpscareType.AtDoor:
+                        if (activeRoom.doorOutsidePoint != null)
+                            SetPositionWithOffset(activeRoom.doorOutsidePoint.position, false);
+                        LookAtTargetFlat(player);
+                        break;
+                    case JumpscareType.BehindPlayer:
+                        Vector3 behindPos = player.position - (player.forward * jumpscareDistance);
+                        SetPositionWithOffset(
+                            new Vector3(behindPos.x, player.position.y, behindPos.z),
+                            true
+                        );
+                        LookAtTargetFlat(player);
+                        shouldPlayAnim = true;
+                        break;
+                    case JumpscareType.InFrontOfPlayer:
+                        LookAtTargetFlat(player);
+                        break;
+                }
+            }
+
+            if (JumpscareManager.Instance != null)
+                JumpscareManager.Instance.StartJumpscare(
+                    transform,
+                    guderianJumpscareProfile,
+                    shouldPlayAnim,
+                    JumpscareStyle.Direct,
+                    reason
+                );
+            else
+                StartCoroutine(ExitSequence());
+        }
     }
 
     public void TriggerLockerJumpscare(Transform lockerExitPoint)
@@ -687,50 +834,63 @@ public class GuderianAI : MonoBehaviour
 
         if (audioFadeRoutine != null)
             StopCoroutine(audioFadeRoutine);
-        if (audioSource)
+
+        // --- YENİ (TİMELİNE) SİSTEMİ ---
+        if (timelineLocker != null)
         {
-            audioSource.Stop();
-            audioSource.volume = 1f;
-            audioSource.PlayOneShot(jumpscareSound);
+            // OYUNCUYU ZORLA DÖNDÜREN HİÇBİR KOD YOK, OLDUĞU GİBİ KALIR.
+            StartCoroutine(ExecuteTimelineJumpscareRoutine(timelineLocker, "You left too early."));
         }
-
-        // Animasyon
-        if (animator != null)
+        else
         {
-            animator.SetFloat(_animIDSpeed, 0f);
-            animator.SetTrigger(_animIDAttack);
+            // --- ESKİ SİSTEM (Eğer Timeline atanmamışsa) ---
+            if (audioSource)
+            {
+                audioSource.Stop();
+                audioSource.volume = 1f;
+                audioSource.PlayOneShot(jumpscareSound);
+            }
+            if (animator != null)
+            {
+                animator.SetFloat(_animIDSpeed, 0f);
+                animator.SetTrigger(_animIDAttack);
+            }
+
+            GameObject player =
+                cachedPlayer != null
+                    ? cachedPlayer.gameObject
+                    : GameObject.FindGameObjectWithTag("Player");
+
+            if (lockerExitPoint != null)
+            {
+                Vector3 finalPos = lockerExitPoint.position;
+                finalPos.y += spawnYOffset;
+                transform.position = finalPos;
+                transform.LookAt(finalPos - lockerExitPoint.forward);
+            }
+
+            // ESKİ SİSTEMDEKİ OYUNCUYU DÖNDÜRME KODU (Timeline varsa burası çalışmaz)
+            if (player != null)
+            {
+                player.transform.LookAt(
+                    new Vector3(
+                        transform.position.x,
+                        player.transform.position.y,
+                        transform.position.z
+                    )
+                );
+            }
+
+            guderianModel.SetActive(true);
+            if (JumpscareManager.Instance != null)
+                JumpscareManager.Instance.StartJumpscare(
+                    transform,
+                    guderianJumpscareProfile,
+                    false,
+                    JumpscareStyle.Direct,
+                    "You left too early."
+                );
         }
-
-        // Performans: Önbellekteki player referansını kullan
-        GameObject player =
-            cachedPlayer != null
-                ? cachedPlayer.gameObject
-                : GameObject.FindGameObjectWithTag("Player");
-
-        if (lockerExitPoint != null)
-        {
-            Vector3 finalPos = lockerExitPoint.position;
-            finalPos.y += spawnYOffset;
-            transform.position = finalPos;
-            transform.LookAt(finalPos - lockerExitPoint.forward);
-        }
-
-        if (player != null)
-        {
-            player.transform.LookAt(
-                new Vector3(transform.position.x, player.transform.position.y, transform.position.z)
-            );
-        }
-
-        guderianModel.SetActive(true);
-        if (JumpscareManager.Instance != null)
-            JumpscareManager.Instance.StartJumpscare(
-                transform,
-                guderianJumpscareProfile,
-                false,
-                JumpscareStyle.Direct,
-                "You left too early."
-            );
     }
 
     private void SetPositionWithOffset(Vector3 targetPos, bool useSpawnOffset = true)

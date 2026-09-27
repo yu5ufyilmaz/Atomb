@@ -126,7 +126,15 @@ public class GuderianEditor : Editor
                 serializedObject.FindProperty("guderianJumpscareProfile"),
                 true
             );
+
+            EditorGUILayout.Space(10);
+            EditorGUILayout.LabelField("Timeline Jumpscare (Sinematik)", EditorStyles.boldLabel);
+            EditorGUILayout.PropertyField(serializedObject.FindProperty("timelineAtDoor"), new GUIContent("Kapıda Yakalanma"));
+            EditorGUILayout.PropertyField(serializedObject.FindProperty("timelineBehindPlayer"), new GUIContent("Arkadan Pusu"));
+            EditorGUILayout.PropertyField(serializedObject.FindProperty("timelineInFront"), new GUIContent("Önden Yakalanma"));
+            EditorGUILayout.PropertyField(serializedObject.FindProperty("timelineLocker"), new GUIContent("Dolap Çıkışı"));
             EditorGUILayout.Space(5);
+            
             EditorGUILayout.LabelField($"Spawn Şansı: {script.GetCurrentChance()}%");
             EditorGUILayout.LabelField(
                 $"Sonraki Kontrol: {script.GetTimeUntilNextSpawnCheck():F1}s"

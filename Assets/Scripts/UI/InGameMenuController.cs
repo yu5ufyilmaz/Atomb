@@ -35,6 +35,8 @@ public class InGameMenuController : MonoBehaviour
 
     private Vector3 lockedPosition;
     private bool isCameraLocked = false;
+    public AudioSource gameMusicSource;
+    public float gameMusicFadeDuration = 3.0f;
 
     void Start()
     {
@@ -100,12 +102,16 @@ public class InGameMenuController : MonoBehaviour
             if (obj != null)
                 StartCoroutine(FadeOutAndHide(obj, uiFadeDuration));
         }
+        // ---> YENİ: OYUN MÜZİĞİNİ YAVAŞÇA BAŞLAT <---
 
         if (menuMusicSource != null)
         {
             StartCoroutine(FadeOutMusic(menuMusicSource, musicFadeDuration));
         }
-
+        if (gameMusicSource != null)
+        {
+            StartCoroutine(FadeInMusic(gameMusicSource, gameMusicFadeDuration));
+        }
         // =================================================================
         // 2. TİMELİNE ÇALIŞSIN VE ROOT OBJESİ GİZLİCE KAMERAYI TAKİP ETSİN!
         // =================================================================
@@ -224,6 +230,23 @@ public class InGameMenuController : MonoBehaviour
         this.enabled = false;
     }
 
+    private IEnumerator FadeInMusic(AudioSource audioSource, float duration)
+    {
+        float targetVolume = audioSource.volume; // Inspector'da ayarladığın sesi hedef alır
+        audioSource.volume = 0f;
+        audioSource.Play();
+
+        float elapsedTime = 0f;
+        while (elapsedTime < duration)
+        {
+            elapsedTime += Time.deltaTime;
+            audioSource.volume = Mathf.Lerp(0f, targetVolume, elapsedTime / duration);
+            yield return null;
+        }
+
+        audioSource.volume = targetVolume;
+    }
+
     private IEnumerator FadeOutAndHide(GameObject panel, float duration)
     {
         CanvasGroup canvasGroup = panel.GetComponent<CanvasGroup>();
@@ -318,7 +341,10 @@ public class InGameMenuController : MonoBehaviour
         {
             menuMusicSource.Stop();
         }
-
+        if (gameMusicSource != null && !gameMusicSource.isPlaying)
+        {
+            gameMusicSource.Play();
+        }
         this.enabled = false;
     }
 

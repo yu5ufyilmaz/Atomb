@@ -199,7 +199,7 @@ Material:
     - _DisplacementLockTilingScale: 1
     - _DisplacementMode: 2
     - _DoubleSidedEnable: 1
-    - _DoubleSidedGIMode: 0
+    - _DoubleSidedGIMode: 1
     - _DoubleSidedNormalMode: 1
     - _DstBlend: 0
     - _DstBlend2: 0

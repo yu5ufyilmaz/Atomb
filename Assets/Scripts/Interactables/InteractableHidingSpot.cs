@@ -33,6 +33,19 @@ public class InteractableHidingSpot : MonoBehaviour, IInteractable, IForceExitab
     [SerializeField]
     private float enterAnimDuration = 2.0f;
 
+    [Header("Peek Kamera Kısıtlama Ayarları")]
+    [SerializeField]
+    private float peekYawLimit = 35f; // Sağa-sola bakış limiti (derece)
+
+    [SerializeField]
+    private float peekPitchLimit = 20f; // Yukarı-aşağı bakış limiti (derece)
+
+    [SerializeField]
+    private float peekLookSensitivity = 2f; // Fare dönüş hassasiyeti
+
+    private float currentPeekYaw = 0f;
+    private float currentPeekPitch = 0f;
+
     [Header("Animasyon & Ses")]
     [SerializeField]
     private Animator propAnimator;
@@ -78,6 +91,11 @@ public class InteractableHidingSpot : MonoBehaviour, IInteractable, IForceExitab
     private Transform originalCameraParent;
     public bool IsOccupied => isOccupied;
 
+    [Header("Guderian Peek Ayarları")]
+    [SerializeField]
+    private float maxPeekTimeWhileDangerous = 2.0f;
+    private float currentPeekTimer = 0f;
+
     [Tooltip("Kapı açılırken karakterin ne kadar bekleyeceği (Animasyon süresi kadar yap)")]
     [SerializeField]
     private float doorOpenDelay = 1.0f; // <-- BUNU EKLE
@@ -116,7 +134,7 @@ public class InteractableHidingSpot : MonoBehaviour, IInteractable, IForceExitab
     {
         if (inTransition)
             return "";
-        return isOccupied ? "[Sol Tık] Çık / [W] Gözetle" : "[Sol Tık] Saklan";
+        return isOccupied ? "[Sol Tık / W] Gözetle | [F] Çık" : "[Sol Tık] Saklan";
     }
 
     private void Update()
@@ -124,7 +142,9 @@ public class InteractableHidingSpot : MonoBehaviour, IInteractable, IForceExitab
         if (isOccupied && !inTransition)
         {
             HandlePeeking();
-            if (Input.GetKeyDown(KeyCode.F) || Input.GetMouseButtonDown(0))
+
+            // Sol tık artık peek yaptığı için çıkış sadece F tuşuna bağlandı
+            if (Input.GetKeyDown(KeyCode.F))
             {
                 if (canExit)
                     AttemptExit();
@@ -134,27 +154,99 @@ public class InteractableHidingSpot : MonoBehaviour, IInteractable, IForceExitab
 
     private void HandlePeeking()
     {
-        bool holdingPeek = Input.GetKey(KeyCode.W) || Input.GetMouseButton(1);
+        // Sağ tık fenerle çakışmasın diye Sol Tık (0) ve W tuşuna bağlandı
+        bool holdingPeek = Input.GetKey(KeyCode.W) || Input.GetMouseButton(0);
+
         if (holdingPeek != isPeeking)
         {
             isPeeking = holdingPeek;
+
             if (propAnimator)
                 propAnimator.SetBool(propPeekBool, isPeeking);
+
             if (isPeeking && peekSound && audioSource)
                 audioSource.PlayOneShot(peekSound);
+
+            // Gözetlemeyi bıraktığında merkez açıyı sıfırla
+            if (!isPeeking)
+            {
+                currentPeekYaw = 0f;
+                currentPeekPitch = 0f;
+                currentPeekTimer = 0f;
+            }
+        }
+        if (isPeeking && GuderianAI.Instance != null)
+        {
+            var gState = GuderianAI.Instance.currentState;
+
+            // Bekleme (Hidden, WaitingBehindDoor, Ambush) dışındaki tüm hareketli durumlar tehlikelidir
+            bool isDangerous = (
+                gState == GuderianAI.GuderianState.Approaching
+                || gState == GuderianAI.GuderianState.Breaching
+                || gState == GuderianAI.GuderianState.Entering
+                || gState == GuderianAI.GuderianState.Searching
+                || gState == GuderianAI.GuderianState.Exiting
+            );
+
+            if (isDangerous)
+            {
+                currentPeekTimer += Time.deltaTime;
+                if (currentPeekTimer >= maxPeekTimeWhileDangerous)
+                {
+                    currentPeekTimer = 0f;
+                    isPeeking = false;
+                    if (propAnimator)
+                        propAnimator.SetBool(propPeekBool, false);
+                    StartCoroutine(CaughtSequence());
+                    return; // Kamerayı daha fazla oynatma, Jumpscare'e geç
+                }
+            }
+            else
+            {
+                // Bekleme modundaysa sayacı sıfırla, istediği kadar durabilir
+                currentPeekTimer = 0f;
+            }
         }
         if (mainCamera != null && hideCameraPosition != null && peekCameraPosition != null)
         {
-            Transform targetPos = isPeeking ? peekCameraPosition : hideCameraPosition;
+            Transform targetAnchor = isPeeking ? peekCameraPosition : hideCameraPosition;
+
+            // Pozisyonu hedefe yumuşakça taşı
             mainCamera.position = Vector3.Lerp(
                 mainCamera.position,
-                targetPos.position,
+                targetAnchor.position,
                 Time.deltaTime * 6f
             );
+
+            Quaternion targetRotation;
+
+            if (isPeeking)
+            {
+                // Peek sırasında fare girdilerini alıp sınırla
+                float mouseX = Input.GetAxis("Mouse X") * peekLookSensitivity;
+                float mouseY = Input.GetAxis("Mouse Y") * peekLookSensitivity;
+
+                currentPeekYaw = Mathf.Clamp(currentPeekYaw + mouseX, -peekYawLimit, peekYawLimit);
+                currentPeekPitch = Mathf.Clamp(
+                    currentPeekPitch - mouseY,
+                    -peekPitchLimit,
+                    peekPitchLimit
+                );
+
+                // Peek noktasının ana rotasyonuna kısıtlanmış açıları ekle
+                Quaternion offsetRot = Quaternion.Euler(currentPeekPitch, currentPeekYaw, 0f);
+                targetRotation = peekCameraPosition.rotation * offsetRot;
+            }
+            else
+            {
+                targetRotation = hideCameraPosition.rotation;
+            }
+
+            // Rotasyonu slerp ile yumuşat
             mainCamera.rotation = Quaternion.Slerp(
                 mainCamera.rotation,
-                targetPos.rotation,
-                Time.deltaTime * 6f
+                targetRotation,
+                Time.deltaTime * 10f
             );
         }
     }
@@ -166,10 +258,30 @@ public class InteractableHidingSpot : MonoBehaviour, IInteractable, IForceExitab
 
     private void AttemptExit()
     {
-        if (GuderianAI.Instance != null && GuderianAI.Instance.IsCampingPlayer(this))
-            StartCoroutine(CaughtSequence());
-        else
-            StartCoroutine(ExitSequence());
+        // 1. BUG FIX: Çıkış yaparken kapak açık kalmasın diye Peek durumunu zorla kapatıyoruz.
+        isPeeking = false;
+        if (propAnimator)
+            propAnimator.SetBool(propPeekBool, false);
+
+        // 2. ERKEN ÇIKIŞ ÖLÜM KONTROLÜ
+        if (GuderianAI.Instance != null)
+        {
+            var gState = GuderianAI.Instance.currentState;
+            bool isBreachingOrEntering = (
+                gState == GuderianAI.GuderianState.Approaching
+                || gState == GuderianAI.GuderianState.Breaching
+                || gState == GuderianAI.GuderianState.Entering
+            );
+
+            // Guderian kamp kurmuşsa VEYA henüz odaya girme/kapı kırma aşamasındaysa anında yakalan!
+            if (GuderianAI.Instance.IsCampingPlayer(this) || isBreachingOrEntering)
+            {
+                StartCoroutine(CaughtSequence());
+                return;
+            }
+        }
+
+        StartCoroutine(ExitSequence());
     }
 
     // --- GİRİŞ SEKANSI ---
@@ -394,13 +506,20 @@ public class InteractableHidingSpot : MonoBehaviour, IInteractable, IForceExitab
     {
         inTransition = true;
 
-        // Bu senaryoda kapıyı Guderian açacağı için biz animasyon tetiklemiyoruz.
-        yield return new WaitForSeconds(0.1f);
+        // Kamerayı serbest bırak (Açısını sıfırlama!)
+        if (mainCamera != null && originalCameraParent != null)
+        {
+            mainCamera.SetParent(originalCameraParent);
+        }
 
+        //TogglePlayerModel(false);
+
+        // Hiç beklemeden anında Guderian'ı tetikle
         if (GuderianAI.Instance != null)
         {
-            GuderianAI.Instance.TriggerLockerJumpscare(exitPosition);
+            GuderianAI.Instance.TriggerLockerJumpscare(insidePosition);
         }
+        yield return null;
     }
 
     private void ToggleControls(bool state)
