@@ -81,6 +81,7 @@ public class InteractableHidingSpot : MonoBehaviour, IInteractable, IForceExitab
     private bool isPeeking = false;
     private bool inTransition = false;
     public bool canExit = true;
+    private bool isMarkedForDeath = false; // <-- BUNU EKLE
 
     private UnityEngine.CharacterController playerController;
     private StarterAssets.StarterAssetsInputs playerInput;
@@ -197,8 +198,10 @@ public class InteractableHidingSpot : MonoBehaviour, IInteractable, IForceExitab
                     isPeeking = false;
                     if (propAnimator)
                         propAnimator.SetBool(propPeekBool, false);
-                    StartCoroutine(CaughtSequence());
-                    return; // Kamerayı daha fazla oynatma, Jumpscare'e geç
+
+                    // YENİ: Anında CaughtSequence başlatmak yerine oyuncuyu ölüm için işaretle
+                    isMarkedForDeath = true;
+                    return; // Kamerayı daha fazla oynatma
                 }
             }
             else
@@ -263,24 +266,43 @@ public class InteractableHidingSpot : MonoBehaviour, IInteractable, IForceExitab
         if (propAnimator)
             propAnimator.SetBool(propPeekBool, false);
 
-        // 2. ERKEN ÇIKIŞ ÖLÜM KONTROLÜ
+        // (Bir önceki düzeltmeden gelen fazla gözetleme ölüm işareti)
+        if (isMarkedForDeath)
+        {
+            StartCoroutine(CaughtSequence());
+            return;
+        }
+
+        // 2. ERKEN ÖLÜM KONTROLÜ (GÜNCELLENDİ)
         if (GuderianAI.Instance != null)
         {
             var gState = GuderianAI.Instance.currentState;
-            bool isBreachingOrEntering = (
+
+            // YENİ: Guderian "Hidden" (Yok) durumu dışındaki herhangi bir aktif eylemdeyse
+            // dolaptan çıkmaya çalışmak SİNİR KRİZİ (Ölüm) demektir.
+            bool isDangerousToExit = (
                 gState == GuderianAI.GuderianState.Approaching
-                || gState == GuderianAI.GuderianState.Breaching
-                || gState == GuderianAI.GuderianState.Entering
+                || // Kapıya yaklaşıyorsa
+                gState == GuderianAI.GuderianState.Breaching
+                || // Kapıyı kırıyorsa/açıyorsa
+                gState == GuderianAI.GuderianState.WaitingBehindDoor
+                || // Kapı arkası pusu atıyorsa
+                gState == GuderianAI.GuderianState.Entering
+                || // Odaya giriyorsa
+                gState == GuderianAI.GuderianState.Searching
+                || // Odayı arıyorsa
+                gState == GuderianAI.GuderianState.Exiting // Odadan çıkıyorsa (Pes edip dönerken arkasından çıkarsan da yakalar)
             );
 
-            // Guderian kamp kurmuşsa VEYA henüz odaya girme/kapı kırma aşamasındaysa anında yakalan!
-            if (GuderianAI.Instance.IsCampingPlayer(this) || isBreachingOrEntering)
+            // Guderian bu tehlike durumlarından herhangi birindeyken çıkmaya basarsan anında yakalanırsın!
+            if (isDangerousToExit)
             {
                 StartCoroutine(CaughtSequence());
                 return;
             }
         }
 
+        // Tehlike yoksa normal çıkış sekansını başlat
         StartCoroutine(ExitSequence());
     }
 
@@ -288,7 +310,7 @@ public class InteractableHidingSpot : MonoBehaviour, IInteractable, IForceExitab
     private IEnumerator EnterSequence()
     {
         inTransition = true;
-
+        isMarkedForDeath = false;
         // Eğer playerMoveScript null ise burada bulalım ki hata vermesin
         if (playerMoveScript == null && playerController != null)
             playerMoveScript = playerController.GetComponent<StarterAssets.CharacterController>();
@@ -387,7 +409,13 @@ public class InteractableHidingSpot : MonoBehaviour, IInteractable, IForceExitab
         // C. KAPIYI KAPAT
         if (propAnimator)
             propAnimator.SetTrigger(propCloseTrigger);
-
+        if (ControlsUIManager.Instance != null)
+        {
+            ControlsUIManager.Instance.ShowMachineUI(
+                ControlsUIManager.MachineType.HidingSpot,
+                "[Sol Tık / W] Gözetle\n[F] Çık"
+            );
+        }
         inTransition = false;
     }
 
@@ -395,7 +423,10 @@ public class InteractableHidingSpot : MonoBehaviour, IInteractable, IForceExitab
     private IEnumerator ExitSequence()
     {
         inTransition = true;
-
+        if (ControlsUIManager.Instance != null)
+        {
+            ControlsUIManager.Instance.HideControls();
+        }
         if (GameManager.Instance != null)
             GameManager.Instance.activeInteraction = null;
 

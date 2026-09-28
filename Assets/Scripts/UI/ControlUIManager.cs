@@ -15,6 +15,7 @@ public class ControlsUIManager : MonoBehaviour
         Oscilloscope, // Osiloskop
         PressureValve, // Basınç Vanası
         Book, // Kitap Okuma
+        HidingSpot,
     }
 
     [Header("Ana UI Referansları")]
@@ -50,6 +51,9 @@ public class ControlsUIManager : MonoBehaviour
 
     [SerializeField]
     private GameObject bookPanel;
+
+    [SerializeField]
+    private GameObject hidingSpotPanel;
 
     private CanvasGroup canvasGroup;
     private GameObject currentActivePanel;
@@ -123,7 +127,10 @@ public class ControlsUIManager : MonoBehaviour
                 DoFManager.Instance.SetFocus(0.32f);
                 currentActivePanel = bookPanel;
                 break;
-
+            case MachineType.HidingSpot: // <--- YENİ EKLENDİ
+                //DoFManager.Instance.ResetFocus(); // Etrafı net bırak (bulanıklaştırma)
+                currentActivePanel = hidingSpotPanel; // Makine panelini kullan
+                break;
             default:
                 Debug.LogWarning("ControlsUI: Tanımlanmamış makine tipi!");
                 return;

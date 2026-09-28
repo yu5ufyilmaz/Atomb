@@ -203,7 +203,6 @@ public class DebugMenuManager : MonoBehaviour
                 em.stopAllEnemies,
                 " Safe Mode (Düşmanları Tamamen Durdur)"
             );
-
             GUILayout.Space(5);
             GUILayout.Label($"Saldırı Durumu: {(em.isAttackInProgress ? "AKTİF" : "Sakin")}");
             GUILayout.Label($"Huzur Süresi (Cooldown): {em.currentGlobalCooldown:F1}s");
@@ -218,9 +217,9 @@ public class DebugMenuManager : MonoBehaviour
             GUILayout.EndHorizontal();
 
             GUILayout.BeginHorizontal();
-            if (GUILayout.Button("Saldırıyı Zorla Başlat"))
+            if (GUILayout.Button("Saldırı Zorla Başlat"))
                 em.RegisterAttackStart();
-            if (GUILayout.Button("Saldırıyı Zorla Bitir"))
+            if (GUILayout.Button("Saldırı Zorla Bitir"))
                 em.RegisterAttackEnd();
             GUILayout.EndHorizontal();
         }
@@ -257,6 +256,18 @@ public class DebugMenuManager : MonoBehaviour
             GUILayout.Label(
                 $"Sonraki Spawn Kontrolü: {GuderianAI.Instance.GetTimeUntilNextSpawnCheck():F1}s"
             );
+            GUILayout.Label($"Cooldown: {GuderianAI.Instance.debugCooldown:F1}s");
+
+            // Guderian İlerleme Çubukları
+            GUILayout.Label(
+                $"Yaklaşma İlerlemesi: %{(GuderianAI.Instance.debugApproachProgress * 100):F0}"
+            );
+            GUILayout.Label(
+                $"Kapı Kırma İlerlemesi: %{(GuderianAI.Instance.debugBreachProgress * 100):F0}"
+            );
+            GUILayout.Label(
+                $"Oda Arama İlerlemesi: %{(GuderianAI.Instance.debugSearchProgress * 100):F0}"
+            );
 
             GUILayout.BeginHorizontal();
             if (GUILayout.Button("Zorla Jumpscare"))
@@ -276,6 +287,21 @@ public class DebugMenuManager : MonoBehaviour
         {
             GUILayout.Label($"State: {LeesEnemyAI.Instance.currentState}");
             GUILayout.Label($"Spawn Şansı: %{LeesEnemyAI.Instance.GetCurrentSpawnChance():F1}");
+
+            // Lees Hayatta Kalma ve Algı Verileri
+            GUILayout.Label(
+                $"Görünüyor mu?: {(LeesEnemyAI.Instance.debugIsVisible ? "EVET" : "HAYIR")} | Fark Edildi mi?: {(LeesEnemyAI.Instance.debugHasBeenSpotted ? "EVET" : "HAYIR")}"
+            );
+            GUILayout.Label(
+                $"Görmezden Gelme: {LeesEnemyAI.Instance.debugIgnoranceTimer:F1}s / {LeesEnemyAI.Instance.maxIgnoranceTime}s"
+            );
+            GUILayout.Label(
+                $"Reaksiyon (Süre Aşımı): {LeesEnemyAI.Instance.debugReactionTimer:F1}s / {LeesEnemyAI.Instance.maxReactionTime}s"
+            );
+            GUILayout.Label(
+                $"Hayatta Kalma: {LeesEnemyAI.Instance.debugSurvivalTimer:F1}s / {LeesEnemyAI.Instance.survivalWaitTime}s"
+            );
+            GUILayout.Label($"Cooldown: {LeesEnemyAI.Instance.debugCooldownTimer:F1}s");
 
             GUILayout.BeginHorizontal();
             if (GUILayout.Button("Zorla Spawn Et"))

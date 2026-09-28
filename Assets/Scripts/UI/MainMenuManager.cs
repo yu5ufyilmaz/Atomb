@@ -132,6 +132,7 @@ public class MainMenuManager : MonoBehaviour
 
     private IEnumerator StartGameTransitionRoutine(bool isLoadGame)
     {
+        //TutorialManager.Instance.SetupTutorialMode();
         float timeElapsed = 0f;
 
         // 1. Orijinal Fade Out animasyonun (UI yavaşça kaybolur)

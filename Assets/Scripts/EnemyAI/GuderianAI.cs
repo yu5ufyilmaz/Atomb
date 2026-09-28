@@ -88,19 +88,11 @@ public class GuderianAI : MonoBehaviour
     [SerializeField]
     private AudioClip[] rummageSounds;
 
-    [HideInInspector]
+    [Header("DEBUG BİLGİLERİ (Canlı Veriler)")]
     public string debugStatus;
-
-    [HideInInspector]
     public float debugSearchProgress;
-
-    [HideInInspector]
     public float debugBreachProgress;
-
-    [HideInInspector]
     public float debugApproachProgress;
-
-    [HideInInspector]
     public float debugCooldown;
 
     private RoomManager activeRoom;
@@ -150,6 +142,14 @@ public class GuderianAI : MonoBehaviour
 
     private void Update()
     {
+        if (
+            GameManager.Instance != null
+            && (!GameManager.Instance.isGameStarted || GameManager.Instance.isGamePaused)
+        )
+        {
+            return;
+        }
+
         if (GlobalEnemyManager.Instance != null && GlobalEnemyManager.Instance.stopAllEnemies)
         {
             return; // Eğer sistem durdurulmuşsa hiçbir sayacı ilerletme, burada kal!
@@ -636,7 +636,10 @@ public class GuderianAI : MonoBehaviour
     {
         if (guderianModel != null)
             guderianModel.SetActive(false);
-
+        if (NotebookUI.Instance != null)
+        {
+            NotebookUI.Instance.ForceClose();
+        }
         // 1. OYUNCU SCRİPTLERİNİ GARANTİ BUL VE FİŞİNİ ÇEK (Asla dönemez)
         var moveScript = Object.FindFirstObjectByType<StarterAssets.CharacterController>();
         if (moveScript != null)

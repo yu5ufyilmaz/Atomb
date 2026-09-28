@@ -149,10 +149,15 @@ public class JumpscareManager : MonoBehaviour
     {
         // --- BU SATIRI EN BAŞA EKLE ---
         // Pressure System'e "Efektlere dokunma, bende" diyoruz.
+        if (NotebookUI.Instance != null)
+        {
+            NotebookUI.Instance.ForceClose();
+        }
         if (PressureSystemManager.Instance != null)
         {
             PressureSystemManager.Instance.StopEffectsForJumpscare();
         }
+
         // 1. KONTROLLERİ KAPAT
         if (playerInput)
         {

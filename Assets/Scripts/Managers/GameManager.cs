@@ -55,7 +55,7 @@ public class GameManager : MonoBehaviour
         isGameStarted = true;
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
-
+       
         // YENİ EKLENEN KISIM: Oyun başladığında karakterin kilitlerini aç
         StarterAssets.CharacterController player =
             Object.FindFirstObjectByType<StarterAssets.CharacterController>();

@@ -78,27 +78,14 @@ public class LeesEnemyAI : MonoBehaviour
     public float spawnCooldownAfterDespawn = 20f;
     private float currentCooldownTimer = 0f;
 
-    // --- DEBUG VERİLERİ ---
-    [Header("DEBUG AYARLARI")]
-    public bool showDebugLogs = true;
-
-    [HideInInspector]
-    public float debugCooldownTimer;
-
-    [HideInInspector]
-    public float debugReactionTimer;
-
-    [HideInInspector]
-    public float debugSurvivalTimer;
-
-    [HideInInspector]
-    public float debugIgnoranceTimer;
-
-    [HideInInspector]
-    public bool debugIsVisible;
-
-    [HideInInspector]
-    public bool debugHasBeenSpotted;
+    [Header("DEBUG AYARLARI (Canlı Veriler)")]
+public bool showDebugLogs = true;
+public float debugCooldownTimer;
+public float debugReactionTimer;
+public float debugSurvivalTimer;
+public float debugIgnoranceTimer;
+public bool debugIsVisible;
+public bool debugHasBeenSpotted;
 
     private float currentIgnoranceTimer;
     private float currentReactionTimer;
@@ -501,7 +488,10 @@ public class LeesEnemyAI : MonoBehaviour
     {
         // 1. HARİTADAKİ LEES'İ GİZLE
         ShowModel(false);
-
+        if (NotebookUI.Instance != null)
+        {
+            NotebookUI.Instance.ForceClose();
+        }
         // 2. OYUNCU KONTROLLERİNİ TAMAMEN DONDUR VE FİŞİNİ ÇEK
         if (playerInputs != null)
         {
