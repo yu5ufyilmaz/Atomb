@@ -270,9 +270,20 @@ public class DebugMenuManager : MonoBehaviour
             );
 
             GUILayout.BeginHorizontal();
+            if (GUILayout.Button("Zorla Spawn Et"))
+            {
+                if (GuderianAI.Instance.playerCurrentRoom != null)
+                {
+                    GuderianAI.Instance.TrySpawnGuderian(GuderianAI.Instance.playerCurrentRoom);
+                }
+                else
+                {
+                    Debug.LogWarning("Oyuncu şu an bir odada değil veya oda tanımlı değil!");
+                }
+            }
             if (GUILayout.Button("Zorla Jumpscare"))
                 GuderianAI.Instance.TriggerJumpscare();
-            if (GUILayout.Button("Zorla Gönder (Force Leave)"))
+            if (GUILayout.Button("Zorla Gönder"))
                 GuderianAI.Instance.ForceLeave();
             GUILayout.EndHorizontal();
         }

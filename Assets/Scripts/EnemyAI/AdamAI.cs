@@ -40,10 +40,10 @@ public class AdamAI : MonoBehaviour
     private float currentDarknessTimer = 0f;
     private int warningLevel = 0;
 
-[Header("DEBUG BİLGİLERİ (Canlı Veriler)")]
-public string debugStatus;
-public float debugTimer;
-public float debugTotalTimeNeeded;
+    [Header("DEBUG BİLGİLERİ (Canlı Veriler)")]
+    public string debugStatus;
+    public float debugTimer;
+    public float debugTotalTimeNeeded;
     public JumpscareProfile adamJumpscareProfile; // <-- YENİ
 
     // Animasyon Hash

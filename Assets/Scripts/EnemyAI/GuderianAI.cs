@@ -45,7 +45,7 @@ public class GuderianAI : MonoBehaviour
 
     [SerializeField]
     private float currentSpawnChance;
-    private RoomManager playerCurrentRoom;
+    public RoomManager playerCurrentRoom;
 
     [Header("Davranış Ayarları")]
     public float baseSearchDuration = 20f;
@@ -838,10 +838,18 @@ public class GuderianAI : MonoBehaviour
         if (audioFadeRoutine != null)
             StopCoroutine(audioFadeRoutine);
 
+        // ---> DÜZELTME: TİMELİNE VEYA ESKİ SİSTEM FARK ETMEZ, GUDERIAN'I DOLABIN ÖNÜNE IŞINLA!
+        if (lockerExitPoint != null)
+        {
+            Vector3 finalPos = lockerExitPoint.position;
+            finalPos.y += spawnYOffset;
+            transform.position = finalPos;
+            transform.LookAt(finalPos - lockerExitPoint.forward);
+        }
+
         // --- YENİ (TİMELİNE) SİSTEMİ ---
         if (timelineLocker != null)
         {
-            // OYUNCUYU ZORLA DÖNDÜREN HİÇBİR KOD YOK, OLDUĞU GİBİ KALIR.
             StartCoroutine(ExecuteTimelineJumpscareRoutine(timelineLocker, "You left too early."));
         }
         else
@@ -864,27 +872,8 @@ public class GuderianAI : MonoBehaviour
                     ? cachedPlayer.gameObject
                     : GameObject.FindGameObjectWithTag("Player");
 
-            if (lockerExitPoint != null)
-            {
-                Vector3 finalPos = lockerExitPoint.position;
-                finalPos.y += spawnYOffset;
-                transform.position = finalPos;
-                transform.LookAt(finalPos - lockerExitPoint.forward);
-            }
-
-            // ESKİ SİSTEMDEKİ OYUNCUYU DÖNDÜRME KODU (Timeline varsa burası çalışmaz)
-            if (player != null)
-            {
-                player.transform.LookAt(
-                    new Vector3(
-                        transform.position.x,
-                        player.transform.position.y,
-                        transform.position.z
-                    )
-                );
-            }
-
             guderianModel.SetActive(true);
+
             if (JumpscareManager.Instance != null)
                 JumpscareManager.Instance.StartJumpscare(
                     transform,

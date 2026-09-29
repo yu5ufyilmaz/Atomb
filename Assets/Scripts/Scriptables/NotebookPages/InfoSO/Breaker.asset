@@ -9,8 +9,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3acf1adf072755c4c8f78fe31345103d, type: 3}
-  m_Name: PressureRoom
-  m_EditorClassIdentifier: Assembly-CSharp::SymbolDataSO
-  symbolID: 40001
-  description: Give Greetings to the big guy
+  m_Script: {fileID: 11500000, guid: 48863aafda478754583318f5cbd28123, type: 3}
+  m_Name: Breaker
+  m_EditorClassIdentifier: Assembly-CSharp::TutorialDataSO
+  title: Breaker Box
+  content: 'Lights are unstable. If fuse turn off fix it. '

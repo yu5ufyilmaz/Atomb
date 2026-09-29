@@ -505,7 +505,10 @@ namespace StarterAssets
                 movement += currentDrunkDrift * Time.deltaTime;
             }
 
-            _controller.Move(movement);
+            if (_controller.enabled)
+            {
+                _controller.Move(movement);
+            }
 
             // Animasyon Güncelleme
             if (_hasAnimator)

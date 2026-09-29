@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 48863aafda478754583318f5cbd28123, type: 3}
-  m_Name: Devil
+  m_Name: Pressure
   m_EditorClassIdentifier: Assembly-CSharp::TutorialDataSO
   title: Pressure Room
-  content: Keep it tight
+  content: Check pressure bar. If bar goes red turn the valve.

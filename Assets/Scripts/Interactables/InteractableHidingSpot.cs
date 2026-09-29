@@ -537,19 +537,40 @@ public class InteractableHidingSpot : MonoBehaviour, IInteractable, IForceExitab
     {
         inTransition = true;
 
-        // Kamerayı serbest bırak (Açısını sıfırlama!)
+        // 1. Kamerayı serbest bırak ama DÜNYA AÇISINI (o an baktığı yeri) KORU
         if (mainCamera != null && originalCameraParent != null)
         {
-            mainCamera.SetParent(originalCameraParent);
+            mainCamera.SetParent(originalCameraParent, true);
         }
 
-        //TogglePlayerModel(false);
+        // 2. Build hatası için modeli görünür yap
+        TogglePlayerModel(true);
 
-        // Hiç beklemeden anında Guderian'ı tetikle
+        if (playerController != null)
+        {
+            playerController.enabled = false;
+
+            // --- KÖKTEN ÇÖZÜM BURADA ---
+            // Karakter dolaba girerken yüzü dolabın arkasına dönük kilitleniyordu.
+            // Jumpscare girmeden hemen önce karakterin vücudunu KESİNLİKLE kameranın
+            // (senin o anki bakışının) yönüne çeviriyoruz ki kamera arkaya sekmek zorunda kalmasın!
+            if (mainCamera != null)
+            {
+                Vector3 camForward = mainCamera.transform.forward;
+                camForward.y = 0; // Sadece kendi etrafında (yatayda) döndür
+                if (camForward != Vector3.zero)
+                {
+                    playerController.transform.rotation = Quaternion.LookRotation(camForward);
+                }
+            }
+        }
+
+        // 3. JUMPSCARE ÇAĞRISI
         if (GuderianAI.Instance != null)
         {
-            GuderianAI.Instance.TriggerLockerJumpscare(insidePosition);
+            GuderianAI.Instance.TriggerLockerJumpscare(exitPosition);
         }
+
         yield return null;
     }
 
@@ -563,6 +584,10 @@ public class InteractableHidingSpot : MonoBehaviour, IInteractable, IForceExitab
         }
         if (playerController)
             playerController.enabled = state;
+
+        // YENİ EKLENEN: Dolaptayken hareket scriptini tamamen uyut
+        if (playerMoveScript)
+            playerMoveScript.enabled = state;
     }
 
     private void TogglePlayerModel(bool show)
