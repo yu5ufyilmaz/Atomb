@@ -829,6 +829,25 @@ namespace StarterAssets
             );
         }
 
+        private void OnDisable()
+        {
+            // 1. Script kapatıldığında (Dolaba girme, makineye oturma, ölüm anı vb.)
+            // Animatöre "ANINDA DUR" emri ver ki yürüme animasyonunda takılıp ayak sesi tetiklemesin!
+            if (_animator != null)
+            {
+                _animator.SetFloat("Speed", 0f);
+                _animator.SetFloat("MotionSpeed", 0f);
+                _animator.SetFloat("VelocityX", 0f);
+                _animator.SetFloat("VelocityZ", 0f);
+            }
+
+            // 2. Eğer o an havada asılı kalan (çalmaya devam eden) bir ayak sesi varsa onu bıçak gibi kes!
+            if (_audioSource != null && _audioSource.isPlaying)
+            {
+                _audioSource.Stop();
+            }
+        }
+
         // --- BU FONKSİYONU EKLE ---
         public void ForceCameraRotation(float yaw, float pitch)
         {

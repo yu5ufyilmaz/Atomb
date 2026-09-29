@@ -186,7 +186,6 @@ public class InteractableHidingSpot : MonoBehaviour, IInteractable, IForceExitab
                 || gState == GuderianAI.GuderianState.Breaching
                 || gState == GuderianAI.GuderianState.Entering
                 || gState == GuderianAI.GuderianState.Searching
-                || gState == GuderianAI.GuderianState.Exiting
             );
 
             if (isDangerous)
@@ -289,9 +288,7 @@ public class InteractableHidingSpot : MonoBehaviour, IInteractable, IForceExitab
                 || // Kapı arkası pusu atıyorsa
                 gState == GuderianAI.GuderianState.Entering
                 || // Odaya giriyorsa
-                gState == GuderianAI.GuderianState.Searching
-                || // Odayı arıyorsa
-                gState == GuderianAI.GuderianState.Exiting // Odadan çıkıyorsa (Pes edip dönerken arkasından çıkarsan da yakalar)
+                gState == GuderianAI.GuderianState.Searching// Odadan çıkıyorsa (Pes edip dönerken arkasından çıkarsan da yakalar)
             );
 
             // Guderian bu tehlike durumlarından herhangi birindeyken çıkmaya basarsan anında yakalanırsın!

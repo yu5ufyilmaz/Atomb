@@ -58,6 +58,12 @@ public class EndGameButton : MonoBehaviour, IInteractable
             var ccs = player.GetComponentsInChildren<UnityEngine.CharacterController>();
             foreach (var cc in ccs)
                 cc.enabled = false;
+            var inputs = Object.FindFirstObjectByType<StarterAssets.StarterAssetsInputs>();
+            if (inputs != null)
+            {
+                inputs.move = Vector2.zero;
+                inputs.enabled = false;
+            }
         }
 
         // 2. TIMELINE'I BAŞLAT VE BİTMESİNİ BEKLE

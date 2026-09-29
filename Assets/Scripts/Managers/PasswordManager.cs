@@ -18,7 +18,8 @@ public class PasswordManager : MonoBehaviour, ISaveable
 
     [Header("Makineler")]
     [SerializeField]
-    private InteractableOscilloscope oscilloscope;
+    private InteractableRetroOscilloscope oscilloscope;
+
 
     [SerializeField]
     private InteractableMassSpectrometer spectrometer;

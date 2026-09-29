@@ -85,6 +85,20 @@ public class InteractableOscilloscope : MonoBehaviour, IInteractable, IForceExit
     private Quaternion timeKnobInitialRot;
     private Coroutine audioFadeRoutine;
 
+    [Header("Oscilloscope Mini-Game")]
+    public float screenRadius = 5f; // Ekranın dairesel yarıçapı
+    public float paddleAngle = 0f; // Raketin anlık açısı (0-360)
+    public float paddleWidth = 40f; // Raketin genişliği (derece cinsinden, örn: 40 derece)
+    public float paddleSpeed = 150f; // A/D tuşlarıyla dönüş hızı
+
+    public Vector2 ballPosition;
+    public Vector2 ballVelocity;
+    public float ballSpeed = 3f;
+
+    public int lives = 3;
+    public int scoreToWin = 5; // Kazanmak için vurulacak hedef sayısı
+    private int currentScore = 0;
+    public Vector2 targetPosition; // Ekranda belirecek hedefin konumu
     private Transform mainCamera;
     private CinemachineBrain cinemachineBrain;
 

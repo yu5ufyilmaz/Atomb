@@ -640,6 +640,16 @@ public class GuderianAI : MonoBehaviour
         {
             NotebookUI.Instance.ForceClose();
         }
+        // --- YENİ EKLENEN: MAKINEDEN ZORLA ATMA KODU ---
+        if (GameManager.Instance != null && GameManager.Instance.activeInteraction != null)
+        {
+            MonoBehaviour machineScript = GameManager.Instance.activeInteraction as MonoBehaviour;
+            if (machineScript != null)
+            {
+                // Makinenin arka plandaki tüm çıkış ve kamera sıfırlama işlemlerini anında öldürür!
+                machineScript.StopAllCoroutines();
+            }
+        }
         // 1. OYUNCU SCRİPTLERİNİ GARANTİ BUL VE FİŞİNİ ÇEK (Asla dönemez)
         var moveScript = Object.FindFirstObjectByType<StarterAssets.CharacterController>();
         if (moveScript != null)
@@ -723,8 +733,17 @@ public class GuderianAI : MonoBehaviour
 
     private void TriggerPositionedJumpscare(JumpscareType type, string reason = "You didn't hide.")
     {
+        if (GameManager.Instance != null && GameManager.Instance.activeInteraction != null)
+        {
+            MonoBehaviour machineScript = GameManager.Instance.activeInteraction as MonoBehaviour;
+            if (machineScript != null)
+            {
+                machineScript.StopAllCoroutines();
+            }
+        }
         currentState = GuderianState.Jumpscare;
         debugStatus = "JUMPSCARE!";
+
         StopAllCoroutines();
 
         if (agent != null)

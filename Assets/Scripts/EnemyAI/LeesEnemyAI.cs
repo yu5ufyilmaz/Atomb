@@ -79,19 +79,20 @@ public class LeesEnemyAI : MonoBehaviour
     private float currentCooldownTimer = 0f;
 
     [Header("DEBUG AYARLARI (Canlı Veriler)")]
-public bool showDebugLogs = true;
-public float debugCooldownTimer;
-public float debugReactionTimer;
-public float debugSurvivalTimer;
-public float debugIgnoranceTimer;
-public bool debugIsVisible;
-public bool debugHasBeenSpotted;
+    public bool showDebugLogs = true;
+    public float debugCooldownTimer;
+    public float debugReactionTimer;
+    public float debugSurvivalTimer;
+    public float debugIgnoranceTimer;
+    public bool debugIsVisible;
+    public bool debugHasBeenSpotted;
 
     private float currentIgnoranceTimer;
     private float currentReactionTimer;
     private float currentSurvivalTimer;
+    public bool HasBeenSpotted = false;
 
-    private bool hasBeenSpotted = false;
+    // Private olan hasBeenSpotted değişkenini Event Controller'ın okuyabilmesi için dışarı açtık.
     private bool hasTurnedAway = false;
     private Vector3 lastPlayerPos;
 
@@ -215,7 +216,7 @@ public bool debugHasBeenSpotted;
         debugIgnoranceTimer = currentIgnoranceTimer;
         if (showDebugLogs)
             debugIsVisible = CheckIfVisible();
-        debugHasBeenSpotted = hasBeenSpotted;
+        debugHasBeenSpotted = HasBeenSpotted;
 #endif
     }
 
@@ -236,14 +237,14 @@ public bool debugHasBeenSpotted;
         );
         bool logicVisible = CheckIfVisible();
 
-        if (!isPlayerControllable && !hasBeenSpotted)
+        if (!isPlayerControllable && !HasBeenSpotted)
             logicVisible = false;
 
-        if (!hasBeenSpotted)
+        if (!HasBeenSpotted)
         {
             if (logicVisible)
             {
-                hasBeenSpotted = true;
+                HasBeenSpotted = true;
                 hasTurnedAway = false;
                 currentReactionTimer = 0f;
                 currentMovementGraceTimer = 0f;
@@ -646,7 +647,7 @@ public bool debugHasBeenSpotted;
         currentIgnoranceTimer = 0;
         currentReactionTimer = 0;
         currentSurvivalTimer = 0;
-        hasBeenSpotted = false;
+        HasBeenSpotted = false;
         hasTurnedAway = false;
         lastPlayerPos = playerTransform.position;
 
