@@ -28,6 +28,9 @@ public class LeesEnemyAI : MonoBehaviour
     [Header("Timeline Jumpscare")]
     public PlayableDirector timelineJumpscare;
 
+    [Tooltip("Arkadan (Odadan çıkarken vb.) yakaladığında oynayacak Timeline")]
+    public PlayableDirector timelineJumpscareBehind; // <--- YENİ EKLENDİ
+
     [Header("Görüş Ayarları")]
     public LayerMask obstacleMask;
     public Transform eyesPosition;

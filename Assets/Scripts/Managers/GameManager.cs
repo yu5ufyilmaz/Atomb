@@ -55,7 +55,7 @@ public class GameManager : MonoBehaviour
         isGameStarted = true;
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
-       
+
         // YENİ EKLENEN KISIM: Oyun başladığında karakterin kilitlerini aç
         StarterAssets.CharacterController player =
             Object.FindFirstObjectByType<StarterAssets.CharacterController>();
@@ -170,6 +170,8 @@ public class GameManager : MonoBehaviour
         if (activeInteraction is InteractablePressureValve)
             return true;
         if (activeInteraction is PuzzleReceiver)
+            return true;
+        if (activeInteraction is InteractableChalkboard)
             return true;
         // 4. Diğer makinalarda (Turing, Osiloskop vb.) fare GİZLİ olmalı.
         return false;

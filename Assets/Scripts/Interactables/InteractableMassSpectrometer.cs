@@ -136,8 +136,18 @@ public class InteractableMassSpectrometer : MonoBehaviour, IInteractable, IForce
         InitializeComponents();
         SetupSafeCamera();
 
-        float randomOffset = Random.Range(-40f, 40f);
-        currentRingAngleValue = ringTargetAngle + 180f + randomOffset;
+        // --- YENİ EKLENEN: RANDOMİZE SİSTEMİ ---
+        // Mıknatısın güvenli bölgesi (Kırmızı eksen hizası) -180 ile 180 derece arasında rastgele belirlenir.
+        safeZoneAngle = Random.Range(-180f, 180f);
+
+        // Halkanın (Ring) ulaşması gereken hedef açı 0 ile 360 derece arasında rastgele belirlenir.
+        ringTargetAngle = Random.Range(0f, 360f);
+
+        // Halkanın başlangıç açısını, direkt çözülü başlamaması için hedeften 90 ila 270 derece uzağa koyuyoruz.
+        float randomOffset = Random.Range(90f, 270f);
+        currentRingAngleValue = ringTargetAngle + randomOffset;
+        // ---------------------------------------
+
         _startMagnetPos = magnetPivot.localPosition;
         UpdateRingRotation();
         ResetMachineVisuals();

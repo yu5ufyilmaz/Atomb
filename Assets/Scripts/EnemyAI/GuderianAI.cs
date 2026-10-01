@@ -733,26 +733,59 @@ public class GuderianAI : MonoBehaviour
 
     private void TriggerPositionedJumpscare(JumpscareType type, string reason = "You didn't hide.")
     {
+        // Eğer oyuncu bir makinede/kitaptaysa, jumpscare'i patlatmadan önce oradan çıkmasını bekle
         if (GameManager.Instance != null && GameManager.Instance.activeInteraction != null)
         {
-            MonoBehaviour machineScript = GameManager.Instance.activeInteraction as MonoBehaviour;
-            if (machineScript != null)
+            StartCoroutine(WaitAndJumpscareRoutine(type, reason));
+        }
+        else
+        {
+            ExecuteJumpscare(type, reason);
+        }
+    }
+
+    private IEnumerator WaitAndJumpscareRoutine(JumpscareType type, string reason)
+    {
+        currentState = GuderianState.Jumpscare; // State'i kilitle ki bu sırada başka şeyler tetiklenmesin
+        debugStatus = "Makineden Çıkması Bekleniyor...";
+
+        // 1. Etkileşimde olunan objeye "Zorla Çık" emrini gönder
+        if (GameManager.Instance != null && GameManager.Instance.activeInteraction != null)
+        {
+            IForceExitable exitable = GameManager.Instance.activeInteraction as IForceExitable;
+            if (exitable != null)
             {
-                machineScript.StopAllCoroutines();
+                exitable.ForceExit();
             }
         }
+
+        // 2. Oyuncunun fizikleri (CharacterController) geri gelene kadar bekle.
+        // Fiziklerin geri gelmesi, kitabın kapanma animasyonunun bittiği anlamına gelir.
+        var physics = Object.FindFirstObjectByType<UnityEngine.CharacterController>();
+        float timer = 0f;
+        while (physics != null && !physics.enabled && timer < 5.0f) // Takılırsa diye Maksimum 5 saniye bekle
+        {
+            timer += Time.deltaTime;
+            yield return null;
+        }
+
+        // 3. Kitap kapandı, ufak bir es ver ve asıl Jumpscare'i patlat
+        yield return new WaitForSeconds(0.2f);
+        ExecuteJumpscare(type, reason);
+    }
+
+    private void ExecuteJumpscare(JumpscareType type, string reason)
+    {
         currentState = GuderianState.Jumpscare;
         debugStatus = "JUMPSCARE!";
 
-        StopAllCoroutines();
+        StopAllCoroutines(); // Guderian'ın kendi devriye/arama rutinlerini durdurur
 
         if (agent != null)
             agent.enabled = false;
-
         if (audioFadeRoutine != null)
             StopCoroutine(audioFadeRoutine);
 
-        // --- YENİ: Hangi Timeline'ın oynayacağını seçiyoruz ---
         PlayableDirector selectedTimeline = null;
         switch (type)
         {
@@ -767,14 +800,13 @@ public class GuderianAI : MonoBehaviour
                 break;
         }
 
-        // Eğer Inspector'dan bu durum için bir Timeline atanmışsa YENİ SİSTEMİ KULLAN
         if (selectedTimeline != null)
         {
             StartCoroutine(ExecuteTimelineJumpscareRoutine(selectedTimeline, reason));
         }
         else
         {
-            // --- ESKİ SİSTEM (Eğer Timeline atanmamışsa normal jumpscare çalışır) ---[cite: 8]
+            // --- ESKİ SİSTEM (Eğer Timeline atanmamışsa normal jumpscare girer) ---
             if (audioSource)
             {
                 audioSource.Stop();
@@ -783,14 +815,12 @@ public class GuderianAI : MonoBehaviour
             }
             if (guderianModel != null)
                 guderianModel.SetActive(true);
-
             if (animator != null)
             {
                 animator.SetFloat(_animIDSpeed, 0f);
                 animator.SetTrigger(_animIDAttack);
             }
 
-            // Performans: Önbellekteki player referansını kullan
             Transform player = cachedPlayer;
             if (player == null)
             {
@@ -801,8 +831,8 @@ public class GuderianAI : MonoBehaviour
                     player = cachedPlayer;
                 }
             }
-            bool shouldPlayAnim = false; // Bu Player'ın animasyonudur
 
+            bool shouldPlayAnim = false;
             if (activeRoom == null)
             {
                 SetPositionWithOffset(player.position + (player.forward * 1.0f), true);
