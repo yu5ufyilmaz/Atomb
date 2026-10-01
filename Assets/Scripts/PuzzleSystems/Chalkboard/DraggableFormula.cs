@@ -11,7 +11,6 @@ public class DraggableFormula : MonoBehaviour
     public float dragSpeed = 25f;
     public float surfaceOffset = 0.02f;
     public float hoverOffset = 0.5f;
-    public float snapRadius = 0.8f;
 
     [Header("Döndürme Ayarları")]
     public float rotationStep = 90f;
@@ -19,7 +18,6 @@ public class DraggableFormula : MonoBehaviour
 
     private Camera mainCam;
 
-    // Bunları public yaptık ki bağlar koparken diğer parçalar değerlerini güncelleyebilsin
     [HideInInspector]
     public bool isDragged = false;
 
@@ -28,9 +26,6 @@ public class DraggableFormula : MonoBehaviour
 
     [HideInInspector]
     public Quaternion targetRotation;
-
-    private FormulaNode mySnapNode = null;
-    private FormulaNode targetSnapNode = null;
 
     public void Initialize(FormulaItemSO data)
     {
@@ -59,14 +54,10 @@ public class DraggableFormula : MonoBehaviour
 
         HandleInput();
 
-        // KODUN CAN DAMARI: Sadece molekülün "Kök" (Root) objesi hareket edebilir!
-        // Alt objeler (çocuklar) kendi başlarına hareket etmeye çalışıp ebeveynle savaşmamalı.
         if (GetRootFormula() == this)
         {
             if (isDragged)
-            {
-                CalculateDragPosition();
-            }
+                CalculateSimpleDragPosition();
             ApplyMovement();
         }
     }
@@ -87,60 +78,65 @@ public class DraggableFormula : MonoBehaviour
     private void HandleInput()
     {
         Ray ray = mainCam.ScreenPointToRay(Input.mousePosition);
-        bool isHovering = false;
 
-        RaycastHit[] hits = Physics.RaycastAll(ray, 15f);
-        foreach (var hit in hits)
+        if (Input.GetMouseButtonDown(0) || Input.GetMouseButtonDown(1))
         {
-            if (hit.collider.GetComponentInParent<DraggableFormula>() == this)
+            RaycastHit[] hits = Physics.RaycastAll(ray, 15f);
+            bool hitMyBody = false;
+            bool hitAnyNode = false;
+
+            foreach (var hit in hits)
             {
-                isHovering = true;
-                break;
+                if (hit.collider.GetComponent<FormulaNode>() != null)
+                    hitAnyNode = true;
+                if (hit.collider.gameObject == this.gameObject)
+                    hitMyBody = true;
             }
-        }
 
-        if (Input.GetMouseButtonDown(0) && isHovering)
-        {
-            DraggableFormula root = GetRootFormula();
-            root.isDragged = true;
+            // Sol Tık: Taşıma
+            if (Input.GetMouseButtonDown(0) && hitMyBody && !hitAnyNode)
+            {
+                DraggableFormula root = GetRootFormula();
+                root.isDragged = true;
+            }
+            // Sağ Tık: Silinme / Kopma ayrımı yapıldı (HATA BURADAYDI)
+            else if (Input.GetMouseButtonDown(1) && hitMyBody && !isDragged)
+            {
+                bool hasAnyBonds = false;
+                foreach (var node in GetComponentsInChildren<FormulaNode>(true))
+                {
+                    if (node.isOccupied)
+                        hasAnyBonds = true;
+                }
+
+                if (hasAnyBonds)
+                {
+                    // Bağlıysa sadece bağları kopar (Silme!)
+                    BreakAllBonds();
+                }
+                else
+                {
+                    // Hiçbir yere bağlı değilse oyundan sil
+                    ChalkboardManager.Instance.RemoveFormula(this);
+                }
+            }
         }
         else if (Input.GetMouseButtonUp(0) && isDragged)
         {
             Drop();
         }
-        else if (Input.GetMouseButtonDown(1) && isHovering && !isDragged)
-        {
-            if (
-                transform.parent != null
-                && transform.parent.GetComponent<DraggableFormula>() != null
-            )
-            {
-                BreakAllBonds();
-            }
-            else
-            {
-                BreakAllBonds();
-                ChalkboardManager.Instance.RemoveFormula(this);
-            }
-        }
 
-        // DÖNDÜRME (Sadece kök obje dönebilir)
         if (isDragged && GetRootFormula() == this)
         {
             float scroll = Input.GetAxis("Mouse ScrollWheel");
-            if (scroll > 0f)
+            if (scroll > 0f || Input.GetKeyDown(KeyCode.Q))
                 targetRotation *= Quaternion.Euler(0, 0, rotationStep);
-            else if (scroll < 0f)
-                targetRotation *= Quaternion.Euler(0, 0, -rotationStep);
-
-            if (Input.GetKeyDown(KeyCode.Q))
-                targetRotation *= Quaternion.Euler(0, 0, rotationStep);
-            if (Input.GetKeyDown(KeyCode.E))
+            else if (scroll < 0f || Input.GetKeyDown(KeyCode.E))
                 targetRotation *= Quaternion.Euler(0, 0, -rotationStep);
         }
     }
 
-    private void CalculateDragPosition()
+    private void CalculateSimpleDragPosition()
     {
         Transform board = ChalkboardManager.Instance.boardTransform;
         if (board == null)
@@ -152,60 +148,13 @@ public class DraggableFormula : MonoBehaviour
             boardNormal = -boardNormal;
 
         Plane boardPlane = new Plane(boardNormal, board.position);
-
         if (boardPlane.Raycast(ray, out float enterDistance))
         {
             Vector3 hitPoint = ray.GetPoint(enterDistance);
             Vector3 localPos = board.InverseTransformPoint(hitPoint);
             localPos = ChalkboardManager.Instance.ClampToBoardArea(localPos);
             localPos.z = hoverOffset;
-
             targetPosition = board.TransformPoint(localPos);
-
-            FindClosestSnapPoint();
-
-            if (mySnapNode != null && targetSnapNode != null)
-            {
-                Vector3 offset = mySnapNode.transform.position - transform.position;
-                targetPosition = targetSnapNode.transform.position - offset;
-                targetPosition.z -= 0.05f;
-            }
-        }
-    }
-
-    private void FindClosestSnapPoint()
-    {
-        mySnapNode = null;
-        targetSnapNode = null;
-        float closestDist = float.MaxValue;
-
-        FormulaNode[] myNodes = GetComponentsInChildren<FormulaNode>();
-        FormulaNode[] allNodes = FindObjectsByType<FormulaNode>(FindObjectsSortMode.None);
-
-        foreach (var mNode in myNodes)
-        {
-            if (mNode.isOccupied)
-                continue;
-
-            foreach (var oNode in allNodes)
-            {
-                if (oNode.transform.IsChildOf(this.transform))
-                    continue;
-                if (oNode.isOccupied)
-                    continue;
-
-                if (!oNode.CanConnect(this, mNode) || !mNode.CanConnect(oNode.parentFormula, oNode))
-                    continue;
-
-                float dist = Vector3.Distance(mNode.transform.position, oNode.transform.position);
-
-                if (dist < snapRadius && dist < closestDist)
-                {
-                    closestDist = dist;
-                    targetSnapNode = oNode;
-                    mySnapNode = mNode;
-                }
-            }
         }
     }
 
@@ -214,52 +163,31 @@ public class DraggableFormula : MonoBehaviour
         isDragged = false;
         if (ChalkboardManager.Instance.boardTransform == null)
             return;
-
-        if (mySnapNode != null && targetSnapNode != null)
-        {
-            mySnapNode.ConnectTo(targetSnapNode);
-            transform.SetParent(targetSnapNode.parentFormula.transform);
-        }
-        else
-        {
-            Transform board = ChalkboardManager.Instance.boardTransform;
-            transform.SetParent(board);
-
-            Vector3 localPos = board.InverseTransformPoint(targetPosition);
-            localPos.z = surfaceOffset;
-            targetPosition = board.TransformPoint(localPos);
-        }
-
-        mySnapNode = null;
-        targetSnapNode = null;
-
-       
+        Transform board = ChalkboardManager.Instance.boardTransform;
+        transform.SetParent(board);
+        Vector3 localPos = board.InverseTransformPoint(targetPosition);
+        localPos.z = surfaceOffset;
+        targetPosition = board.TransformPoint(localPos);
     }
 
     private void BreakAllBonds()
     {
-        // Sadece BU formüle ait olan bağ noktalarını tarar ve koparır
-        FormulaNode[] allNodes = GetComponentsInChildren<FormulaNode>();
+        FormulaNode[] allNodes = GetComponentsInChildren<FormulaNode>(true);
         foreach (var node in allNodes)
         {
-            if (node.parentFormula == this && node.connectedNode != null)
+            if (node.parentFormula == this && node.isOccupied)
             {
                 DraggableFormula otherFormula = node.connectedNode.parentFormula;
 
-                // Eğer bağlandığım obje benim çocuğumsa, onu serbest bırak
-                if (otherFormula.transform.parent == this.transform)
-                {
-                    otherFormula.transform.SetParent(ChalkboardManager.Instance.boardTransform);
-                    otherFormula.targetPosition = otherFormula.transform.position;
-                    otherFormula.targetRotation = otherFormula.transform.rotation;
-                }
-                // Eğer ben onun çocuğuysam, kendimi serbest bırak
-                else if (this.transform.parent == otherFormula.transform)
-                {
-                    this.transform.SetParent(ChalkboardManager.Instance.boardTransform);
-                    this.targetPosition = this.transform.position;
-                    this.targetRotation = this.transform.rotation;
-                }
+                // Diğer formülü tahtanın içine bağımsız olarak geri gönder
+                otherFormula.transform.SetParent(ChalkboardManager.Instance.boardTransform);
+                otherFormula.targetPosition = otherFormula.transform.position;
+                otherFormula.targetRotation = otherFormula.transform.rotation;
+
+                // Kendi formülümüzü de tahtaya bağımsız olarak gönder
+                this.transform.SetParent(ChalkboardManager.Instance.boardTransform);
+                this.targetPosition = this.transform.position;
+                this.targetRotation = this.transform.rotation;
 
                 node.Disconnect();
             }
@@ -269,36 +197,29 @@ public class DraggableFormula : MonoBehaviour
     private void ApplyMovement()
     {
         if (isDragged || Vector3.Distance(transform.position, targetPosition) > 0.001f)
-        {
             transform.position = Vector3.Lerp(
                 transform.position,
                 targetPosition,
                 Time.deltaTime * dragSpeed
             );
-        }
 
         if (transform.rotation != targetRotation)
-        {
             transform.rotation = Quaternion.Lerp(
                 transform.rotation,
                 targetRotation,
                 Time.deltaTime * rotationAnimSpeed
             );
-        }
     }
 
     public List<FormulaItemSO> GetMoleculeData()
     {
         DraggableFormula root = GetRootFormula();
         DraggableFormula[] allParts = root.GetComponentsInChildren<DraggableFormula>();
-
         List<FormulaItemSO> dataList = new List<FormulaItemSO>();
         foreach (var part in allParts)
         {
             if (part.formulaData != null)
-            {
                 dataList.Add(part.formulaData);
-            }
         }
         return dataList;
     }

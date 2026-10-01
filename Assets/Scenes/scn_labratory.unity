@@ -26314,8 +26314,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1.1128507, y: 2.5854976, z: 1.0901326}
-  m_Center: {x: 0.15510345, y: -0.2585051, z: 0}
+  m_Size: {x: 1.1128507, y: 2.5854976, z: 0.47658432}
+  m_Center: {x: 0.15510345, y: -0.2585051, z: -0.3067742}
 --- !u!114 &393088938
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -26329,7 +26329,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ReactionZone
   currentItems:
-  - {fileID: 1675939165}
   - {fileID: 1852904478}
 --- !u!1 &399485381
 GameObject:
@@ -27756,7 +27755,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7167651591803715524, guid: 0a81e5f84063802498a6da99847a17d5, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0.166
+      value: 0.06
       objectReference: {fileID: 0}
     - target: {fileID: 7167651591803715524, guid: 0a81e5f84063802498a6da99847a17d5, type: 3}
       propertyPath: m_LocalRotation.w
@@ -50522,7 +50521,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7167651591803715524, guid: 0a81e5f84063802498a6da99847a17d5, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0.166
+      value: 0.06
       objectReference: {fileID: 0}
     - target: {fileID: 7167651591803715524, guid: 0a81e5f84063802498a6da99847a17d5, type: 3}
       propertyPath: m_LocalRotation.w
@@ -66266,6 +66265,7 @@ MonoBehaviour:
   synthesisZone: {fileID: 393088938}
   allRecipes:
   - {fileID: 11400000, guid: a734090a0a526d44b8e82f86f2b1ce5b, type: 2}
+  - {fileID: 11400000, guid: 1c901af678b72a241bbb8a30bb726e18, type: 2}
 --- !u!1 &1060166092
 GameObject:
   m_ObjectHideFlags: 0
@@ -72434,8 +72434,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 0.44632816, y: 3.5172758, z: 1.8820121}
-  m_Center: {x: -0.21889353, y: 0.0032190084, z: -0.03540933}
+  m_Size: {x: 3.5380678, y: 1.8477159, z: 0.73231494}
+  m_Center: {x: 0.007226467, y: -0.011777163, z: 0.18953139}
 --- !u!114 &1151116806
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -90278,7 +90278,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7167651591803715524, guid: 0a81e5f84063802498a6da99847a17d5, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0.166
+      value: 0.06
       objectReference: {fileID: 0}
     - target: {fileID: 7167651591803715524, guid: 0a81e5f84063802498a6da99847a17d5, type: 3}
       propertyPath: m_LocalRotation.w
@@ -98031,7 +98031,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3068148629653049666, guid: 7b0acb05bae235544ab1548e084c750b, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0.056
+      value: 0.06
       objectReference: {fileID: 0}
     - target: {fileID: 3068148629653049666, guid: 7b0acb05bae235544ab1548e084c750b, type: 3}
       propertyPath: m_LocalRotation.w
@@ -105082,7 +105082,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7167651591803715524, guid: 0a81e5f84063802498a6da99847a17d5, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0.166
+      value: 0.06
       objectReference: {fileID: 0}
     - target: {fileID: 7167651591803715524, guid: 0a81e5f84063802498a6da99847a17d5, type: 3}
       propertyPath: m_LocalRotation.w
@@ -105122,17 +105122,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 7167651591803715524, guid: 0a81e5f84063802498a6da99847a17d5, type: 3}
   m_PrefabInstance: {fileID: 1675939159}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &1675939165 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 2154228476461379201, guid: 0a81e5f84063802498a6da99847a17d5, type: 3}
-  m_PrefabInstance: {fileID: 1675939159}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 679ad2fff364b5349a5acdfe26b86fe2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::DraggableFormula
 --- !u!1 &1675975920
 GameObject:
   m_ObjectHideFlags: 0
