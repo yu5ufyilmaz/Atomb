@@ -898,5 +898,43 @@ namespace StarterAssets
                 staminaCircularImage.color = isExhausted ? Color.red : Color.white;
             }
         }
+
+        public float CurrentStamina => currentStamina;
+
+        public bool IsExhausted => isExhausted;
+
+        public void SetStaminaForDebug(float stamina)
+        {
+            currentStamina = Mathf.Clamp(stamina, 0f, maxStamina);
+            isExhausted = currentStamina <= 0f;
+            UpdateStaminaUIForDebug();
+        }
+
+        public void ResetRuntimeStateForDebug()
+        {
+            currentStamina = maxStamina;
+            isExhausted = false;
+            drunkIntensity = 0f;
+            drunkTime = 0f;
+            currentDrunkRoll = 0f;
+            currentDrunkYaw = 0f;
+            currentDrunkDrift = Vector3.zero;
+            _speed = 0f;
+            _animationBlend = 0f;
+            _verticalVelocity = -2f;
+            _jumpTimeoutDelta = JumpTimeout;
+            _fallTimeoutDelta = FallTimeout;
+            ResetHeadBobYPos(0f);
+            UpdateStaminaUIForDebug();
+        }
+
+        private void UpdateStaminaUIForDebug()
+        {
+            if (staminaCircularImage == null)
+                return;
+
+            staminaCircularImage.fillAmount = maxStamina > 0f ? currentStamina / maxStamina : 0f;
+            staminaCircularImage.color = isExhausted ? Color.red : Color.white;
+        }
     }
 }

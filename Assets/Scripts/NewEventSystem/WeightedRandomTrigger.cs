@@ -117,6 +117,26 @@ public class WeightedRandomTrigger : MonoBehaviour
         }
     }
 
+    // Mekanik test sahnesinde condition zincirinden bağımsız zar atmak için.
+    public void DebugTrigger()
+    {
+        if (mode == RandomMode.SelectOnceAtStart && preSelectedOutcome == null)
+            preSelectedOutcome = RollDice();
+
+        HasTriggered = true;
+        ExecuteOutcome();
+    }
+
+    public void DebugReset()
+    {
+        HasTriggered = false;
+        if (mode == RandomMode.SelectOnceAtStart)
+        {
+            preSelectedOutcome = RollDice();
+            DisableUnusedContainers(preSelectedOutcome);
+        }
+    }
+
     private WeightedOutcome RollDice()
     {
         if (outcomes.Count == 0)
@@ -157,6 +177,9 @@ public class WeightedRandomTrigger : MonoBehaviour
 
     private void OnDestroy()
     {
+        if (conditions == null)
+            return;
+
         foreach (var cond in conditions)
         {
             if (cond != null)
