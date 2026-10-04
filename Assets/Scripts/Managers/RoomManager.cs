@@ -122,7 +122,9 @@ public class RoomManager : MonoBehaviour, ISaveable
 
                     // DEĞİŞİKLİK BURADA: Artık odadaki hoparlörün konumunu da gönderiyoruz.
                     // DialogueEvent.cs ve MegaphoneSystem.cs güncellemelerinle uyumlu çalışır.
-                    onFirstEnterSound.Play(roomSpeakerTransform);
+                    
+                    //OSMANNn
+                  //  onFirstEnterSound.Play(roomSpeakerTransform);
 
                     hasEnteredBefore = true; // KİLİTLE: Bir daha çalmasın
                 }

@@ -39,6 +39,12 @@ private string saveFileName = "SenzoraLocalSave.json";
 
     public void NewGame()
     {
+        if (MechanicsTestController.IsActive)
+        {
+            Debug.Log("[MechanicsTest] NewGame engellendi; gerçek kayıt korunuyor.");
+            return;
+        }
+
         gameData = new GameData();
 
         string path = Path.Combine(Application.persistentDataPath, saveFileName);
@@ -57,6 +63,12 @@ private string saveFileName = "SenzoraLocalSave.json";
 
     public bool LoadGame()
     {
+        if (MechanicsTestController.IsActive)
+        {
+            Debug.Log("[MechanicsTest] Gerçek kayıt test sahnesine yüklenmedi.");
+            return false;
+        }
+
         string path = Path.Combine(Application.persistentDataPath, saveFileName);
 
         // Gelecekte buraya Steamworks Load mantığı eklenecek
@@ -81,6 +93,12 @@ private string saveFileName = "SenzoraLocalSave.json";
 
     public void SaveGame()
     {
+        if (MechanicsTestController.IsActive)
+        {
+            Debug.Log("[MechanicsTest] SaveGame engellendi; gerçek kayıt korunuyor.");
+            return;
+        }
+
         if (gameData == null)
             gameData = new GameData();
 

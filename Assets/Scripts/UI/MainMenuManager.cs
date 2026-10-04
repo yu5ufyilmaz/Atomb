@@ -121,6 +121,21 @@ public class MainMenuManager : MonoBehaviour
             mainMenuPanel.SetActive(true);
     }
 
+    public void HideAllMenusForMechanicsTest()
+    {
+        if (Application.isPlaying)
+            StopAllCoroutines();
+
+        if (settingsPanel != null)
+            settingsPanel.SetActive(false);
+        if (creditsPanel != null)
+            creditsPanel.SetActive(false);
+        if (mainMenuPanel != null)
+            mainMenuPanel.SetActive(false);
+
+        enabled = false;
+    }
+
     public void QuitGame()
     {
 #if UNITY_EDITOR

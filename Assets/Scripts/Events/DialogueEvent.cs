@@ -5,14 +5,13 @@ public class DialogueEvent
 {
     public AudioClip clip;
 
-    [SubtitleIDSelection]
+    [SubtitleIDSelection] // Dropdown büyüsü
     public string subtitleID;
 
-    // Parametreyi güncelledik: İsteğe bağlı bir Transform alıyor.
-    public void Play(Transform soundOrigin = null)
+    public void Play()
     {
         if (MegaphoneSystem.Instance != null)
-            MegaphoneSystem.Instance.PlayEvent(this, soundOrigin);
+            MegaphoneSystem.Instance.PlayEvent(this);
     }
 }
 

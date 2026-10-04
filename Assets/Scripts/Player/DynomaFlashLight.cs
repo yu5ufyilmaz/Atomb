@@ -127,4 +127,22 @@ public class DynomaFlashLight : MonoBehaviour
             energyBar.fillAmount = currentEnergy / maxEnergy;
         }
     }
+
+    public float CurrentEnergy => currentEnergy;
+
+    public float MaxEnergy => maxEnergy;
+
+    public void SetEnergyForDebug(float energy)
+    {
+        currentEnergy = Mathf.Clamp(energy, 0f, maxEnergy);
+        UpdateLight();
+        UpdateUI();
+    }
+
+    public void ChargeOnceForDebug()
+    {
+        ChargeFlashlight();
+        UpdateLight();
+        UpdateUI();
+    }
 }

@@ -63,8 +63,27 @@ public class EventLogicController : MonoBehaviour
         }
     }
 
+    // Mekanik test sahnesinde koşulları beklemeden bu event zincirini sınamak için.
+    public void DebugTrigger()
+    {
+        if (actions == null)
+            actions = GetComponents<IAction>();
+
+        HasTriggered = true;
+        FireActions();
+        OnEventTriggered?.Invoke();
+    }
+
+    public void DebugReset()
+    {
+        HasTriggered = false;
+    }
+
     private void OnDestroy()
     {
+        if (conditions == null)
+            return;
+
         foreach (var cond in conditions)
         {
             if (cond != null)
