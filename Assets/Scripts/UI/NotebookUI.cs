@@ -93,13 +93,13 @@ public class NotebookUI : MonoBehaviour
     public void ToggleNotebook()
     {
         isNotebookOpen = !isNotebookOpen;
-
         if (playerAnimator != null)
             playerAnimator.SetBool(animatorParameterName, isNotebookOpen);
 
         if (isNotebookOpen)
         {
-            DoFManager.Instance.SetFocus(0.3f);
+            // BURADAKİ 0.3f SABİTİNİ DEĞİŞTİRİYORUZ
+            DoFManager.Instance.SetFocus(notebookFocusDistance);
             UpdateUI();
         }
         else

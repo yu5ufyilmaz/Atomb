@@ -243,12 +243,13 @@ MonoBehaviour:
   formulaData: {fileID: 11400000, guid: 9a0f0ebbf0292404d9d47b0766434a79, type: 2}
   dragSpeed: 25
   surfaceOffset: 0.1
-  hoverOffset: 0.12
+  hoverOffset: 0.15
   rotationStep: 90
   rotationAnimSpeed: 15
   isDragged: 0
   targetPosition: {x: 0, y: 0, z: 0}
   targetRotation: {x: 0, y: 0, z: 0, w: 0}
+  dragOffset: {x: 0, y: 0, z: 0}
 --- !u!54 &7548552905551654696
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -388,7 +389,7 @@ SphereCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Radius: 1.42
+  m_Radius: 2.0010216
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &8055860199585500842
 MonoBehaviour:

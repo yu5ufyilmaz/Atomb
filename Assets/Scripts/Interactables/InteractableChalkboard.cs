@@ -161,7 +161,7 @@ public class InteractableChalkboard : MonoBehaviour, IInteractable, IForceExitab
 
         if (ControlsUIManager.Instance != null)
             ControlsUIManager.Instance.ShowMachineUI(
-                ControlsUIManager.MachineType.Generic,
+                ControlsUIManager.MachineType.Chalkboard,
                 "Sentez Tahtası\n[F] Çık"
             );
 

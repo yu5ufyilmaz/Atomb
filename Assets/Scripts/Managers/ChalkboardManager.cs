@@ -41,6 +41,54 @@ public class ChalkboardManager : MonoBehaviour
         return localPos;
     }
 
+    // Yeni Gelişmiş Sınırlandırma Sistemi (Tüm molekülü kapsar)
+    public Vector3 ClampMoleculeToBoardArea(
+        DraggableFormula root,
+        Vector3 proposedLocalPos,
+        float padding = 0.15f
+    )
+    {
+        // 1. Formülün şu an nerede olduğunu ve nereye gitmek istediğini (delta) buluyoruz
+        Vector3 currentLocalPos = boardTransform.InverseTransformPoint(root.transform.position);
+        Vector3 delta = proposedLocalPos - currentLocalPos;
+
+        // 2. Birbirine bağlı tüm parçaları (kolları/dalları) bul
+        DraggableFormula[] allParts = root.GetComponentsInChildren<DraggableFormula>();
+
+        float minX = float.MaxValue,
+            maxX = float.MinValue;
+        float minY = float.MaxValue,
+            maxY = float.MinValue;
+
+        // 3. Her bir parçanın "eğer hareket edersek" nerede olacağını hesapla
+        foreach (var part in allParts)
+        {
+            Vector3 partLocal =
+                boardTransform.InverseTransformPoint(part.transform.position) + delta;
+
+            if (partLocal.x < minX)
+                minX = partLocal.x;
+            if (partLocal.x > maxX)
+                maxX = partLocal.x;
+            if (partLocal.y < minY)
+                minY = partLocal.y;
+            if (partLocal.y > maxY)
+                maxY = partLocal.y;
+        }
+
+        // 4. Herhangi bir uç parça sınırları aşıyorsa, gitmek istediğimiz hedefi geriye doğru it (Kelepçele)
+        if (minX - padding < minBounds.x)
+            proposedLocalPos.x += (minBounds.x - (minX - padding));
+        if (maxX + padding > maxBounds.x)
+            proposedLocalPos.x -= ((maxX + padding) - maxBounds.x);
+        if (minY - padding < minBounds.y)
+            proposedLocalPos.y += (minBounds.y - (minY - padding));
+        if (maxY + padding > maxBounds.y)
+            proposedLocalPos.y -= ((maxY + padding) - maxBounds.y);
+
+        return proposedLocalPos;
+    }
+
     public void AttemptSynthesis()
     {
         if (!isMachineActive || synthesisZone == null || synthesisZone.currentItems.Count == 0)

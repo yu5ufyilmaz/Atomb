@@ -16,6 +16,7 @@ public class ControlsUIManager : MonoBehaviour
         PressureValve, // Basınç Vanası
         Book, // Kitap Okuma
         HidingSpot,
+        Chalkboard,
     }
 
     [Header("Ana UI Referansları")]
@@ -58,6 +59,15 @@ public class ControlsUIManager : MonoBehaviour
     private CanvasGroup canvasGroup;
     private GameObject currentActivePanel;
 
+    [Header("Makine Focus (Bulanıklık) Ayarları")]
+    public float chalkboardFocus = 0.8f;
+    public float genericFocus = 0.5f;
+    public float massSpectrometerFocus = 0.95f;
+    public float turingMachineFocus = 0.77f;
+    public float oscilloscopeFocus = 0.69f;
+    public float pressureValveFocus = 1.3f;
+    public float bookFocus = 0.32f;
+
     private void Awake()
     {
         if (Instance == null)
@@ -98,38 +108,37 @@ public class ControlsUIManager : MonoBehaviour
         {
             case MachineType.Generic:
                 currentActivePanel = genericTextPanel;
-                DoFManager.Instance.SetFocus(0.28f);
+                DoFManager.Instance.SetFocus(genericFocus); // Sabit 0.28f yerine değişkeni kullandık
                 if (genericText != null)
                     genericText.text = optionalText;
                 break;
-
             case MachineType.MassSpectrometer:
                 currentActivePanel = massSpectrometerPanel;
-                DoFManager.Instance.SetFocus(0.95f);
+                DoFManager.Instance.SetFocus(massSpectrometerFocus);
                 break;
-
             case MachineType.TuringMachine:
-                DoFManager.Instance.SetFocus(0.77f);
+                DoFManager.Instance.SetFocus(turingMachineFocus);
                 currentActivePanel = turingMachinePanel;
                 break;
-
             case MachineType.Oscilloscope:
-                DoFManager.Instance.SetFocus(0.69f);
+                DoFManager.Instance.SetFocus(oscilloscopeFocus);
                 currentActivePanel = oscilloscopePanel;
                 break;
-
             case MachineType.PressureValve:
-                DoFManager.Instance.SetFocus(1.3f);
+                DoFManager.Instance.SetFocus(pressureValveFocus);
                 currentActivePanel = pressureValvePanel;
                 break;
-
             case MachineType.Book:
-                DoFManager.Instance.SetFocus(0.32f);
+                DoFManager.Instance.SetFocus(bookFocus);
                 currentActivePanel = bookPanel;
                 break;
-            case MachineType.HidingSpot: // <--- YENİ EKLENDİ
-                //DoFManager.Instance.ResetFocus(); // Etrafı net bırak (bulanıklaştırma)
-                currentActivePanel = hidingSpotPanel; // Makine panelini kullan
+            case MachineType.HidingSpot:
+                currentActivePanel = hidingSpotPanel;
+                break;
+            case MachineType.Chalkboard: // <--- YENİ EKLENEN KISIM
+                DoFManager.Instance.SetFocus(chalkboardFocus);
+                // Eğer Chalkboard'a özel sol altta açılan bir UI panelin yoksa null kalabilir. Varsa buraya atayabilirsin.
+                currentActivePanel = null;
                 break;
             default:
                 Debug.LogWarning("ControlsUI: Tanımlanmamış makine tipi!");

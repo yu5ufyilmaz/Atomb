@@ -75,31 +75,55 @@ public class DraggableFormula : MonoBehaviour
         return current;
     }
 
+    [HideInInspector]
+    public Vector3 dragOffset; // Fare ile formülün merkezi arasındaki farkı tutacak
+
     private void HandleInput()
     {
         Ray ray = mainCam.ScreenPointToRay(Input.mousePosition);
-
         if (Input.GetMouseButtonDown(0) || Input.GetMouseButtonDown(1))
         {
             RaycastHit[] hits = Physics.RaycastAll(ray, 15f);
+
+            // KRİTİK ÇÖZÜM: Çarpan objeleri kameraya olan mesafelerine göre yakından uzağa sırala!
+            System.Array.Sort(hits, (a, b) => a.distance.CompareTo(b.distance));
+
             bool hitMyBody = false;
             bool hitAnyNode = false;
 
             foreach (var hit in hits)
             {
                 if (hit.collider.GetComponent<FormulaNode>() != null)
+                {
                     hitAnyNode = true;
+                    break; // Eğer fareye en yakın obje bir Node ise formülü TAŞIMA, döngüden çık.
+                }
                 if (hit.collider.gameObject == this.gameObject)
+                {
                     hitMyBody = true;
+                    break; // Eğer fareye en yakın obje gövdeyse tut!
+                }
             }
 
-            // Sol Tık: Taşıma
+            // Sol Tık: Taşı
             if (Input.GetMouseButtonDown(0) && hitMyBody && !hitAnyNode)
             {
                 DraggableFormula root = GetRootFormula();
                 root.isDragged = true;
+
+                Transform board = ChalkboardManager.Instance.boardTransform;
+
+                // DÜZELTME BURADA: Sanal düzlemi tahtanın pozisyonunda değil,
+                // tuttuğumuz formülün tam o anki derinliğinde (Z pozisyonunda) oluşturuyoruz!
+                Plane formulaPlane = new Plane(board.forward, root.transform.position);
+
+                if (formulaPlane.Raycast(ray, out float enterDistance))
+                {
+                    Vector3 hitPoint = ray.GetPoint(enterDistance);
+                    root.dragOffset = root.transform.position - hitPoint;
+                }
             }
-            // Sağ Tık: Silinme / Kopma ayrımı yapıldı (HATA BURADAYDI)
+            // Sağ tık: Silinme / Kopma ayrı yapı
             else if (Input.GetMouseButtonDown(1) && hitMyBody && !isDragged)
             {
                 bool hasAnyBonds = false;
@@ -108,15 +132,12 @@ public class DraggableFormula : MonoBehaviour
                     if (node.isOccupied)
                         hasAnyBonds = true;
                 }
-
                 if (hasAnyBonds)
                 {
-                    // Bağlıysa sadece bağları kopar (Silme!)
                     BreakAllBonds();
                 }
                 else
                 {
-                    // Hiçbir yere bağlı değilse oyundan sil
                     ChalkboardManager.Instance.RemoveFormula(this);
                 }
             }
@@ -126,6 +147,7 @@ public class DraggableFormula : MonoBehaviour
             Drop();
         }
 
+        // Döndürme kodların aynı kalıyor...
         if (isDragged && GetRootFormula() == this)
         {
             float scroll = Input.GetAxis("Mouse ScrollWheel");
@@ -143,16 +165,31 @@ public class DraggableFormula : MonoBehaviour
             return;
 
         Ray ray = mainCam.ScreenPointToRay(Input.mousePosition);
+
         Vector3 boardNormal = board.forward;
         if (Vector3.Dot(ray.direction, boardNormal) > 0)
             boardNormal = -boardNormal;
 
-        Plane boardPlane = new Plane(boardNormal, board.position);
-        if (boardPlane.Raycast(ray, out float enterDistance))
+        Vector3 hoverPosition = board.position + (boardNormal * hoverOffset);
+        Plane hoverPlane = new Plane(boardNormal, hoverPosition);
+
+        if (hoverPlane.Raycast(ray, out float enterDistance))
         {
             Vector3 hitPoint = ray.GetPoint(enterDistance);
-            Vector3 localPos = board.InverseTransformPoint(hitPoint);
-            localPos = ChalkboardManager.Instance.ClampToBoardArea(localPos);
+
+            Vector3 targetWorldPos = hitPoint + dragOffset;
+
+            // Tahtanın lokal koordinatlarına çevir
+            Vector3 localPos = board.InverseTransformPoint(targetWorldPos);
+
+            // DÜZELTME BURADA: Eski tekli clamp yerine yeni molekül clamp'i kullanıyoruz!
+            // 0.15f değeri tebeşirlerin yarıçapı gibidir (padding). Eğer formüller kenara çok değiyorsa 0.20f yapabilirsin.
+            localPos = ChalkboardManager.Instance.ClampMoleculeToBoardArea(
+                GetRootFormula(),
+                localPos,
+                0.15f
+            );
+
             localPos.z = hoverOffset;
             targetPosition = board.TransformPoint(localPos);
         }

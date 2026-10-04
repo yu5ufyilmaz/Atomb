@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-// 1. AÇILIR LİSTE (DROPDOWN) SEÇENEKLERİMİZ
 public enum ConnectionType
 {
     Normal,
@@ -33,7 +32,29 @@ public class FormulaNode : MonoBehaviour
     private bool isDraggingLine = false;
 
     [HideInInspector]
-    public bool isLineOwner = false; // Çizgiyi çeken biz miyiz?
+    public bool isLineOwner = false;
+
+    public static FormulaNode activeDraggingNode;
+
+    [Header("Görsel Geribildirim (Heartbeat)")]
+    public float pulseSpeed = 6f;
+    public float maxPulseScale = 1.3f;
+    private Vector3 originalScale;
+    private float noiseSeedX;
+    private float noiseSeedY;
+
+    // ==========================================
+    // YENİ: TEBEŞİR VE ÇİZİM AYARLARI
+    // ==========================================
+    [Header("Tebeşir Çizim Ayarları")]
+    [Tooltip("Bağlanan iki formülün arasındaki kusursuz uzaklık")]
+    public float idealBondLength = 0.8f;
+
+    [Tooltip("Tebeşir çizgisinin pürüzlülük/titreme detayı")]
+    public int lineSegments = 8;
+
+    [Tooltip("Pürüzlerin (tebeşir tozunun) ne kadar dağınık duracağı")]
+    public float chalkRoughness = 0.015f;
 
     private void Awake()
     {
@@ -41,45 +62,68 @@ public class FormulaNode : MonoBehaviour
         lineRenderer = GetComponent<LineRenderer>();
         mainCam = Camera.main;
 
-        lineRenderer.positionCount = 2;
+        lineRenderer.numCapVertices = 4;
+        lineRenderer.numCornerVertices = 4;
         lineRenderer.enabled = false;
+
+        originalScale = transform.localScale;
+
+        // YENİ: Her objeye özel sabit bir rastgele sayı atıyoruz
+        noiseSeedX = Random.Range(0f, 100f);
+        noiseSeedY = Random.Range(0f, 100f);
+    }
+
+    private void OnDisable()
+    {
+        if (activeDraggingNode == this)
+            activeDraggingNode = null;
+
+        isDraggingLine = false;
+        transform.localScale = originalScale;
     }
 
     private void Update()
     {
-        // 1. Oyun durmuşsa veya makine aktif değilse alt satırlara hiç inme (Performans)
         if (
             ChalkboardManager.Instance == null
             || !ChalkboardManager.Instance.isMachineActive
             || (GameManager.Instance != null && GameManager.Instance.isGamePaused)
         )
+        {
+            transform.localScale = originalScale;
             return;
+        }
 
-        // 2. Yeni bir çizgi çekilmeye başlanıyor mu kontrol et
         CheckForInitialClick();
-
-        // 3. Çizginin durumuna (sürüklenme veya bağlı olma) göre görselini güncelle
         UpdateLineState();
+        UpdateHeartbeatVisuals();
     }
 
     private void CheckForInitialClick()
     {
-        // Sadece sol tıka o an basıldıysa tarama yap
         if (Input.GetMouseButtonDown(0))
         {
             Ray ray = mainCam.ScreenPointToRay(Input.mousePosition);
             RaycastHit[] hits = Physics.RaycastAll(ray, 15f);
+            System.Array.Sort(hits, (a, b) => a.distance.CompareTo(b.distance));
 
             foreach (var hit in hits)
             {
-                // Eğer fare tam olarak bizim üzerimizdeyse ve boşsak
                 if (hit.collider.gameObject == this.gameObject)
                 {
                     if (!isOccupied)
                     {
                         isDraggingLine = true;
+                        activeDraggingNode = this;
                         lineRenderer.enabled = true;
                     }
+                    break;
+                }
+                if (
+                    hit.collider.GetComponent<FormulaNode>() != null
+                    || hit.collider.GetComponent<DraggableFormula>() != null
+                )
+                {
                     break;
                 }
             }
@@ -88,17 +132,16 @@ public class FormulaNode : MonoBehaviour
 
     private void UpdateLineState()
     {
-        // Durum A: Fare ile kablo çekiyoruz
         if (isDraggingLine)
         {
             HandleLineDragging();
         }
-        // Durum B: Başka bir node'a zaten bağlandık ve çizgiyi BİZ çektik
         else if (isOccupied && connectedNode != null && isLineOwner)
         {
-            KeepLineConnected();
+            lineRenderer.enabled = true;
+            // Çizgiyi sertçe germek yerine organik tebeşir şeklinde çiziyoruz
+            DrawRoughChalkLine(transform.position, connectedNode.transform.position);
         }
-        // Durum C: Hiçbiri değilse çizgiyi gizle
         else
         {
             lineRenderer.enabled = false;
@@ -107,41 +150,66 @@ public class FormulaNode : MonoBehaviour
 
     private void HandleLineDragging()
     {
-        // Çizginin başı hep kendi merkezimizde
-        lineRenderer.SetPosition(0, transform.position);
-
-        // Çizginin ucu fareyi takip etsin
         Ray ray = mainCam.ScreenPointToRay(Input.mousePosition);
-        Plane boardPlane = new Plane(-mainCam.transform.forward, transform.position);
 
+        Transform board = ChalkboardManager.Instance.boardTransform;
+        Vector3 boardNormal = board != null ? board.forward : -mainCam.transform.forward;
+
+        if (Vector3.Dot(ray.direction, boardNormal) > 0)
+            boardNormal = -boardNormal;
+
+        Plane boardPlane = new Plane(boardNormal, transform.position);
         if (boardPlane.Raycast(ray, out float distance))
         {
             Vector3 mousePos = ray.GetPoint(distance);
-            lineRenderer.SetPosition(1, mousePos);
+
+            // Faremizle çizerken bile tebeşir hissini veriyoruz
+            DrawRoughChalkLine(transform.position, mousePos);
         }
 
-        // Fare bırakıldığında bağlanmayı dene
         if (Input.GetMouseButtonUp(0))
         {
             isDraggingLine = false;
+            if (activeDraggingNode == this)
+                activeDraggingNode = null;
+
             TryConnect(ray);
         }
     }
 
-    private void KeepLineConnected()
+    // --- TEBEŞİR ÇİZİM SİMÜLASYONU ---
+    private void DrawRoughChalkLine(Vector3 start, Vector3 end)
     {
-        lineRenderer.enabled = true;
-        lineRenderer.SetPosition(0, transform.position);
-        lineRenderer.SetPosition(1, connectedNode.transform.position);
+        lineRenderer.positionCount = lineSegments;
+        for (int i = 0; i < lineSegments; i++)
+        {
+            float t = i / (float)(lineSegments - 1);
+            Vector3 point = Vector3.Lerp(start, end, t);
+
+            // Çizginin başı ve sonu tam Node'lara otursun, aradaki kısımlar pürüzlü olsun
+            if (i > 0 && i < lineSegments - 1)
+            {
+                // DÜZELTME BURADA: Time.time YERİNE SABİT SEED KULLANIYORUZ
+                // Artık zamanla değişmeyecek, olduğu yerde donuk ve pürüzlü duracak!
+                float noiseX = (Mathf.PerlinNoise(noiseSeedX, i * 2f) - 0.5f) * chalkRoughness;
+                float noiseY = (Mathf.PerlinNoise(i * 2f, noiseSeedY) - 0.5f) * chalkRoughness;
+
+                point.x += noiseX;
+                point.y += noiseY;
+            }
+
+            lineRenderer.SetPosition(i, point);
+        }
     }
 
     private void TryConnect(Ray ray)
     {
         RaycastHit[] hits = Physics.RaycastAll(ray, 15f);
+        System.Array.Sort(hits, (a, b) => a.distance.CompareTo(b.distance));
+
         foreach (var hit in hits)
         {
             FormulaNode targetNode = hit.collider.GetComponent<FormulaNode>();
-
             if (targetNode != null && targetNode != this)
             {
                 DraggableFormula myRoot = this.parentFormula.GetRootFormula();
@@ -155,15 +223,35 @@ public class FormulaNode : MonoBehaviour
                     )
                     {
                         ConnectTo(targetNode);
-
-                        // DEĞİŞEN KISIM: Çizgiyi çeken biz olduğumuz için sahibi biziz, karşı taraf değil.
                         this.isLineOwner = true;
                         targetNode.isLineOwner = false;
+
+                        // ========================================================
+                        // KUSURSUZ BAĞ HİZALAMASI (SERT GERGİNLİĞİ BİTİREN KISIM)
+                        // ========================================================
+                        Vector3 direction = (
+                            targetNode.transform.position - transform.position
+                        ).normalized;
+                        if (direction == Vector3.zero)
+                            direction = Vector3.right;
+
+                        // İki formülün olması gereken o "mükemmel" mesafeyi hesapla
+                        Vector3 idealNodePos = transform.position + (direction * idealBondLength);
+                        Vector3 offsetToMove = idealNodePos - targetNode.transform.position;
+
+                        // Diğer formülü zorla ışınlamak yerine hedefini (targetPosition) güncelliyoruz.
+                        // Böylece formül, tebeşir tahtasında yumuşakça kayarak yerine oturuyor!
+                        targetRoot.targetPosition += offsetToMove;
 
                         targetRoot.transform.SetParent(myRoot.transform);
                         return;
                     }
                 }
+            }
+
+            if (hit.collider.GetComponent<DraggableFormula>() != null)
+            {
+                break;
             }
         }
         lineRenderer.enabled = false;
@@ -173,10 +261,8 @@ public class FormulaNode : MonoBehaviour
     {
         if (connectedNode != null)
         {
-            // DEĞİŞEN KISIM: Ayrılırken her iki tarafın sahipliğini sıfırla
             this.isLineOwner = false;
             connectedNode.isLineOwner = false;
-
             connectedNode.connectedNode = null;
             connectedNode = null;
         }
@@ -201,6 +287,53 @@ public class FormulaNode : MonoBehaviour
             return false;
         }
         return true;
+    }
+
+    private void UpdateHeartbeatVisuals()
+    {
+        if (isOccupied)
+        {
+            transform.localScale = originalScale;
+            return;
+        }
+
+        bool shouldPulse = false;
+
+        if (activeDraggingNode == null)
+        {
+            shouldPulse = true;
+        }
+        else if (activeDraggingNode == this)
+        {
+            shouldPulse = true;
+        }
+        else
+        {
+            DraggableFormula activeRoot = activeDraggingNode.parentFormula.GetRootFormula();
+            DraggableFormula myRoot = this.parentFormula.GetRootFormula();
+
+            if (activeRoot != myRoot)
+            {
+                if (
+                    CanConnect(activeDraggingNode.parentFormula, activeDraggingNode)
+                    && activeDraggingNode.CanConnect(this.parentFormula, this)
+                )
+                {
+                    shouldPulse = true;
+                }
+            }
+        }
+
+        if (shouldPulse)
+        {
+            float sineWave = (Mathf.Sin(Time.time * pulseSpeed) + 1f) / 2f;
+            float scaleMulti = Mathf.Lerp(1f, maxPulseScale, sineWave);
+            transform.localScale = originalScale * scaleMulti;
+        }
+        else
+        {
+            transform.localScale = originalScale;
+        }
     }
 
     public void ConnectTo(FormulaNode otherNode)
