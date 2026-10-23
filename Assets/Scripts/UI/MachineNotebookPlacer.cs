@@ -54,6 +54,8 @@ public class MachineNotebookPlacer : MonoBehaviour
 
     private void PlaceNotebookOnMachine()
     {
+        // Kitap ve tahta kendi ekran çalışma alanını kullanır; fiziksel defterin parent'ını değiştirme.
+        if (machineInterface is InteractableBook || machineInterface is InteractableChalkboard) return;
         if (NotebookUI.Instance == null || NotebookUI.Instance.notebookPanel == null) return;
 
         GameObject realNotebook = NotebookUI.Instance.notebookPanel;
@@ -84,6 +86,7 @@ public class MachineNotebookPlacer : MonoBehaviour
 
     private void TakeNotebookBack()
     {
+        if (machineInterface is InteractableBook || machineInterface is InteractableChalkboard) return;
         if (NotebookUI.Instance == null || NotebookUI.Instance.notebookPanel == null) return;
 
         GameObject realNotebook = NotebookUI.Instance.notebookPanel;

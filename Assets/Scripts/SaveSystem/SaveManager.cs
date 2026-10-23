@@ -40,6 +40,10 @@ private string saveFileName = "SenzoraLocalSave.json";
     public void NewGame()
     {
         gameData = new GameData();
+        if (NotebookUI.Instance != null) NotebookUI.Instance.ResetWorkspace();
+        if (ProceduralSynthesisGenerator.Instance != null)
+            ProceduralSynthesisGenerator.Instance.GenerateRun(UnityEngine.Random.Range(1, int.MaxValue));
+        if (ChalkboardManager.Instance != null) ChalkboardManager.Instance.ResetBoard();
 
         string path = Path.Combine(Application.persistentDataPath, saveFileName);
         if (File.Exists(path))
@@ -66,9 +70,14 @@ private string saveFileName = "SenzoraLocalSave.json";
             string json = File.ReadAllText(path);
             gameData = JsonUtility.FromJson<GameData>(json);
 
+            // Çalışma anında üretilen SO kimlikleri, defter ve tahta çözümlemesinden önce hazır olmalı.
+            var synthesisGenerator = ProceduralSynthesisGenerator.Instance;
+            if (synthesisGenerator != null) synthesisGenerator.LoadData(gameData);
+
             // Tüm objelere veriyi yükle
-            foreach (ISaveable saveable in saveableObjects)
+            foreach (ISaveable saveable in saveableObjects.ToArray())
             {
+                if (ReferenceEquals(saveable, synthesisGenerator)) continue;
                 saveable.LoadData(gameData);
             }
             Debug.Log("Kayıt Yüklendi: " + path);
@@ -87,7 +96,7 @@ private string saveFileName = "SenzoraLocalSave.json";
         gameData.lastSavedTime = System.DateTime.Now.ToString();
 
         // Sahnedeki tüm objelerden veriyi topla
-        foreach (ISaveable saveable in saveableObjects)
+        foreach (ISaveable saveable in saveableObjects.ToArray())
         {
             saveable.SaveData(ref gameData);
         }

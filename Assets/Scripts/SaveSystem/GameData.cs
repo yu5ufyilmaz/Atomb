@@ -35,6 +35,15 @@ public class GameData
 
     public List<string> inventoryItemIDs = new List<string>();
 
+    // Eski kayıt dosyalarında null kalır; ilk çalışma alanı açılışında yeni koşu üretilir.
+    public SynthesisRunData synthesisRun;
+    public SynthesisBoardSaveData savedChalkboard;
+
+    [Header("Defter Çalışma Alanı")]
+    public List<NotebookPageSaveData> notebookPages = new List<NotebookPageSaveData>();
+    public int currentNotebookPage;
+    public List<string> notebookResearch = new List<string>();
+
     // ESKİ: public int spawnedSymbolID;
     public string spawnedItemID = "";
 

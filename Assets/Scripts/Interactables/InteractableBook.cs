@@ -79,6 +79,20 @@ public class InteractableBook : MonoBehaviour, IInteractable, IForceExitable
     public GameObject bookUI;
     public TextMeshProUGUI pageNumberText;
 
+    [Header("Sentez Çalışma Alanı")]
+    [Tooltip("Açıklamalar basılı kalır; yalnızca özel bloklar deftere sürüklenebilir.")]
+    public List<BookWorkspacePage> synthesisPages = new List<BookWorkspacePage>();
+
+    [Tooltip("Bu kitapta prosedürel görev ve kural sayfalarını göster.")]
+    public bool includeProceduralClues = true;
+    [Tooltip("Özel blokları ekran penceresi yerine gerçek kitap sayfalarında gösterir.")]
+    public bool usePhysicalPageBlocks;
+    [Tooltip("Sayfalardaki parça bölgeleri; defter blokları bu bölgelerin gerçek görüntüsünden kırpılır.")]
+    public BookClueData clueData;
+
+    public int LeftPageIndex => pageIndexL;
+    public int RightPageIndex => pageIndexR;
+
     [Header("Gizmos Settings")]
     [SerializeField]
     private Vector2 singlePageSize = new Vector2(0.16f, 0.32f);
@@ -390,6 +404,7 @@ public class InteractableBook : MonoBehaviour, IInteractable, IForceExitable
 
     private void Update()
     {
+        if (GameManager.Instance != null && GameManager.Instance.isGamePaused) return;
         if (isOpen && !isAnimating)
         {
             if (
@@ -606,10 +621,12 @@ public class InteractableBook : MonoBehaviour, IInteractable, IForceExitable
         // ------------------------------------
 
         isAnimating = false;
+        if (NotebookUI.Instance != null) NotebookUI.Instance.OpenBookWorkspace(this);
     }
 
     private IEnumerator CloseBook()
     {
+        if (NotebookUI.Instance != null) NotebookUI.Instance.SetWorkspaceMode(false);
         // --- COLLIDER FIX: Mesh'i Geri Al ve Colliderları Aç ---
         // Kitap kapanırken eski (kapalı) mesh'e dön
         if (bookCollider is MeshCollider mc && originalMesh != null)
@@ -850,6 +867,8 @@ public class InteractableBook : MonoBehaviour, IInteractable, IForceExitable
     {
         if (pageNumberText != null)
             pageNumberText.text = $"{pageIndexL}-{pageIndexR}";
+        if (NotebookWorkspaceController.Instance != null)
+            NotebookWorkspaceController.Instance.RefreshBook(this);
     }
 
     public bool IsOnPage(int targetPage)
@@ -859,6 +878,8 @@ public class InteractableBook : MonoBehaviour, IInteractable, IForceExitable
 
     private void CheckForPasswordClick()
     {
+        if (UnityEngine.EventSystems.EventSystem.current != null
+            && UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject()) return;
         if (
             PuzzleInventoryManager.Instance != null
             && PuzzleInventoryManager.Instance.isOverlayActive

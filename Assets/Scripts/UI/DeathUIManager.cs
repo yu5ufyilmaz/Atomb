@@ -135,6 +135,8 @@ public class DeathUIManager : MonoBehaviour
 
     private void HideGameplayUI()
     {
+        if (NotebookWorkspaceController.Instance != null)
+            NotebookWorkspaceController.Instance.Close();
         if (uiElementsToHide != null)
         {
             foreach (var uiObj in uiElementsToHide)

@@ -20,11 +20,14 @@ public class ChalkboardButton : MonoBehaviour
         )
             return;
 
-        if (Input.GetMouseButtonDown(0))
+        if (Input.GetMouseButtonDown(0) && !FormulaNode.IsPointerOverUI())
         {
+            if (mainCam == null) mainCam = Camera.main;
+            if (mainCam == null) return;
             // Fare neredeyse oraya ışın at
             Ray ray = mainCam.ScreenPointToRay(Input.mousePosition);
             RaycastHit[] hits = Physics.RaycastAll(ray, 10f);
+            System.Array.Sort(hits, (a, b) => a.distance.CompareTo(b.distance));
 
             foreach (RaycastHit hit in hits)
             {
@@ -34,6 +37,8 @@ public class ChalkboardButton : MonoBehaviour
                     ChalkboardManager.Instance.AttemptSynthesis();
                     break;
                 }
+                if (hit.collider.GetComponentInParent<DraggableFormula>() != null)
+                    break;
             }
         }
     }

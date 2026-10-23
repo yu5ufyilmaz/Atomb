@@ -6,9 +6,17 @@ using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.HighDefinition;
 
-public class NotebookUI : MonoBehaviour
+public class NotebookUI : MonoBehaviour, ISaveable
 {
     public static NotebookUI Instance;
+
+    [Header("Serbest Çalışma Alanı")]
+    public List<NotebookPageSaveData> workspacePages = new List<NotebookPageSaveData>();
+    public int currentWorkspacePage;
+    public bool IsWorkspaceActive => workspace != null && workspace.IsActive;
+    private bool IsDocumentInteraction => IsWorkspaceActive || (GameManager.Instance != null
+        && (GameManager.Instance.activeInteraction is InteractableBook || GameManager.Instance.activeInteraction is InteractableChalkboard));
+    private NotebookWorkspaceController workspace;
 
     [Header("  Data Source")]
     public NotebookData notebookData;
@@ -55,10 +63,30 @@ public class NotebookUI : MonoBehaviour
     {
         if (Instance == null)
             Instance = this;
+        else if (Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+        workspace = GetComponent<NotebookWorkspaceController>();
+        if (workspace == null) workspace = gameObject.AddComponent<NotebookWorkspaceController>();
+        EnsureWorkspacePage();
+    }
+
+    private void OnEnable()
+    {
+        if (SaveManager.Instance != null) SaveManager.Instance.RegisterSaveable(this);
+    }
+
+    private void OnDisable()
+    {
+        if (SaveManager.Instance != null) SaveManager.Instance.UnregisterSaveable(this);
+        if (workspace != null) workspace.Close();
     }
 
     private void Start()
     {
+        if (SaveManager.Instance != null) SaveManager.Instance.RegisterSaveable(this);
         if (playerAnimator == null)
         {
             var player = GameObject.FindGameObjectWithTag("Player");
@@ -78,6 +106,9 @@ public class NotebookUI : MonoBehaviour
 
     private void Update()
     {
+        if (IsWorkspaceActive || (GameManager.Instance != null && GameManager.Instance.isGamePaused)) return;
+        if (GameManager.Instance != null && (GameManager.Instance.activeInteraction is InteractableBook
+            || GameManager.Instance.activeInteraction is InteractableChalkboard)) return;
         // Tuşa basıldığında sadece animatörü tetikler, modeli gösterme/gizleme işini EVENT'e bırakır.
         if (Input.GetKeyDown(KeyCode.Tab) && !isOnMachine)
         {
@@ -92,6 +123,7 @@ public class NotebookUI : MonoBehaviour
 
     public void ToggleNotebook()
     {
+        if (IsDocumentInteraction) return;
         isNotebookOpen = !isNotebookOpen;
         if (playerAnimator != null)
             playerAnimator.SetBool(animatorParameterName, isNotebookOpen);
@@ -99,12 +131,12 @@ public class NotebookUI : MonoBehaviour
         if (isNotebookOpen)
         {
             // BURADAKİ 0.3f SABİTİNİ DEĞİŞTİRİYORUZ
-            DoFManager.Instance.SetFocus(notebookFocusDistance);
+            if (DoFManager.Instance != null) DoFManager.Instance.SetFocus(notebookFocusDistance);
             UpdateUI();
         }
         else
         {
-            DoFManager.Instance.ResetFocus();
+            if (DoFManager.Instance != null) DoFManager.Instance.ResetFocus();
         }
 
         if (GameManager.Instance != null)
@@ -114,6 +146,7 @@ public class NotebookUI : MonoBehaviour
     // EVENT'LERİN KULLANACAĞI FONKSİYON
     public void SetNotebookVisibility(bool isVisible)
     {
+        if (isVisible && IsDocumentInteraction) return;
         // Eğer makinede değilse görünürlüğü değiştir (Makinedeyken defter elde olmamalı)
         if (!isOnMachine && notebookPanel != null)
         {
@@ -133,6 +166,67 @@ public class NotebookUI : MonoBehaviour
         PutArmDown();
         if (notebookPanel != null)
             notebookPanel.SetActive(false);
+    }
+
+    public void SetWorkspaceMode(bool state)
+    {
+        if (state)
+        {
+            PutArmDown();
+            if (notebookPanel != null) notebookPanel.SetActive(false);
+            workspace.Open(null);
+        }
+        else workspace.Close();
+    }
+
+    public void OpenBookWorkspace(InteractableBook book)
+    {
+        PutArmDown();
+        if (notebookPanel != null) notebookPanel.SetActive(false);
+        workspace.Open(book);
+    }
+
+    public bool TryStoreBoardFormula(DraggableFormula formula, Vector2 screenPosition)
+    {
+        return workspace != null && workspace.TryStoreBoardFormula(formula, screenPosition);
+    }
+
+    public NotebookPageSaveData EnsureWorkspacePage()
+    {
+        if (workspacePages == null) workspacePages = new List<NotebookPageSaveData>();
+        if (workspacePages.Count == 0) workspacePages.Add(new NotebookPageSaveData());
+        currentWorkspacePage = Mathf.Clamp(currentWorkspacePage, 0, workspacePages.Count - 1);
+        if (workspacePages[currentWorkspacePage] == null) workspacePages[currentWorkspacePage] = new NotebookPageSaveData();
+        return workspacePages[currentWorkspacePage];
+    }
+
+    public void SaveData(ref GameData data)
+    {
+        data.notebookPages = new List<NotebookPageSaveData>();
+        foreach (var page in workspacePages) data.notebookPages.Add(page.Clone());
+        data.currentNotebookPage = currentWorkspacePage;
+        data.notebookResearch = new List<string>(unlockedSymbols);
+    }
+
+    public void LoadData(GameData data)
+    {
+        workspacePages = new List<NotebookPageSaveData>();
+        if (data.notebookPages != null)
+            foreach (var page in data.notebookPages)
+                if (page != null) workspacePages.Add(page.Clone());
+        currentWorkspacePage = data.currentNotebookPage;
+        unlockedSymbols = data.notebookResearch != null ? new List<string>(data.notebookResearch) : new List<string>();
+        EnsureWorkspacePage();
+        if (workspace != null) workspace.RefreshPage();
+        UpdateUI();
+    }
+
+    public void ResetWorkspace()
+    {
+        workspacePages = new List<NotebookPageSaveData> { new NotebookPageSaveData() };
+        currentWorkspacePage = 0;
+        unlockedSymbols.Clear();
+        if (workspace != null) workspace.RefreshPage();
     }
 
     private void HandleInput()
@@ -256,7 +350,7 @@ public class NotebookUI : MonoBehaviour
     public void OpenNotebookToCategory(int categoryIndex)
     {
         // Eğer oyuncu makinedeyse (osiloskop vb.) defter fiziksel olarak ele gelmesin, sadece arkaplanda sayfa değişsin.
-        if (isOnMachine)
+        if (isOnMachine || IsDocumentInteraction)
         {
             currentCategoryIndex = categoryIndex;
             UpdateUI();

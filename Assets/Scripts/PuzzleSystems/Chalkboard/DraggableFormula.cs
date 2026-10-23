@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 [RequireComponent(typeof(Collider))]
@@ -6,258 +7,249 @@ public class DraggableFormula : MonoBehaviour
 {
     [Header("Formül Verisi")]
     public FormulaItemSO formulaData;
-
+    [Tooltip("İsteğe bağlı parça adı etiketi; atanmazsa parçanın kendi metni kullanılır")]
+    public TMP_Text formulaLabel;
+    public bool IsSynthesized { get; set; }
     [Header("Taşıma Ayarları")]
     public float dragSpeed = 25f;
     public float surfaceOffset = 0.02f;
     public float hoverOffset = 0.5f;
-
     [Header("Döndürme Ayarları")]
     public float rotationStep = 90f;
     public float rotationAnimSpeed = 15f;
+    [HideInInspector] public bool isDragged;
+    [HideInInspector] public Vector3 targetPosition;
+    [HideInInspector] public Quaternion targetRotation;
+    [HideInInspector] public Vector3 dragOffset;
 
     private Camera mainCam;
+    private bool initialized;
+    private bool nodeDefaultsApplied;
 
-    [HideInInspector]
-    public bool isDragged = false;
-
-    [HideInInspector]
-    public Vector3 targetPosition;
-
-    [HideInInspector]
-    public Quaternion targetRotation;
-
-    public void Initialize(FormulaItemSO data)
+    public int ConnectionCapacity => formulaData != null ? Mathf.Max(0, formulaData.connectionCapacity) : 0;
+    public int UsedCapacity
     {
-        formulaData = data;
+        get
+        {
+            int count = 0;
+            foreach (FormulaNode node in GetOwnNodes())
+                if (node.isOccupied) count += (int)node.bondType;
+            return count;
+        }
+    }
+
+    private void Awake()
+    {
+        SyncMovementTarget();
     }
 
     private void Start()
     {
         mainCam = Camera.main;
-        targetPosition = transform.position;
-        targetRotation = transform.rotation;
+        if (!initialized && formulaData != null) Initialize(formulaData);
     }
 
-    private void Update()
+    public void Initialize(FormulaItemSO data)
     {
-        if (
-            ChalkboardManager.Instance == null
-            || !ChalkboardManager.Instance.isMachineActive
-            || (GameManager.Instance != null && GameManager.Instance.isGamePaused)
-        )
+        formulaData = data;
+        initialized = true;
+        SyncMovementTarget();
+        UpdateLabel();
+        if (nodeDefaultsApplied || data == null) return;
+        FormulaNode[] nodes = GetOwnNodes();
+        for (int i = 0; i < nodes.Length; i++)
         {
-            if (isDragged)
-                Drop();
-            return;
+            if (data.initiallyBlockedNodes != null && data.initiallyBlockedNodes.Contains(i))
+                nodes[i].nodeState = FormulaNodeState.Blocked;
+            if (data.initiallyUnstableNodes != null && data.initiallyUnstableNodes.Contains(i))
+                nodes[i].nodeState = FormulaNodeState.Unstable;
         }
+        nodeDefaultsApplied = true;
+    }
 
-        HandleInput();
-
-        if (GetRootFormula() == this)
+    private void UpdateLabel()
+    {
+        if (formulaData == null) return;
+        string label = string.IsNullOrEmpty(formulaData.itemName) ? formulaData.itemID : formulaData.itemName;
+        if (formulaLabel != null) { formulaLabel.text = label; return; }
+        bool found = false;
+        foreach (TMP_Text text in GetComponentsInChildren<TMP_Text>(true))
         {
-            if (isDragged)
-                CalculateSimpleDragPosition();
-            ApplyMovement();
+            if (text.GetComponentInParent<DraggableFormula>() != this || text.GetComponentInParent<FormulaNode>() != null) continue;
+            text.text = label;
+            found = true;
         }
+        foreach (TextMesh text in GetComponentsInChildren<TextMesh>(true))
+        {
+            if (text.GetComponentInParent<DraggableFormula>() != this || text.GetComponentInParent<FormulaNode>() != null) continue;
+            text.text = label;
+            found = true;
+        }
+        if (found) return;
+        GameObject labelObject = new GameObject("Parça Kimliği");
+        labelObject.transform.SetParent(transform, false);
+        labelObject.transform.localPosition = new Vector3(0f, 0f, -0.56f);
+        formulaLabel = labelObject.AddComponent<TextMeshPro>();
+        formulaLabel.text = label;
+        formulaLabel.alignment = TextAlignmentOptions.Center;
+        formulaLabel.fontSize = 3f;
+        formulaLabel.textWrappingMode = TextWrappingModes.Normal;
+        formulaLabel.rectTransform.sizeDelta = new Vector2(1.8f, 1f);
+        formulaLabel.raycastTarget = false;
+    }
+
+    public void SyncMovementTarget()
+    {
+        targetPosition = transform.position;
+        targetRotation = transform.rotation;
+        isDragged = false;
+    }
+
+    public FormulaNode[] GetOwnNodes()
+    {
+        List<FormulaNode> result = new List<FormulaNode>();
+        foreach (FormulaNode node in GetComponentsInChildren<FormulaNode>(true))
+        {
+            // Yakındaki formül, Transform gruplamasından bağımsız düğüm sahibidir.
+            if (node.GetComponentInParent<DraggableFormula>(true) != this) continue;
+            node.parentFormula = this;
+            result.Add(node);
+        }
+        return result.ToArray();
+    }
+
+    public List<DraggableFormula> GetConnectedParts()
+    {
+        List<DraggableFormula> result = new List<DraggableFormula>();
+        HashSet<DraggableFormula> visited = new HashSet<DraggableFormula>();
+        Queue<DraggableFormula> pending = new Queue<DraggableFormula>();
+        visited.Add(this);
+        pending.Enqueue(this);
+        while (pending.Count > 0)
+        {
+            DraggableFormula part = pending.Dequeue();
+            result.Add(part);
+            foreach (FormulaNode node in part.GetOwnNodes())
+            {
+                DraggableFormula other = node.connectedNode != null ? node.connectedNode.parentFormula : null;
+                if (other != null && visited.Add(other)) pending.Enqueue(other);
+            }
+        }
+        return result;
     }
 
     public DraggableFormula GetRootFormula()
     {
         DraggableFormula current = this;
-        while (
-            current.transform.parent != null
-            && current.transform.parent.GetComponent<DraggableFormula>() != null
-        )
+        while (current.transform.parent != null)
         {
-            current = current.transform.parent.GetComponent<DraggableFormula>();
+            DraggableFormula parent = current.transform.parent.GetComponent<DraggableFormula>();
+            if (parent == null) break;
+            current = parent;
         }
         return current;
     }
 
-    [HideInInspector]
-    public Vector3 dragOffset; // Fare ile formülün merkezi arasındaki farkı tutacak
+    private void Update()
+    {
+        ChalkboardManager manager = ChalkboardManager.Instance;
+        if (manager == null || !manager.isMachineActive || (GameManager.Instance != null && GameManager.Instance.isGamePaused))
+        {
+            if (isDragged) Drop(false);
+            return;
+        }
+        if (mainCam == null) mainCam = Camera.main;
+        if (mainCam == null) return;
+        HandleInput();
+        if (GetRootFormula() != this) return;
+        if (isDragged) CalculateDragPosition();
+        transform.position = Vector3.Lerp(transform.position, targetPosition, Time.deltaTime * dragSpeed);
+        transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, Time.deltaTime * rotationAnimSpeed);
+    }
 
     private void HandleInput()
     {
-        Ray ray = mainCam.ScreenPointToRay(Input.mousePosition);
-        if (Input.GetMouseButtonDown(0) || Input.GetMouseButtonDown(1))
+        if (isDragged && Input.GetMouseButtonUp(0)) { Drop(true); return; }
+        if (!FormulaNode.IsPointerOverUI() && (Input.GetMouseButtonDown(0) || Input.GetMouseButtonDown(1)))
         {
-            RaycastHit[] hits = Physics.RaycastAll(ray, 15f);
-
-            // KRİTİK ÇÖZÜM: Çarpan objeleri kameraya olan mesafelerine göre yakından uzağa sırala!
+            Ray ray = mainCam.ScreenPointToRay(Input.mousePosition);
+            RaycastHit[] hits = Physics.RaycastAll(ray, 100f);
             System.Array.Sort(hits, (a, b) => a.distance.CompareTo(b.distance));
-
-            bool hitMyBody = false;
-            bool hitAnyNode = false;
-
-            foreach (var hit in hits)
+            DraggableFormula hitBody = null;
+            foreach (RaycastHit hit in hits)
             {
-                if (hit.collider.GetComponent<FormulaNode>() != null)
-                {
-                    hitAnyNode = true;
-                    break; // Eğer fareye en yakın obje bir Node ise formülü TAŞIMA, döngüden çık.
-                }
-                if (hit.collider.gameObject == this.gameObject)
-                {
-                    hitMyBody = true;
-                    break; // Eğer fareye en yakın obje gövdeyse tut!
-                }
+                if (hit.collider.GetComponent<FormulaNode>() != null) break;
+                hitBody = hit.collider.GetComponentInParent<DraggableFormula>();
+                if (hitBody != null) break;
             }
-
-            // Sol Tık: Taşı
-            if (Input.GetMouseButtonDown(0) && hitMyBody && !hitAnyNode)
+            if (hitBody != this) return;
+            if (Input.GetMouseButtonDown(0) && FormulaNode.activeDraggingNode == null)
             {
                 DraggableFormula root = GetRootFormula();
+                root.SyncMovementTarget();
                 root.isDragged = true;
-
                 Transform board = ChalkboardManager.Instance.boardTransform;
-
-                // DÜZELTME BURADA: Sanal düzlemi tahtanın pozisyonunda değil,
-                // tuttuğumuz formülün tam o anki derinliğinde (Z pozisyonunda) oluşturuyoruz!
-                Plane formulaPlane = new Plane(board.forward, root.transform.position);
-
-                if (formulaPlane.Raycast(ray, out float enterDistance))
-                {
-                    Vector3 hitPoint = ray.GetPoint(enterDistance);
-                    root.dragOffset = root.transform.position - hitPoint;
-                }
+                Vector3 normal = board != null ? board.forward : -mainCam.transform.forward;
+                if (new Plane(normal, root.transform.position).Raycast(ray, out float distance))
+                    root.dragOffset = root.transform.position - ray.GetPoint(distance);
             }
-            // Sağ tık: Silinme / Kopma ayrı yapı
-            else if (Input.GetMouseButtonDown(1) && hitMyBody && !isDragged)
+            else if (Input.GetMouseButtonDown(1) && !GetRootFormula().isDragged)
             {
-                bool hasAnyBonds = false;
-                foreach (var node in GetComponentsInChildren<FormulaNode>(true))
-                {
-                    if (node.isOccupied)
-                        hasAnyBonds = true;
-                }
-                if (hasAnyBonds)
-                {
-                    BreakAllBonds();
-                }
-                else
-                {
-                    ChalkboardManager.Instance.RemoveFormula(this);
-                }
+                bool hasBonds = false;
+                foreach (FormulaNode node in GetOwnNodes()) if (node.isOccupied) hasBonds = true;
+                if (hasBonds) BreakAllBonds();
+                else ChalkboardManager.Instance.RemoveFormula(this);
             }
         }
-        else if (Input.GetMouseButtonUp(0) && isDragged)
-        {
-            Drop();
-        }
-
-        // Döndürme kodların aynı kalıyor...
-        if (isDragged && GetRootFormula() == this)
-        {
-            float scroll = Input.GetAxis("Mouse ScrollWheel");
-            if (scroll > 0f || Input.GetKeyDown(KeyCode.Q))
-                targetRotation *= Quaternion.Euler(0, 0, rotationStep);
-            else if (scroll < 0f || Input.GetKeyDown(KeyCode.E))
-                targetRotation *= Quaternion.Euler(0, 0, -rotationStep);
-        }
+        if (!isDragged || GetRootFormula() != this || FormulaNode.IsPointerOverUI()) return;
+        float scroll = Input.GetAxis("Mouse ScrollWheel");
+        if (scroll > 0f || Input.GetKeyDown(KeyCode.Q)) targetRotation *= Quaternion.Euler(0f, 0f, rotationStep);
+        else if (scroll < 0f || Input.GetKeyDown(KeyCode.E)) targetRotation *= Quaternion.Euler(0f, 0f, -rotationStep);
     }
 
-    private void CalculateSimpleDragPosition()
+    private void CalculateDragPosition()
     {
-        Transform board = ChalkboardManager.Instance.boardTransform;
-        if (board == null)
-            return;
-
+        ChalkboardManager manager = ChalkboardManager.Instance;
+        Transform board = manager.boardTransform;
+        if (board == null) return;
         Ray ray = mainCam.ScreenPointToRay(Input.mousePosition);
-
-        Vector3 boardNormal = board.forward;
-        if (Vector3.Dot(ray.direction, boardNormal) > 0)
-            boardNormal = -boardNormal;
-
-        Vector3 hoverPosition = board.position + (boardNormal * hoverOffset);
-        Plane hoverPlane = new Plane(boardNormal, hoverPosition);
-
-        if (hoverPlane.Raycast(ray, out float enterDistance))
-        {
-            Vector3 hitPoint = ray.GetPoint(enterDistance);
-
-            Vector3 targetWorldPos = hitPoint + dragOffset;
-
-            // Tahtanın lokal koordinatlarına çevir
-            Vector3 localPos = board.InverseTransformPoint(targetWorldPos);
-
-            // DÜZELTME BURADA: Eski tekli clamp yerine yeni molekül clamp'i kullanıyoruz!
-            // 0.15f değeri tebeşirlerin yarıçapı gibidir (padding). Eğer formüller kenara çok değiyorsa 0.20f yapabilirsin.
-            localPos = ChalkboardManager.Instance.ClampMoleculeToBoardArea(
-                GetRootFormula(),
-                localPos,
-                0.15f
-            );
-
-            localPos.z = hoverOffset;
-            targetPosition = board.TransformPoint(localPos);
-        }
+        Plane plane = new Plane(board.forward, board.TransformPoint(new Vector3(0f, 0f, hoverOffset)));
+        if (!plane.Raycast(ray, out float distance)) return;
+        Vector3 local = board.InverseTransformPoint(ray.GetPoint(distance) + dragOffset);
+        local = manager.ClampMoleculeToBoardArea(this, local, 0.15f);
+        local.z = hoverOffset;
+        targetPosition = board.TransformPoint(local);
     }
 
-    private void Drop()
+    private void Drop(bool allowNotebook)
     {
         isDragged = false;
-        if (ChalkboardManager.Instance.boardTransform == null)
-            return;
-        Transform board = ChalkboardManager.Instance.boardTransform;
-        transform.SetParent(board);
-        Vector3 localPos = board.InverseTransformPoint(targetPosition);
-        localPos.z = surfaceOffset;
-        targetPosition = board.TransformPoint(localPos);
-    }
-
-    private void BreakAllBonds()
-    {
-        FormulaNode[] allNodes = GetComponentsInChildren<FormulaNode>(true);
-        foreach (var node in allNodes)
+        ChalkboardManager manager = ChalkboardManager.Instance;
+        if (manager == null) return;
+        if (allowNotebook && GetConnectedParts().Count == 1 && NotebookUI.Instance != null
+            && NotebookUI.Instance.TryStoreBoardFormula(this, Input.mousePosition))
         {
-            if (node.parentFormula == this && node.isOccupied)
-            {
-                DraggableFormula otherFormula = node.connectedNode.parentFormula;
-
-                // Diğer formülü tahtanın içine bağımsız olarak geri gönder
-                otherFormula.transform.SetParent(ChalkboardManager.Instance.boardTransform);
-                otherFormula.targetPosition = otherFormula.transform.position;
-                otherFormula.targetRotation = otherFormula.transform.rotation;
-
-                // Kendi formülümüzü de tahtaya bağımsız olarak gönder
-                this.transform.SetParent(ChalkboardManager.Instance.boardTransform);
-                this.targetPosition = this.transform.position;
-                this.targetRotation = this.transform.rotation;
-
-                node.Disconnect();
-            }
+            manager.RemoveFormula(this);
+            return;
         }
+        Transform board = manager.boardTransform;
+        if (board == null) return;
+        transform.SetParent(board, true);
+        Vector3 local = manager.ClampMoleculeToBoardArea(this, board.InverseTransformPoint(targetPosition));
+        local.z = surfaceOffset;
+        targetPosition = board.TransformPoint(local);
     }
 
-    private void ApplyMovement()
+    public void BreakAllBonds()
     {
-        if (isDragged || Vector3.Distance(transform.position, targetPosition) > 0.001f)
-            transform.position = Vector3.Lerp(
-                transform.position,
-                targetPosition,
-                Time.deltaTime * dragSpeed
-            );
-
-        if (transform.rotation != targetRotation)
-            transform.rotation = Quaternion.Lerp(
-                transform.rotation,
-                targetRotation,
-                Time.deltaTime * rotationAnimSpeed
-            );
+        FormulaNode[] nodes = GetOwnNodes();
+        foreach (FormulaNode node in nodes) node.Disconnect();
     }
 
     public List<FormulaItemSO> GetMoleculeData()
     {
-        DraggableFormula root = GetRootFormula();
-        DraggableFormula[] allParts = root.GetComponentsInChildren<DraggableFormula>();
-        List<FormulaItemSO> dataList = new List<FormulaItemSO>();
-        foreach (var part in allParts)
-        {
-            if (part.formulaData != null)
-                dataList.Add(part.formulaData);
-        }
-        return dataList;
+        List<FormulaItemSO> data = new List<FormulaItemSO>();
+        foreach (DraggableFormula part in GetConnectedParts()) if (part.formulaData != null) data.Add(part.formulaData);
+        return data;
     }
 }

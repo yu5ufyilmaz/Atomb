@@ -18,4 +18,10 @@ public class RecipeSO : ScriptableObject
 
     [Tooltip("Sentez sonucu çıkacak ürün veya Parçalanmadan düşecek temel parçalar")]
     public List<FormulaItemSO> outputs = new List<FormulaItemSO>();
+
+    [Header("Grafik ve İpucu Kuralları")]
+    [Tooltip("Atanırsa girdi listesine ek olarak bu şemanın topolojisi doğrulanır.")]
+    public QuestBlueprintSO blueprint;
+    [Tooltip("Eski tariflerde boş bırakılabilir. Kapasite ve bağlı grafik kontrolü her zaman yapılır.")]
+    public List<SynthesisRuleData> rules = new List<SynthesisRuleData>();
 }

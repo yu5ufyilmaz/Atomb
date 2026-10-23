@@ -1,344 +1,283 @@
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
-public enum ConnectionType
-{
-    Normal,
-    Core,
-    Branch,
-    DoubleBond,
-    Special,
-}
+// Mevcut prefabların serileştirilmiş değerleri korunur.
+public enum ConnectionType { Normal = 0, Core = 1, Branch = 2, DoubleBond = 3, Special = 4 }
 
-[RequireComponent(typeof(Collider))]
-[RequireComponent(typeof(LineRenderer))]
+[RequireComponent(typeof(Collider), typeof(LineRenderer))]
 public class FormulaNode : MonoBehaviour
 {
     [Header("Bağlantı Kuralları")]
     public bool acceptAnyFormula = true;
     public List<FormulaItemSO> allowedFormulas = new List<FormulaItemSO>();
     public ConnectionType connectionType = ConnectionType.Normal;
-
+    public FormulaNodeState nodeState = FormulaNodeState.Open;
+    public BondType bondType = BondType.Single;
     public bool isOccupied => connectedNode != null;
-
-    [HideInInspector]
-    public FormulaNode connectedNode;
-
-    [HideInInspector]
-    public DraggableFormula parentFormula;
-
-    private LineRenderer lineRenderer;
-    private Camera mainCam;
-    private bool isDraggingLine = false;
-
-    [HideInInspector]
-    public bool isLineOwner = false;
-
+    [HideInInspector] public FormulaNode connectedNode;
+    [HideInInspector] public DraggableFormula parentFormula;
+    [HideInInspector] public bool isLineOwner;
     public static FormulaNode activeDraggingNode;
 
     [Header("Görsel Geribildirim (Heartbeat)")]
     public float pulseSpeed = 6f;
     public float maxPulseScale = 1.3f;
-    private Vector3 originalScale;
-    private float noiseSeedX;
-    private float noiseSeedY;
-
-    // ==========================================
-    // YENİ: TEBEŞİR VE ÇİZİM AYARLARI
-    // ==========================================
     [Header("Tebeşir Çizim Ayarları")]
-    [Tooltip("Bağlanan iki formülün arasındaki kusursuz uzaklık")]
     public float idealBondLength = 0.8f;
-
-    [Tooltip("Tebeşir çizgisinin pürüzlülük/titreme detayı")]
-    public int lineSegments = 8;
-
-    [Tooltip("Pürüzlerin (tebeşir tozunun) ne kadar dağınık duracağı")]
+    [Min(2)] public int lineSegments = 8;
     public float chalkRoughness = 0.015f;
+    [Tooltip("Çift bağın paralel çizgileri arasındaki mesafe")]
+    public float doubleBondSpacing = 0.035f;
+
+    private LineRenderer lineRenderer;
+    private LineRenderer secondLine;
+    private TextMeshPro blockedMark;
+    private Camera mainCam;
+    private bool isDraggingLine;
+    private Vector3 originalScale;
+    private float noiseSeed;
 
     private void Awake()
     {
         parentFormula = GetComponentInParent<DraggableFormula>();
         lineRenderer = GetComponent<LineRenderer>();
-        mainCam = Camera.main;
-
-        lineRenderer.numCapVertices = 4;
-        lineRenderer.numCornerVertices = 4;
+        lineRenderer.numCapVertices = lineRenderer.numCornerVertices = 4;
+        lineRenderer.useWorldSpace = true;
         lineRenderer.enabled = false;
-
         originalScale = transform.localScale;
-
-        // YENİ: Her objeye özel sabit bir rastgele sayı atıyoruz
-        noiseSeedX = Random.Range(0f, 100f);
-        noiseSeedY = Random.Range(0f, 100f);
+        noiseSeed = Random.Range(0f, 100f);
     }
 
     private void OnDisable()
     {
-        if (activeDraggingNode == this)
-            activeDraggingNode = null;
-
-        isDraggingLine = false;
+        CancelDrawing();
         transform.localScale = originalScale;
+        if (lineRenderer != null) lineRenderer.enabled = false;
+        if (secondLine != null) secondLine.enabled = false;
+    }
+
+    private void OnDestroy()
+    {
+        if (connectedNode == null) return;
+        connectedNode.connectedNode = null;
+        connectedNode.isLineOwner = false;
+        connectedNode = null;
     }
 
     private void Update()
     {
-        if (
-            ChalkboardManager.Instance == null
-            || !ChalkboardManager.Instance.isMachineActive
-            || (GameManager.Instance != null && GameManager.Instance.isGamePaused)
-        )
-        {
-            transform.localScale = originalScale;
-            return;
-        }
-
-        CheckForInitialClick();
-        UpdateLineState();
-        UpdateHeartbeatVisuals();
+        bool active = ChalkboardManager.Instance != null && ChalkboardManager.Instance.isMachineActive
+            && (GameManager.Instance == null || !GameManager.Instance.isGamePaused);
+        if (active) { HandleInput(); UpdateHeartbeatVisuals(); }
+        else { CancelDrawing(); transform.localScale = originalScale; }
+        UpdateBlockedVisual();
+        if (isDraggingLine) DrawDraggingLine();
+        else DrawConnection();
     }
 
-    private void CheckForInitialClick()
+    public static bool IsPointerOverUI()
     {
-        if (Input.GetMouseButtonDown(0))
-        {
-            Ray ray = mainCam.ScreenPointToRay(Input.mousePosition);
-            RaycastHit[] hits = Physics.RaycastAll(ray, 15f);
-            System.Array.Sort(hits, (a, b) => a.distance.CompareTo(b.distance));
+        return EventSystem.current != null && EventSystem.current.IsPointerOverGameObject();
+    }
 
-            foreach (var hit in hits)
-            {
-                if (hit.collider.gameObject == this.gameObject)
-                {
-                    if (!isOccupied)
-                    {
-                        isDraggingLine = true;
-                        activeDraggingNode = this;
-                        lineRenderer.enabled = true;
-                    }
-                    break;
-                }
-                if (
-                    hit.collider.GetComponent<FormulaNode>() != null
-                    || hit.collider.GetComponent<DraggableFormula>() != null
-                )
-                {
-                    break;
-                }
-            }
+    private void HandleInput()
+    {
+        if (mainCam == null) mainCam = Camera.main;
+        if (mainCam == null) return;
+        bool overUI = IsPointerOverUI();
+        if ((Input.GetMouseButtonDown(0) || Input.GetMouseButtonDown(1)) && !overUI)
+        {
+            if (FindNodeAtPointer() != this) return;
+            if (Input.GetMouseButtonDown(1)) { Erase(); return; }
+            if (nodeState == FormulaNodeState.Open && activeDraggingNode == null)
+            { isDraggingLine = true; activeDraggingNode = this; }
+        }
+        if (isDraggingLine && Input.GetMouseButtonUp(0))
+        {
+            CancelDrawing();
+            if (!overUI) ConnectTo(FindNodeAtPointer());
         }
     }
 
-    private void UpdateLineState()
+    private FormulaNode FindNodeAtPointer()
     {
-        if (isDraggingLine)
-        {
-            HandleLineDragging();
-        }
-        else if (isOccupied && connectedNode != null && isLineOwner)
-        {
-            lineRenderer.enabled = true;
-            // Çizgiyi sertçe germek yerine organik tebeşir şeklinde çiziyoruz
-            DrawRoughChalkLine(transform.position, connectedNode.transform.position);
-        }
-        else
-        {
-            lineRenderer.enabled = false;
-        }
-    }
-
-    private void HandleLineDragging()
-    {
-        Ray ray = mainCam.ScreenPointToRay(Input.mousePosition);
-
-        Transform board = ChalkboardManager.Instance.boardTransform;
-        Vector3 boardNormal = board != null ? board.forward : -mainCam.transform.forward;
-
-        if (Vector3.Dot(ray.direction, boardNormal) > 0)
-            boardNormal = -boardNormal;
-
-        Plane boardPlane = new Plane(boardNormal, transform.position);
-        if (boardPlane.Raycast(ray, out float distance))
-        {
-            Vector3 mousePos = ray.GetPoint(distance);
-
-            // Faremizle çizerken bile tebeşir hissini veriyoruz
-            DrawRoughChalkLine(transform.position, mousePos);
-        }
-
-        if (Input.GetMouseButtonUp(0))
-        {
-            isDraggingLine = false;
-            if (activeDraggingNode == this)
-                activeDraggingNode = null;
-
-            TryConnect(ray);
-        }
-    }
-
-    // --- TEBEŞİR ÇİZİM SİMÜLASYONU ---
-    private void DrawRoughChalkLine(Vector3 start, Vector3 end)
-    {
-        lineRenderer.positionCount = lineSegments;
-        for (int i = 0; i < lineSegments; i++)
-        {
-            float t = i / (float)(lineSegments - 1);
-            Vector3 point = Vector3.Lerp(start, end, t);
-
-            // Çizginin başı ve sonu tam Node'lara otursun, aradaki kısımlar pürüzlü olsun
-            if (i > 0 && i < lineSegments - 1)
-            {
-                // DÜZELTME BURADA: Time.time YERİNE SABİT SEED KULLANIYORUZ
-                // Artık zamanla değişmeyecek, olduğu yerde donuk ve pürüzlü duracak!
-                float noiseX = (Mathf.PerlinNoise(noiseSeedX, i * 2f) - 0.5f) * chalkRoughness;
-                float noiseY = (Mathf.PerlinNoise(i * 2f, noiseSeedY) - 0.5f) * chalkRoughness;
-
-                point.x += noiseX;
-                point.y += noiseY;
-            }
-
-            lineRenderer.SetPosition(i, point);
-        }
-    }
-
-    private void TryConnect(Ray ray)
-    {
-        RaycastHit[] hits = Physics.RaycastAll(ray, 15f);
+        RaycastHit[] hits = Physics.RaycastAll(mainCam.ScreenPointToRay(Input.mousePosition), 100f);
         System.Array.Sort(hits, (a, b) => a.distance.CompareTo(b.distance));
-
-        foreach (var hit in hits)
+        foreach (RaycastHit hit in hits)
         {
-            FormulaNode targetNode = hit.collider.GetComponent<FormulaNode>();
-            if (targetNode != null && targetNode != this)
-            {
-                DraggableFormula myRoot = this.parentFormula.GetRootFormula();
-                DraggableFormula targetRoot = targetNode.parentFormula.GetRootFormula();
-
-                if (myRoot != targetRoot)
-                {
-                    if (
-                        CanConnect(targetNode.parentFormula, targetNode)
-                        && targetNode.CanConnect(this.parentFormula, this)
-                    )
-                    {
-                        ConnectTo(targetNode);
-                        this.isLineOwner = true;
-                        targetNode.isLineOwner = false;
-
-                        // ========================================================
-                        // KUSURSUZ BAĞ HİZALAMASI (SERT GERGİNLİĞİ BİTİREN KISIM)
-                        // ========================================================
-                        Vector3 direction = (
-                            targetNode.transform.position - transform.position
-                        ).normalized;
-                        if (direction == Vector3.zero)
-                            direction = Vector3.right;
-
-                        // İki formülün olması gereken o "mükemmel" mesafeyi hesapla
-                        Vector3 idealNodePos = transform.position + (direction * idealBondLength);
-                        Vector3 offsetToMove = idealNodePos - targetNode.transform.position;
-
-                        // Diğer formülü zorla ışınlamak yerine hedefini (targetPosition) güncelliyoruz.
-                        // Böylece formül, tebeşir tahtasında yumuşakça kayarak yerine oturuyor!
-                        targetRoot.targetPosition += offsetToMove;
-
-                        targetRoot.transform.SetParent(myRoot.transform);
-                        return;
-                    }
-                }
-            }
-
-            if (hit.collider.GetComponent<DraggableFormula>() != null)
-            {
-                break;
-            }
+            FormulaNode node = hit.collider.GetComponent<FormulaNode>();
+            if (node != null) return node;
+            if (hit.collider.GetComponentInParent<DraggableFormula>() != null) return null;
         }
-        lineRenderer.enabled = false;
+        return null;
     }
 
-    public void Disconnect()
+    private void CancelDrawing()
     {
-        if (connectedNode != null)
-        {
-            this.isLineOwner = false;
-            connectedNode.isLineOwner = false;
-            connectedNode.connectedNode = null;
-            connectedNode = null;
-        }
+        isDraggingLine = false;
+        if (activeDraggingNode == this) activeDraggingNode = null;
+    }
+
+    public void Erase()
+    {
+        if (nodeState != FormulaNodeState.Open) { nodeState = FormulaNodeState.Open; return; }
+        if (connectedNode == null) return;
+        if (bondType == BondType.Double) bondType = connectedNode.bondType = BondType.Single;
+        else Disconnect();
     }
 
     public bool CanConnect(DraggableFormula otherFormula, FormulaNode otherNode)
     {
-        if (isOccupied)
-            return false;
-        if (this.connectionType != otherNode.connectionType)
-            return false;
-        if (acceptAnyFormula)
-            return true;
-
-        if (allowedFormulas.Count > 0)
-        {
-            foreach (var allowedSO in allowedFormulas)
-            {
-                if (allowedSO != null && allowedSO.itemID == otherFormula.formulaData.itemID)
-                    return true;
-            }
-            return false;
-        }
-        return true;
+        if (otherFormula == null || otherNode == null || otherNode == this || parentFormula == null
+            || parentFormula == otherFormula || nodeState != FormulaNodeState.Open
+            || otherNode.nodeState != FormulaNodeState.Open || connectionType != otherNode.connectionType) return false;
+        bool upgrade = connectedNode == otherNode && otherNode.connectedNode == this;
+        if ((isOccupied || otherNode.isOccupied) && !upgrade) return false;
+        if (upgrade && bondType == BondType.Double) return false;
+        if (!upgrade)
+            foreach (FormulaNode node in parentFormula.GetOwnNodes())
+                if (node.connectedNode != null && node.connectedNode.parentFormula == otherFormula) return false;
+        int additionalOrder = upgrade ? 1 : connectionType == ConnectionType.DoubleBond ? 2 : 1;
+        if (parentFormula.UsedCapacity + additionalOrder > parentFormula.ConnectionCapacity) return false;
+        return IsFormulaAllowed(otherFormula);
     }
 
-    private void UpdateHeartbeatVisuals()
+    private bool IsFormulaAllowed(DraggableFormula otherFormula)
     {
-        if (isOccupied)
-        {
-            transform.localScale = originalScale;
-            return;
-        }
+        if (acceptAnyFormula || (parentFormula.formulaData != null && parentFormula.formulaData.useUniversalNodeRules)) return true;
+        if (allowedFormulas == null || allowedFormulas.Count == 0) return true;
+        if (otherFormula.formulaData == null) return false;
+        foreach (FormulaItemSO allowed in allowedFormulas)
+            if (allowed != null && (allowed.itemID == otherFormula.formulaData.itemID
+                || allowed.itemID == otherFormula.formulaData.connectionAliasID)) return true;
+        return false;
+    }
 
-        bool shouldPulse = false;
-
-        if (activeDraggingNode == null)
-        {
-            shouldPulse = true;
-        }
-        else if (activeDraggingNode == this)
-        {
-            shouldPulse = true;
-        }
-        else
-        {
-            DraggableFormula activeRoot = activeDraggingNode.parentFormula.GetRootFormula();
-            DraggableFormula myRoot = this.parentFormula.GetRootFormula();
-
-            if (activeRoot != myRoot)
-            {
-                if (
-                    CanConnect(activeDraggingNode.parentFormula, activeDraggingNode)
-                    && activeDraggingNode.CanConnect(this.parentFormula, this)
-                )
-                {
-                    shouldPulse = true;
-                }
-            }
-        }
-
-        if (shouldPulse)
-        {
-            float sineWave = (Mathf.Sin(Time.time * pulseSpeed) + 1f) / 2f;
-            float scaleMulti = Mathf.Lerp(1f, maxPulseScale, sineWave);
-            transform.localScale = originalScale * scaleMulti;
-        }
-        else
-        {
-            transform.localScale = originalScale;
-        }
+    public bool CanRestoreConnection(FormulaNode other, BondType savedType)
+    {
+        if (other == null || other == this || parentFormula == null || other.parentFormula == null
+            || parentFormula == other.parentFormula || isOccupied || other.isOccupied
+            || nodeState != FormulaNodeState.Open || other.nodeState != FormulaNodeState.Open
+            || connectionType != other.connectionType || (savedType != BondType.Single && savedType != BondType.Double)) return false;
+        foreach (FormulaNode own in parentFormula.GetOwnNodes())
+            if (own.connectedNode != null && own.connectedNode.parentFormula == other.parentFormula) return false;
+        int order = (int)savedType;
+        return parentFormula.UsedCapacity + order <= parentFormula.ConnectionCapacity
+            && other.parentFormula.UsedCapacity + order <= other.parentFormula.ConnectionCapacity
+            && IsFormulaAllowed(other.parentFormula) && other.IsFormulaAllowed(parentFormula);
     }
 
     public void ConnectTo(FormulaNode otherNode)
     {
+        if (otherNode == null || !CanConnect(otherNode.parentFormula, otherNode)
+            || !otherNode.CanConnect(parentFormula, this)) return;
+        bool upgrade = connectedNode == otherNode;
+        bondType = upgrade || connectionType == ConnectionType.DoubleBond ? BondType.Double : BondType.Single;
+        otherNode.bondType = bondType;
         connectedNode = otherNode;
         otherNode.connectedNode = this;
+        isLineOwner = true;
+        otherNode.isLineOwner = false;
+        if (!upgrade && ChalkboardManager.Instance != null) ChalkboardManager.Instance.RebuildFormulaGroups();
+    }
+
+    public void Disconnect()
+    {
+        if (connectedNode == null) return;
+        FormulaNode other = connectedNode;
+        connectedNode = other.connectedNode = null;
+        isLineOwner = other.isLineOwner = false;
+        bondType = other.bondType = BondType.Single;
+        if (ChalkboardManager.Instance != null) ChalkboardManager.Instance.RebuildFormulaGroups();
+    }
+
+    private void DrawDraggingLine()
+    {
+        if (mainCam == null) return;
+        Transform board = ChalkboardManager.Instance.boardTransform;
+        Vector3 normal = board != null ? board.forward : -mainCam.transform.forward;
+        Ray ray = mainCam.ScreenPointToRay(Input.mousePosition);
+        if (new Plane(normal, transform.position).Raycast(ray, out float distance))
+            DrawLine(lineRenderer, transform.position, ray.GetPoint(distance), 0f);
+        if (secondLine != null) secondLine.enabled = false;
+    }
+
+    private void DrawConnection()
+    {
+        lineRenderer.enabled = isOccupied && isLineOwner;
+        if (secondLine != null) secondLine.enabled = false;
+        if (!lineRenderer.enabled) return;
+        bool isDouble = bondType == BondType.Double;
+        DrawLine(lineRenderer, transform.position, connectedNode.transform.position, isDouble ? -doubleBondSpacing * 0.5f : 0f);
+        if (!isDouble) return;
+        if (secondLine == null)
+        {
+            GameObject second = new GameObject("Çift Bağ Çizgisi");
+            second.transform.SetParent(transform, false);
+            secondLine = second.AddComponent<LineRenderer>();
+            secondLine.sharedMaterials = lineRenderer.sharedMaterials;
+            secondLine.widthMultiplier = lineRenderer.widthMultiplier;
+            secondLine.widthCurve = lineRenderer.widthCurve;
+            secondLine.colorGradient = lineRenderer.colorGradient;
+            secondLine.numCapVertices = lineRenderer.numCapVertices;
+            secondLine.numCornerVertices = lineRenderer.numCornerVertices;
+            secondLine.sortingLayerID = lineRenderer.sortingLayerID;
+            secondLine.sortingOrder = lineRenderer.sortingOrder;
+            secondLine.useWorldSpace = true;
+        }
+        DrawLine(secondLine, transform.position, connectedNode.transform.position, doubleBondSpacing * 0.5f);
+    }
+
+    private void DrawLine(LineRenderer line, Vector3 start, Vector3 end, float offset)
+    {
+        Transform board = ChalkboardManager.Instance != null ? ChalkboardManager.Instance.boardTransform : null;
+        Vector3 normal = board != null ? board.forward : Vector3.forward;
+        Vector3 right = board != null ? board.right : Vector3.right;
+        Vector3 up = board != null ? board.up : Vector3.up;
+        Vector3 side = Vector3.Cross(normal, end - start).normalized * offset;
+        int count = Mathf.Max(2, lineSegments);
+        line.enabled = true;
+        line.positionCount = count;
+        for (int i = 0; i < count; i++)
+        {
+            Vector3 point = Vector3.Lerp(start, end, i / (float)(count - 1)) + side;
+            if (i > 0 && i < count - 1)
+            {
+                point += right * ((Mathf.PerlinNoise(noiseSeed, i * 2f + offset) - 0.5f) * chalkRoughness);
+                point += up * ((Mathf.PerlinNoise(i * 2f, noiseSeed + offset) - 0.5f) * chalkRoughness);
+            }
+            line.SetPosition(i, point);
+        }
+    }
+
+    private void UpdateBlockedVisual()
+    {
+        bool blocked = nodeState != FormulaNodeState.Open;
+        if (!blocked && blockedMark == null) return;
+        if (blockedMark == null)
+        {
+            GameObject mark = new GameObject("Kapalı Uç (x)");
+            mark.transform.SetParent(transform, false);
+            mark.transform.localPosition = new Vector3(0f, 0f, -0.015f);
+            blockedMark = mark.AddComponent<TextMeshPro>();
+            blockedMark.text = "x";
+            blockedMark.alignment = TextAlignmentOptions.Center;
+            blockedMark.fontSize = 5f;
+            blockedMark.rectTransform.sizeDelta = Vector2.one;
+            blockedMark.raycastTarget = false;
+        }
+        blockedMark.gameObject.SetActive(blocked);
+        blockedMark.color = nodeState == FormulaNodeState.Unstable ? new Color(1f, 0.55f, 0.2f) : Color.white;
+    }
+
+    private void UpdateHeartbeatVisuals()
+    {
+        bool pulse = !isOccupied && nodeState == FormulaNodeState.Open;
+        if (pulse && activeDraggingNode != null && activeDraggingNode != this)
+            pulse = CanConnect(activeDraggingNode.parentFormula, activeDraggingNode) && activeDraggingNode.CanConnect(parentFormula, this);
+        float scale = pulse ? Mathf.Lerp(1f, maxPulseScale, (Mathf.Sin(Time.time * pulseSpeed) + 1f) * 0.5f) : 1f;
+        transform.localScale = originalScale * scale;
     }
 }

@@ -5581,6 +5581,66 @@ ReflectionProbe:
   m_UseOcclusionCulling: 1
   m_Importance: 1
   m_CustomBakedTexture: {fileID: 0}
+--- !u!1 &90046801
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 90046803}
+  - component: {fileID: 90046802}
+  m_Layer: 0
+  m_Name: "Prosed\xFCrel Sentez G\xF6revleri"
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &90046802
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 90046801}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 05efdb2b75714642915d2faed3428d43, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ProceduralSynthesisGenerator
+  formulaCatalog:
+  - {fileID: 11400000, guid: 2f48d28a8c4446d38da6a0961adae73f, type: 2}
+  - {fileID: 11400000, guid: dd80648d25f7481d8f1a8f5d7aab7518, type: 2}
+  - {fileID: 11400000, guid: 698a21a0628a4b29905108ba73c807be, type: 2}
+  - {fileID: 11400000, guid: 4743287aebc8463880870245d7c882ce, type: 2}
+  - {fileID: 11400000, guid: c8b01d6e2d9b46c49b672b99530630c3, type: 2}
+  - {fileID: 11400000, guid: 3dfbb2a3461f46019a48b198d27dd023, type: 2}
+  - {fileID: 11400000, guid: e75d860b94db4c7b87981258aeea7820, type: 2}
+  - {fileID: 11400000, guid: d81533e3bfba46bca3a0dec1165225cd, type: 2}
+  - {fileID: 11400000, guid: 6db8933cc731eac4fb77be79ecf27430, type: 2}
+  - {fileID: 11400000, guid: 9a0f0ebbf0292404d9d47b0766434a79, type: 2}
+  - {fileID: 11400000, guid: 910e8aebc2ec0ce46a2a0aacae6a0657, type: 2}
+  - {fileID: 0}
+  outputCatalog: []
+  allowFallbackCatalog: 1
+  fallbackPartCount: 7
+--- !u!4 &90046803
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 90046801}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &91650115
 GameObject:
   m_ObjectHideFlags: 0
@@ -9285,6 +9345,8 @@ MonoBehaviour:
   moveDuration: 0.5
   bookUI: {fileID: 0}
   pageNumberText: {fileID: 0}
+  synthesisPages: []
+  includeProceduralClues: 1
   singlePageSize: {x: 0.9, y: 1.25}
   gizmoYOffset: 0.18
   animationDuration: 1
@@ -12473,6 +12535,8 @@ MonoBehaviour:
   moveDuration: 0.5
   bookUI: {fileID: 0}
   pageNumberText: {fileID: 0}
+  synthesisPages: []
+  includeProceduralClues: 1
   singlePageSize: {x: 0.9, y: 1.25}
   gizmoYOffset: 0.18
   animationDuration: 1
@@ -13848,6 +13912,8 @@ MonoBehaviour:
   moveDuration: 0.5
   bookUI: {fileID: 0}
   pageNumberText: {fileID: 0}
+  synthesisPages: []
+  includeProceduralClues: 1
   singlePageSize: {x: 0.9, y: 1.25}
   gizmoYOffset: 0.18
   animationDuration: 1
@@ -16620,6 +16686,8 @@ MonoBehaviour:
   moveDuration: 0.5
   bookUI: {fileID: 0}
   pageNumberText: {fileID: 0}
+  synthesisPages: []
+  includeProceduralClues: 1
   singlePageSize: {x: 0.9, y: 1.25}
   gizmoYOffset: 0.18
   animationDuration: 1
@@ -18522,6 +18590,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a7f4c5e275af047f39895883265eb587, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::NotebookUI
+  workspacePages: []
+  currentWorkspacePage: 0
   notebookData: {fileID: 11400000, guid: 289396c7566699f4eb79431127577f01, type: 2}
   notebookPanel: {fileID: 267656256}
   categoryTitleText: {fileID: 1139890728}
@@ -22236,6 +22306,8 @@ MonoBehaviour:
   moveDuration: 0.5
   bookUI: {fileID: 0}
   pageNumberText: {fileID: 0}
+  synthesisPages: []
+  includeProceduralClues: 1
   singlePageSize: {x: 0.9, y: 1.25}
   gizmoYOffset: 0.18
   animationDuration: 1
@@ -23076,6 +23148,8 @@ MonoBehaviour:
   moveDuration: 0.5
   bookUI: {fileID: 0}
   pageNumberText: {fileID: 0}
+  synthesisPages: []
+  includeProceduralClues: 1
   singlePageSize: {x: 0.9, y: 1.25}
   gizmoYOffset: 0.18
   animationDuration: 1
@@ -25502,6 +25576,8 @@ MonoBehaviour:
   moveDuration: 0.5
   bookUI: {fileID: 0}
   pageNumberText: {fileID: 0}
+  synthesisPages: []
+  includeProceduralClues: 1
   singlePageSize: {x: 0.9, y: 1.25}
   gizmoYOffset: 0.18
   animationDuration: 1
@@ -32063,6 +32139,8 @@ MonoBehaviour:
   moveDuration: 0.5
   bookUI: {fileID: 0}
   pageNumberText: {fileID: 0}
+  synthesisPages: []
+  includeProceduralClues: 1
   singlePageSize: {x: 0.9, y: 1.25}
   gizmoYOffset: 0.18
   animationDuration: 1
@@ -36584,6 +36662,8 @@ MonoBehaviour:
   moveDuration: 0.5
   bookUI: {fileID: 0}
   pageNumberText: {fileID: 0}
+  synthesisPages: []
+  includeProceduralClues: 1
   singlePageSize: {x: 0.9, y: 1.25}
   gizmoYOffset: 0.18
   animationDuration: 1
@@ -37539,6 +37619,8 @@ MonoBehaviour:
   moveDuration: 0.5
   bookUI: {fileID: 0}
   pageNumberText: {fileID: 0}
+  synthesisPages: []
+  includeProceduralClues: 1
   singlePageSize: {x: 0.9, y: 1.25}
   gizmoYOffset: 0.18
   animationDuration: 1
@@ -41982,6 +42064,8 @@ MonoBehaviour:
   moveDuration: 0.5
   bookUI: {fileID: 0}
   pageNumberText: {fileID: 0}
+  synthesisPages: []
+  includeProceduralClues: 1
   singlePageSize: {x: 0.9, y: 1.25}
   gizmoYOffset: 0.18
   animationDuration: 1
@@ -42505,6 +42589,8 @@ MonoBehaviour:
   moveDuration: 0.5
   bookUI: {fileID: 0}
   pageNumberText: {fileID: 0}
+  synthesisPages: []
+  includeProceduralClues: 1
   singlePageSize: {x: 0.9, y: 1.25}
   gizmoYOffset: 0.18
   animationDuration: 1
@@ -42922,6 +43008,8 @@ MonoBehaviour:
   moveDuration: 0.5
   bookUI: {fileID: 0}
   pageNumberText: {fileID: 0}
+  synthesisPages: []
+  includeProceduralClues: 1
   singlePageSize: {x: 0.9, y: 1.25}
   gizmoYOffset: 0.18
   animationDuration: 1
@@ -44068,6 +44156,8 @@ MonoBehaviour:
   moveDuration: 0.5
   bookUI: {fileID: 0}
   pageNumberText: {fileID: 0}
+  synthesisPages: []
+  includeProceduralClues: 1
   singlePageSize: {x: 0.16, y: 0.32}
   gizmoYOffset: 0.005
   animationDuration: 1
@@ -45786,6 +45876,8 @@ MonoBehaviour:
   moveDuration: 0.5
   bookUI: {fileID: 0}
   pageNumberText: {fileID: 0}
+  synthesisPages: []
+  includeProceduralClues: 1
   singlePageSize: {x: 0.9, y: 1.25}
   gizmoYOffset: 0.18
   animationDuration: 1
@@ -48549,6 +48641,8 @@ MonoBehaviour:
   moveDuration: 0.5
   bookUI: {fileID: 0}
   pageNumberText: {fileID: 0}
+  synthesisPages: []
+  includeProceduralClues: 1
   singlePageSize: {x: 0.9, y: 1.25}
   gizmoYOffset: 0.18
   animationDuration: 1
@@ -59202,6 +59296,8 @@ MonoBehaviour:
   moveDuration: 0.5
   bookUI: {fileID: 0}
   pageNumberText: {fileID: 0}
+  synthesisPages: []
+  includeProceduralClues: 1
   singlePageSize: {x: 0.16, y: 0.32}
   gizmoYOffset: 0.005
   animationDuration: 1
@@ -61419,6 +61515,66 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!1 &982899828
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 982899830}
+  - component: {fileID: 982899829}
+  m_Layer: 0
+  m_Name: "Prosed\xFCrel Sentez G\xF6revleri"
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &982899829
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 982899828}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 05efdb2b75714642915d2faed3428d43, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ProceduralSynthesisGenerator
+  formulaCatalog:
+  - {fileID: 11400000, guid: 2f48d28a8c4446d38da6a0961adae73f, type: 2}
+  - {fileID: 11400000, guid: dd80648d25f7481d8f1a8f5d7aab7518, type: 2}
+  - {fileID: 11400000, guid: 698a21a0628a4b29905108ba73c807be, type: 2}
+  - {fileID: 11400000, guid: 4743287aebc8463880870245d7c882ce, type: 2}
+  - {fileID: 11400000, guid: c8b01d6e2d9b46c49b672b99530630c3, type: 2}
+  - {fileID: 11400000, guid: 3dfbb2a3461f46019a48b198d27dd023, type: 2}
+  - {fileID: 11400000, guid: e75d860b94db4c7b87981258aeea7820, type: 2}
+  - {fileID: 11400000, guid: d81533e3bfba46bca3a0dec1165225cd, type: 2}
+  - {fileID: 11400000, guid: 6db8933cc731eac4fb77be79ecf27430, type: 2}
+  - {fileID: 11400000, guid: 9a0f0ebbf0292404d9d47b0766434a79, type: 2}
+  - {fileID: 11400000, guid: 910e8aebc2ec0ce46a2a0aacae6a0657, type: 2}
+  - {fileID: 0}
+  outputCatalog: []
+  allowFallbackCatalog: 1
+  fallbackPartCount: 7
+--- !u!4 &982899830
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 982899828}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &984727833
 GameObject:
   m_ObjectHideFlags: 0
@@ -66263,6 +66419,8 @@ MonoBehaviour:
   allRecipes:
   - {fileID: 11400000, guid: a734090a0a526d44b8e82f86f2b1ce5b, type: 2}
   - {fileID: 11400000, guid: 1c901af678b72a241bbb8a30bb726e18, type: 2}
+  formulaCatalog: []
+  useProceduralQuests: 1
 --- !u!1 &1060166092
 GameObject:
   m_ObjectHideFlags: 0
@@ -66692,6 +66850,8 @@ MonoBehaviour:
   moveDuration: 0.5
   bookUI: {fileID: 0}
   pageNumberText: {fileID: 0}
+  synthesisPages: []
+  includeProceduralClues: 1
   singlePageSize: {x: 0.9, y: 1.25}
   gizmoYOffset: 0.18
   animationDuration: 1
@@ -67254,6 +67414,8 @@ MonoBehaviour:
   moveDuration: 0.5
   bookUI: {fileID: 0}
   pageNumberText: {fileID: 0}
+  synthesisPages: []
+  includeProceduralClues: 1
   singlePageSize: {x: 0.9, y: 1.25}
   gizmoYOffset: 0.18
   animationDuration: 1
@@ -68398,6 +68560,8 @@ MonoBehaviour:
   moveDuration: 0.5
   bookUI: {fileID: 0}
   pageNumberText: {fileID: 0}
+  synthesisPages: []
+  includeProceduralClues: 1
   singlePageSize: {x: 0.9, y: 1.25}
   gizmoYOffset: 0.18
   animationDuration: 1
@@ -69833,6 +69997,8 @@ MonoBehaviour:
   moveDuration: 0.5
   bookUI: {fileID: 0}
   pageNumberText: {fileID: 0}
+  synthesisPages: []
+  includeProceduralClues: 1
   singlePageSize: {x: 0.9, y: 1.25}
   gizmoYOffset: 0.18
   animationDuration: 1
@@ -73919,6 +74085,8 @@ MonoBehaviour:
   moveDuration: 0.5
   bookUI: {fileID: 0}
   pageNumberText: {fileID: 0}
+  synthesisPages: []
+  includeProceduralClues: 1
   singlePageSize: {x: 0.9, y: 1.25}
   gizmoYOffset: 0.18
   animationDuration: 1
@@ -74752,6 +74920,8 @@ MonoBehaviour:
   moveDuration: 0.5
   bookUI: {fileID: 0}
   pageNumberText: {fileID: 0}
+  synthesisPages: []
+  includeProceduralClues: 1
   singlePageSize: {x: 0.9, y: 1.25}
   gizmoYOffset: 0.18
   animationDuration: 1
@@ -76170,6 +76340,8 @@ MonoBehaviour:
   moveDuration: 0.5
   bookUI: {fileID: 0}
   pageNumberText: {fileID: 0}
+  synthesisPages: []
+  includeProceduralClues: 1
   singlePageSize: {x: 0.9, y: 1.25}
   gizmoYOffset: 0.18
   animationDuration: 1
@@ -78535,6 +78707,8 @@ MonoBehaviour:
   moveDuration: 0.5
   bookUI: {fileID: 0}
   pageNumberText: {fileID: 0}
+  synthesisPages: []
+  includeProceduralClues: 1
   singlePageSize: {x: 0.9, y: 1.25}
   gizmoYOffset: 0.18
   animationDuration: 1
@@ -79114,6 +79288,8 @@ MonoBehaviour:
   moveDuration: 0.5
   bookUI: {fileID: 0}
   pageNumberText: {fileID: 0}
+  synthesisPages: []
+  includeProceduralClues: 1
   singlePageSize: {x: 0.9, y: 1.25}
   gizmoYOffset: 0.18
   animationDuration: 1
@@ -82138,6 +82314,8 @@ MonoBehaviour:
   moveDuration: 0.5
   bookUI: {fileID: 0}
   pageNumberText: {fileID: 0}
+  synthesisPages: []
+  includeProceduralClues: 1
   singlePageSize: {x: 0.9, y: 1.25}
   gizmoYOffset: 0.18
   animationDuration: 1
@@ -83820,6 +83998,8 @@ MonoBehaviour:
   moveDuration: 0.5
   bookUI: {fileID: 0}
   pageNumberText: {fileID: 0}
+  synthesisPages: []
+  includeProceduralClues: 1
   singlePageSize: {x: 0.9, y: 1.25}
   gizmoYOffset: 0.18
   animationDuration: 1
@@ -85766,6 +85946,8 @@ MonoBehaviour:
   moveDuration: 0.5
   bookUI: {fileID: 0}
   pageNumberText: {fileID: 0}
+  synthesisPages: []
+  includeProceduralClues: 1
   singlePageSize: {x: 0.9, y: 1.25}
   gizmoYOffset: 0.18
   animationDuration: 1
@@ -86886,6 +87068,57 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!1 &1402954564
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1402954566}
+  - component: {fileID: 1402954565}
+  m_Layer: 0
+  m_Name: "Prosed\xFCrel Sentez G\xF6revleri"
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1402954565
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1402954564}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 05efdb2b75714642915d2faed3428d43, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ProceduralSynthesisGenerator
+  formulaCatalog:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  outputCatalog: []
+  allowFallbackCatalog: 1
+  fallbackPartCount: 7
+--- !u!4 &1402954566
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1402954564}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1403221797
 GameObject:
   m_ObjectHideFlags: 0
@@ -88022,6 +88255,8 @@ MonoBehaviour:
   moveDuration: 0.5
   bookUI: {fileID: 0}
   pageNumberText: {fileID: 0}
+  synthesisPages: []
+  includeProceduralClues: 1
   singlePageSize: {x: 0.9, y: 1.25}
   gizmoYOffset: 0.18
   animationDuration: 1
@@ -91138,6 +91373,8 @@ MonoBehaviour:
   moveDuration: 0.5
   bookUI: {fileID: 0}
   pageNumberText: {fileID: 0}
+  synthesisPages: []
+  includeProceduralClues: 1
   singlePageSize: {x: 0.9, y: 1.25}
   gizmoYOffset: 0.18
   animationDuration: 1
@@ -91378,6 +91615,8 @@ MonoBehaviour:
   moveDuration: 0.5
   bookUI: {fileID: 0}
   pageNumberText: {fileID: 0}
+  synthesisPages: []
+  includeProceduralClues: 1
   singlePageSize: {x: 0.9, y: 1.25}
   gizmoYOffset: 0.18
   animationDuration: 1
@@ -92390,6 +92629,8 @@ MonoBehaviour:
   moveDuration: 0.5
   bookUI: {fileID: 0}
   pageNumberText: {fileID: 0}
+  synthesisPages: []
+  includeProceduralClues: 1
   singlePageSize: {x: 0.9, y: 1.25}
   gizmoYOffset: 0.18
   animationDuration: 1
@@ -93436,6 +93677,8 @@ MonoBehaviour:
   moveDuration: 0.5
   bookUI: {fileID: 0}
   pageNumberText: {fileID: 0}
+  synthesisPages: []
+  includeProceduralClues: 1
   singlePageSize: {x: 0.9, y: 1.25}
   gizmoYOffset: 0.18
   animationDuration: 1
@@ -97633,6 +97876,8 @@ MonoBehaviour:
   moveDuration: 0.5
   bookUI: {fileID: 0}
   pageNumberText: {fileID: 0}
+  synthesisPages: []
+  includeProceduralClues: 1
   singlePageSize: {x: 0.9, y: 1.25}
   gizmoYOffset: 0.18
   animationDuration: 1
@@ -103433,6 +103678,8 @@ MonoBehaviour:
   moveDuration: 0.5
   bookUI: {fileID: 0}
   pageNumberText: {fileID: 0}
+  synthesisPages: []
+  includeProceduralClues: 1
   singlePageSize: {x: 0.9, y: 1.25}
   gizmoYOffset: 0.18
   animationDuration: 1
@@ -104475,6 +104722,8 @@ MonoBehaviour:
   moveDuration: 0.5
   bookUI: {fileID: 0}
   pageNumberText: {fileID: 0}
+  synthesisPages: []
+  includeProceduralClues: 1
   singlePageSize: {x: 0.9, y: 1.25}
   gizmoYOffset: 0.18
   animationDuration: 1
@@ -104991,6 +105240,8 @@ MonoBehaviour:
   moveDuration: 0.5
   bookUI: {fileID: 0}
   pageNumberText: {fileID: 0}
+  synthesisPages: []
+  includeProceduralClues: 1
   singlePageSize: {x: 0.9, y: 1.25}
   gizmoYOffset: 0.18
   animationDuration: 1
@@ -106063,6 +106314,57 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1700510052}
   m_CullTransparentMesh: 1
+--- !u!1 &1701522618
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1701522620}
+  - component: {fileID: 1701522619}
+  m_Layer: 0
+  m_Name: "Prosed\xFCrel Sentez G\xF6revleri"
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1701522619
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1701522618}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 05efdb2b75714642915d2faed3428d43, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ProceduralSynthesisGenerator
+  formulaCatalog:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  outputCatalog: []
+  allowFallbackCatalog: 1
+  fallbackPartCount: 7
+--- !u!4 &1701522620
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1701522618}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1707167710
 GameObject:
   m_ObjectHideFlags: 0
@@ -106462,6 +106764,8 @@ MonoBehaviour:
   moveDuration: 0.5
   bookUI: {fileID: 0}
   pageNumberText: {fileID: 0}
+  synthesisPages: []
+  includeProceduralClues: 1
   singlePageSize: {x: 0.9, y: 1.25}
   gizmoYOffset: 0.18
   animationDuration: 1
@@ -106848,6 +107152,57 @@ Transform:
   m_Children:
   - {fileID: 326596250}
   m_Father: {fileID: 552669252}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1724085858
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1724085860}
+  - component: {fileID: 1724085859}
+  m_Layer: 0
+  m_Name: "Prosed\xFCrel Sentez G\xF6revleri"
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1724085859
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1724085858}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 05efdb2b75714642915d2faed3428d43, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ProceduralSynthesisGenerator
+  formulaCatalog:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  outputCatalog: []
+  allowFallbackCatalog: 1
+  fallbackPartCount: 7
+--- !u!4 &1724085860
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1724085858}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1725499789
 GameObject:
@@ -107464,7 +107819,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1735270669
 RectTransform:
   m_ObjectHideFlags: 0
@@ -107915,6 +108270,8 @@ MonoBehaviour:
   moveDuration: 0.5
   bookUI: {fileID: 0}
   pageNumberText: {fileID: 0}
+  synthesisPages: []
+  includeProceduralClues: 1
   singlePageSize: {x: 0.9, y: 1.25}
   gizmoYOffset: 0.18
   animationDuration: 1
@@ -108187,6 +108544,8 @@ MonoBehaviour:
   moveDuration: 0.5
   bookUI: {fileID: 0}
   pageNumberText: {fileID: 0}
+  synthesisPages: []
+  includeProceduralClues: 1
   singlePageSize: {x: 0.9, y: 1.25}
   gizmoYOffset: 0.18
   animationDuration: 1
@@ -117953,6 +118312,8 @@ MonoBehaviour:
   moveDuration: 0.5
   bookUI: {fileID: 0}
   pageNumberText: {fileID: 0}
+  synthesisPages: []
+  includeProceduralClues: 1
   singlePageSize: {x: 0.9, y: 1.25}
   gizmoYOffset: 0.18
   animationDuration: 1
@@ -119804,6 +120165,8 @@ MonoBehaviour:
   moveDuration: 0.5
   bookUI: {fileID: 0}
   pageNumberText: {fileID: 0}
+  synthesisPages: []
+  includeProceduralClues: 1
   singlePageSize: {x: 0.9, y: 1.25}
   gizmoYOffset: 0.18
   animationDuration: 1
@@ -120246,6 +120609,8 @@ MonoBehaviour:
   moveDuration: 0.5
   bookUI: {fileID: 0}
   pageNumberText: {fileID: 0}
+  synthesisPages: []
+  includeProceduralClues: 1
   singlePageSize: {x: 0.9, y: 1.25}
   gizmoYOffset: 0.18
   animationDuration: 1
@@ -120720,6 +121085,8 @@ MonoBehaviour:
   moveDuration: 0.5
   bookUI: {fileID: 0}
   pageNumberText: {fileID: 0}
+  synthesisPages: []
+  includeProceduralClues: 1
   singlePageSize: {x: 0.9, y: 1.25}
   gizmoYOffset: 0.18
   animationDuration: 1
@@ -122054,6 +122421,8 @@ MonoBehaviour:
   moveDuration: 0.5
   bookUI: {fileID: 0}
   pageNumberText: {fileID: 0}
+  synthesisPages: []
+  includeProceduralClues: 1
   singlePageSize: {x: 0.9, y: 1.25}
   gizmoYOffset: 0.18
   animationDuration: 1
@@ -122209,6 +122578,67 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1990814909}
   m_CullTransparentMesh: 1
+--- !u!1 &1991422802
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1991422804}
+  - component: {fileID: 1991422803}
+  m_Layer: 0
+  m_Name: "Prosed\xFCrel Sentez G\xF6revleri"
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1991422803
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1991422802}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 05efdb2b75714642915d2faed3428d43, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ProceduralSynthesisGenerator
+  formulaCatalog:
+  - {fileID: 11400000, guid: 2f48d28a8c4446d38da6a0961adae73f, type: 2}
+  - {fileID: 11400000, guid: dd80648d25f7481d8f1a8f5d7aab7518, type: 2}
+  - {fileID: 11400000, guid: 698a21a0628a4b29905108ba73c807be, type: 2}
+  - {fileID: 11400000, guid: 4743287aebc8463880870245d7c882ce, type: 2}
+  - {fileID: 11400000, guid: c8b01d6e2d9b46c49b672b99530630c3, type: 2}
+  - {fileID: 11400000, guid: 3dfbb2a3461f46019a48b198d27dd023, type: 2}
+  - {fileID: 11400000, guid: e75d860b94db4c7b87981258aeea7820, type: 2}
+  - {fileID: 11400000, guid: d81533e3bfba46bca3a0dec1165225cd, type: 2}
+  - {fileID: 11400000, guid: 6db8933cc731eac4fb77be79ecf27430, type: 2}
+  - {fileID: 11400000, guid: 9a0f0ebbf0292404d9d47b0766434a79, type: 2}
+  - {fileID: 11400000, guid: 910e8aebc2ec0ce46a2a0aacae6a0657, type: 2}
+  - {fileID: 0}
+  outputCatalog:
+  - {fileID: 0}
+  allowFallbackCatalog: 1
+  fallbackPartCount: 7
+--- !u!4 &1991422804
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1991422802}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1994088165
 GameObject:
   m_ObjectHideFlags: 0
@@ -123280,6 +123710,8 @@ MonoBehaviour:
   moveDuration: 0.5
   bookUI: {fileID: 0}
   pageNumberText: {fileID: 0}
+  synthesisPages: []
+  includeProceduralClues: 1
   singlePageSize: {x: 0.9, y: 1.25}
   gizmoYOffset: 0.18
   animationDuration: 1
@@ -123785,7 +124217,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &2014130988
 Transform:
   m_ObjectHideFlags: 0
@@ -128287,6 +128719,8 @@ MonoBehaviour:
   moveDuration: 0.5
   bookUI: {fileID: 0}
   pageNumberText: {fileID: 0}
+  synthesisPages: []
+  includeProceduralClues: 1
   singlePageSize: {x: 0.9, y: 1.25}
   gizmoYOffset: 0.18
   animationDuration: 1
@@ -129659,6 +130093,8 @@ MonoBehaviour:
   moveDuration: 0.5
   bookUI: {fileID: 0}
   pageNumberText: {fileID: 0}
+  synthesisPages: []
+  includeProceduralClues: 1
   singlePageSize: {x: 0.9, y: 1.25}
   gizmoYOffset: 0.18
   animationDuration: 1
@@ -131428,6 +131864,8 @@ MonoBehaviour:
   moveDuration: 0.5
   bookUI: {fileID: 0}
   pageNumberText: {fileID: 0}
+  synthesisPages: []
+  includeProceduralClues: 1
   singlePageSize: {x: 0.9, y: 1.25}
   gizmoYOffset: 0.18
   animationDuration: 1
@@ -196687,3 +197125,9 @@ SceneRoots:
   - {fileID: 2014130988}
   - {fileID: 2093281509}
   - {fileID: 854486652}
+  - {fileID: 982899830}
+  - {fileID: 1991422804}
+  - {fileID: 90046803}
+  - {fileID: 1402954566}
+  - {fileID: 1701522620}
+  - {fileID: 1724085860}
