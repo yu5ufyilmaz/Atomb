@@ -16,4 +16,4 @@ MonoBehaviour:
   itemName: formulaC
   isCore: 0
   connectionCapacity: 0
-  chalkPrefab: {fileID: 7590904312662934715, guid: f6354fda8b794c046851505634f05455, type: 3}
+  chalkPrefab: {fileID: 1000, guid: 09f4c0057fd7402ea6e7718be77ca4cc, type: 3}

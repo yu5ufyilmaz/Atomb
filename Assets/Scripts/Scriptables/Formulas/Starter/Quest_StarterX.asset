@@ -1,0 +1,97 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject:
+    fileID: 0
+  m_PrefabInstance:
+    fileID: 0
+  m_PrefabAsset:
+    fileID: 0
+  m_GameObject:
+    fileID: 0
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script:
+    fileID: 11500000
+    guid: f7f827a5aa54424caab72cbca29d4790
+    type: 3
+  m_Name: Quest_StarterX
+  m_EditorClassIdentifier: ''
+  questID: starter-x
+  title: NÖTRON BAŞLATICI SENTEZİ
+  output:
+    fileID: 0
+  nodes:
+  - itemID: starter-BE9
+    isUnknown: 1
+    position:
+      x: -0.8
+      y: 0.5
+  - itemID: starter-U235
+    isUnknown: 0
+    position:
+      x: 0.65
+      y: 0.5
+  - itemID: starter-REF
+    isUnknown: 1
+    position:
+      x: 0.65
+      y: -0.65
+  bonds:
+  - fromIndex: 0
+    toIndex: 1
+    bondType: 1
+    label: (n)
+    directed: 1
+  - fromIndex: 1
+    toIndex: 2
+    bondType: 2
+    label: ''
+    directed: 0
+  rules:
+  - ruleType: 6
+    itemID: starter-BE9
+    otherItemID: ''
+    bridgeItemID: ''
+    amount: 1
+  - ruleType: 6
+    itemID: starter-REF
+    otherItemID: ''
+    bridgeItemID: ''
+    amount: 1
+  - ruleType: 7
+    itemID: starter-PO210
+    otherItemID: ''
+    bridgeItemID: ''
+    amount: 0
+  - ruleType: 7
+    itemID: starter-KALKAN
+    otherItemID: ''
+    bridgeItemID: ''
+    amount: 0
+  - ruleType: 8
+    itemID: ''
+    otherItemID: ''
+    bridgeItemID: ''
+    amount: 0
+  clueParts:
+  - fileID: 11400000
+    guid: d6b9254927e7439f9041393ff9b78621
+    type: 2
+  - fileID: 11400000
+    guid: 836f4feda5374bca8ea4b099f5ea3d67
+    type: 2
+  - fileID: 11400000
+    guid: fe8e01b3b7fe406fbbbe3c478a16f893
+    type: 2
+  - fileID: 11400000
+    guid: d5966ab95b6540219a40fc67758fbffb
+    type: 2
+  - fileID: 11400000
+    guid: 7865b1f6697546359ce0a36490763844
+    type: 2
+  clueNotes:
+  - '[PO-210], [U-235] yanına bağlanırsa erir. Nötron üreten başka bir aday seç.'
+  - Kapalı (x) uçlarına SİLGİ ile tıklayarak bağlantıyı aç. TEBEŞİR ile aynı iki uç arasında ikinci kez çizmek çift bağ yapar.

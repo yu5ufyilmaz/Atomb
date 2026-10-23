@@ -92,8 +92,35 @@ public class NotebookDraggableBlock : MonoBehaviour, IBeginDragHandler, IDragHan
                 border.raycastTarget = false;
             }
             border.Variant = Data.sketchVariant;
+            border.BlockType = Data.blockType;
             border.color = outline.effectColor;
             border.SetVerticesDirty();
+        }
+
+        if (IsSource)
+        {
+            var borderObject = new GameObject("Not Türü Çerçevesi", typeof(RectTransform), typeof(NotebookSketchBorder));
+            borderObject.transform.SetParent(transform, false);
+            var border = borderObject.GetComponent<NotebookSketchBorder>();
+            border.rectTransform.anchorMin = Vector2.zero;
+            border.rectTransform.anchorMax = Vector2.one;
+            border.rectTransform.offsetMin = new Vector2(4, 4);
+            border.rectTransform.offsetMax = new Vector2(-4, -4);
+            border.BlockType = Data.blockType;
+            border.color = outline.effectColor;
+            border.raycastTarget = false;
+            outline.enabled = false;
+        }
+        if (Data.blockType == NotebookBlockType.RuleClue && transform.Find("Bant") == null)
+        {
+            var tape = new GameObject("Bant", typeof(RectTransform), typeof(Image));
+            tape.transform.SetParent(transform, false);
+            var tapeRect = (RectTransform)tape.transform;
+            tapeRect.anchorMin = tapeRect.anchorMax = new Vector2(0.5f, 1);
+            tapeRect.sizeDelta = new Vector2(65, 13);
+            tapeRect.localRotation = Quaternion.Euler(0, 0, -5);
+            tape.GetComponent<Image>().color = new Color(0.79f, 0.72f, 0.5f, 0.85f);
+            tape.GetComponent<Image>().raycastTarget = false;
         }
 
         if (titleText == null)
@@ -116,9 +143,9 @@ public class NotebookDraggableBlock : MonoBehaviour, IBeginDragHandler, IDragHan
 
         rect.localRotation = IsSource ? Quaternion.identity : Quaternion.Euler(0f, 0f, Data.rotation);
         var generator = ProceduralSynthesisGenerator.Instance;
-        if (quest && generator != null && generator.Run != null && generator.Run.quests != null)
+        if (quest)
         {
-            var blueprint = generator.Run.quests.Find(q => q != null && q.questID == Data.questID);
+            var blueprint = NotebookWorkspaceController.FindQuest(Data.questID);
             if (blueprint != null)
             {
                 var diagram = GetComponentInChildren<QuestDiagramGraphic>();
@@ -444,6 +471,7 @@ public class NotebookDraggableBlock : MonoBehaviour, IBeginDragHandler, IDragHan
 internal sealed class NotebookSketchBorder : MaskableGraphic
 {
     [SerializeField] internal int Variant;
+    [SerializeField] internal NotebookBlockType BlockType = NotebookBlockType.PartClue;
 
     protected override void OnPopulateMesh(VertexHelper vh)
     {
@@ -467,7 +495,9 @@ internal sealed class NotebookSketchBorder : MaskableGraphic
                 float t = point / 8f;
                 float jitter = point == 8 ? 0f : Mathf.Sin((point + side * 11 + Variant * 3) * 2.34f) * 1.5f;
                 Vector2 next = Vector2.Lerp(a, b, t) + normal * jitter;
+                if (BlockType == NotebookBlockType.PartClue && point % 2 == 0) { previous = next; continue; }
                 Vector2 width = new Vector2(-(next - previous).y, (next - previous).x).normalized * 0.75f;
+                if (BlockType == NotebookBlockType.Quest) width *= 2;
                 int index = vh.currentVertCount;
                 vh.AddVert(previous - width, color, Vector2.zero);
                 vh.AddVert(previous + width, color, Vector2.zero);
@@ -475,6 +505,17 @@ internal sealed class NotebookSketchBorder : MaskableGraphic
                 vh.AddVert(next - width, color, Vector2.zero);
                 vh.AddTriangle(index, index + 1, index + 2);
                 vh.AddTriangle(index, index + 2, index + 3);
+                if (BlockType == NotebookBlockType.Quest)
+                {
+                    Vector2 inset = normal * -6;
+                    index = vh.currentVertCount;
+                    vh.AddVert(previous - width + inset, color, Vector2.zero);
+                    vh.AddVert(previous + width + inset, color, Vector2.zero);
+                    vh.AddVert(next + width + inset, color, Vector2.zero);
+                    vh.AddVert(next - width + inset, color, Vector2.zero);
+                    vh.AddTriangle(index, index + 1, index + 2);
+                    vh.AddTriangle(index, index + 2, index + 3);
+                }
                 previous = next;
             }
         }

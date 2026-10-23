@@ -16,7 +16,7 @@ MonoBehaviour:
   itemName: Bozuk Deney Modulu
   isCore: 0
   connectionCapacity: 4
-  chalkPrefab: {fileID: 1873792701659357103, guid: 7b0acb05bae235544ab1548e084c750b, type: 3}
+  chalkPrefab: {fileID: 1000, guid: 3c8489de99f5431abd1313438462e92b, type: 3}
 
   description: Bu deney modulu kararsizdir. Hedef semalarda kullanmayin.
   isDecoy: 1

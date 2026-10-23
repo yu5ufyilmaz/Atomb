@@ -13,6 +13,10 @@ public class QuestBlueprintSO : ScriptableObject
     public List<SynthesisBondData> bonds = new List<SynthesisBondData>();
     public List<SynthesisRuleData> rules = new List<SynthesisRuleData>();
 
+    [Header("Toplanabilir Başlangıç Notları")]
+    public List<FormulaItemSO> clueParts = new List<FormulaItemSO>();
+    [TextArea(2, 5)] public List<string> clueNotes = new List<string>();
+
     public SynthesisQuestData CreateQuest()
     {
         var data = new SynthesisQuestData

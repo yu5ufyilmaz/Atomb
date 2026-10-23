@@ -69,6 +69,8 @@ public class SynthesisBondData
     public int fromIndex;
     public int toIndex;
     public BondType bondType = BondType.Single;
+    public string label;
+    public bool directed;
 }
 
 [Serializable]

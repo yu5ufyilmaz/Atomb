@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using NaughtyAttributes;
 using UnityEngine;
 
+public enum ChalkboardTool { Move, Chalk, Eraser }
+
 public class ChalkboardManager : MonoBehaviour, ISaveable
 {
     public static ChalkboardManager Instance { get; private set; }
@@ -20,6 +22,10 @@ public class ChalkboardManager : MonoBehaviour, ISaveable
     public List<FormulaItemSO> formulaCatalog = new List<FormulaItemSO>();
     [Tooltip("Yeni oyun başına beş aşamalı görev zincirini başlat")]
     public bool useProceduralQuests = true;
+
+    [Tooltip("Atanırsa yalnız bu alıştırma doğrulanır; parçalar tüketilmez ve çıktı üretilmez.")]
+    public QuestBlueprintSO practiceQuest;
+    public ChalkboardTool Tool { get; set; } = ChalkboardTool.Chalk;
 
     public bool isMachineActive { get; private set; }
     public SynthesisQuestData PinnedQuest { get; private set; }
@@ -262,6 +268,25 @@ public class ChalkboardManager : MonoBehaviour, ISaveable
         HashSet<DraggableFormula> roots = new HashSet<DraggableFormula>();
         foreach (DraggableFormula part in zone.currentItems) if (part != null) roots.Add(part.GetRootFormula());
         if (roots.Count == 0) { Report("Sentez çemberi boş.", false); return; }
+
+        if (practiceQuest != null)
+        {
+            if (PinnedQuest == null || PinnedQuest.questID != practiceQuest.CreateQuest().questID)
+            { Report("Önce defterindeki HEDEF notunu tahtaya sürükle.", false); return; }
+            if (roots.Count != 1)
+            { Report("Parçaları tek bir yapıda birleştir; fazlalıkları silgiyle kaldır.", false); return; }
+            foreach (var root in roots)
+            {
+                foreach (var part in root.GetConnectedParts())
+                    if (!zone.ContainsFormula(part))
+                    { Report("Yapının tamamını tahta alanına yerleştir.", false); return; }
+                if (!SynthesisGraphValidator.Validate(BuildGraph(root), practiceQuest.CreateQuest(), out string failure))
+                { Report(failure, false); return; }
+            }
+            PinnedQuest.completed = true;
+            Report("Doğru bildin", true);
+            return;
+        }
 
         ProceduralSynthesisGenerator generator = ProceduralSynthesisGenerator.Instance;
         SynthesisQuestData quest = useProceduralQuests && generator != null ? generator.ActiveQuest : null;

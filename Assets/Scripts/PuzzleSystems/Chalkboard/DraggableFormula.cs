@@ -54,6 +54,7 @@ public class DraggableFormula : MonoBehaviour
         formulaData = data;
         initialized = true;
         SyncMovementTarget();
+        GetComponent<ChalkFormulaSketch>()?.Draw(data);
         UpdateLabel();
         if (nodeDefaultsApplied || data == null) return;
         FormulaNode[] nodes = GetOwnNodes();
@@ -183,6 +184,11 @@ public class DraggableFormula : MonoBehaviour
                 if (hitBody != null) break;
             }
             if (hitBody != this) return;
+            if (ChalkboardManager.Instance.Tool == ChalkboardTool.Eraser)
+            {
+                ChalkboardManager.Instance.RemoveFormula(this);
+                return;
+            }
             if (Input.GetMouseButtonDown(0) && FormulaNode.activeDraggingNode == null)
             {
                 DraggableFormula root = GetRootFormula();

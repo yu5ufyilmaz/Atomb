@@ -12,13 +12,27 @@ public class BookPageBlockSurface : MonoBehaviour
     private Canvas surface;
     private int left = -1, right = -1;
     private Mesh bakedPages;
-    // Sayfa-yerel UV (0-1) -> yüzey canvas koordinatı; sol ve sağ sayfa için ayrı çözülür.
-    private PageMap leftMap, rightMap;
+    private readonly List<PageTriangle> pageTriangles = new List<PageTriangle>();
 
-    private struct PageMap
+    private struct PageTriangle
     {
-        public float ax, bx, cx, ay, by, cy;
-        public Vector2 Map(Vector2 uv) => new Vector2(ax * uv.x + bx * uv.y + cx, ay * uv.x + by * uv.y + cy);
+        public bool right;
+        public Vector2 a, b, c;
+        public Vector3 pa, pb, pc;
+        public Vector3 Map(Vector2 uv)
+        {
+            Vector2 ab = b - a, ac = c - a, ap = uv - a;
+            float det = Cross(ab, ac);
+            float v = Cross(ap, ac) / det, w = Cross(ab, ap) / det;
+            return pa + (pb - pa) * v + (pc - pa) * w;
+        }
+        public bool Contains(Vector2 uv)
+        {
+            float sign = Mathf.Sign(Cross(b - a, c - a));
+            return sign * Cross(b - a, uv - a) >= -0.000001f
+                && sign * Cross(c - b, uv - b) >= -0.000001f
+                && sign * Cross(a - c, uv - c) >= -0.000001f;
+        }
     }
 
     private void Awake()
@@ -36,8 +50,14 @@ public class BookPageBlockSurface : MonoBehaviour
         if (!visible) { if (surface != null) surface.gameObject.SetActive(false); return; }
         if (surface == null) BuildSurface();
         if (surface == null) return;
+        bool refresh = !surface.gameObject.activeSelf || left != book.LeftPageIndex || right != book.RightPageIndex;
         surface.gameObject.SetActive(true);
-        if (left != book.LeftPageIndex || right != book.RightPageIndex) RefreshPages();
+        if (refresh)
+        {
+            if (bakedPages != null) book.bookSkinnedMeshRenderer.BakeMesh(bakedPages, true);
+            BuildPageMaps(book.bookSkinnedMeshRenderer, (RectTransform)surface.transform);
+            RefreshPages();
+        }
     }
 
     private void BuildSurface()
@@ -56,13 +76,15 @@ public class BookPageBlockSurface : MonoBehaviour
         if (mesh.sharedMesh != null)
         {
             bakedPages = new Mesh();
-            mesh.BakeMesh(bakedPages);
+            // Rig'in ölçeğini dahil et: false bu modelde parent ölçeğini bir kez daha uygular.
+            // true ile elde edilen renderer-yerel noktalar GPU'daki kemik dönüşümleriyle eşleşir.
+            mesh.BakeMesh(bakedPages, true);
             bakedPages.RecalculateBounds();
             if (bakedPages.vertexCount > 0 && bakedPages.bounds.size.sqrMagnitude > 0.00000001f)
                 bounds = bakedPages.bounds;
         }
         rect.sizeDelta = new Vector2(1000, 700);
-        // Sayfa eğri/kalın olsa da çerçeveler yüzeyin altında kalmasın diye canvas yeterince yukarıda durur.
+        // Kartlar ve taşıma bandı için ana düzlem; UV çerçeveleri gerçek yüzeye ayrıca yansıtılır.
         float lift = Mathf.Max(bounds.size.y * 0.1f, bounds.size.x * 0.01f);
         rect.localPosition = new Vector3(bounds.center.x, bounds.max.y + lift, bounds.center.z);
         rect.localRotation = Quaternion.Euler(90, 0, 0);
@@ -77,93 +99,127 @@ public class BookPageBlockSurface : MonoBehaviour
         BuildPageMaps(mesh, rect);
     }
 
-    // Sayfa meshinin gerçek UV'sinden, kırpılan bölgenin yüzeyde tam hangi noktaya denk geldiğini çıkarır.
-    // Mesh okunamazsa veya sayfa düz değilse kitabı iki eşit yarım sayfa sayan yaklaşık yerleşime döner.
+    // Afin yaklaşım yerine her UV üçgeninin gerçek 3B yüzeyini sakla; sırt ve eğrilik korunur.
     private void BuildPageMaps(SkinnedMeshRenderer mesh, RectTransform rect)
     {
-        leftMap = FallbackMap(false);
-        rightMap = FallbackMap(true);
+        pageTriangles.Clear();
         if (bakedPages == null || bakedPages.vertexCount == 0) return;
         var uvs = new List<Vector2>();
         bakedPages.GetUVs(0, uvs);
         Vector3[] vertices = bakedPages.vertices;
         if (uvs.Count != vertices.Length || bakedPages.subMeshCount == 0) return;
         int submesh = Mathf.Clamp(book.bookMaterialIndex, 0, bakedPages.subMeshCount - 1);
-        var used = new HashSet<int>(bakedPages.GetIndices(submesh));
-        var leftUV = new List<Vector2>(); var leftPos = new List<Vector2>();
-        var rightUV = new List<Vector2>(); var rightPos = new List<Vector2>();
-        foreach (int index in used)
+        int[] indices = bakedPages.GetTriangles(submesh);
+        for (int i = 0; i < indices.Length; i += 3)
         {
-            Vector2 uv = uvs[index];
-            Vector3 local = rect.InverseTransformPoint(mesh.transform.TransformPoint(vertices[index]));
-            Vector2 pos = new Vector2(local.x, local.y);
-            if (uv.x < 0.5f) { leftUV.Add(new Vector2(uv.x * 2f, uv.y)); leftPos.Add(pos); }
-            else { rightUV.Add(new Vector2((uv.x - 0.5f) * 2f, uv.y)); rightPos.Add(pos); }
+            int a = indices[i], b = indices[i + 1], c = indices[i + 2];
+            bool rightPage = (uvs[a].x + uvs[b].x + uvs[c].x) / 3f >= 0.5f;
+            Vector2 offset = rightPage ? Vector2.right : Vector2.zero;
+            var triangle = new PageTriangle
+            {
+                right = rightPage,
+                a = Vector2.Scale(uvs[a], new Vector2(2, 1)) - offset,
+                b = Vector2.Scale(uvs[b], new Vector2(2, 1)) - offset,
+                c = Vector2.Scale(uvs[c], new Vector2(2, 1)) - offset,
+                pa = rect.InverseTransformPoint(mesh.transform.TransformPoint(vertices[a])),
+                pb = rect.InverseTransformPoint(mesh.transform.TransformPoint(vertices[b])),
+                pc = rect.InverseTransformPoint(mesh.transform.TransformPoint(vertices[c])),
+            };
+            if (Mathf.Abs(Cross(triangle.b - triangle.a, triangle.c - triangle.a)) > 0.00000001f)
+                pageTriangles.Add(triangle);
         }
-        if (TryFit(leftUV, leftPos, out PageMap fittedLeft)) leftMap = fittedLeft;
-        if (TryFit(rightUV, rightPos, out PageMap fittedRight)) rightMap = fittedRight;
     }
 
-    private static PageMap FallbackMap(bool rightPage)
+    private Vector3 MapPagePoint(Vector2 uv, bool rightPage)
     {
-        return new PageMap { ax = 500, cx = rightPage ? 0 : -500, by = 700, cy = -350 };
+        foreach (var triangle in pageTriangles)
+            if (triangle.right == rightPage && triangle.Contains(uv)) return triangle.Map(uv);
+        return new Vector3(uv.x * 500 + (rightPage ? 0 : -500), uv.y * 700 - 350, 0);
     }
 
-    // En küçük kareler ile pos = M * uv + t (2B afin) çözer; düz olmayan sayfalarda reddeder.
-    private static bool TryFit(List<Vector2> uv, List<Vector2> pos, out PageMap map)
+    private static float Cross(Vector2 a, Vector2 b) => a.x * b.y - a.y * b.x;
+
+    // Görünür alan ve dört kenar aynı UV üçgenlerinden kırpılır; sayfanın yüksekliği kaybolmaz.
+    internal void PopulateRegion(VertexHelper vh, Rect uv, bool rightPage, Transform target, Color tint)
     {
-        map = default;
-        int count = uv.Count;
-        if (count < 3) return false;
-        double suu = 0, suv = 0, su = 0, svv = 0, sv = 0;
-        double sux = 0, svx = 0, sx = 0, suy = 0, svy = 0, sy = 0;
-        for (int i = 0; i < count; i++)
+        vh.Clear();
+        foreach (var triangle in pageTriangles)
         {
-            double u = uv[i].x, v = uv[i].y, x = pos[i].x, y = pos[i].y;
-            suu += u * u; suv += u * v; su += u; svv += v * v; sv += v;
-            sux += u * x; svx += v * x; sx += x;
-            suy += u * y; svy += v * y; sy += y;
+            if (triangle.right != rightPage) continue;
+            var polygon = new List<Vector2> { triangle.a, triangle.b, triangle.c };
+            polygon = Clip(polygon, 0, uv.xMin, true);
+            polygon = Clip(polygon, 0, uv.xMax, false);
+            polygon = Clip(polygon, 1, uv.yMin, true);
+            polygon = Clip(polygon, 1, uv.yMax, false);
+            int start = vh.currentVertCount;
+            foreach (Vector2 point in polygon)
+                vh.AddVert(target.InverseTransformPoint(surface.transform.TransformPoint(triangle.Map(point))), tint, Vector2.zero);
+            for (int i = 1; i + 1 < polygon.Count; i++) vh.AddTriangle(start, start + i, start + i + 1);
         }
-        double[] m = { suu, suv, su, suv, svv, sv, su, sv, count };
-        double det = Det3(m);
-        if (System.Math.Abs(det) < 1e-9) return false;
-        double[] rx = SolveCramer(m, det, sux, svx, sx);
-        double[] ry = SolveCramer(m, det, suy, svy, sy);
-        map = new PageMap { ax = (float)rx[0], bx = (float)rx[1], cx = (float)rx[2], ay = (float)ry[0], by = (float)ry[1], cy = (float)ry[2] };
-        double error = 0;
-        for (int i = 0; i < count; i++) error += (map.Map(uv[i]) - pos[i]).sqrMagnitude;
-        // Sayfa eğriliği küçük sapma verir; büyük sapma UV düzeninin beklenenden farklı olduğunu gösterir.
-        return System.Math.Sqrt(error / count) < 25.0;
     }
 
-    private static double Det3(double[] m)
+    internal bool HitRegion(Vector2 screenPoint, Camera camera, Rect region, bool rightPage)
     {
-        return m[0] * (m[4] * m[8] - m[5] * m[7]) - m[1] * (m[3] * m[8] - m[5] * m[6]) + m[2] * (m[3] * m[7] - m[4] * m[6]);
-    }
-
-    private static double[] SolveCramer(double[] m, double det, double r0, double r1, double r2)
-    {
-        double[] result = new double[3];
-        double[] rhs = { r0, r1, r2 };
-        for (int column = 0; column < 3; column++)
+        if (camera == null) return false;
+        Ray worldRay = camera.ScreenPointToRay(screenPoint);
+        var ray = new Ray(surface.transform.InverseTransformPoint(worldRay.origin), surface.transform.InverseTransformVector(worldRay.direction));
+        foreach (var triangle in pageTriangles)
         {
-            double[] c = (double[])m.Clone();
-            for (int row = 0; row < 3; row++) c[row * 3 + column] = rhs[row];
-            result[column] = Det3(c) / det;
+            if (triangle.right != rightPage) continue;
+            var plane = new Plane(triangle.pa, triangle.pb, triangle.pc);
+            if (!plane.Raycast(ray, out float distance)) continue;
+            Vector3 ab = triangle.pb - triangle.pa, ac = triangle.pc - triangle.pa, ap = ray.GetPoint(distance) - triangle.pa;
+            float aa = Vector3.Dot(ab, ab), bb = Vector3.Dot(ac, ac), cross = Vector3.Dot(ab, ac);
+            float det = aa * bb - cross * cross;
+            if (Mathf.Abs(det) < 0.00000001f) continue;
+            float v = (bb * Vector3.Dot(ap, ab) - cross * Vector3.Dot(ap, ac)) / det;
+            float w = (aa * Vector3.Dot(ap, ac) - cross * Vector3.Dot(ap, ab)) / det;
+            if (v < 0 || w < 0 || v + w > 1f) continue;
+            Vector2 uv = triangle.a + (triangle.b - triangle.a) * v + (triangle.c - triangle.a) * w;
+            if (region.Contains(uv)) return true;
+        }
+        return false;
+    }
+
+    private static List<Vector2> Clip(List<Vector2> polygon, int axis, float edge, bool keepGreater)
+    {
+        var result = new List<Vector2>();
+        if (polygon.Count == 0) return result;
+        Vector2 previous = polygon[polygon.Count - 1];
+        bool wasInside = keepGreater ? previous[axis] >= edge : previous[axis] <= edge;
+        foreach (Vector2 current in polygon)
+        {
+            bool inside = keepGreater ? current[axis] >= edge : current[axis] <= edge;
+            if (inside != wasInside) result.Add(Vector2.Lerp(previous, current, (edge - previous[axis]) / (current[axis] - previous[axis])));
+            if (inside) result.Add(current);
+            previous = current;
+            wasInside = inside;
         }
         return result;
     }
 
     private void PlaceClueRegion(RectTransform rect, BookClueRegion region, bool rightPage)
     {
-        PageMap map = rightPage ? rightMap : leftMap;
         Rect uv = region.regionUV;
-        Vector2 a = map.Map(new Vector2(uv.xMin, uv.yMin)), b = map.Map(new Vector2(uv.xMax, uv.yMin));
-        Vector2 c = map.Map(new Vector2(uv.xMax, uv.yMax)), d = map.Map(new Vector2(uv.xMin, uv.yMax));
+        Vector2 a = MapPagePoint(new Vector2(uv.xMin, uv.yMin), rightPage), b = MapPagePoint(new Vector2(uv.xMax, uv.yMin), rightPage);
+        Vector2 c = MapPagePoint(new Vector2(uv.xMax, uv.yMax), rightPage), d = MapPagePoint(new Vector2(uv.xMin, uv.yMax), rightPage);
         Vector2 min = Vector2.Min(Vector2.Min(a, b), Vector2.Min(c, d));
         Vector2 max = Vector2.Max(Vector2.Max(a, b), Vector2.Max(c, d));
-        rect.anchoredPosition = (min + max) * 0.5f;
-        rect.sizeDelta = Vector2.Max(max - min, new Vector2(24f, 24f));
+        Vector3 center = MapPagePoint(uv.center, rightPage);
+        rect.localPosition = new Vector3((min.x + max.x) * 0.5f, (min.y + max.y) * 0.5f, center.z);
+        // Eğri yüzeyin düz raycast dikdörtgenini aşabildiği kenarlara pay bırak;
+        // gerçek tıklama alanını HitRegion UV üzerinden sınırlar.
+        rect.sizeDelta = Vector2.Max(max - min, Vector2.one * 0.001f) + Vector2.one * 24f;
+        if (pageTriangles.Count == 0) return;
+        foreach (var image in rect.GetComponentsInChildren<Image>())
+        {
+            var projection = image.GetComponent<BookPageRegionProjection>() ?? image.gameObject.AddComponent<BookPageRegionProjection>();
+            projection.Surface = this;
+            projection.RegionRect = rect;
+            projection.RegionUV = uv;
+            projection.RightPage = rightPage;
+            image.SetVerticesDirty();
+        }
     }
 
     private void RefreshPages()
@@ -174,6 +230,7 @@ public class BookPageBlockSurface : MonoBehaviour
         {
             if (page == null || !book.IsOnPage(page.pageIndex) || page.blocks == null) continue;
             float x = page.pageIndex == right ? 250 : -250;
+            float y = 270;
             for (int i = 0; i < page.blocks.Count; i++)
             {
                 var obj = new GameObject("Sayfa İpucu", typeof(RectTransform), typeof(CanvasGroup), typeof(NotebookDraggableBlock));
@@ -181,10 +238,13 @@ public class BookPageBlockSurface : MonoBehaviour
                 var block = obj.GetComponent<NotebookDraggableBlock>();
                 block.Initialize(page.blocks[i], true);
                 var rect = (RectTransform)obj.transform;
-                rect.sizeDelta = new Vector2(360, 150);
-                rect.anchoredPosition = new Vector2(x, 175 - i * 185);
+                float height = page.blocks[i].blockType == NotebookBlockType.Quest ? 230 : 145;
+                rect.sizeDelta = new Vector2(410, height);
+                rect.pivot = new Vector2(0.5f, 1);
+                rect.anchoredPosition = new Vector2(x, y);
+                y -= height + 18;
                 var image = obj.GetComponent<Image>();
-                image.color = new Color(1f, 0.77f, 0.19f, 1f);
+                image.color = new Color(0.96f, 0.92f, 0.79f, 1f);
                 var outline = obj.GetComponent<UnityEngine.UI.Outline>();
                 outline.effectColor = new Color(0.12f, 0.07f, 0.02f, 1);
                 outline.effectDistance = new Vector2(4, -4);
@@ -208,7 +268,7 @@ public class BookPageBlockSurface : MonoBehaviour
         text.transform.SetParent(handle.transform, false);
         text.rectTransform.sizeDelta = hr.sizeDelta;
         text.text = book.clueData != null ? "SARI CERCEVEYI TUT > DEFTERE SURUKLE\nBu bant: kitabi tasi | A/D: sayfa"
-            : "SARI KARTI TUT > DEFTERE SURUKLE\nBu bant: kitabi tasi | A/D: sayfa"; text.fontSize = 21;
+            : "CERCEVELI NOTU TUT > DEFTERE SURUKLE\nBu bant: kitabi tasi | A/D: sayfa"; text.fontSize = 21;
         text.color = Color.white;
         text.alignment = TextAlignmentOptions.Center; text.raycastTarget = false;
     }
@@ -243,8 +303,36 @@ public class BookPageBlockSurface : MonoBehaviour
     private void OnDestroy() { if (bakedPages != null) Destroy(bakedPages); }
 }
 
+// Mevcut sürükleme ve hover görsellerini, seçilen UV'nin gerçek sayfa yüzeyine taşır.
+internal sealed class BookPageRegionProjection : BaseMeshEffect, ICanvasRaycastFilter
+{
+    internal BookPageBlockSurface Surface;
+    internal RectTransform RegionRect;
+    internal Rect RegionUV;
+    internal bool RightPage;
+
+    public bool IsRaycastLocationValid(Vector2 screenPoint, Camera eventCamera) =>
+        Surface == null || Surface.HitRegion(screenPoint, eventCamera, RegionUV, RightPage);
+
+    public override void ModifyMesh(VertexHelper vh)
+    {
+        if (!IsActive() || Surface == null || RegionRect == null) return;
+        var rect = (RectTransform)transform;
+        Vector3 min = RegionRect.InverseTransformPoint(rect.TransformPoint(rect.rect.min));
+        Vector3 max = RegionRect.InverseTransformPoint(rect.TransformPoint(rect.rect.max));
+        Rect bounds = RegionRect.rect;
+        Vector2 a = new Vector2((min.x - bounds.xMin) / bounds.width, (min.y - bounds.yMin) / bounds.height);
+        Vector2 b = new Vector2((max.x - bounds.xMin) / bounds.width, (max.y - bounds.yMin) / bounds.height);
+        Vector2 uvMin = RegionUV.min + Vector2.Scale(a, RegionUV.size);
+        Vector2 uvMax = RegionUV.min + Vector2.Scale(b, RegionUV.size);
+        Surface.PopulateRegion(vh, Rect.MinMaxRect(uvMin.x, uvMin.y, uvMax.x, uvMax.y), RightPage, transform, graphic.color);
+    }
+}
+
 internal class BookPageSourceHighlight : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
+    private Color originalColor;
+    private void Awake() { originalColor = GetComponent<Image>().color; }
     public void OnPointerEnter(PointerEventData data)
     {
         GetComponent<Image>().color = new Color(1f, 0.95f, 0.5f, 1);
@@ -255,7 +343,7 @@ internal class BookPageSourceHighlight : MonoBehaviour, IPointerEnterHandler, IP
     private void ResetVisual()
     {
         var image = GetComponent<Image>();
-        if (image != null) image.color = new Color(1f, 0.77f, 0.19f, 1);
+        if (image != null) image.color = originalColor;
         transform.localScale = Vector3.one;
     }
 }

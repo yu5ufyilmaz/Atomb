@@ -90,7 +90,9 @@ public class FormulaNode : MonoBehaviour
         if ((Input.GetMouseButtonDown(0) || Input.GetMouseButtonDown(1)) && !overUI)
         {
             if (FindNodeAtPointer() != this) return;
-            if (Input.GetMouseButtonDown(1)) { Erase(); return; }
+            var tool = ChalkboardManager.Instance.Tool;
+            if (Input.GetMouseButtonDown(1) || tool == ChalkboardTool.Eraser) { Erase(); return; }
+            if (tool == ChalkboardTool.Move) return;
             if (nodeState == FormulaNodeState.Open && activeDraggingNode == null)
             { isDraggingLine = true; activeDraggingNode = this; }
         }

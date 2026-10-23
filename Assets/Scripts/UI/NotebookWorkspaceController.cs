@@ -27,6 +27,8 @@ public class NotebookWorkspaceController : MonoBehaviour
     private TextMeshProUGUI pageLabel, chapterLabel, statusLabel;
     private QuestDiagramGraphic pinnedDiagram;
     private GameObject pinnedPanel;
+    private GameObject boardControls;
+    private TextMeshProUGUI pinnedTitle, pinnedHint, boardFeedback;
     private InteractableBook activeBook;
     private int clueChapter, displayedStage = -1, displayedSeed;
     private readonly List<NotebookDraggableBlock> pageBlocks = new List<NotebookDraggableBlock>();
@@ -88,6 +90,11 @@ public class NotebookWorkspaceController : MonoBehaviour
         if (statusLabel == null) return;
         statusLabel.text = message;
         statusLabel.color = success ? new Color(0.15f, 0.35f, 0.15f) : new Color(0.55f, 0.12f, 0.1f);
+        if (boardFeedback != null)
+        {
+            boardFeedback.text = message;
+            boardFeedback.color = statusLabel.color;
+        }
     }
 
     private void OnQuestPinned(SynthesisQuestData quest) { RefreshPinnedQuest(); }
@@ -168,16 +175,28 @@ public class NotebookWorkspaceController : MonoBehaviour
         bookContent.pivot = new Vector2(0.5f, 1);
         scroll.content = bookContent;
 
-        var pin = Panel("Tahta Hedefi", bounds, new Vector2(330, 210), paper);
+        var pin = Panel("Tahta Hedefi", bounds, new Vector2(490, 235), paper);
         pin.anchorMin = pin.anchorMax = new Vector2(0, 1);
-        pin.anchoredPosition = new Vector2(180, -125);
+        pin.anchoredPosition = new Vector2(280, -135);
         MakeHeader(pin, "SABİTLENEN HEDEF ŞEMA");
         pinnedPanel = pin.gameObject;
+        pinnedTitle = Label(pin, "", new Vector2(0, 69), new Vector2(465, 30), 17);
         pinnedDiagram = new GameObject("Hedef Şema", typeof(RectTransform), typeof(QuestDiagramGraphic)).GetComponent<QuestDiagramGraphic>();
         pinnedDiagram.transform.SetParent(pin, false);
         var diagramRect = pinnedDiagram.rectTransform;
-        diagramRect.sizeDelta = new Vector2(310, 160);
-        diagramRect.anchoredPosition = new Vector2(0, -10);
+        diagramRect.sizeDelta = new Vector2(460, 140);
+        diagramRect.anchoredPosition = new Vector2(0, -8);
+        pinnedHint = Label(pin, "", new Vector2(0, -94), new Vector2(465, 30), 15);
+
+        var controls = Panel("Tahta Araçları", bounds, new Vector2(720, 100), paper);
+        controls.anchorMin = controls.anchorMax = Vector2.zero;
+        controls.anchoredPosition = new Vector2(395, 85);
+        boardControls = controls.gameObject;
+        Button(controls, "Taşı", new Vector2(-300, 25), new Vector2(90, 34), () => SetBoardTool(ChalkboardTool.Move));
+        Button(controls, "Tebeşir", new Vector2(-193, 25), new Vector2(110, 34), () => SetBoardTool(ChalkboardTool.Chalk));
+        Button(controls, "Silgi", new Vector2(-83, 25), new Vector2(90, 34), () => SetBoardTool(ChalkboardTool.Eraser));
+        Button(controls, "SENTEZLE / TEST ET", new Vector2(169, 25), new Vector2(300, 34), () => ChalkboardManager.Instance?.AttemptSynthesis());
+        boardFeedback = Label(controls, "Tebeşir: uçtan uca çiz. İkinci çizim çift bağ yapar.", new Vector2(0, -22), new Vector2(700, 43), 17);
         root.SetActive(false);
     }
 
@@ -398,7 +417,22 @@ public class NotebookWorkspaceController : MonoBehaviour
     }
 
     private static NotebookBlockData PartBlock(FormulaItemSO formula) => new NotebookBlockData { blockType = NotebookBlockType.PartClue, itemID = formula.itemID, title = formula.itemName, description = "Modül / kapasite " + formula.connectionCapacity };
-    private static SynthesisQuestData FindQuest(string id) => ProceduralSynthesisGenerator.Instance?.Run?.quests.Find(q => q.questID == id);
+    public static SynthesisQuestData FindQuest(string id)
+    {
+        var practice = ChalkboardManager.Instance != null ? ChalkboardManager.Instance.practiceQuest : null;
+        if (practice != null && practice.CreateQuest().questID == id) return practice.CreateQuest();
+        return ProceduralSynthesisGenerator.Instance?.Run?.quests.Find(q => q.questID == id);
+    }
+
+    private void SetBoardTool(ChalkboardTool tool)
+    {
+        if (ChalkboardManager.Instance == null) return;
+        ChalkboardManager.Instance.Tool = tool;
+        boardFeedback.text = tool == ChalkboardTool.Move ? "Taşı: parçayı tutup sürükle. Q/E: döndür."
+            : tool == ChalkboardTool.Eraser ? "Silgi: (x) uca tıklayıp aç; bağı ucundan sil; fazlalığı gövdesinden sil."
+            : "Tebeşir: bir uçtan diğerine çiz. Aynı bağı tekrar çizerek çift bağ yap.";
+        boardFeedback.color = ink;
+    }
 
     private void AddSource(NotebookBlockData data, ref float y)
     {
@@ -427,8 +461,17 @@ public class NotebookWorkspaceController : MonoBehaviour
     {
         if (pinnedPanel == null) return;
         bool boardActive = activeBook == null && ChalkboardManager.Instance != null && ChalkboardManager.Instance.isMachineActive;
-        pinnedPanel.SetActive(boardActive && ChalkboardManager.Instance.useProceduralQuests);
-        if (boardActive) pinnedDiagram.SetQuest(ChalkboardManager.Instance.PinnedQuest ?? ProceduralSynthesisGenerator.Instance.ActiveQuest);
+        var quest = boardActive ? ChalkboardManager.Instance.PinnedQuest : null;
+        pinnedPanel.SetActive(boardActive && quest != null);
+        boardControls.SetActive(boardActive);
+        if (quest != null)
+        {
+            pinnedTitle.text = quest.title;
+            pinnedHint.text = ChalkboardManager.Instance.practiceQuest != null
+                ? "?1: nötron üretmeli   /   ?2: çift bağ tutabilmeli"
+                : "Bilinmeyen yuvaları topladığın kural notlarıyla çöz.";
+            pinnedDiagram.SetQuest(quest);
+        }
     }
 
     private void MakeHeader(RectTransform window, string title)
