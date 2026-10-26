@@ -18,6 +18,7 @@ public partial class InteractableTuringMachine
     public bool IsReadingMeasurement { get; private set; }
     private bool IsMeasurementTerminal => SecondTraceExperiment.Active != null
         && SecondTraceExperiment.Active.terminal == this;
+    public bool RequiresMeasurementCursor => IsMeasurementTerminal && inMachineMode && !isExiting;
     private bool ReaderPaused => GameManager.Instance != null && GameManager.Instance.isGamePaused;
 
     private void OpenMeasurementReader()

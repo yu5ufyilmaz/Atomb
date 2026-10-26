@@ -88,7 +88,7 @@ public static class ResearchTrialBookTitles
     public static bool Apply(ResearchPuzzleTrial trial)
     {
         if (EditorApplication.isPlayingOrWillChangePlaymode || trial == null
-            || trial.gameObject.scene.path != ScenePath || trial.books == null || trial.books.Length != 4) return false;
+            || (trial.gameObject.scene.path != ScenePath && !trial.allowGameplayScene) || trial.books == null || trial.books.Length != 4) return false;
         var material = AssetDatabase.LoadAssetAtPath<Material>("Assets/Materials/SynthesisBlockout/Blockout_Tahta.mat");
         var sample = trial.GetComponentInChildren<TextMeshPro>(true);
         var font = sample != null ? sample.font : TMP_Settings.defaultFontAsset;

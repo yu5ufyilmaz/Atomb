@@ -4,6 +4,7 @@
     "com.febucci.custom-hierarchy": "https://github.com/febucci/unitypackage-custom-hierarchy.git",
     "com.unity.2d.sprite": "1.0.0",
     "com.unity.ai.navigation": "2.0.10",
+    "com.unity.animation.rigging": "1.4.1",
     "com.unity.burst": "1.8.28",
     "com.unity.cinemachine": "2.10.5",
     "com.unity.collab-proxy": "2.11.3",

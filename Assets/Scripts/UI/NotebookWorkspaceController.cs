@@ -16,6 +16,7 @@ public partial class NotebookWorkspaceController : MonoBehaviour
     [SerializeField] private Sprite notePaperSprite;
     [SerializeField] private TMP_FontAsset notebookHeadingFont;
     [SerializeField] private TMP_FontAsset notebookBodyFont;
+    [SerializeField] private TMP_FontAsset notebookHandwritingFont;
     private bool UsesNotebookSkin => IsArchiveNotebook && notebookSprite != null;
     public Canvas DragCanvas => root != null ? root.GetComponent<Canvas>() : null;
     public bool IsActive => root != null && root.activeSelf;
@@ -23,6 +24,9 @@ public partial class NotebookWorkspaceController : MonoBehaviour
     public bool CanMoveBlocks => IsActive && !IsPaused;
     public bool IsArchiveNotebook => ResearchPuzzleTrial.IsResearch(ChalkboardManager.Instance);
     public bool IsStandaloneOpen { get; private set; }
+    [Tooltip("Test sahnesinde serbest fare; oyun sahnesinde kapatarak Q/E ile gezin.")]
+    public bool standaloneUnlocksCursor = true;
+    public bool StandaloneRequiresCursor => IsStandaloneOpen && standaloneUnlocksCursor;
 
     private NotebookUI notebook;
     private GameObject root;
@@ -64,15 +68,26 @@ public partial class NotebookWorkspaceController : MonoBehaviour
 
     public void Open(InteractableBook book)
     {
+        RestoreWorkstationNotebookPosition();
         ResetNotebookPageTurn();
         openingNotebook = true;
         IsStandaloneOpen = false;
+        if (notebook != null && notebook.useScreenSpaceNotebook) notebook.isNotebookOpen = false;
         if (root == null) BuildWorkspace();
+        root.SetActive(true);
+        Canvas.ForceUpdateCanvases();
+        notebookWindow.localScale = Vector3.one * NotebookScale;
+        if (notebook != null && notebook.useScreenSpaceNotebook)
+        {
+            notebookOpenPosition = new Vector2(-notebookWindow.sizeDelta.x * NotebookScale * .5f - 50,
+                -bounds.rect.height * .5f + notebookWindow.sizeDelta.y * NotebookScale * .5f + 75);
+            notebookWindow.anchoredPosition = notebookOpenPosition;
+        }
         activeBook = book;
         if (archiveFooter != null && IsArchiveNotebook) archiveFooter.text = "NOTU SÜRÜKLE  /  ASLI DEFTERDE KALIR";
         if (generateProceduralRun) ProceduralSynthesisGenerator.Instance.EnsureRun();
-        root.SetActive(true);
-        bookWindow.gameObject.SetActive(book != null && !book.usePhysicalPageBlocks);
+        bookWindow.gameObject.SetActive(book != null && !book.usePhysicalPageBlocks
+            && (book.includeProceduralClues || book.synthesisPages.Count > 0));
         clueChapter = Mathf.Clamp(ProceduralSynthesisGenerator.Instance.Run != null ? ProceduralSynthesisGenerator.Instance.Run.currentStage : 0, 0, 4);
         if (ChalkboardManager.Instance != null)
         {
@@ -94,6 +109,7 @@ public partial class NotebookWorkspaceController : MonoBehaviour
         ResetNotebookPageTurn();
         bool restoreCursor = IsStandaloneOpen;
         IsStandaloneOpen = false;
+        if (notebook != null && notebook.useScreenSpaceNotebook) notebook.isNotebookOpen = false;
         if (ChalkboardManager.Instance != null)
         {
             ChalkboardManager.Instance.SynthesisFeedback -= ShowFeedback;
@@ -130,8 +146,7 @@ public partial class NotebookWorkspaceController : MonoBehaviour
     private void Update()
     {
         if (!IsActive) return;
-        group.interactable = !IsPaused;
-        group.blocksRaycasts = !IsPaused;
+        group.interactable = group.blocksRaycasts = !IsPaused && (!IsStandaloneOpen || standaloneUnlocksCursor);
         group.alpha = IsPaused ? 0f : 1f;
         if (IsPaused) ResetNotebookPageTurn();
         else
@@ -374,7 +389,7 @@ public partial class NotebookWorkspaceController : MonoBehaviour
             var rect = (RectTransform)block.transform;
             rect.sizeDelta = new Vector2(UsesNotebookSkin ? 218 : 234, UsesNotebookSkin ? 190 : 174);
             Top(rect, new Vector2(slot % 2 == 0 ? -(UsesNotebookSkin ? 116 : 125) : (UsesNotebookSkin ? 116 : 125), -8 - slot / 2 * (UsesNotebookSkin ? 204 : 190)));
-            rect.localRotation = Quaternion.identity; pageBlocks.Add(block);
+            ApplyArchiveNotePose(rect, notes[index]); pageBlocks.Add(block);
         }
         if (page.gameObject.activeSelf) pageLabel.text = UsesNotebookSkin ? $"{partsArchivePage + 1} / {pageCount}" : $"PARÇALAR  {partsArchivePage + 1} / {pageCount}";
         if (page.gameObject.activeSelf) UpdateArchivePager(partsArchivePage, pageCount);

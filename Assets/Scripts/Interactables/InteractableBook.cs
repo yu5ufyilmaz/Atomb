@@ -6,7 +6,7 @@ using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 
-public class InteractableBook : MonoBehaviour, IInteractable, IForceExitable
+public partial class InteractableBook : MonoBehaviour, IInteractable, IForceExitable
 {
     public enum BookInitialState
     {
@@ -87,6 +87,8 @@ public class InteractableBook : MonoBehaviour, IInteractable, IForceExitable
     public bool includeProceduralClues = true;
     [Tooltip("Özel blokları ekran penceresi yerine gerçek kitap sayfalarında gösterir.")]
     public bool usePhysicalPageBlocks;
+    [Tooltip("Notları kart penceresi yerine sayfanın UV yüzeyine basar.")]
+    public bool printNotesOnPages;
     [Tooltip("Sayfalardaki parça bölgeleri; defter blokları bu bölgelerin gerçek görüntüsünden kırpılır.")]
     public BookClueData clueData;
 
@@ -160,6 +162,8 @@ public class InteractableBook : MonoBehaviour, IInteractable, IForceExitable
     private StarterAssets.CharacterController playerGameScript;
     private MonoBehaviour playerLookScript;
     private Animator playerAnimator;
+    private float previousAnimatorSpeed;
+    private bool previousLookInput;
     private Camera mainCamera;
     private BoxCollider interactionCollider;
     public Collider bookCollider;
@@ -327,6 +331,8 @@ public class InteractableBook : MonoBehaviour, IInteractable, IForceExitable
             pageFlipObject.SetActive(false);
 
         InitializePages();
+        if (usePhysicalPageBlocks && GetComponent<BookPageBlockSurface>() == null)
+            gameObject.AddComponent<BookPageBlockSurface>();
     }
 
     // ==========================================
@@ -405,6 +411,12 @@ public class InteractableBook : MonoBehaviour, IInteractable, IForceExitable
     private void Update()
     {
         if (GameManager.Instance != null && GameManager.Instance.isGamePaused) return;
+        if (closeRequested && isOpen && !isAnimating)
+        {
+            closeRequested = false;
+            ForceExit();
+            return;
+        }
         if (isOpen && !isAnimating)
         {
             if (
@@ -421,7 +433,7 @@ public class InteractableBook : MonoBehaviour, IInteractable, IForceExitable
                 if (Input.GetKeyDown(KeyCode.T))
                 {
                     PuzzleReceiver receiver = GetComponent<PuzzleReceiver>();
-                    if (receiver != null)
+                    if (receiver != null && receiver.enabled)
                         receiver.ToggleSymbolMode();
                 }
 
@@ -511,6 +523,8 @@ public class InteractableBook : MonoBehaviour, IInteractable, IForceExitable
 
     private IEnumerator OpenBook()
     {
+        bool alreadyOpen = isOpen;
+        IsOpening = true;
         if (NotebookUI.Instance != null)
             NotebookUI.Instance.SetNotebookVisibility(false);
         isAnimating = true;
@@ -527,17 +541,19 @@ public class InteractableBook : MonoBehaviour, IInteractable, IForceExitable
         if (interactionCollider != null)
             interactionCollider.enabled = false;
 
-        if (playerGameScript != null)
-            playerGameScript.enabled = false;
-
-        if (playerController != null)
-            playerController.enabled = false;
-
-        if (playerLookScript != null)
-            playerLookScript.enabled = false;
-
+        if (playerGameScript != null) playerGameScript.SetFrozen(true, true, false);
+        // The view camera is attached to the animated head; pause its pose without disabling the Animator.
         if (playerAnimator != null)
-            playerAnimator.enabled = false;
+        {
+            previousAnimatorSpeed = playerAnimator.speed;
+            playerAnimator.speed = 0;
+        }
+        if (playerLookScript is StarterAssetsInputs inputs)
+        {
+            previousLookInput = inputs.cursorInputForLook;
+            inputs.look = Vector2.zero;
+            inputs.cursorInputForLook = false;
+        }
 
         GameManager.Instance.UpdateCursorState();
 
@@ -547,45 +563,47 @@ public class InteractableBook : MonoBehaviour, IInteractable, IForceExitable
         originalLocalScale = transform.localScale; // BUNU EKLEs
         transform.SetParent(cameraTransform, true);
 
-        float t = 0f;
+        pageIndexL = (startPageIndex % 2 == 0) ? startPageIndex : startPageIndex - 1;
+        pageIndexR = pageIndexL + 1;
+        currentPage = startPageIndex;
+        UpdateBookPagesMaterial();
+        float duration = Mathf.Max(.3f, moveDuration + .32f);
         Vector3 startLocalPos = transform.localPosition;
         Quaternion startLocalRot = transform.localRotation;
         Quaternion targetLocalRot = Quaternion.Euler(viewRotationOffset);
+        BeginCoverMotion(true, alreadyOpen);
+        var presentation = usePhysicalPageBlocks ? GetComponent<BookPageBlockSurface>() : null;
+        if (presentation != null)
+        {
+            // Build the input plane facing the reader, regardless of how the book lay on its shelf.
+            transform.localPosition = viewPositionOffset;
+            transform.localRotation = targetLocalRot;
+            if (!alreadyOpen) UpdateCoverMotion(1);
+            presentation.PreparePresentation();
+            if (!alreadyOpen) UpdateCoverMotion(0);
+            transform.localPosition = startLocalPos;
+            transform.localRotation = startLocalRot;
+        }
+        float t = 0f;
 
         while (t < 1f)
         {
-            t += Time.deltaTime / moveDuration;
+            if (GameManager.Instance != null && GameManager.Instance.isGamePaused) { yield return null; continue; }
+            t = Mathf.Clamp01(t + Time.deltaTime / duration);
             float smoothT = Mathf.SmoothStep(0.0f, 1.0f, t);
-            transform.localPosition = Vector3.Lerp(startLocalPos, viewPositionOffset, smoothT);
-            transform.localRotation = Quaternion.Slerp(startLocalRot, targetLocalRot, smoothT);
+            float arc = Mathf.Sin(Mathf.PI * smoothT);
+            transform.localPosition = Vector3.Lerp(startLocalPos, viewPositionOffset, smoothT) + Vector3.up * (.035f * arc);
+            float rotationT = Mathf.SmoothStep(0, 1, Mathf.InverseLerp(.06f, .96f, t));
+            transform.localRotation = Quaternion.Slerp(startLocalRot, targetLocalRot, rotationT)
+                * Quaternion.Euler(-2f * arc, 0, 1.2f * arc);
+            if (!alreadyOpen) UpdateCoverMotion(Mathf.InverseLerp(.12f, .92f, t));
+            if (!alreadyOpen && !coverSoundPlayed && t >= .15f)
+            { PlaySound(bookOpenSound); coverSoundPlayed = true; }
             yield return null;
         }
-
-        if (bookAnimator != null)
-        {
-            bookAnimator.SetTrigger(OpenTrigger);
-            bookAnimator.SetBool(IsOpenBool, true);
-        }
-
-        PlaySound(bookOpenSound);
-
-        // Animasyonun TAMAMEN bitmesini bekle
-        yield return new WaitForSeconds(animationDuration);
-
-        // Animator'ın "Open" state'ine geçmesini bekle
-        if (bookAnimator != null)
-        {
-            // Animator'ın güncellenmesi için bir frame bekle
-            yield return null;
-
-            // Animasyonun normalizedTime'ı 1.0'a ulaşana kadar bekle (tam bitiş)
-            AnimatorStateInfo stateInfo = bookAnimator.GetCurrentAnimatorStateInfo(0);
-            while (stateInfo.normalizedTime < 1.0f || bookAnimator.IsInTransition(0))
-            {
-                yield return null;
-                stateInfo = bookAnimator.GetCurrentAnimatorStateInfo(0);
-            }
-        }
+        transform.localPosition = viewPositionOffset;
+        transform.localRotation = targetLocalRot;
+        EndCoverMotion(true);
         // Kitap açıldığında belirlediğin sayfadan başlasın
         pageIndexL = (startPageIndex % 2 == 0) ? startPageIndex : startPageIndex - 1;
         pageIndexR = pageIndexL + 1;
@@ -621,11 +639,13 @@ public class InteractableBook : MonoBehaviour, IInteractable, IForceExitable
         // ------------------------------------
 
         isAnimating = false;
+        IsOpening = false;
         if (NotebookUI.Instance != null) NotebookUI.Instance.OpenBookWorkspace(this);
     }
 
     private IEnumerator CloseBook()
     {
+        IsClosing = true;
         if (NotebookUI.Instance != null) NotebookUI.Instance.SetWorkspaceMode(false);
         // --- COLLIDER FIX: Mesh'i Geri Al ve Colliderları Aç ---
         // Kitap kapanırken eski (kapalı) mesh'e dön
@@ -653,15 +673,18 @@ public class InteractableBook : MonoBehaviour, IInteractable, IForceExitable
         if (bookUI != null)
             bookUI.SetActive(false);
 
+        // Release the player as soon as closing starts; the returning book can finish independently.
+        if (playerLookScript is StarterAssetsInputs inputs)
+        {
+            inputs.look = Vector2.zero;
+            inputs.cursorInputForLook = previousLookInput;
+        }
+        if (playerAnimator != null) playerAnimator.speed = previousAnimatorSpeed;
+        if (playerGameScript != null) playerGameScript.SetFrozen(false, false, false);
         GameManager.Instance.UpdateCursorState();
 
-        if (bookAnimator != null)
-        {
-            bookAnimator.SetTrigger(CloseTrigger);
-            bookAnimator.SetBool(IsOpenBool, false);
-        }
-        PlaySound(bookCloseSound);
-        yield return new WaitForSeconds(animationDuration);
+        BeginCoverMotion(false, false);
+        transform.SetParent(originalParent, true);
 
         Vector3 targetWorldPosition;
         Quaternion targetWorldRotation;
@@ -682,48 +705,28 @@ public class InteractableBook : MonoBehaviour, IInteractable, IForceExitable
 
         while (t < 1f)
         {
-            t += Time.deltaTime / moveDuration;
+            if (GameManager.Instance != null && GameManager.Instance.isGamePaused) { yield return null; continue; }
+            t = Mathf.Clamp01(t + Time.deltaTime / Mathf.Max(.3f, moveDuration + .22f));
             float smoothT = Mathf.SmoothStep(0.0f, 1.0f, t);
-            transform.position = Vector3.Lerp(startWorldPos, targetWorldPosition, smoothT);
-            transform.rotation = Quaternion.Slerp(startWorldRot, targetWorldRotation, smoothT);
+            float arc = Mathf.Sin(Mathf.PI * smoothT);
+            transform.position = Vector3.Lerp(startWorldPos, targetWorldPosition, smoothT) + Vector3.up * (.025f * arc);
+            transform.rotation = Quaternion.Slerp(startWorldRot, targetWorldRotation,
+                Mathf.SmoothStep(0, 1, Mathf.InverseLerp(.04f, 1, t)));
+            UpdateCoverMotion(Mathf.InverseLerp(0, .8f, t));
+            if (!coverSoundPlayed && t >= .72f) { PlaySound(bookCloseSound); coverSoundPlayed = true; }
             yield return null;
         }
+        EndCoverMotion(false);
         transform.SetParent(originalParent, true);
         transform.localPosition = originalLocalPosition;
         transform.localRotation = originalLocalRotation;
         transform.localScale = originalLocalScale; // BUNU EKLE
 
-        // --- KONTROLLERİ GERİ AÇMA (DÜZELTİLEN KISIM) ---
-        if (playerAnimator != null)
-            playerAnimator.enabled = true;
-        if (playerController != null)
-            playerController.enabled = true;
-        if (playerGameScript != null)
-            playerGameScript.enabled = true;
-
-        if (playerLookScript != null)
-        {
-            playerLookScript.enabled = true;
-
-            // ESC'den sonra kilitlenen kamerayı zorla aç
-            if (playerLookScript is StarterAssetsInputs inputs)
-            {
-                inputs.cursorInputForLook = true;
-            }
-            else
-            {
-                var inputsComp = playerLookScript.GetComponent<StarterAssetsInputs>();
-                if (inputsComp != null)
-                {
-                    inputsComp.cursorInputForLook = true;
-                }
-            }
-        }
-
         if (interactionCollider != null)
             interactionCollider.enabled = true;
         currentPage = 0;
         isAnimating = false;
+        IsClosing = false;
         PlayerInteraction.NotifyInteractionExit(gameObject);
     }
 
@@ -762,49 +765,67 @@ public class InteractableBook : MonoBehaviour, IInteractable, IForceExitable
 
         isAnimating = true;
 
-        if (pageFlipSounds != null && pageFlipSounds.Length > 0)
-        {
-            AudioClip clipToPlay = pageFlipSounds[currentSoundIndex];
-            PlaySound(clipToPlay);
-            currentSoundIndex = (currentSoundIndex + 1) % pageFlipSounds.Length;
-        }
+        bool soundPlayed = false;
 
         if (pageFlipObject != null)
             pageFlipObject.SetActive(true);
 
         if (pageTurnMaterial != null)
         {
-            if (direction > 0)
-                pageTurnMaterial.SetFloat("_PageIndex", pageIndexR);
-            else
-                pageTurnMaterial.SetFloat("_PageIndex", pageIndexL - 1);
+            int turningPage = direction > 0 ? pageIndexR : pageIndexL - 1;
+            if (allowLoop) turningPage = (turningPage + totalPages) % totalPages;
+            pageTurnMaterial.SetFloat("_PageIndex", turningPage);
+            if (printNotesOnPages) pageTurnMaterial.SetTexture("_PagesTex", Texture2D.whiteTexture);
+            else if (bookPagesMaterial != null && bookPagesMaterial.HasProperty("_PagesTex"))
+                pageTurnMaterial.SetTexture("_PagesTex", bookPagesMaterial.GetTexture("_PagesTex"));
+            if (pageFlipRenderer != null) pageFlipRenderer.sharedMaterial = pageTurnMaterial;
+        }
+
+        var paper = GetComponent<BookPageBlockSurface>();
+        bool physicalTurn = usePhysicalPageBlocks && paper != null && paper.BeginTurn(direction);
+        if (physicalTurn)
+        {
+            // The next sheet is exposed as soon as the top one starts lifting.
+            int next = direction > 0 ? pageIndexR + 2 : pageIndexL - 2;
+            if (allowLoop) next = (next + totalPages) % totalPages;
+            SetVisiblePage(direction > 0 ? "_PageIndexR" : "_PageIndexL", next);
         }
 
         float t = 0f;
-        float flipSpeed = 1f / pageFlipDuration;
+        float flipSpeed = 1f / Mathf.Max(.1f, pageFlipDuration);
         bool indicesUpdated = false;
 
         while (t < 1f)
         {
+            if (GameManager.Instance != null && GameManager.Instance.isGamePaused) { yield return null; continue; }
             t += Time.deltaTime * flipSpeed;
             t = Mathf.Clamp01(t);
-            float v = t * t * t * (t * (t * 6f - 15f) + 10f);
+            float v = Mathf.SmoothStep(0, 1, t);
             float flipAmount = (direction > 0) ? v : 1f - v;
 
-            if (pageTurnMaterial != null)
+            if (physicalTurn) paper.UpdateTurn(v);
+            else if (pageTurnMaterial != null)
                 pageTurnMaterial.SetFloat("_PageFlip", flipAmount);
 
+            if (!soundPlayed && t >= .16f)
+            {
+                if (pageFlipSounds != null && pageFlipSounds.Length > 0)
+                {
+                    PlaySound(pageFlipSounds[currentSoundIndex % pageFlipSounds.Length]);
+                    currentSoundIndex = (currentSoundIndex + 1) % pageFlipSounds.Length;
+                }
+                soundPlayed = true;
+            }
             if (t >= 0.5f && !indicesUpdated)
             {
-                UpdatePageIndices(direction);
-                UpdateBookPagesMaterial();
+                if (!physicalTurn) { UpdatePageIndices(direction); UpdateBookPagesMaterial(); }
                 indicesUpdated = true;
             }
 
             yield return null;
         }
 
-        if (!indicesUpdated)
+        if (physicalTurn || !indicesUpdated)
         {
             UpdatePageIndices(direction);
             UpdateBookPagesMaterial();
@@ -812,6 +833,7 @@ public class InteractableBook : MonoBehaviour, IInteractable, IForceExitable
 
         if (pageFlipObject != null)
             pageFlipObject.SetActive(false);
+        if (physicalTurn) paper.EndTurn();
 
         currentPage = direction > 0 ? currentPage + 1 : currentPage - 1;
         UpdatePageUI();
@@ -1088,6 +1110,7 @@ public class InteractableBook : MonoBehaviour, IInteractable, IForceExitable
 
     public void ForceExit()
     {
+        if (isOpen && isAnimating) { closeRequested = true; return; }
         if (isOpen && !isAnimating)
         {
             // Kaçış durumunda sembol de temizlensin

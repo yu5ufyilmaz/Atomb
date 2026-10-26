@@ -18,6 +18,8 @@ public class NotebookUI : MonoBehaviour, ISaveable
     private bool IsDocumentInteraction => IsWorkspaceActive || (GameManager.Instance != null
         && (GameManager.Instance.activeInteraction is InteractableBook || GameManager.Instance.activeInteraction is InteractableChalkboard));
     private NotebookWorkspaceController workspace;
+    [Tooltip("Defteri eldeki model yerine ekran çalışma alanında göster.")]
+    public bool useScreenSpaceNotebook;
 
     [Header("  Data Source")]
     public NotebookData notebookData;
@@ -160,6 +162,7 @@ public class NotebookUI : MonoBehaviour, ISaveable
     // EVENT'LERİN KULLANACAĞI FONKSİYON
     public void SetNotebookVisibility(bool isVisible)
     {
+        if (useScreenSpaceNotebook) return;
         if (isVisible && IsDocumentInteraction) return;
         // Eğer makinede değilse görünürlüğü değiştir (Makinedeyken defter elde olmamalı)
         if (!isOnMachine && notebookPanel != null)
@@ -393,6 +396,12 @@ public class NotebookUI : MonoBehaviour, ISaveable
 
     public void OpenNotebookToCategory(int categoryIndex)
     {
+        if (useScreenSpaceNotebook)
+        {
+            if (workspace != null && workspace.IsArchiveNotebook && !workspace.IsActive)
+                workspace.ToggleStandaloneNotebook();
+            return;
+        }
         // Eğer oyuncu makinedeyse (osiloskop vb.) defter fiziksel olarak ele gelmesin, sadece arkaplanda sayfa değişsin.
         if (isOnMachine || IsDocumentInteraction)
         {

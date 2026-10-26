@@ -93,7 +93,7 @@ public partial class NotebookWorkspaceController
                 if (noteIndex >= notes.Count) break;
                 var block = CreateBlock(notes[noteIndex], false, informationContent);
                 var rect = (RectTransform)block.transform; rect.sizeDelta = new Vector2(UsesNotebookSkin ? 218 : 234, UsesNotebookSkin ? 240 : 200);
-                Top(rect, new Vector2(slot == 0 ? -(UsesNotebookSkin ? 116 : 125) : (UsesNotebookSkin ? 116 : 125), UsesNotebookSkin ? -58 : -10)); rect.localRotation = Quaternion.identity;
+                Top(rect, new Vector2(slot == 0 ? -(UsesNotebookSkin ? 116 : 125) : (UsesNotebookSkin ? 116 : 125), UsesNotebookSkin ? -58 : -10)); ApplyArchiveNotePose(rect, notes[noteIndex]);
             }
             informationContent.sizeDelta = new Vector2(0, informationPanel.rect.height);
             informationContent.anchoredPosition = Vector2.zero;

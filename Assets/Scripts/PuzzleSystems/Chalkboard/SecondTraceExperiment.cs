@@ -76,7 +76,7 @@ public sealed class SecondTraceExperiment : MonoBehaviour
 
     public void Initialize(ResearchPuzzleTrial research)
     {
-        if (gameObject.scene.name != "scn_SynthesisBlockout") return;
+        if (gameObject.scene.name != "scn_SynthesisBlockout" && !research.allowGameplayScene) return;
         Active = this;
         trial = research;
         var root = new GameObject("İz Ölçüm Çıktısı", typeof(RectTransform), typeof(Canvas), typeof(GraphicRaycaster), typeof(CanvasGroup));

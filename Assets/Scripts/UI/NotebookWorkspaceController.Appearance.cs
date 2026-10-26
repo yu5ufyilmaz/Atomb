@@ -158,6 +158,18 @@ public partial class NotebookWorkspaceController
         surface.GetComponent<Image>().color = Color.clear;
     }
 
+    private bool UsesHandwriting(NotebookDraggableBlock block) => !block.IsSource && notebookHandwritingFont != null
+        && !SecondTraceExperiment.IsMeasurementNote(block.Data);
+
+    private void ApplyArchiveNotePose(RectTransform rect, NotebookBlockData note)
+    {
+        int hash = 17;
+        foreach (char c in note.title ?? "") hash = unchecked(hash * 31 + c);
+        float angle = UsesNotebookSkin && notebookHandwritingFont != null && !SecondTraceExperiment.IsMeasurementNote(note)
+            ? ((hash & 255) / 255f - .5f) * 1.4f : 0;
+        rect.localRotation = Quaternion.Euler(0, 0, angle);
+    }
+
     public void StyleNotebookNote(NotebookDraggableBlock block)
     {
         if (!UsesNotebookSkin || block == null || !string.IsNullOrEmpty(block.Data?.clueDataID)) return;
@@ -170,14 +182,26 @@ public partial class NotebookWorkspaceController
         var footer = block.transform.Find("Bulmaca Etiketi"); if (footer != null) footer.gameObject.SetActive(false);
         bool notebookCard = block.GetComponentInParent<Canvas>()?.renderMode == RenderMode.ScreenSpaceOverlay;
         bool bookSource = block.IsSource && block.GetComponentInParent<InteractableBook>() != null;
+        bool handwritten = UsesHandwriting(block);
+        if (handwritten)
+        {
+            if (background != null) { background.color = Color.clear; background.canvasRenderer.cullTransparentMesh = false; }
+            if (outline != null) outline.enabled = false;
+            foreach (var border in block.GetComponentsInChildren<NotebookSketchBorder>())
+            {
+                border.enabled = true; border.color = new Color(.12f, .18f, .22f, .34f);
+            }
+        }
         foreach (var label in block.GetComponentsInChildren<TMP_Text>(true))
         {
             bool heading = label.name == "Başlık";
-            label.font = heading ? notebookHeadingFont : notebookBodyFont;
-            label.color = NotebookInk; label.fontStyle = heading ? FontStyles.Bold : FontStyles.Normal;
-            label.fontSizeMin = heading ? bookSource ? 16 : 13 : notebookCard || bookSource ? 14 : 11;
-            label.fontSizeMax = bookSource ? heading ? 22 : 18 : 16;
+            label.font = handwritten ? notebookHandwritingFont : heading ? notebookHeadingFont : notebookBodyFont;
+            label.color = handwritten ? new Color(.10f, .16f, .20f) : NotebookInk;
+            label.fontStyle = heading && !handwritten ? FontStyles.Bold : FontStyles.Normal;
+            label.fontSizeMin = handwritten ? heading ? 21 : 16 : heading ? bookSource ? 16 : 13 : notebookCard || bookSource ? 14 : 11;
+            label.fontSizeMax = handwritten ? heading ? 27 : 24 : bookSource ? heading ? 22 : 18 : 16;
             label.fontSize = label.fontSizeMax; label.enableAutoSizing = true;
+            if (heading && handwritten) label.text = block.Data.title;
             if (heading) { label.rectTransform.offsetMin = new Vector2(14, -50); label.rectTransform.offsetMax = new Vector2(-14, -16); }
         }
         var body = block.transform.Find("Açıklama")?.GetComponent<TMP_Text>();

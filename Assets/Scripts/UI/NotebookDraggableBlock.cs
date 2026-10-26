@@ -271,8 +271,13 @@ public class NotebookDraggableBlock : MonoBehaviour, IBeginDragHandler, IDragHan
         bool fromWorld = canvas.renderMode == RenderMode.WorldSpace;
         if (fromWorld && workspace.DragCanvas != null) canvas = workspace.DragCanvas;
         canvas = canvas.rootCanvas;
-        var copy = Instantiate(gameObject, canvas.transform, true);
+        // Printed book meshes belong to the curved page. Rebuild their drag copy as a normal paper note.
+        var copy = fromWorld
+            ? new GameObject("Sürüklenen Not", typeof(RectTransform), typeof(CanvasGroup), typeof(NotebookDraggableBlock))
+            : Instantiate(gameObject, canvas.transform, true);
+        if (fromWorld) copy.transform.SetParent(canvas.transform, false);
         var copyBlock = copy.GetComponent<NotebookDraggableBlock>();
+        if (fromWorld) copyBlock.Initialize(Data, false);
         copyBlock.enabled = false;
         copyBlock.ShowClueAsFloating();
         floatingRect = (RectTransform)copy.transform;
@@ -280,7 +285,13 @@ public class NotebookDraggableBlock : MonoBehaviour, IBeginDragHandler, IDragHan
         {
             floatingRect.localScale = Vector3.one;
             floatingRect.localRotation = Quaternion.identity;
-            floatingRect.sizeDelta = ((RectTransform)transform).sizeDelta;
+            floatingRect.pivot = new Vector2(.5f, .5f);
+            floatingRect.sizeDelta = new Vector2(300, 230);
+            workspace.StyleNotebookNote(copyBlock);
+            var fill = copy.GetComponent<Image>();
+            if (fill != null) fill.color = new Color(.96f, .93f, .83f, 1);
+            var shadow = copy.AddComponent<Shadow>();
+            shadow.effectColor = new Color(0, 0, 0, .35f); shadow.effectDistance = new Vector2(5, -6);
         }
         floatingRect.SetAsLastSibling();
         var floatingGroup = copy.GetComponent<CanvasGroup>();

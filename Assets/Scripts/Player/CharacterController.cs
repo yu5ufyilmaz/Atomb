@@ -184,6 +184,7 @@ namespace StarterAssets
         private StarterAssetsInputs _input;
         private GameObject _mainCamera;
         private AudioSource _audioSource;
+        private PlayerFootwork _footwork;
         private const float _threshold = 0.01f;
 
         private bool _hasAnimator;
@@ -202,6 +203,7 @@ namespace StarterAssets
 
         private void Awake()
         {
+            _footwork = GetComponent<PlayerFootwork>();
             // get a reference to our main camera
             if (_mainCamera == null)
             {
@@ -395,8 +397,8 @@ namespace StarterAssets
                     _animator.SetFloat(_animIDVelocityZ, 0f);
                 }
 
-                // --- YENİ EKLENEN KISIM: Dondurulmuşken Yumuşak Dönüş ---
-                if (_mainCamera != null)
+                // A full view lock must also keep the body still: its child camera target otherwise rotates with it.
+                if (!_lockCamera && _mainCamera != null)
                 {
                     _targetRotation = _mainCamera.transform.eulerAngles.y;
 
@@ -470,7 +472,8 @@ namespace StarterAssets
                 _animationBlend = 0f;
 
             // ROTASYON: Karakteri her zaman KAMERANIN baktığı yöne kilitle.
-            _targetRotation = _mainCamera.transform.eulerAngles.y;
+            _targetRotation = _footwork != null && _footwork.CanApply
+                ? _cinemachineTargetYaw : _mainCamera.transform.eulerAngles.y;
 
             // Sarhoşluk yalpalamasını rotasyona ekle
             float rotationWithDrunk = _targetRotation;
@@ -481,11 +484,9 @@ namespace StarterAssets
             Quaternion targetRotation = Quaternion.Euler(0.0f, rotationWithDrunk, 0.0f);
 
             // Slerp ile mevcut dönüşten hedefe kusursuzca ak (15f hızını zevkine göre değiştirebilirsin)
-            transform.rotation = Quaternion.Slerp(
-                transform.rotation,
-                targetRotation,
-                Time.deltaTime * 15f
-            );
+            transform.rotation = _footwork != null && _footwork.CanApply && _input.move.sqrMagnitude < .01f
+                ? Quaternion.RotateTowards(transform.rotation, targetRotation, _footwork.standingTurnSpeed * Time.deltaTime)
+                : Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * 15f);
 
             // HAREKET YÖNÜ: Input'u (WASD) kamera açısına göre ayarla.
             Vector3 inputDirection = new Vector3(_input.move.x, 0.0f, _input.move.y).normalized;
@@ -691,6 +692,8 @@ namespace StarterAssets
         }
 
         private bool _restrictRotation = false; // Kısıtlı görüş açık mı?
+        public bool IsFrozen => _isFrozen;
+        public float IntendedLookYaw => _cinemachineTargetYaw;
         private float _centerYaw; // Kilitlendiğimizde baktığımız merkez açı
         private float _yawLimit = 50f; // Sağa/Sola kaç derece dönebiliriz?
 

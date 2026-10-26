@@ -9,20 +9,47 @@ public partial class NotebookWorkspaceController
     private bool notebookExpanded = true;
     private float notebookReveal = 1;
     private Vector2 notebookOpenPosition;
+    private Vector2 workstationNotebookPosition;
+    private bool standalonePositioned;
+    private float NotebookScale => notebook != null && notebook.useScreenSpaceNotebook ? .8f : 1f;
+
+    private void RestoreWorkstationNotebookPosition()
+    {
+        if (!standalonePositioned || notebookWindow == null) return;
+        standalonePositioned = false;
+        notebookOpenPosition = workstationNotebookPosition;
+        notebookWindow.anchoredPosition = notebookOpenPosition;
+        notebookWindow.localScale = Vector3.one * NotebookScale;
+        notebookVisibility.alpha = notebookReveal = 1;
+        notebookExpanded = true;
+    }
 
     public void ToggleStandaloneNotebook()
     {
         if (!IsArchiveNotebook || IsPaused || notebook == null || notebook.isOnMachine
             || (GameManager.Instance != null && GameManager.Instance.activeInteraction != null)) return;
+        if (notebook.useScreenSpaceNotebook && GameManager.Instance != null && !GameManager.Instance.isGameStarted) return;
         if (IsStandaloneOpen) { Close(); return; }
         Open(null);
         // A notebook folded at a workstation must still open when requested with Tab.
         if (!notebookExpanded) ToggleNotebook();
         IsStandaloneOpen = true;
+        if (notebook.useScreenSpaceNotebook) notebook.isNotebookOpen = true;
+        if (!standaloneUnlocksCursor)
+        {
+            workstationNotebookPosition = notebookOpenPosition;
+            standalonePositioned = true;
+            notebookOpenPosition = new Vector2(-bounds.rect.width + notebookWindow.sizeDelta.x * NotebookScale * .5f + 45,
+                -bounds.rect.height * .5f + notebookWindow.sizeDelta.y * NotebookScale * .5f + 28);
+            notebookReveal = 0;
+            notebookVisibility.alpha = 0;
+            notebookVisibility.interactable = notebookVisibility.blocksRaycasts = false;
+            notebookWindow.anchoredPosition = notebookOpenPosition + Vector2.down * (notebookWindow.sizeDelta.y + 40);
+        }
         if (boardControls != null) boardControls.SetActive(false);
         archiveFooter.text = "TAB: KAPAT   /   Q E: BÖLÜM   /   TEKERLEK: SAYFA";
-        Cursor.lockState = CursorLockMode.None;
-        Cursor.visible = true;
+        Cursor.lockState = standaloneUnlocksCursor ? CursorLockMode.None : CursorLockMode.Locked;
+        Cursor.visible = standaloneUnlocksCursor;
     }
 
     public void BrowseStandaloneNotebook(int sectionDelta, int pageDelta)
@@ -83,8 +110,9 @@ public partial class NotebookWorkspaceController
         // Both positions use the notebook's right/center anchor, including after a resize.
         Vector2 dock = bounds.InverseTransformPoint(notebookToggle.position);
         dock -= new Vector2(bounds.rect.xMax, bounds.rect.center.y);
+        if (standalonePositioned) dock = notebookOpenPosition + Vector2.down * (notebookWindow.sizeDelta.y + 40);
         notebookWindow.anchoredPosition = Vector2.Lerp(dock, notebookOpenPosition, t);
-        notebookWindow.localScale = Vector3.one * Mathf.Lerp(.08f, 1, t);
+        notebookWindow.localScale = Vector3.one * NotebookScale * (standalonePositioned ? 1 : Mathf.Lerp(.08f, 1, t));
         notebookVisibility.alpha = t;
         notebookVisibility.interactable = notebookVisibility.blocksRaycasts = notebookReveal >= 1;
         if (notebookReveal <= 0) notebookWindow.gameObject.SetActive(false);

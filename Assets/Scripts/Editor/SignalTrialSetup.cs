@@ -212,6 +212,9 @@ public static class SignalTrialSetup
         window.anchoredPosition = new Vector2(-bounds.rect.width + 290, original.y);
         var positions = new[] { new Vector2(.28f, .23f), new Vector2(-.35f, .23f), new Vector2(-1.05f, .23f),
             new Vector2(.25f, -.65f), new Vector2(-.45f, -.65f), new Vector2(-1.25f, -.65f) };
+        if (trial.allowGameplayScene)
+            for (int i = 0; i < positions.Length; i++) positions[i] = board.minBounds + Vector2.Scale(board.maxBounds - board.minBounds,
+                    new Vector2(.2f + (i % 3) * .25f, i < 3 ? .7f : .3f));
         var parts = new List<DraggableFormula>();
         try
         {
@@ -223,6 +226,14 @@ public static class SignalTrialSetup
                 Check(workspace.ShowCollectedPart(id), "Collected part is missing from the archive."); Canvas.ForceUpdateCanvases();
                 var note = Array.Find(UnityEngine.Object.FindObjectsByType<NotebookDraggableBlock>(FindObjectsSortMode.None), b => !b.IsSource && b.isActiveAndEnabled && b.Data.itemID == id);
                 Vector3 point = board.boardTransform.TransformPoint(new Vector3(positions[i].x, positions[i].y, .02f));
+                if (trial.allowGameplayScene)
+                {
+                    // Keep the movable notebook on the opposite side of this actual drop point.
+                    float halfWidth = window.rect.width * window.localScale.x * .5f + 50;
+                    window.anchoredPosition = new Vector2(Camera.main.WorldToScreenPoint(point).x < Screen.width * .5f
+                        ? -halfWidth : -bounds.rect.width + halfWidth, original.y);
+                    Canvas.ForceUpdateCanvases();
+                }
                 Check(note != null && workspace.TryDropBlock(note, Camera.main.WorldToScreenPoint(point)), "Notebook to board drop failed.");
                 parts.Add(Array.Find(board.boardTransform.GetComponentsInChildren<DraggableFormula>(), p => p.formulaData.itemID == id));
             }
@@ -250,7 +261,8 @@ public static class SignalTrialSetup
             board.EnsureDocuments().SetDocumentPanelOpen(false, true);
             Check(workspace.ShowCollectedPart(SignalTrial.Attenuator), "Repeated part is missing."); Canvas.ForceUpdateCanvases();
             var repeatNote = Array.Find(UnityEngine.Object.FindObjectsByType<NotebookDraggableBlock>(FindObjectsSortMode.None), b => !b.IsSource && b.isActiveAndEnabled && b.Data.itemID == SignalTrial.Attenuator);
-            var repeatPoint = Camera.main.WorldToScreenPoint(board.boardTransform.TransformPoint(new Vector3(.3f, -.7f, .02f)));
+            Vector2 repeatPosition = trial.allowGameplayScene ? Vector2.Lerp(board.minBounds, board.maxBounds, .5f) : new Vector2(.3f, -.7f);
+            var repeatPoint = Camera.main.WorldToScreenPoint(board.boardTransform.TransformPoint(new Vector3(repeatPosition.x, repeatPosition.y, .02f)));
             Check(repeatNote != null && workspace.TryDropBlock(repeatNote, repeatPoint), "A collected drawing cannot be reused on the board.");
             var extraPart = Array.Find(board.boardTransform.GetComponentsInChildren<DraggableFormula>(), p => Array.IndexOf(restored, p) < 0);
             Check(extraPart != null && extraPart.formulaData.itemID == SignalTrial.Attenuator, "Repeated drawing did not create another instance.");

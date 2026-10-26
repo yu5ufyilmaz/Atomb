@@ -26,6 +26,7 @@ public class DraggableFormula : MonoBehaviour
     private bool initialized;
 
     public bool CanMoveOnBoard => gameObject.scene.name == "scn_SynthesisBlockout"
+        || ResearchPuzzleTrial.IsResearch(ChalkboardManager.Instance)
         || !GetConnectedParts().Exists(part => part.GetComponent<ChalkFormulaSketch>() != null);
 
     public int ConnectionCapacity => formulaData != null ? Mathf.Max(0, formulaData.connectionCapacity) : 0;
@@ -170,7 +171,7 @@ public class DraggableFormula : MonoBehaviour
         HandleInput();
         if (!CanMoveOnBoard) { isDragged = false; return; }
         if (GetRootFormula() != this) return;
-        if (isDragged) CalculateDragPosition();
+        if (isDragged) CalculateDragPosition(Input.mousePosition);
         transform.position = Vector3.Lerp(transform.position, targetPosition, Time.deltaTime * dragSpeed);
         transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, Time.deltaTime * rotationAnimSpeed);
     }
@@ -215,12 +216,12 @@ public class DraggableFormula : MonoBehaviour
         else if (scroll < 0f || Input.GetKeyDown(KeyCode.E)) targetRotation *= Quaternion.Euler(0f, 0f, -rotationStep);
     }
 
-    private void CalculateDragPosition()
+    private void CalculateDragPosition(Vector2 screenPosition)
     {
         ChalkboardManager manager = ChalkboardManager.Instance;
         Transform board = manager.boardTransform;
         if (board == null) return;
-        Ray ray = mainCam.ScreenPointToRay(Input.mousePosition);
+        Ray ray = mainCam.ScreenPointToRay(screenPosition);
         Plane plane = new Plane(board.forward, board.TransformPoint(new Vector3(0f, 0f, hoverOffset)));
         if (!plane.Raycast(ray, out float distance)) return;
         Vector3 local = board.InverseTransformPoint(ray.GetPoint(distance) + dragOffset);

@@ -224,7 +224,7 @@ Material:
     - _PPDPrimitiveLength: 1
     - _PPDPrimitiveWidth: 1
     - _PageCount: 8
-    - _PageFlip: 1
+    - _PageFlip: 0
     - _PageIndex: 0
     - _PageIndexBack: 2
     - _PageIndexFront: 1

@@ -77,6 +77,7 @@ public class InteractableChalkboard : MonoBehaviour, IInteractable, IForceExitab
     {
         if (isUsing || inMachineMode || isExiting)
             return;
+        if (NotebookUI.Instance != null && NotebookUI.Instance.useScreenSpaceNotebook) NotebookUI.Instance.ForceClose();
         StartCoroutine(MoveToInteractionPoint());
     }
 

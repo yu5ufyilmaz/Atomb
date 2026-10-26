@@ -10,6 +10,8 @@ public class SaveManager : MonoBehaviour
 private GameData gameData;
 private List<ISaveable> saveableObjects = new List<ISaveable>(); // Liste artık hazır!
 private string saveFileName = "SenzoraLocalSave.json";
+    [Tooltip("Geçiş denemesinde ana oyunun kayıt dosyasını okumaz veya değiştirmez.")]
+    public bool sessionOnly;
 
     private void Awake()
     {
@@ -45,6 +47,7 @@ private string saveFileName = "SenzoraLocalSave.json";
             ProceduralSynthesisGenerator.Instance.GenerateRun(UnityEngine.Random.Range(1, int.MaxValue));
         if (ChalkboardManager.Instance != null) ChalkboardManager.Instance.ResetBoard();
 
+        if (sessionOnly) return;
         string path = Path.Combine(Application.persistentDataPath, saveFileName);
         if (File.Exists(path))
         {
@@ -55,12 +58,14 @@ private string saveFileName = "SenzoraLocalSave.json";
 
     public bool HasSaveFile()
     {
+        if (sessionOnly) return false;
         string path = System.IO.Path.Combine(Application.persistentDataPath, saveFileName);
         return System.IO.File.Exists(path);
     }
 
     public bool LoadGame()
     {
+        if (sessionOnly) return false;
         string path = Path.Combine(Application.persistentDataPath, saveFileName);
 
         // Gelecekte buraya Steamworks Load mantığı eklenecek
@@ -90,6 +95,7 @@ private string saveFileName = "SenzoraLocalSave.json";
 
     public void SaveGame()
     {
+        if (sessionOnly) return;
         if (gameData == null)
             gameData = new GameData();
 
@@ -115,7 +121,7 @@ private string saveFileName = "SenzoraLocalSave.json";
     private void OnApplicationQuit()
     {
         // Sadece oyun aktif olarak başladıysa kaydet (Ana menüde çıkarsa boşuna kaydetmesin)
-        if (GameManager.Instance != null && GameManager.Instance.isGameStarted)
+        if (!sessionOnly && GameManager.Instance != null && GameManager.Instance.isGameStarted)
         {
             SaveGame();
             Debug.Log("Oyundan çıkılıyor... Son durum otomatik kaydedildi.");
@@ -125,7 +131,7 @@ private string saveFileName = "SenzoraLocalSave.json";
     // Opsiyonel: Oyun arka plana atılırsa (Özellikle ileride Steam Overlay vs. gelirse iyi olur)
     private void OnApplicationPause(bool pauseStatus)
     {
-        if (pauseStatus && GameManager.Instance != null && GameManager.Instance.isGameStarted)
+        if (!sessionOnly && pauseStatus && GameManager.Instance != null && GameManager.Instance.isGameStarted)
         {
             SaveGame();
         }

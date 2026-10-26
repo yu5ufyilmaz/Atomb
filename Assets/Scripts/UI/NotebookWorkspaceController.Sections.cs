@@ -178,7 +178,7 @@ public partial class NotebookWorkspaceController
                 if (index >= targets.Count) break;
                 var block = CreateBlock(targets[index], false, targetContent);
                 var rect = (RectTransform)block.transform; rect.sizeDelta = new Vector2(UsesNotebookSkin ? 218 : 234, UsesNotebookSkin ? 240 : 200);
-                Top(rect, new Vector2(slot == 0 ? -(UsesNotebookSkin ? 116 : 125) : (UsesNotebookSkin ? 116 : 125), UsesNotebookSkin ? -58 : -10)); rect.localRotation = Quaternion.identity;
+                Top(rect, new Vector2(slot == 0 ? -(UsesNotebookSkin ? 116 : 125) : (UsesNotebookSkin ? 116 : 125), UsesNotebookSkin ? -58 : -10)); ApplyArchiveNotePose(rect, targets[index]);
             }
             if (UsesNotebookSkin) ShowEmptyArchivePaper(targetPanel, targets.Count == 0);
             return;

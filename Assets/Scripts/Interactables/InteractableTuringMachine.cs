@@ -262,6 +262,7 @@ public partial class InteractableTuringMachine : MonoBehaviour, IInteractable, I
     {
         if (isInteracting || inMachineMode || isExiting)
             return;
+        if (NotebookUI.Instance != null && NotebookUI.Instance.useScreenSpaceNotebook) NotebookUI.Instance.ForceClose();
         StartCoroutine(MoveToInteractionPoint());
     }
 
@@ -435,7 +436,10 @@ public partial class InteractableTuringMachine : MonoBehaviour, IInteractable, I
         if (ControlsUIManager.Instance)
             ControlsUIManager.Instance.HideControls();
         if (GameManager.Instance)
+        {
             GameManager.Instance.activeInteraction = null;
+            GameManager.Instance.UpdateCursorState();
+        }
 
         isInteracting = false;
         isExiting = false;

@@ -156,7 +156,7 @@ public class GameManager : MonoBehaviour
 
     public bool IsCursorRequired()
     {
-        if (NotebookWorkspaceController.Instance != null && NotebookWorkspaceController.Instance.IsStandaloneOpen) return true;
+        if (NotebookWorkspaceController.Instance != null && NotebookWorkspaceController.Instance.StandaloneRequiresCursor) return true;
         if (!isGameStarted)
             return true;
         // 1. Eğer hiçbir etkileşimde değilsek (FPS modu), fare GİZLİ olmalı.
@@ -173,6 +173,8 @@ public class GameManager : MonoBehaviour
         if (activeInteraction is PuzzleReceiver)
             return true;
         if (activeInteraction is InteractableChalkboard)
+            return true;
+        if (activeInteraction is InteractableTuringMachine terminal && terminal.RequiresMeasurementCursor)
             return true;
         // 4. Diğer makinalarda (Turing, Osiloskop vb.) fare GİZLİ olmalı.
         return false;

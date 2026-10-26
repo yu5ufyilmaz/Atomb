@@ -2,11 +2,13 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-// Yalnız scn_SynthesisBlockout'a takılır; üretim sahnelerinde bu mod bulunmaz.
+// Test sahnesinde veya açıkça etkinleştirildiği laboratuvar kopyasında çalışır.
 public sealed class ResearchPuzzleTrial : MonoBehaviour
 {
     public static ResearchPuzzleTrial Active { get; private set; }
     public FormulaItemSO partTemplate;
+    [Tooltip("Sahne kopyasında araştırma içeriğini mevcut oyun nesneleriyle çalıştır.")]
+    public bool allowGameplayScene;
     public InteractableBook[] books = new InteractableBook[4];
     public ResearchTrialContent Content { get; private set; }
     public ChalkboardManager Board { get; private set; }
@@ -20,7 +22,7 @@ public sealed class ResearchPuzzleTrial : MonoBehaviour
 
     public bool Configure(SynthesisBlockoutScene scene)
     {
-        if (!enabled || gameObject.scene.name != "scn_SynthesisBlockout" || partTemplate == null || books == null || books.Length != 4)
+        if (!enabled || (!allowGameplayScene && gameObject.scene.name != "scn_SynthesisBlockout") || partTemplate == null || books == null || books.Length != 4)
             return false;
         Board = ChalkboardManager.Instance;
         var generator = ProceduralSynthesisGenerator.Instance;
@@ -46,6 +48,8 @@ public sealed class ResearchPuzzleTrial : MonoBehaviour
             books[i].usePhysicalPageBlocks = true;
             books[i].totalPages = secondTrace ? experiment.newTest ? Mathf.Max(2, (Content.Books[i].Count + 1) / 2 * 2) : 2 : 8;
             books[i].ClearPassword();
+            if (books[i].printNotesOnPages && books[i].bookPagesMaterial != null)
+                books[i].bookPagesMaterial.SetTexture("_PagesTex", Texture2D.whiteTexture);
             books[i].emissionIntensity = 0;
             foreach (var renderer in books[i].GetComponentsInChildren<Renderer>(true))
                 foreach (var material in renderer.materials)

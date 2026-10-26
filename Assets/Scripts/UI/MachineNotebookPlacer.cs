@@ -35,6 +35,7 @@ public class MachineNotebookPlacer : MonoBehaviour
 
     void Update()
     {
+        if (NotebookUI.Instance != null && NotebookUI.Instance.useScreenSpaceNotebook) return;
         if (machineInterface == null || targetSlot == null) return;
 
         bool isUsingThisMachine = (GameManager.Instance != null && 
