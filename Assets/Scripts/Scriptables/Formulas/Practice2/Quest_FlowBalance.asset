@@ -1,0 +1,69 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f7f827a5aa54424caab72cbca29d4790, type: 3}
+  m_Name: Quest_FlowBalance
+  m_EditorClassIdentifier: ''
+  questID: trial-flow-balance
+  title: AKIŞ DENGELEYİCİ MONTAJI
+  clueSummary: '?1: kesintisiz akış. ?2: dış kanala ısı aktarımı.'
+  output: {fileID: 0}
+  nodes:
+  - itemID: trial-core
+    isUnknown: 0
+    position: {x: -0.6, y: 0.5}
+  - itemID: trial-channel-b
+    isUnknown: 1
+    position: {x: -0.6, y: -0.65}
+  - itemID: trial-ring-b
+    isUnknown: 1
+    position: {x: 0.8, y: 0.5}
+  bonds:
+  - fromIndex: 0
+    toIndex: 1
+    bondType: 1
+    label: ''
+    directed: 0
+  - fromIndex: 0
+    toIndex: 2
+    bondType: 2
+    label: ''
+    directed: 0
+  rules:
+  - ruleType: 7
+    itemID: trial-channel-a
+    otherItemID: ''
+    bridgeItemID: ''
+    amount: 0
+  - ruleType: 7
+    itemID: trial-ring-a
+    otherItemID: ''
+    bridgeItemID: ''
+    amount: 0
+  - ruleType: 6
+    itemID: trial-channel-b
+    otherItemID: ''
+    bridgeItemID: ''
+    amount: 1
+  - ruleType: 6
+    itemID: trial-ring-b
+    otherItemID: ''
+    bridgeItemID: ''
+    amount: 1
+  clueParts:
+  - {fileID: 11400000, guid: 0f5384ddcfa1480184e6117dc5f0b8d9, type: 2}
+  - {fileID: 11400000, guid: bded795d7428413591d790cb65afc389, type: 2}
+  - {fileID: 11400000, guid: fb41f5239283488cbb7a402c8cb28130, type: 2}
+  - {fileID: 11400000, guid: 138c4de382fe4a99b5c7462b4fc318aa, type: 2}
+  - {fileID: 11400000, guid: 8d3517040d034849a6d5667d4138069f, type: 2}
+  clueNotes:
+  - "Merkez gövde kesintili akışla çalışmaz. Tek bağlı boşluğa, akışı bölmeden ileten parça gelmelidir."
+  - "Çift bağlı boşluk, ısının merkezde birikmesini önlemelidir. Isıyı dış kanala taşıyan parça gerekir."

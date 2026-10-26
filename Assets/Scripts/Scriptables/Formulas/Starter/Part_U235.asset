@@ -3,30 +3,20 @@
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject:
-    fileID: 0
-  m_PrefabInstance:
-    fileID: 0
-  m_PrefabAsset:
-    fileID: 0
-  m_GameObject:
-    fileID: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script:
-    fileID: 11500000
-    guid: 78024bc84943c624e98630172e1000b1
-    type: 3
+  m_Script: {fileID: 11500000, guid: 78024bc84943c624e98630172e1000b1, type: 3}
   m_Name: Part_U235
   m_EditorClassIdentifier: ''
   itemID: starter-U235
   itemName: U-235
   isCore: 1
   connectionCapacity: 3
-  chalkPrefab:
-    fileID: 1000
-    guid: 3c8489de99f5431abd1313438462e92b
-    type: 3
+  chalkPrefab: {fileID: 1000, guid: 3c8489de99f5431abd1313438462e92b, type: 3}
   description: Merkez parça. Bir tek ve bir çift bağı birlikte taşır.
   isDecoy: 0
   sketchSprites: []

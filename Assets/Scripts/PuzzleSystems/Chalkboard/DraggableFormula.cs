@@ -24,7 +24,9 @@ public class DraggableFormula : MonoBehaviour
 
     private Camera mainCam;
     private bool initialized;
-    private bool nodeDefaultsApplied;
+
+    public bool CanMoveOnBoard => gameObject.scene.name == "scn_SynthesisBlockout"
+        || !GetConnectedParts().Exists(part => part.GetComponent<ChalkFormulaSketch>() != null);
 
     public int ConnectionCapacity => formulaData != null ? Mathf.Max(0, formulaData.connectionCapacity) : 0;
     public int UsedCapacity
@@ -54,25 +56,29 @@ public class DraggableFormula : MonoBehaviour
         formulaData = data;
         initialized = true;
         SyncMovementTarget();
+        SignalPort.Configure(this);
         GetComponent<ChalkFormulaSketch>()?.Draw(data);
         UpdateLabel();
-        if (nodeDefaultsApplied || data == null) return;
         FormulaNode[] nodes = GetOwnNodes();
         for (int i = 0; i < nodes.Length; i++)
         {
-            if (data.initiallyBlockedNodes != null && data.initiallyBlockedNodes.Contains(i))
-                nodes[i].nodeState = FormulaNodeState.Blocked;
-            if (data.initiallyUnstableNodes != null && data.initiallyUnstableNodes.Contains(i))
-                nodes[i].nodeState = FormulaNodeState.Unstable;
+            nodes[i].nodeState = FormulaNodeState.Open;
+            nodes[i].doubleBondSocket = data != null && data.doubleBondNodes != null && data.doubleBondNodes.Contains(i);
         }
-        nodeDefaultsApplied = true;
     }
 
     private void UpdateLabel()
     {
         if (formulaData == null) return;
         string label = string.IsNullOrEmpty(formulaData.itemName) ? formulaData.itemID : formulaData.itemName;
-        if (formulaLabel != null) { formulaLabel.text = label; return; }
+        if (formulaData.doubleBondNodes != null && formulaData.doubleBondNodes.Count > 0) label += "\nÇİFT BAĞ (=)";
+        if (formulaLabel != null)
+        {
+            formulaLabel.text = label;
+            if (formulaData.doubleBondNodes != null && formulaData.doubleBondNodes.Count > 0)
+                formulaLabel.rectTransform.sizeDelta = new Vector2(formulaLabel.rectTransform.sizeDelta.x, 1f);
+            return;
+        }
         bool found = false;
         foreach (TMP_Text text in GetComponentsInChildren<TMP_Text>(true))
         {
@@ -162,6 +168,7 @@ public class DraggableFormula : MonoBehaviour
         if (mainCam == null) mainCam = Camera.main;
         if (mainCam == null) return;
         HandleInput();
+        if (!CanMoveOnBoard) { isDragged = false; return; }
         if (GetRootFormula() != this) return;
         if (isDragged) CalculateDragPosition();
         transform.position = Vector3.Lerp(transform.position, targetPosition, Time.deltaTime * dragSpeed);
@@ -184,12 +191,7 @@ public class DraggableFormula : MonoBehaviour
                 if (hitBody != null) break;
             }
             if (hitBody != this) return;
-            if (ChalkboardManager.Instance.Tool == ChalkboardTool.Eraser)
-            {
-                ChalkboardManager.Instance.RemoveFormula(this);
-                return;
-            }
-            if (Input.GetMouseButtonDown(0) && FormulaNode.activeDraggingNode == null)
+            if (Input.GetMouseButtonDown(0) && FormulaNode.activeDraggingNode == null && CanMoveOnBoard)
             {
                 DraggableFormula root = GetRootFormula();
                 root.SyncMovementTarget();
@@ -203,7 +205,7 @@ public class DraggableFormula : MonoBehaviour
             {
                 bool hasBonds = false;
                 foreach (FormulaNode node in GetOwnNodes()) if (node.isOccupied) hasBonds = true;
-                if (hasBonds) BreakAllBonds();
+                if (hasBonds && GetComponent<ChalkFormulaSketch>() == null) BreakAllBonds();
                 else ChalkboardManager.Instance.RemoveFormula(this);
             }
         }

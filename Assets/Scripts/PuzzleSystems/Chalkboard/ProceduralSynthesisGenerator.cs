@@ -186,8 +186,8 @@ public class ProceduralSynthesisGenerator : MonoBehaviour, ISaveable
                 part.connectionCapacity = mostNodes;
                 part.useUniversalNodeRules = true;
                 part.description = "Deneysel şema modülü. Uç tiplerini ve kitapta verilen bağlantı kurallarını karşılaştırın.";
-                part.initiallyBlockedNodes = i % 3 == 0 ? new List<int> { 0 } : new List<int>();
-                part.initiallyUnstableNodes = i % 3 == 1 ? new List<int> { mostNodes - 1 } : new List<int>();
+                part.initiallyBlockedNodes = new List<int>();
+                part.initiallyUnstableNodes = new List<int>();
                 if (i == 0) outputTemplate = part;
             }
             var decoy = CloneRuntime(donor, "ARIZA", "Bozuk Deney Modülü");
@@ -328,7 +328,6 @@ public class ProceduralSynthesisGenerator : MonoBehaviour, ISaveable
         foreach (var bond in bonds) { if (bond.bondType == BondType.Double) doubles++; else singles++; }
         foreach (var used in usedNodes) foreach (bool occupied in used) if (!occupied) openEnds++;
         quest.rules.Add(new SynthesisRuleData { ruleType = doubles > 0 ? SynthesisRuleType.MinDoubleBonds : SynthesisRuleType.MaxSingleBonds, amount = doubles > 0 ? doubles : singles });
-        quest.rules.Add(new SynthesisRuleData { ruleType = SynthesisRuleType.RequireNoBlockedEnds });
         quest.rules.Add(new SynthesisRuleData { ruleType = SynthesisRuleType.MaxOpenEnds, amount = openEnds });
         foreach (var item in formulaCatalog)
             if (item.isDecoy) { quest.rules.Add(new SynthesisRuleData { ruleType = SynthesisRuleType.ForbiddenPart, itemID = item.itemID }); break; }
@@ -358,7 +357,7 @@ public class ProceduralSynthesisGenerator : MonoBehaviour, ISaveable
                 }
     }
 
-    // Doğrulama aracı da aynı gerçek prefab uç kısıtlarını sorgular; kapalı uçlar silinebildiğinden kullanılabilir kabul edilir.
+    // Doğrulama aracı da aynı gerçek prefab uç kısıtlarını sorgular; tüm yuvalar doğrudan kullanılabilir.
     public bool CanRealizeQuest(SynthesisQuestData quest)
     {
         if (quest == null || quest.nodes == null || quest.bonds == null) return false;

@@ -51,8 +51,22 @@ public class NotebookDraggableBlock : MonoBehaviour, IBeginDragHandler, IDragHan
         CancelDrag();
         Data = data != null ? data.Clone() : new NotebookBlockData();
         IsSource = source;
+        var formula = Data.blockType == NotebookBlockType.PartClue && ProceduralSynthesisGenerator.Instance != null
+            ? ProceduralSynthesisGenerator.Instance.ResolveFormula(Data.itemID) : null;
+        if (formula != null)
+        {
+            if (formula.doubleBondNodes != null && formula.doubleBondNodes.Count > 0 && !(Data.title ?? "").Contains("ÇİFT BAĞ"))
+                Data.title += " [ÇİFT BAĞ]";
+            if ((Data.description ?? "").Contains("(x)")) Data.description = formula.description;
+        }
+        if (Data.blockType == NotebookBlockType.RuleClue && (Data.description ?? "").Contains("Kapalı (x) uç"))
+        {
+            Data.title = "OPERASYON / ÇİFT BAĞ";
+            Data.description = "Yuvalar doğrudan kullanılabilir. (=) çift bağ yuvasıdır. Aynı iki uç arasında ikinci kez çiz: 1/2 > 2/2. Mevcut bağı silme.";
+        }
         canvasGroup = GetComponent<CanvasGroup>();
         RenderBlock();
+        NotebookWorkspaceController.Instance?.StyleNotebookNote(this);
     }
 
     private void RenderBlock()
@@ -129,16 +143,37 @@ public class NotebookDraggableBlock : MonoBehaviour, IBeginDragHandler, IDragHan
         titleText.enableAutoSizing = true;
         titleText.fontSizeMin = 11f;
         titleText.fontSizeMax = 17f;
-        titleText.text = (quest ? "◆ HEDEF  " : Data.blockType == NotebookBlockType.RuleClue ? "KURAL  " : "PARÇA  ") + Data.title;
+        bool researchNote = ResearchPuzzleTrial.IsResearch(ChalkboardManager.Instance);
+        bool measurement = SecondTraceExperiment.IsMeasurementNote(Data);
+        titleText.text = (quest ? "◆ HEDEF  " : measurement ? "ÖLÇÜM KARTI  "
+            : Data.blockType == NotebookBlockType.RuleClue ? researchNote ? "KAYIT  " : "KURAL  " : "PARÇA  ") + Data.title;
+        if (measurement) titleText.text = "ÖLÇÜM KARTI  " + (Data.title ?? "").Replace("ÖLÇÜM / ", "");
         if (descriptionText == null)
             descriptionText = CreateText("Açıklama", new Vector2(10f, -39f), new Vector2(-10f, 8f), 13f);
-        descriptionText.text = Data.description;
+        descriptionText.text = measurement && researchNote
+            ? "Turing'in sol klavyesindeki yuvaya sürükle." : Data.description;
         // Bağ/köprü kuralının son cümlesi bulmacanın zorunlu bilgisidir; üç nokta ile kesilmez.
         if (autoBuilt && Data.blockType == NotebookBlockType.RuleClue)
         {
             float bodyHeight = descriptionText.GetPreferredValues(Data.description ?? "", rect.rect.width - 20f, 0f).y;
             rect.sizeDelta = new Vector2(rect.sizeDelta.x, Mathf.Max(115f, bodyHeight + 52f));
             descriptionText.overflowMode = TextOverflowModes.Overflow;
+        }
+        if (!IsSource && Data.blockType == NotebookBlockType.RuleClue)
+        {
+            bool linked = PuzzleInformation.TryResolve(Data, ChalkboardManager.Instance);
+            var footer = transform.Find("Bulmaca Etiketi");
+            var label = footer != null ? footer.GetComponent<TextMeshProUGUI>()
+                : CreateText("Bulmaca Etiketi", new Vector2(10, -39), new Vector2(-10, 4), 10);
+            label.rectTransform.anchorMin = Vector2.zero; label.rectTransform.anchorMax = new Vector2(1, 0);
+            label.rectTransform.pivot = new Vector2(.5f, 0); label.rectTransform.offsetMin = new Vector2(10, 4);
+            label.rectTransform.offsetMax = new Vector2(-10, 20);
+            label.enableAutoSizing = true; label.fontSizeMin = 8; label.fontSizeMax = 10;
+            label.text = measurement && researchNote ? "TURING'E TAKILAN KART" : researchNote ? "GENEL ARAŞTIRMA KAYDI"
+                : linked ? PuzzleInformation.Title(Data.questID, ChalkboardManager.Instance) : "BAĞLANTISI BELİRSİZ";
+            label.color = new Color(.3f, .34f, .3f);
+            descriptionText.rectTransform.offsetMin = new Vector2(descriptionText.rectTransform.offsetMin.x, 26);
+            if (autoBuilt) rect.sizeDelta += new Vector2(0, 18);
         }
 
         rect.localRotation = IsSource ? Quaternion.identity : Quaternion.Euler(0f, 0f, Data.rotation);
@@ -155,7 +190,7 @@ public class NotebookDraggableBlock : MonoBehaviour, IBeginDragHandler, IDragHan
                     diagramObject.transform.SetParent(transform, false);
                     diagram = diagramObject.AddComponent<QuestDiagramGraphic>();
                     RectTransform diagramRect = diagram.rectTransform;
-                    diagramRect.anchorMin = new Vector2(0f, 0.18f);
+                    diagramRect.anchorMin = new Vector2(0f, ResearchTrialContent.OwnsQuest(Data.questID) ? .26f : .18f);
                     diagramRect.anchorMax = new Vector2(1f, 0.8f);
                     diagramRect.offsetMin = new Vector2(8f, 0f);
                     diagramRect.offsetMax = new Vector2(-8f, 0f);
@@ -163,12 +198,14 @@ public class NotebookDraggableBlock : MonoBehaviour, IBeginDragHandler, IDragHan
                 diagram.raycastTarget = false;
                 diagram.SetQuest(blueprint);
                 descriptionText.rectTransform.anchorMin = Vector2.zero;
-                descriptionText.rectTransform.anchorMax = new Vector2(1f, 0.18f);
+                descriptionText.rectTransform.anchorMax = new Vector2(1f, ResearchTrialContent.OwnsQuest(Data.questID) ? .24f : .18f);
                 descriptionText.rectTransform.offsetMin = new Vector2(10f, 3f);
                 descriptionText.rectTransform.offsetMax = new Vector2(-10f, 0f);
                 descriptionText.fontSize = 11f;
             }
         }
+
+        SecondTraceGraphic.Decorate(this, titleText, descriptionText);
 
         if (IsSource || Data.blockType != NotebookBlockType.PartClue || generator == null)
             return;
@@ -199,6 +236,8 @@ public class NotebookDraggableBlock : MonoBehaviour, IBeginDragHandler, IDragHan
         var textObject = new GameObject(objectName, typeof(RectTransform));
         textObject.transform.SetParent(transform, false);
         var label = textObject.AddComponent<TextMeshProUGUI>();
+        // Kapalı defterde de ölçüm yapılır; TMP'nin OnEnable'ını bekleme.
+        label.font = TMP_Settings.defaultFontAsset;
         label.rectTransform.anchorMin = Vector2.zero;
         label.rectTransform.anchorMax = Vector2.one;
         // Başlık üst kenara, gövde ise başlığın altındaki alana yerleşir.
@@ -251,8 +290,6 @@ public class NotebookDraggableBlock : MonoBehaviour, IBeginDragHandler, IDragHan
         originalAlpha = canvasGroup.alpha;
         originalRaycastState = canvasGroup.blocksRaycasts;
         canvasGroup.blocksRaycasts = false;
-        if (!IsSource)
-            canvasGroup.alpha = 0f;
         var canvasRect = (RectTransform)canvas.transform;
         Camera camera = canvas.renderMode == RenderMode.ScreenSpaceOverlay ? null : canvas.worldCamera;
         if (RectTransformUtility.ScreenPointToWorldPointInRectangle(canvasRect, eventData.position, camera, out var point))
@@ -299,8 +336,8 @@ public class NotebookDraggableBlock : MonoBehaviour, IBeginDragHandler, IDragHan
     public void OnPointerClick(PointerEventData eventData)
     {
         var workspace = NotebookWorkspaceController.Instance;
-        if (!IsSource && workspace != null && !workspace.IsPaused && workspace.IsEraserActive
-            && eventData.button == PointerEventData.InputButton.Left)
+        if (!IsSource && workspace != null && !workspace.IsPaused
+            && eventData.button == PointerEventData.InputButton.Right)
             workspace.DeleteBlock(this);
     }
 

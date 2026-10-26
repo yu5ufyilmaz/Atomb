@@ -13,6 +13,7 @@ public class BookPageBlockSurface : MonoBehaviour
     private int left = -1, right = -1;
     private Mesh bakedPages;
     private readonly List<PageTriangle> pageTriangles = new List<PageTriangle>();
+    private readonly Dictionary<int, List<NotebookStrokeData>> annotations = new Dictionary<int, List<NotebookStrokeData>>();
 
     private struct PageTriangle
     {
@@ -130,12 +131,14 @@ public class BookPageBlockSurface : MonoBehaviour
         }
     }
 
-    private Vector3 MapPagePoint(Vector2 uv, bool rightPage)
+    internal Vector3 MapPagePoint(Vector2 uv, bool rightPage)
     {
         foreach (var triangle in pageTriangles)
             if (triangle.right == rightPage && triangle.Contains(uv)) return triangle.Map(uv);
         return new Vector3(uv.x * 500 + (rightPage ? 0 : -500), uv.y * 700 - 350, 0);
     }
+
+    internal Vector3 MapPageWorld(Vector2 uv, bool rightPage) => surface.transform.TransformPoint(MapPagePoint(uv, rightPage));
 
     private static float Cross(Vector2 a, Vector2 b) => a.x * b.y - a.y * b.x;
 
@@ -160,6 +163,12 @@ public class BookPageBlockSurface : MonoBehaviour
 
     internal bool HitRegion(Vector2 screenPoint, Camera camera, Rect region, bool rightPage)
     {
+        return TryGetPageUV(screenPoint, camera, rightPage, out Vector2 uv) && region.Contains(uv);
+    }
+
+    internal bool TryGetPageUV(Vector2 screenPoint, Camera camera, bool rightPage, out Vector2 uv)
+    {
+        uv = Vector2.zero;
         if (camera == null) return false;
         Ray worldRay = camera.ScreenPointToRay(screenPoint);
         var ray = new Ray(surface.transform.InverseTransformPoint(worldRay.origin), surface.transform.InverseTransformVector(worldRay.direction));
@@ -175,8 +184,8 @@ public class BookPageBlockSurface : MonoBehaviour
             float v = (bb * Vector3.Dot(ap, ab) - cross * Vector3.Dot(ap, ac)) / det;
             float w = (aa * Vector3.Dot(ap, ac) - cross * Vector3.Dot(ap, ab)) / det;
             if (v < 0 || w < 0 || v + w > 1f) continue;
-            Vector2 uv = triangle.a + (triangle.b - triangle.a) * v + (triangle.c - triangle.a) * w;
-            if (region.Contains(uv)) return true;
+            uv = triangle.a + (triangle.b - triangle.a) * v + (triangle.c - triangle.a) * w;
+            return true;
         }
         return false;
     }
@@ -226,6 +235,8 @@ public class BookPageBlockSurface : MonoBehaviour
     {
         left = book.LeftPageIndex; right = book.RightPageIndex;
         foreach (Transform child in surface.transform) { child.gameObject.SetActive(false); Destroy(child.gameObject); }
+        AddDrawingPage(left, false);
+        AddDrawingPage(right, true);
         foreach (var page in book.synthesisPages)
         {
             if (page == null || !book.IsOnPage(page.pageIndex) || page.blocks == null) continue;
@@ -238,7 +249,9 @@ public class BookPageBlockSurface : MonoBehaviour
                 var block = obj.GetComponent<NotebookDraggableBlock>();
                 block.Initialize(page.blocks[i], true);
                 var rect = (RectTransform)obj.transform;
-                float height = page.blocks[i].blockType == NotebookBlockType.Quest ? 230 : 145;
+                bool traceVisual = SecondTraceGraphic.IsVisualNote(page.blocks[i])
+                    || (page.blocks[i].itemID ?? "").StartsWith("trace-") && page.blocks[i].blockType == NotebookBlockType.PartClue;
+                float height = page.blocks[i].blockType == NotebookBlockType.Quest ? 230 : traceVisual ? 180 : 145;
                 rect.sizeDelta = new Vector2(410, height);
                 rect.pivot = new Vector2(0.5f, 1);
                 rect.anchoredPosition = new Vector2(x, y);
@@ -251,9 +264,13 @@ public class BookPageBlockSurface : MonoBehaviour
                 foreach (var label in obj.GetComponentsInChildren<TextMeshProUGUI>())
                 {
                     label.color = Color.black;
-                    label.fontSize = label.fontStyle == FontStyles.Bold ? 25 : 21;
-                    label.enableAutoSizing = false;
+                    bool heading = label.fontStyle == FontStyles.Bold;
+                    label.fontSize = heading ? 22 : 18;
+                    label.enableAutoSizing = heading || traceVisual;
+                    label.fontSizeMin = traceVisual && !heading ? 12 : 16;
+                    label.fontSizeMax = 22;
                 }
+                NotebookWorkspaceController.Instance?.StyleNotebookNote(block);
                 obj.AddComponent<BookPageSourceHighlight>();
             }
         }
@@ -271,6 +288,21 @@ public class BookPageBlockSurface : MonoBehaviour
             : "CERCEVELI NOTU TUT > DEFTERE SURUKLE\nBu bant: kitabi tasi | A/D: sayfa"; text.fontSize = 21;
         text.color = Color.white;
         text.alignment = TextAlignmentOptions.Center; text.raycastTarget = false;
+    }
+
+    private void AddDrawingPage(int pageIndex, bool rightPage)
+    {
+        if (pageIndex < 0) return;
+        var obj = new GameObject("Kitap Kalemi " + (pageIndex + 1), typeof(RectTransform), typeof(BookPageFreehandDrawer));
+        obj.transform.SetParent(surface.transform, false);
+        var drawer = obj.GetComponent<BookPageFreehandDrawer>();
+        drawer.Surface = this;
+        drawer.RightPage = rightPage;
+        drawer.rectTransform.sizeDelta = new Vector2(500, 700);
+        drawer.rectTransform.anchoredPosition = new Vector2(rightPage ? 250 : -250, 0);
+        drawer.Tool = NotebookTool.Pen;
+        if (annotations.TryGetValue(pageIndex, out var strokes)) drawer.SetStrokes(strokes);
+        drawer.Changed += () => annotations[pageIndex] = drawer.Strokes;
     }
 
     // Sayfadaki gerçek görüntüden kırpılan parça bölgeleri: şeffaf alan + ince sarı çerçeve.
@@ -335,7 +367,8 @@ internal class BookPageSourceHighlight : MonoBehaviour, IPointerEnterHandler, IP
     private void Awake() { originalColor = GetComponent<Image>().color; }
     public void OnPointerEnter(PointerEventData data)
     {
-        GetComponent<Image>().color = new Color(1f, 0.95f, 0.5f, 1);
+        GetComponent<Image>().color = NotebookWorkspaceController.Instance != null && NotebookWorkspaceController.Instance.IsArchiveNotebook
+            ? new Color(.88f, .91f, .84f, 1) : new Color(1f, 0.95f, 0.5f, 1);
         transform.localScale = Vector3.one * 1.05f;
     }
     public void OnPointerExit(PointerEventData data) { ResetVisual(); }
@@ -353,7 +386,7 @@ internal class BookPageMoveHandle : MonoBehaviour, IDragHandler
     internal InteractableBook Book;
     public void OnDrag(PointerEventData data)
     {
-        if (Book == null || Book.isAnimating || (GameManager.Instance != null && GameManager.Instance.isGamePaused)) return;
+        if (data.button != PointerEventData.InputButton.Left || Book == null || Book.isAnimating || (GameManager.Instance != null && GameManager.Instance.isGamePaused)) return;
         var camera = Camera.main;
         if (camera == null) return;
         Vector3 point = camera.WorldToScreenPoint(Book.transform.position);

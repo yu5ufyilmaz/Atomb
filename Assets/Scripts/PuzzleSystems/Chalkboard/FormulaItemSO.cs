@@ -28,10 +28,13 @@ public class FormulaItemSO : ScriptableObject
     [Tooltip("Deftere bırakılan bloğun el çizimi görsel varyasyonları.")]
     public Sprite[] sketchSprites = new Sprite[0];
 
-    [Header("Başlangıç Uçları")]
-    [Tooltip("Bu prefabın kendi FormulaNode dizisindeki kapalı uç indeksleri.")]
+    [Header("Bağ Görünümü")]
+    [Tooltip("Çift bağ gerektiren yuvaların FormulaNode dizisindeki indeksleri. 0/2, 1/2, 2/2 olarak işaretlenir.")]
+    public List<int> doubleBondNodes = new List<int>();
+    // Eski asset/kayıt uyumluluğu; kapalı uç açma mekaniği artık kullanılmaz.
+    [HideInInspector]
     public List<int> initiallyBlockedNodes = new List<int>();
-    [Tooltip("Bu prefabın kendi FormulaNode dizisindeki kararsız uç indeksleri.")]
+    [HideInInspector]
     public List<int> initiallyUnstableNodes = new List<int>();
 
     [Header("Prosedürel Ara Ürün Uyumluluğu")]

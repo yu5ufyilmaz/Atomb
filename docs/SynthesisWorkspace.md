@@ -1,14 +1,14 @@
 # Senzora sentez çalışma alanı
 
-Kitap açılınca kitap ve defter pencereleri birlikte görünür. Başlıklarından sürüklenir, üst üste veya yan yana dizilir. Tahtada defter ve hedef şema açık kalır. Normal yürüyüşte Tab ve fiziksel makine slotu davranışı korunur.
+Kitap açılınca kitap ve defter pencereleri birlikte görünür. Başlıklarından sürüklenir, üst üste veya yan yana dizilir. Defter sağ alttaki düğmeyle kapatılıp son konumuna geri açılır; hedef şema tahtada kalır. Normal yürüyüşte Tab ve fiziksel makine slotu davranışı korunur.
 
 ## Oynanış
 
 1. Kitaptaki dosya oklarıyla beş aşamanın hedeflerini, kural bloklarını ve parçaları inceleyin. Açıklama metni basılıdır; yalnız çerçeveli bloklar kopyalanır. Bozuk modül uyarısı blok dışında görünür.
 2. İstenen blokları defter kağıdına bırakın. Hedefler üst tarafta yığılır. Taşı, Kalem, Silgi ve + Sayfa düğmeleriyle çalışma alanını düzenleyin. Silgi çizgiye temas eden karalamayı veya tıklanan bloğu kaldırır. Sayfa sayısı sınırlanmaz.
-3. Tahtada defterdeki parçayı boş tahta yüzeyine sürükleyin. Birleşik molekülü taşıyın; Q/E veya tekerlekle döndürün. Uçtan uca çizgi çekin; aynı çift üzerinde ikinci çizim çift bağ yapar. Sağ tık (x) ucunu açar, çift bağı teke düşürür veya tek bağı siler.
+3. Tahtada defterdeki parçayı boş tahta yüzeyine sürükleyin. Tebeşir eskizi yazıldığı yerde sabittir; konumunu değiştirmek için gövdeye sağ tıklayıp silin ve defterden yeniden bırakın. Uçtan uca çizgi çekin; aynı çift üzerinde ikinci çizim çift bağ yapar. Uca sağ tık çift bağı teke düşürür veya tek bağı siler.
 4. Molekülün tamamını sentez çemberine yerleştirip mevcut sentez düğmesini kullanın. Eksik/yanlış kurallar defterin altında bildirilir; başarısız girişler tüketilmez.
-5. Oluşan ara bileşeni defterin görünür sayfasına geri sürükleyin. Sonraki aşamada yeniden tahtaya taşıyın. Silinen veya kaybolan tamamlanmış ürünler kitabın Sentez Arşivi bölümünden tekrar alınabilir; henüz tamamlanmamış aşamaların ürünleri burada bulunmaz. Beşinci aşama zinciri tamamlar.
+5. Oluşan ara bileşenin kartını kitabın Sentez Arşivi bölümünden deftere alın ve sonraki aşamada yeniden tahtaya yazın. Henüz tamamlanmamış aşamaların ürünleri bu arşivde bulunmaz. Beşinci aşama zinciri tamamlar.
 
 ## Veri ve kurulum
 
@@ -26,4 +26,4 @@ Unity menüsü: **Senzora > Doğrulama > Tüm Sentez ve Çalışma Alanı** (`Se
 
 Kapsam: 64 seed / 320 aşama gerçek prefab çözülebilirliği, 20'den fazla farklı şema, deterministik tekrar, grafik/kural olumsuz senaryoları, kapasite, döngü koparma, çift bağ, kapalı uç, döndürülmüş tahta kayıt dönüşümü, bağımsız defter kopyaları, JSON, uzun çizgi ve silgi matematiği, varsayılan UI kartları, yalnız tamamlanmış ürünlerin arşivden geri alınması ve ölüm ekranında çalışma alanının kapanması.
 
-Bu oturumda runtime ve Editor doğrulama kodları mevcut Unity DLL'lerine karşı derlendi. Gerçek grafik doğrulayıcısının 16 bağımsız kontrolü geçti. Üretici kaynak kodunun modellenmiş prefablarla çalıştırıldığı 128 seed / 640 aşamalık harness 7.963 kontrolü geçti; bu sonuç Unity Play Mode doğrulaması yerine geçmez. Gerçek Unity menü testleri, açık editör proje kilidini tuttuğu için bu oturumda çalıştırılamadı. Görsel ve fare etkileşimlerinin son kontrolü editörde yapılmalıdır.
+24 Ekim 2026 kontrolü: Unity Editor içinde tüm sentez/çalışma alanı, iki alıştırma, tebeşir eskizleri, tahta belgeleri, bağlı ipucu grupları ve defter aç/kapat doğrulamaları geçti. Ayrı bir Play denemesinde defter düğmesinin görünürlüğü, kapanma/açılma animasyonu, taşınmış konuma geri dönüş, sabit çift tebeşir bağı ve eksik bilgi yuvaları kontrol edildi; açık/kapalı ekran görüntüleri incelendi.

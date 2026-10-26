@@ -1,0 +1,156 @@
+<div id="puzzle-tasarim-temeli">
+  <style>
+    #puzzle-tasarim-temeli { color:var(--foreground); }
+    #puzzle-tasarim-temeli .pf-controls { display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:16px 0 10px; }
+    #puzzle-tasarim-temeli .pf-controls > div { min-width:0; }
+    #puzzle-tasarim-temeli .pf-drawing { display:block;width:100%; }
+    #puzzle-tasarim-temeli .pf-legend { display:flex;flex-wrap:wrap;gap:8px 18px;margin:8px 0; }
+    #puzzle-tasarim-temeli .pf-swatch { display:inline-block;width:22px;height:3px;background:var(--viz-series-1);margin-right:6px;vertical-align:middle; }
+    #puzzle-tasarim-temeli .pf-swatch.neutral { background:var(--muted-foreground); }
+    #puzzle-tasarim-temeli .pf-detail { min-height:3em;margin:12px 0; }
+    #puzzle-tasarim-temeli .pf-footer { margin-top:8px; }
+    @media(max-width:500px){ #puzzle-tasarim-temeli .pf-controls { grid-template-columns:1fr;gap:12px; } }
+  </style>
+  <h3>Aynı çalışma yöntemi, farklı düşünme görevleri</h3>
+  <div class="pf-controls">
+    <div>
+      <label class="form-label" for="pf-view">Temelin görünümü</label>
+      <select id="pf-view" class="form-select">
+        <option value="loop">Sabit core loop</option>
+        <option value="discovery">Serbest keşif sırası</option>
+        <option value="families">Questleri farklılaştırma</option>
+      </select>
+    </div>
+    <div>
+      <label class="form-label" id="pf-choice-label" for="pf-choice">Testten sonraki durum</label>
+      <select id="pf-choice" class="form-select"></select>
+    </div>
+  </div>
+  <div id="pf-heading"></div>
+  <svg id="pf-svg" class="pf-drawing" role="img" aria-label="Puzzle tasarım temelinin etkileşimli şeması"></svg>
+  <div class="pf-legend text-small"><span><span class="pf-swatch"></span>Seçilen yol veya düşünme işi</span><span><span class="pf-swatch neutral"></span>Ortak temel</span></div>
+  <div id="pf-detail" class="pf-detail" aria-live="polite"></div>
+  <hr>
+  <div id="pf-footer" class="pf-footer text-small"></div>
+  <script>
+  (()=>{
+    const root=document.getElementById('puzzle-tasarim-temeli');
+    const get=id=>root.querySelector('#pf-'+id);
+    const ns='http://www.w3.org/2000/svg';
+    const active='var(--viz-series-1)',ink='var(--foreground)',neutral='var(--muted-foreground)',border='var(--border)';
+    const menus={
+      loop:{label:'Testten sonraki durum',options:[['research','Bilgi eksik → araştır'],['revise','Bilgim yeterli → düzeni değiştir'],['solve','Hedef karşılandı → çözüm']]},
+      discovery:{label:'Bulma sırası',options:[['quest','Hedef önce'],['knowledge','Bilgi önce'],['mixed','Karışık sırada']]},
+      families:{label:'Baskın düşünme görevi',options:[['select','Seç ve ele'],['arrange','Düzeni çıkar'],['diagnose','Hatayı teşhis et'],['transfer','Bilgiyi aktar'],['constraints','Koşulları uzlaştır'],['hypotheses','Hipotez ayır']]}
+    };
+    const family={
+      select:{q:'Hangi aday bütün koşulları karşılıyor?',detail:'Parça seç → kanıtla ele → uygun adayı kur.',foot:'Aynı açıklamayı kopyalamak yerine, bilgilerin kesişiminden seçim çıkar.'},
+      arrange:{q:'Parçalar belli; hangi düzen mümkün?',detail:'Bilinen parçalar → eksik komşuluklar → gerekçeli bağ düzeni.',foot:'Değişen parça isimleri değil, çözülmesi gereken ilişkiler.'},
+      diagnose:{q:'Bu öneride sonucu bozan şey ne?',detail:'Makul bir deneme → başarısız gözlem → hatalı ilişkiyi düzelt.',foot:'Silmeyi ve yeniden bağlamayı bir teşhis kararına dönüştür.'},
+      transfer:{q:'Eski bilgimin hangi kısmı burada işe yarıyor?',detail:'Önceden öğrenilen alt yapı → farklı bağlamda yeniden kullanım.',foot:'Eski not değersizleşmez; oyuncunun ustalığı yeni questte karşılık bulur.'},
+      constraints:{q:'Tek tek uygun kararlar birlikte neden çalışmıyor?',detail:'İki koşul → birbirini etkileyen seçimler → ortak geçerli yapı.',foot:'Daha çok parça yerine, kararlar arasında anlamlı bağımlılık kur.'},
+      hypotheses:{q:'İki açıklamayı hangi bilgi ayırır?',detail:'İki hipotez → ayırt edici kanıt veya doğrulanabilir test → gerekçeli seçim.',foot:'Test yalnız oyunun gerçekten doğrulayabildiği koşullardan sonuç üretir; fizik simülasyonu varsayılmaz.'}
+    };
+    let view='loop',choice='research';
+    function restore(s){if(s&&s.privateContent&&menus[s.privateContent.temelGorunumu]){view=s.privateContent.temelGorunumu;const candidate=s.privateContent.temelSecimi;choice=menus[view].options.some(o=>o[0]===candidate)?candidate:menus[view].options[0][0];}}
+    restore(window.openai&&window.openai.widgetState);
+    function add(p,tag,attrs){const e=document.createElementNS(ns,tag);Object.entries(attrs).forEach(([k,v])=>e.setAttribute(k,v));p.appendChild(e);return e;}
+    function text(p,x,y,value,extra={}){const e=add(p,'text',{x,y,fill:ink,'font-size':12,'font-weight':400,'text-anchor':'middle',...extra});e.textContent=value;return e;}
+    function path(p,d,color=neutral,width=1.5,extra={}){return add(p,'path',{d,fill:'none',stroke:color,'stroke-width':width,'stroke-linecap':'round','stroke-linejoin':'round',...extra});}
+    function line(p,x1,y1,x2,y2,color=neutral,width=1.5,extra={}){return path(p,`M ${x1} ${y1} L ${x2} ${y2}`,color,width,extra);}
+    function scene(height,description){
+      const svg=get('svg'),w=Math.max(270,root.getBoundingClientRect().width);
+      svg.style.height=height+'px';svg.setAttribute('viewBox',`0 0 ${w} ${height}`);svg.replaceChildren();
+      const title=add(svg,'title',{});title.textContent=description;
+      const defs=add(svg,'defs',{});
+      [['pf-arrow',neutral],['pf-arrow-active',active]].forEach(([id,c])=>{const m=add(defs,'marker',{id,viewBox:'0 0 10 10',refX:9,refY:5,markerWidth:6,markerHeight:6,orient:'auto-start-reverse'});add(m,'path',{d:'M 0 1 L 9 5 L 0 9',fill:'none',stroke:c,'stroke-width':1.5});});
+      return {svg,w};
+    }
+    function node(svg,p,label,sub,isActive=false,width=162){
+      add(svg,'rect',{x:p[0]-width/2,y:p[1]-28,width,height:56,rx:6,fill:isActive?active:'var(--background)','fill-opacity':isActive?.10:1,stroke:border,'stroke-width':1});
+      if(isActive)line(svg,p[0]-width/2+10,p[1]-27,p[0]+width/2-10,p[1]-27,active,3);
+      text(svg,p[0],p[1]-4,label,{'font-weight':500});text(svg,p[0],p[1]+15,sub);
+    }
+    function edge(svg,a,b,on=false){
+      const dx=b[0]-a[0],dy=b[1]-a[1],len=Math.hypot(dx,dy),ux=dx/len,uy=dy/len;
+      const w=svg.viewBox.baseVal.width,half=Math.min(w<540?w*.43:w*.29,170)/2;
+      const exit=Math.min((half+4)/Math.max(.001,Math.abs(ux)),32/Math.max(.001,Math.abs(uy)));
+      const cutA=exit,cutB=exit+2;
+      line(svg,a[0]+ux*cutA,a[1]+uy*cutA,b[0]-ux*cutB,b[1]-uy*cutB,on?active:neutral,on?2.5:1.2,{'marker-end':`url(#${on?'pf-arrow-active':'pf-arrow'})`,opacity:on?1:.55});
+    }
+    function loop(){
+      const narrow=root.getBoundingClientRect().width<540;
+      const {svg,w}=scene(narrow?566:360,'Sabit araştırma döngüsü: hedefi keşfet, defterde koru, tahtada yorumla; araştırma, düzeltme veya çözüm yolunu seç.');
+      const cols=narrow?[w*.25,w*.75]:[w/6,w/2,w*5/6];
+      const pos=narrow?[[cols[0],43],[cols[1],43],[cols[1],151],[cols[0],151],[cols[1],259],[cols[1],367],[cols[0],367],[cols[0],493]]:[[cols[0],43],[cols[1],43],[cols[2],43],[cols[0],161],[cols[1],161],[cols[2],161],[cols[1],292],[cols[2],292]];
+      const base=[[0,1],[1,2],[2,4],[4,5],[5,6]],branches=[[6,3],[3,1],[6,4],[6,7]];
+      base.forEach(([a,b])=>edge(svg,pos[a],pos[b],true));
+      branches.forEach(([a,b],i)=>edge(svg,pos[a],pos[b],choice==='research'?i<2:choice==='revise'?i===2:i===3));
+      const labels=[['KİTAP','Soruyu keşfet'],['DEFTER','Bilgiyi koru'],['KARA TAHTA','Sorunu anla'],['ARAŞTIR','Eksik ilişkiyi bul'],['HİPOTEZ','Bir fikir kur'],['KUR VE DENE','Sonucu öngör'],['SONUCU OKU','Neyi öğrendin?'],['ÇÖZÜM','Kazanımı taşı']];
+      labels.forEach(([a,b],i)=>node(svg,pos[i],a,b,[0,1,2,4,5,6].includes(i)||(choice==='research'&&i===3)||(choice==='solve'&&i===7),Math.min(narrow?w*.43:w*.29,170)));
+      get('heading').textContent='Hedef, not alma ve tahta kullanımı her questte tanıdık kalır.';
+      get('detail').textContent={research:'Bir ilişkiyi bilmiyorum → ilgili kaynağı araştır → bulduğunu deftere ekle → fikrini güncelle.',revise:'Bilgiler elimde → başka bir düzen kur. Kitaplara geri dönmek zorunlu değil.',solve:'Amaç karşılandı → çözümü doğrula → öğrendiğini sonraki questlerde kullan.'}[choice];
+      get('footer').textContent='Bir testin sonucu yalnızca yeniden toplama talimatı olmamalı; oyuncunun düşüncesini değiştirmeli.';
+    }
+    function discovery(){
+      const narrow=root.getBoundingClientRect().width<540;
+      const {svg,w}=scene(narrow?510:340,'Hedef, parça ve genel bilgi farklı sıralarda bulunur; defterde kalır ve farklı sorularda yeniden kullanılır.');
+      const order={quest:[1,2,3],knowledge:[3,2,1],mixed:[2,1,3]}[choice];
+      const source=narrow?[[w*.25,40],[w*.75,40],[w*.25,139]]:[[w/6,42],[w/2,42],[w*5/6,42]];
+      const archive=[w*.5,narrow?258:162],q1=[w*.25,narrow?418:290],q2=[w*.75,narrow?418:290];
+      source.forEach(p=>edge(svg,p,archive,true));edge(svg,archive,q1,true);edge(svg,archive,q2,true);
+      ['Hedef','Parça çizimi','Genel bilgi'].forEach((label,i)=>node(svg,source[i],order[i]+' · KİTAP',label,true,Math.min(narrow?w*.43:w*.29,170)));
+      node(svg,archive,'DEFTER','Kalıcı bilgi birikimi',true,174);
+      node(svg,q1,'TAHTA · SORU A','İlgili bilgi',true,Math.min(w*.43,176));node(svg,q2,'TAHTA · SORU B','Eski bilgiyi kullan',false,Math.min(w*.43,176));
+      get('heading').textContent='Bulma sırası değişir; bilginin değeri korunur.';
+      get('detail').textContent={quest:'Önce hedefi bulurum. Neyi öğrenmem gerektiğini anlayarak parçaları ve bilgiyi araştırırım.',knowledge:'Önce bilgiyi bulurum. Hedefi daha sonra keşfettiğimde eski notum anlam kazanır.',mixed:'Bazı parçalar elimdedir. Yeni hedef eski notlarıma dönmemi ve kalan ilişkiyi araştırmamı sağlar.'}[choice];
+      get('footer').textContent='Sayılar örnek keşif sırasıdır. Hedefi bulmadan önce not almak mümkündür; bütün notları yeniden toplamak gerekmez.';
+    }
+    function point(svg,x,y,label,lit=false){
+      add(svg,'circle',{cx:x,cy:y,r:20,fill:lit?active:'var(--background)','fill-opacity':lit?.12:1,stroke:lit?active:border,'stroke-width':lit?2:1.3});text(svg,x,y+4,label);
+    }
+    function graph(svg,cx,cy,s,kind){
+      const pts=[[-70,0],[0,-50],[70,0],[0,50]].map(([x,y])=>[cx+x*s,cy+y*s]);
+      let edges=[[0,1],[1,2],[2,3]];
+      if(kind==='a')edges=[[0,1],[1,2],[1,3]];
+      if(kind==='b')edges=[[0,1],[0,3],[2,3]];
+      edges.forEach(([a,b],i)=>line(svg,...pts[a],...pts[b],choice==='diagnose'&&i===1?neutral:active,choice==='transfer'&&i<2?3:2,choice==='arrange'?{'stroke-dasharray':'6 5'}:{}));
+      if(choice==='diagnose')text(svg,(pts[1][0]+pts[2][0])/2+8,(pts[1][1]+pts[2][1])/2-10,'?');
+      if(choice==='constraints')line(svg,...pts[3],...pts[0],neutral,1.5,{'stroke-dasharray':'4 5'});
+      pts.forEach(([x,y],i)=>point(svg,x,y,choice==='select'&&i===2?'?':String.fromCharCode(65+i),choice==='transfer'&&i<3));
+    }
+    function families(){
+      const narrow=root.getBoundingClientRect().width<540;
+      const pair=choice==='hypotheses';
+      const {svg,w}=scene(pair&&narrow?410:265,'Quest ailesinin şematik düşünme örneği; oynanabilir bir quest veya yeni oyun arayüzü değildir.');
+      const f=family[choice];get('heading').textContent=f.q;
+      if(pair){
+        const centers=narrow?[[w/2,94],[w/2,284]]:[[w*.25,132],[w*.75,132]];
+        graph(svg,...centers[0],.95,'a');graph(svg,...centers[1],.95,'b');
+        text(svg,centers[0][0],centers[0][1]-77,'HİPOTEZ A');text(svg,centers[1][0],centers[1][1]-77,'HİPOTEZ B');
+      }else{
+        graph(svg,w/2,choice==='select'?175:130,Math.min(1.25,w/240),'a');
+        if(choice==='select'){
+          [w/2-72,w/2,w/2+72].forEach((x,i)=>point(svg,x,31,['X','Y','Z'][i],false));
+          text(svg,w/2,74,'AYNI YUVA · FARKLI ADAYLAR');
+        }
+        if(choice==='arrange')text(svg,w/2,236,'PARÇALAR BELLİ · BAĞLAR ARAŞTIRILIYOR');
+        if(choice==='diagnose')text(svg,w/2,236,'BİR İLİŞKİYİ SORGULA');
+        if(choice==='transfer')text(svg,w/2,236,'TANIDIK ALT YAPI · YENİ BAĞLAM');
+        if(choice==='constraints')text(svg,w/2,236,'BÜTÜN KOŞULLAR BİRLİKTE');
+      }
+      get('detail').textContent=f.detail;get('footer').textContent=f.foot;
+    }
+    function draw(){({loop,discovery,families})[view]();}
+    function controls(){
+      get('view').value=view;get('choice-label').textContent=menus[view].label;
+      get('choice').replaceChildren();menus[view].options.forEach(([v,label])=>{const o=document.createElement('option');o.value=v;o.textContent=label;get('choice').appendChild(o);});get('choice').value=choice;
+    }
+    function persist(){if(window.openai&&window.openai.setWidgetState)window.openai.setWidgetState({modelContent:{tasarimTemeli:view,secim:choice},privateContent:{temelGorunumu:view,temelSecimi:choice}}).catch(()=>{});}
+    get('view').addEventListener('change',()=>{view=get('view').value;choice=menus[view].options[0][0];controls();draw();persist();});
+    get('choice').addEventListener('change',()=>{choice=get('choice').value;draw();persist();});
+    window.addEventListener('openai:set_globals',e=>{const s=e.detail&&e.detail.globals&&e.detail.globals.widgetState;if(s){restore(s);controls();draw();}});
+    new ResizeObserver(draw).observe(root);controls();draw();
+  })();
+  </script>
+</div>

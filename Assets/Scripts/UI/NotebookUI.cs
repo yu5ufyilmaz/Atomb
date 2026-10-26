@@ -12,6 +12,7 @@ public class NotebookUI : MonoBehaviour, ISaveable
 
     [Header("Serbest Çalışma Alanı")]
     public List<NotebookPageSaveData> workspacePages = new List<NotebookPageSaveData>();
+    public List<NotebookBlockData> collectedQuests = new List<NotebookBlockData>();
     public int currentWorkspacePage;
     public bool IsWorkspaceActive => workspace != null && workspace.IsActive;
     private bool IsDocumentInteraction => IsWorkspaceActive || (GameManager.Instance != null
@@ -106,6 +107,18 @@ public class NotebookUI : MonoBehaviour, ISaveable
 
     private void Update()
     {
+        if (workspace != null && workspace.IsArchiveNotebook)
+        {
+            if ((GameManager.Instance != null && (GameManager.Instance.isGamePaused || GameManager.Instance.activeInteraction != null)) || isOnMachine) return;
+            if (Input.GetKeyDown(KeyCode.Tab)) workspace.ToggleStandaloneNotebook();
+            else if (workspace.IsStandaloneOpen && !Input.GetKey(KeyCode.LeftAlt) && !Input.GetKey(KeyCode.RightAlt))
+            {
+                int section = Input.GetKeyDown(KeyCode.Q) ? -1 : Input.GetKeyDown(KeyCode.E) ? 1 : 0;
+                float wheel = Input.GetAxis("Mouse ScrollWheel");
+                workspace.BrowseStandaloneNotebook(section, wheel > .01f ? -1 : wheel < -.01f ? 1 : 0);
+            }
+            return;
+        }
         if (IsWorkspaceActive || (GameManager.Instance != null && GameManager.Instance.isGamePaused)) return;
         if (GameManager.Instance != null && (GameManager.Instance.activeInteraction is InteractableBook
             || GameManager.Instance.activeInteraction is InteractableChalkboard)) return;
@@ -123,6 +136,7 @@ public class NotebookUI : MonoBehaviour, ISaveable
 
     public void ToggleNotebook()
     {
+        if (workspace != null && workspace.IsArchiveNotebook) { workspace.ToggleStandaloneNotebook(); return; }
         if (IsDocumentInteraction) return;
         isNotebookOpen = !isNotebookOpen;
         if (playerAnimator != null)
@@ -163,6 +177,7 @@ public class NotebookUI : MonoBehaviour, ISaveable
 
     public void ForceClose()
     {
+        if (workspace != null && workspace.IsStandaloneOpen) workspace.Close();
         PutArmDown();
         if (notebookPanel != null)
             notebookPanel.SetActive(false);
@@ -195,38 +210,67 @@ public class NotebookUI : MonoBehaviour, ISaveable
     {
         if (workspacePages == null) workspacePages = new List<NotebookPageSaveData>();
         if (workspacePages.Count == 0) workspacePages.Add(new NotebookPageSaveData());
-        currentWorkspacePage = Mathf.Clamp(currentWorkspacePage, 0, workspacePages.Count - 1);
+        currentWorkspacePage = Mathf.Max(0, currentWorkspacePage);
+        while (workspacePages.Count <= currentWorkspacePage) workspacePages.Add(new NotebookPageSaveData());
         if (workspacePages[currentWorkspacePage] == null) workspacePages[currentWorkspacePage] = new NotebookPageSaveData();
         return workspacePages[currentWorkspacePage];
     }
 
     public void SaveData(ref GameData data)
     {
+        EnsureCollectedQuests();
         data.notebookPages = new List<NotebookPageSaveData>();
         foreach (var page in workspacePages) data.notebookPages.Add(page.Clone());
+        data.notebookQuests = collectedQuests.ConvertAll(q => q.Clone());
         data.currentNotebookPage = currentWorkspacePage;
         data.notebookResearch = new List<string>(unlockedSymbols);
     }
 
     public void LoadData(GameData data)
     {
+        collectedQuests = data.notebookQuests != null
+            ? data.notebookQuests.FindAll(q => q != null && q.blockType == NotebookBlockType.Quest).ConvertAll(q => q.Clone())
+            : new List<NotebookBlockData>();
         workspacePages = new List<NotebookPageSaveData>();
         if (data.notebookPages != null)
             foreach (var page in data.notebookPages)
-                if (page != null) workspacePages.Add(page.Clone());
+                workspacePages.Add(page != null ? page.Clone() : new NotebookPageSaveData());
         currentWorkspacePage = data.currentNotebookPage;
         unlockedSymbols = data.notebookResearch != null ? new List<string>(data.notebookResearch) : new List<string>();
         EnsureWorkspacePage();
+        EnsureCollectedQuests();
         if (workspace != null) workspace.RefreshPage();
         UpdateUI();
     }
 
     public void ResetWorkspace()
     {
+        collectedQuests = new List<NotebookBlockData>();
         workspacePages = new List<NotebookPageSaveData> { new NotebookPageSaveData() };
         currentWorkspacePage = 0;
         unlockedSymbols.Clear();
         if (workspace != null) workspace.RefreshPage();
+    }
+
+    // Eski kayıtlarda sayfalara yığılmış hedefleri yeni ortak bölüme bir kez taşı.
+    public List<NotebookBlockData> EnsureCollectedQuests()
+    {
+        if (collectedQuests == null) collectedQuests = new List<NotebookBlockData>();
+        collectedQuests.RemoveAll(q => q == null);
+        EnsureWorkspacePage();
+        foreach (var page in workspacePages)
+        {
+            if (page == null || page.blocks == null) continue;
+            for (int i = 0; i < page.blocks.Count;)
+            {
+                var block = page.blocks[i];
+                if (block == null || block.blockType != NotebookBlockType.Quest) { i++; continue; }
+                if (string.IsNullOrEmpty(block.questID) || !collectedQuests.Exists(q => q.questID == block.questID))
+                    collectedQuests.Add(block);
+                page.blocks.RemoveAt(i);
+            }
+        }
+        return collectedQuests;
     }
 
     private void HandleInput()

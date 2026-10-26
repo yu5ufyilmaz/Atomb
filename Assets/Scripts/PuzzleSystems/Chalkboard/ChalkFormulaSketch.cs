@@ -21,6 +21,11 @@ public sealed class ChalkFormulaSketch : MonoBehaviour
         }
         drawing = new GameObject(DrawingName).transform;
         drawing.SetParent(transform, false);
+        if (data != null && SignalTrial.IsPart(data.itemID))
+        {
+            DrawSignalPart(formula, drawing, data);
+            return;
+        }
         int hash = 17;
         foreach (char c in data != null ? data.itemID ?? "" : "") hash = unchecked(hash * 31 + c);
         float seed = (hash & 65535) * 0.013f;
@@ -75,11 +80,62 @@ public sealed class ChalkFormulaSketch : MonoBehaviour
             connection.sharedMaterial = chalkMaterial;
             connection.widthMultiplier = 0.004f;
             connection.widthCurve = AnimationCurve.Constant(0, 1, 1);
-            connection.alignment = LineAlignment.TransformZ;
+            // Bağ noktaları dünya uzayındadır; View, bağlı parçaların yerel dönüşümünden etkilenmez.
+            connection.alignment = LineAlignment.View;
             connection.shadowCastingMode = ShadowCastingMode.Off;
             connection.receiveShadows = false;
             Ring(node.transform, Vector3.zero, 0.19f, seed);
         }
+    }
+
+    private void DrawSignalPart(DraggableFormula formula, Transform drawing, FormulaItemSO data)
+    {
+        string id = data.itemID;
+        void Path(params Vector3[] points) => Stroke(drawing, new List<Vector3>(points), .055f);
+        void Box(float x, float y) => Path(new Vector3(-x, -y), new Vector3(x, -y), new Vector3(x, y), new Vector3(-x, y), new Vector3(-x, -y));
+        if (id == SignalTrial.Source)
+        {
+            Ring(drawing, Vector3.zero, .72f, 0);
+            Path(new Vector3(.4f, -.1f), new Vector3(.05f, -.1f), new Vector3(.05f, .4f), new Vector3(-.2f, .4f), new Vector3(-.2f, -.1f), new Vector3(-.5f, -.1f));
+        }
+        else if (id == SignalTrial.Narrow || id == SignalTrial.Wide)
+        {
+            Path(new Vector3(-.45f, .85f), new Vector3(-.45f, .4f), new Vector3(-.78f, -.65f), new Vector3(.78f, -.65f), new Vector3(.45f, .4f), new Vector3(.45f, .85f));
+            Path(new Vector3(-.65f, -.2f), new Vector3(.65f, -.2f));
+            if (id == SignalTrial.Wide) Path(new Vector3(-.4f, -.45f), new Vector3(.4f, -.45f));
+        }
+        else if (id == SignalTrial.Splitter)
+            Path(new Vector3(1, 0), Vector3.zero, new Vector3(-1, .65f));
+        else if (id == SignalTrial.Delay)
+        {
+            Ring(drawing, Vector3.zero, .70f, 0);
+            Path(new Vector3(0, .5f), Vector3.zero, new Vector3(-.4f, 0));
+        }
+        else if (id == SignalTrial.Attenuator)
+            Path(new Vector3(.9f, 0), new Vector3(.6f, .5f), new Vector3(.25f, -.5f), new Vector3(-.1f, .5f), new Vector3(-.45f, -.5f), new Vector3(-.8f, 0));
+        else
+        {
+            Box(.9f, .65f);
+            Path(new Vector3(.65f, -.25f), new Vector3(.25f, -.25f), new Vector3(.05f, .35f), new Vector3(-.15f, -.25f), new Vector3(-.65f, -.25f));
+        }
+        if (id == SignalTrial.Splitter) Path(Vector3.zero, new Vector3(-1, -.65f));
+        foreach (var node in formula.GetOwnNodes())
+        {
+            if (!node.gameObject.activeSelf) continue;
+            var line = node.GetComponent<LineRenderer>(); line.sharedMaterial = chalkMaterial;
+            line.alignment = LineAlignment.View; line.widthMultiplier = .004f;
+            Vector3 p = node.transform.localPosition;
+            if (node.GetComponent<SignalPort>().output)
+                Path(p + new Vector3(.18f, .18f), p + new Vector3(-.10f, 0), p + new Vector3(.18f, -.18f));
+            else Ring(drawing, p, .17f, 0);
+        }
+        var text = new GameObject("Parça Adı", typeof(TextMeshPro)).GetComponent<TextMeshPro>();
+        text.transform.SetParent(drawing, false); text.transform.localPosition = new Vector3(0, -1.15f, 0);
+        text.transform.localRotation = Quaternion.Euler(0, 180, 0);
+        text.text = data.itemName; text.fontSize = 4; text.enableAutoSizing = true; text.fontSizeMin = 2.5f; text.fontSizeMax = 4;
+        text.alignment = TextAlignmentOptions.Center; text.textWrappingMode = TextWrappingModes.NoWrap;
+        text.rectTransform.sizeDelta = new Vector2(3.3f, .5f); text.color = new Color(.88f, .9f, .84f); text.raycastTarget = false;
+        formula.formulaLabel = text;
     }
 
     private void Ring(Transform parent, Vector3 center, float radius, float seed)

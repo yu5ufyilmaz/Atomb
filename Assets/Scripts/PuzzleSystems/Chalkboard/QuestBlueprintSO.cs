@@ -7,6 +7,7 @@ public class QuestBlueprintSO : ScriptableObject
     [Header("Hedef Şema")]
     public string questID;
     public string title;
+    [TextArea(1, 3)] public string clueSummary;
     public FormulaItemSO output;
     [Tooltip("Bilinmeyen düğümlerin gerçek kimliği oyuncuya gösterilmez. İpucu kuralları bu yuvaları çözdürür.")]
     public List<QuestNodeData> nodes = new List<QuestNodeData>();

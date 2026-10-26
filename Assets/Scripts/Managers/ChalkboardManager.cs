@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using NaughtyAttributes;
 using UnityEngine;
 
-public enum ChalkboardTool { Move, Chalk, Eraser }
-
 public class ChalkboardManager : MonoBehaviour, ISaveable
 {
     public static ChalkboardManager Instance { get; private set; }
@@ -25,7 +23,55 @@ public class ChalkboardManager : MonoBehaviour, ISaveable
 
     [Tooltip("Atanırsa yalnız bu alıştırma doğrulanır; parçalar tüketilmez ve çıktı üretilmez.")]
     public QuestBlueprintSO practiceQuest;
-    public ChalkboardTool Tool { get; set; } = ChalkboardTool.Chalk;
+    [Tooltip("Toplanan hedef sabitlenince seçilebilen alıştırmalar.")]
+    public List<QuestBlueprintSO> practicePuzzles = new List<QuestBlueprintSO>();
+    private ChalkboardFreehandDrawing freehand;
+    [Header("Tahtaya Sabitlenen Bilgiler")]
+    public List<NotebookBlockData> pinnedInformation = new List<NotebookBlockData>();
+    private ChalkboardDocuments documents;
+    public bool IndividualPartMovement => ResearchPuzzleTrial.IsResearch(this);
+
+    public ChalkboardDocuments EnsureDocuments()
+    {
+        if (boardTransform == null) return null;
+        if (documents == null) documents = GetComponent<ChalkboardDocuments>() ?? gameObject.AddComponent<ChalkboardDocuments>();
+        documents.Initialize(this);
+        return documents;
+    }
+
+    public bool TryPinInformation(NotebookBlockData note)
+    {
+        if (!isMachineActive || note == null || note.blockType != NotebookBlockType.RuleClue) return false;
+        bool research = ResearchPuzzleTrial.IsResearch(this);
+        bool linked = !research && PuzzleInformation.TryResolve(note, this);
+        if (!research && PinnedQuest != null && (!linked || note.questID != PinnedQuest.questID))
+        {
+            Report(linked ? "Bu bilgi " + PuzzleInformation.Title(note.questID, this) + " hedefine ait. Önce o hedefi seç."
+                : "Bu bilginin hangi hedefe ait olduğu henüz belirlenemedi.", false);
+            return false;
+        }
+        foreach (var saved in pinnedInformation) PuzzleInformation.TryResolve(saved, this);
+        if (!pinnedInformation.Exists(n => linked ? n.questID == note.questID && n.ruleIndex == note.ruleIndex
+            : n.questID == note.questID && n.title == note.title && n.description == note.description))
+            pinnedInformation.Add(note.Clone());
+        EnsureDocuments()?.Refresh();
+        Report(research ? "Araştırma kaydı panoya takıldı. İlgili olup olmadığını sen değerlendir." : "Bilgi doğru hedefe bağlandı.", true);
+        return true;
+    }
+
+    public void RemoveInformation(NotebookBlockData note)
+    {
+        if (!isMachineActive || (GameManager.Instance != null && GameManager.Instance.isGamePaused)) return;
+        pinnedInformation.Remove(note);
+        documents?.Refresh();
+    }
+
+    public NotebookFreehandDrawer EnsureDrawing()
+    {
+        if (freehand == null) freehand = GetComponent<ChalkboardFreehandDrawing>() ?? gameObject.AddComponent<ChalkboardFreehandDrawing>();
+        freehand.Initialize(this);
+        return freehand.Drawer;
+    }
 
     public bool isMachineActive { get; private set; }
     public SynthesisQuestData PinnedQuest { get; private set; }
@@ -63,7 +109,11 @@ public class ChalkboardManager : MonoBehaviour, ISaveable
     public void SetMachineActive(bool state)
     {
         isMachineActive = state;
+        if (state) EnsureDrawing();
+        if (state) EnsureDocuments();
+        else if (freehand != null && freehand.Drawer != null) freehand.Drawer.EndStroke();
         if (state) AdoptSceneFormulas();
+        if (state) KeepFormulasInWorkingArea();
         if (state && useProceduralQuests)
         {
             ProceduralSynthesisGenerator generator = ProceduralSynthesisGenerator.Instance;
@@ -103,9 +153,19 @@ public class ChalkboardManager : MonoBehaviour, ISaveable
     public bool TryPinQuest(SynthesisQuestData quest)
     {
         if (!isMachineActive || quest == null) return false;
+        var practice = FindPracticeQuest(quest.questID);
+        if (practiceQuest != null && practice == null) return false;
+        if (practice != null) practiceQuest = practice;
         PinnedQuest = quest;
+        EnsureDocuments()?.Refresh();
         QuestPinned?.Invoke(quest);
         return true;
+    }
+
+    public QuestBlueprintSO FindPracticeQuest(string id)
+    {
+        if (practiceQuest != null && practiceQuest.CreateQuest().questID == id) return practiceQuest;
+        return practicePuzzles != null ? practicePuzzles.Find(q => q != null && q.CreateQuest().questID == id) : null;
     }
 
     public bool TryGetBoardPoint(Vector2 screenPosition, out Vector3 point)
@@ -161,13 +221,19 @@ public class ChalkboardManager : MonoBehaviour, ISaveable
 
     public Vector3 ClampToBoardArea(Vector3 localPos)
     {
-        localPos.x = Mathf.Clamp(localPos.x, minBounds.x, maxBounds.x);
+        localPos.x = Mathf.Clamp(localPos.x, minBounds.x, WorkingMaxX);
         localPos.y = Mathf.Clamp(localPos.y, minBounds.y, maxBounds.y);
         return localPos;
     }
 
     public Vector3 ClampMoleculeToBoardArea(DraggableFormula root, Vector3 proposedLocalPos, float padding = 0.15f)
     {
+        if (IndividualPartMovement)
+        {
+            proposedLocalPos.x = Mathf.Clamp(proposedLocalPos.x, minBounds.x + padding, WorkingMaxX - padding);
+            proposedLocalPos.y = Mathf.Clamp(proposedLocalPos.y, minBounds.y + padding, maxBounds.y - padding);
+            return proposedLocalPos;
+        }
         if (root == null || boardTransform == null) return ClampToBoardArea(proposedLocalPos);
         Vector3 delta = proposedLocalPos - boardTransform.InverseTransformPoint(root.transform.position);
         Vector2 low = new Vector2(float.MaxValue, float.MaxValue);
@@ -179,10 +245,26 @@ public class ChalkboardManager : MonoBehaviour, ISaveable
             high = Vector2.Max(high, new Vector2(pos.x + padding, pos.y + padding));
         }
         if (low.x < minBounds.x) proposedLocalPos.x += minBounds.x - low.x;
-        if (high.x > maxBounds.x) proposedLocalPos.x -= high.x - maxBounds.x;
+        if (high.x > WorkingMaxX) proposedLocalPos.x -= high.x - WorkingMaxX;
         if (low.y < minBounds.y) proposedLocalPos.y += minBounds.y - low.y;
         if (high.y > maxBounds.y) proposedLocalPos.y -= high.y - maxBounds.y;
         return proposedLocalPos;
+    }
+
+    private float WorkingMaxX => documents != null ? documents.WorkingMaxX : maxBounds.x;
+
+    private void KeepFormulasInWorkingArea()
+    {
+        if (boardTransform == null) return;
+        foreach (var part in boardTransform.GetComponentsInChildren<DraggableFormula>())
+        {
+            if (part.GetRootFormula() != part) continue;
+            if (!part.CanMoveOnBoard) continue;
+            Vector3 current = boardTransform.InverseTransformPoint(part.transform.position);
+            Vector3 bounded = ClampMoleculeToBoardArea(part, current);
+            part.transform.position += boardTransform.TransformVector(bounded - current);
+            part.SyncMovementTarget();
+        }
     }
 
     // Transform yalnızca taşıma grubudur. Grup sahipliğini her zaman gerçek bağlardan yeniden kur.
@@ -196,6 +278,7 @@ public class ChalkboardManager : MonoBehaviour, ISaveable
             part.transform.SetParent(boardTransform, true);
             part.SyncMovementTarget();
         }
+        if (IndividualPartMovement) return;
         HashSet<DraggableFormula> grouped = new HashSet<DraggableFormula>();
         foreach (DraggableFormula root in parts)
         {
@@ -219,16 +302,15 @@ public class ChalkboardManager : MonoBehaviour, ISaveable
         foreach (DraggableFormula part in parts)
         {
             indices.Add(part, graph.parts.Count);
-            int open = 0, blocked = 0;
+            int open = 0;
             foreach (FormulaNode node in part.GetOwnNodes())
             {
-                if (node.nodeState != FormulaNodeState.Open) blocked++;
-                else if (!node.isOccupied) open++;
+                if (!node.isOccupied) open++;
             }
             graph.parts.Add(new SynthesisPartData
             {
                 itemID = part.formulaData != null ? part.formulaData.itemID : string.Empty,
-                capacity = part.ConnectionCapacity, openEnds = open, blockedEnds = blocked,
+                capacity = part.ConnectionCapacity, openEnds = open, blockedEnds = 0,
             });
         }
         HashSet<FormulaNode> visited = new HashSet<FormulaNode>();
@@ -238,7 +320,7 @@ public class ChalkboardManager : MonoBehaviour, ISaveable
                 if (node.connectedNode == null || visited.Contains(node)) continue;
                 FormulaNode other = node.connectedNode;
                 if (other.connectedNode != node || other.parentFormula == null || !indices.ContainsKey(other.parentFormula)
-                    || node.bondType != other.bondType || node.nodeState != FormulaNodeState.Open || other.nodeState != FormulaNodeState.Open)
+                    || node.bondType != other.bondType)
                 {
                     // Bozuk bir ucu sessizce yok saymak geçersiz grafiği geçerli hale getirmemeli.
                     graph.bonds.Add(new SynthesisBondData { fromIndex = -1, toIndex = -1 });
@@ -248,7 +330,10 @@ public class ChalkboardManager : MonoBehaviour, ISaveable
                 visited.Add(other);
                 graph.bonds.Add(new SynthesisBondData
                 {
-                    fromIndex = indices[part], toIndex = indices[other.parentFormula], bondType = node.bondType,
+                    fromIndex = node.GetComponent<SignalPort>() is SignalPort port && !port.output ? indices[other.parentFormula] : indices[part],
+                    toIndex = node.GetComponent<SignalPort>() is SignalPort input && !input.output ? indices[part] : indices[other.parentFormula],
+                    directed = node.GetComponent<SignalPort>() != null,
+                    bondType = node.bondType,
                 });
             }
         return graph;
@@ -266,7 +351,13 @@ public class ChalkboardManager : MonoBehaviour, ISaveable
         { Report("Sentez alanı hazır değil.", false); return; }
         zone.RefreshItems();
         HashSet<DraggableFormula> roots = new HashSet<DraggableFormula>();
-        foreach (DraggableFormula part in zone.currentItems) if (part != null) roots.Add(part.GetRootFormula());
+        var visitedParts = new HashSet<DraggableFormula>();
+        foreach (DraggableFormula part in zone.currentItems)
+        {
+            if (part == null || !visitedParts.Add(part)) continue;
+            roots.Add(part.GetRootFormula());
+            if (IndividualPartMovement) foreach (var connected in part.GetConnectedParts()) visitedParts.Add(connected);
+        }
         if (roots.Count == 0) { Report("Sentez çemberi boş.", false); return; }
 
         if (practiceQuest != null)
@@ -280,8 +371,25 @@ public class ChalkboardManager : MonoBehaviour, ISaveable
                 foreach (var part in root.GetConnectedParts())
                     if (!zone.ContainsFormula(part))
                     { Report("Yapının tamamını tahta alanına yerleştir.", false); return; }
-                if (!SynthesisGraphValidator.Validate(BuildGraph(root), practiceQuest.CreateQuest(), out string failure))
-                { Report(failure, false); return; }
+                // Alıştırmanın gizli parça kimlikleri ayrıntılı kural hatalarında açığa çıkmamalı.
+                if (ResearchPuzzleTrial.IsResearch(this) && ResearchTrialContent.OwnsQuest(practiceQuest.questID))
+                {
+                    if ((practiceQuest.questID == SecondTraceExperiment.QuestID || practiceQuest.questID == SignalTrial.QuestID) && SecondTraceExperiment.Active != null)
+                    {
+                        SecondTraceExperiment.Active.Measure(BuildGraph(root));
+                        return;
+                    }
+                    bool success = ResearchPuzzleTrial.Active.Content.Evaluate(practiceQuest.questID, BuildGraph(root), out string observation);
+                    if (success)
+                    {
+                        PinnedQuest.completed = true;
+                        ResearchPuzzleTrial.Active.MarkCompleted(practiceQuest.questID);
+                    }
+                    Report(observation, success);
+                    return;
+                }
+                if (!SynthesisGraphValidator.Validate(BuildGraph(root), practiceQuest.CreateQuest(), out _))
+                { Report("Parça seçimi veya bağlar hedefle uyuşmuyor. Kitaptaki ipuçlarını kontrol et.", false); return; }
             }
             PinnedQuest.completed = true;
             Report("Doğru bildin", true);
@@ -380,6 +488,10 @@ public class ChalkboardManager : MonoBehaviour, ISaveable
         if (boardTransform == null) return;
         if (data == null) data = new GameData();
         var snapshot = new SynthesisBoardSaveData { pinnedQuestID = PinnedQuest != null ? PinnedQuest.questID : null };
+        foreach (var note in pinnedInformation) if (note != null) snapshot.information.Add(note.Clone());
+        documents?.SaveLayout(snapshot);
+        if (freehand != null && freehand.Drawer != null)
+            foreach (var stroke in freehand.Drawer.Strokes) snapshot.strokes.Add(stroke.Clone());
         DraggableFormula[] parts = boardTransform.GetComponentsInChildren<DraggableFormula>();
         var indices = new Dictionary<DraggableFormula, int>();
         for (int i = 0; i < parts.Length; i++)
@@ -393,7 +505,7 @@ public class ChalkboardManager : MonoBehaviour, ISaveable
                 localRotation = Quaternion.Inverse(boardTransform.rotation) * part.transform.rotation,
                 synthesized = part.IsSynthesized,
             };
-            foreach (FormulaNode node in part.GetOwnNodes()) saved.nodeStates.Add(node.nodeState);
+            foreach (FormulaNode node in part.GetOwnNodes()) saved.nodeStates.Add(FormulaNodeState.Open);
             snapshot.parts.Add(saved);
         }
         var visited = new HashSet<FormulaNode>();
@@ -461,7 +573,7 @@ public class ChalkboardManager : MonoBehaviour, ISaveable
                 FormulaNode[] nodes = formula.GetOwnNodes();
                 if (saved.nodeStates == null || saved.nodeStates.Count != nodes.Length)
                     throw new InvalidOperationException("Kayıttaki parça uçları prefab ile uyuşmuyor.");
-                for (int n = 0; n < nodes.Length; n++) nodes[n].nodeState = saved.nodeStates[n];
+                for (int n = 0; n < nodes.Length; n++) nodes[n].nodeState = FormulaNodeState.Open;
             }
             foreach (SynthesisBoardBondSaveData bond in snapshot.bonds)
             {
@@ -489,10 +601,21 @@ public class ChalkboardManager : MonoBehaviour, ISaveable
             return;
         }
         DestroyParts(oldParts);
+        EnsureDrawing()?.SetStrokes(snapshot.strokes);
         RebuildFormulaGroups();
         if (synthesisZone != null) synthesisZone.RefreshItems();
-        PinnedQuest = generator != null && generator.Run != null
+        var practice = FindPracticeQuest(snapshot.pinnedQuestID);
+        if (practice != null) practiceQuest = practice;
+        PinnedQuest = practice != null ? practice.CreateQuest() : generator != null && generator.Run != null
             ? generator.Run.quests.Find(quest => quest.questID == snapshot.pinnedQuestID) : null;
+        pinnedInformation = snapshot.information != null
+            ? snapshot.information.FindAll(n => n != null && n.blockType == NotebookBlockType.RuleClue).ConvertAll(n => n.Clone())
+            : new List<NotebookBlockData>();
+        var loadedDocuments = EnsureDocuments();
+        loadedDocuments?.LoadLayout(snapshot);
+        loadedDocuments?.Refresh();
+        if (isMachineActive) KeepFormulasInWorkingArea();
+        if (synthesisZone != null) synthesisZone.RefreshItems();
         QuestPinned?.Invoke(PinnedQuest);
     }
 
@@ -515,9 +638,12 @@ public class ChalkboardManager : MonoBehaviour, ISaveable
     public void ResetBoard()
     {
         if (boardTransform != null) DestroyParts(boardTransform.GetComponentsInChildren<DraggableFormula>(true));
+        if (freehand != null && freehand.Drawer != null) freehand.Drawer.Clear();
         if (synthesisZone != null) synthesisZone.currentItems.Clear();
         PinnedQuest = null;
         LastSynthesisMessage = string.Empty;
+        pinnedInformation.Clear();
+        documents?.Refresh();
         QuestPinned?.Invoke(null);
     }
 

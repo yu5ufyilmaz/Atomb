@@ -9,6 +9,8 @@ public class DraggableWorkspaceItem : MonoBehaviour, IBeginDragHandler, IDragHan
     public RectTransform target;
     [Tooltip("Pencerenin ekrandan kaybolmasını önleyen alan. Boşsa üst nesne kullanılır.")]
     public RectTransform workspaceBounds;
+    [Tooltip("Pencerenin sağından çıkan ayraçlar için ek sınır; varsayılan sıfırdır.")]
+    public float rightEdgeExtension;
 
     [Header("Fiziksel Kitap (İsteğe Bağlı)")]
     [Tooltip("Ekrandaki başlıkla birlikte kamera düzleminde taşınacak kitap.")]
@@ -79,6 +81,8 @@ public class DraggableWorkspaceItem : MonoBehaviour, IBeginDragHandler, IDragHan
     private void ClampToWorkspace()
     {
         target.GetWorldCorners(corners);
+        Vector3 extension = target.TransformVector(new Vector3(Mathf.Max(0, rightEdgeExtension), 0, 0));
+        corners[2] += extension; corners[3] += extension;
         Vector2 min = new Vector2(float.PositiveInfinity, float.PositiveInfinity);
         Vector2 max = new Vector2(float.NegativeInfinity, float.NegativeInfinity);
         foreach (var corner in corners)

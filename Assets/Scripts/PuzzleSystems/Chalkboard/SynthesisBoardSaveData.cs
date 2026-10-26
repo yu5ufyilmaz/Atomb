@@ -7,7 +7,18 @@ public class SynthesisBoardSaveData
 {
     public List<SynthesisBoardPartSaveData> parts = new List<SynthesisBoardPartSaveData>();
     public List<SynthesisBoardBondSaveData> bonds = new List<SynthesisBoardBondSaveData>();
+    public List<NotebookStrokeData> strokes = new List<NotebookStrokeData>();
     public string pinnedQuestID;
+    public List<NotebookBlockData> information = new List<NotebookBlockData>();
+    public List<SynthesisBoardDocumentSaveData> documents = new List<SynthesisBoardDocumentSaveData>();
+    public bool documentShadeOpen;
+}
+
+[Serializable]
+public class SynthesisBoardDocumentSaveData
+{
+    public string id;
+    public Vector2 position;
 }
 
 [Serializable]

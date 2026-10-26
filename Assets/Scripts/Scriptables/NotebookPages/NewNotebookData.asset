@@ -20,6 +20,9 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 32e8809b6981d3d4cac16e6be17100f6, type: 2}
   - {fileID: 11400000, guid: 3931f28d2b8d3fb4ebf31b04c541c9f7, type: 2}
 
+  synthesisRecipes:
+  - {fileID: 11400000, guid: a734090a0a526d44b8e82f86f2b1ce5b, type: 2}
+  - {fileID: 11400000, guid: 1c901af678b72a241bbb8a30bb726e18, type: 2}
   workspaceBlockPrefab: {fileID: 0}
   sketchRotation: 5
   synthesisCatalog:

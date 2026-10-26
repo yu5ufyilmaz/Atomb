@@ -156,6 +156,7 @@ public class GameManager : MonoBehaviour
 
     public bool IsCursorRequired()
     {
+        if (NotebookWorkspaceController.Instance != null && NotebookWorkspaceController.Instance.IsStandaloneOpen) return true;
         if (!isGameStarted)
             return true;
         // 1. Eğer hiçbir etkileşimde değilsek (FPS modu), fare GİZLİ olmalı.

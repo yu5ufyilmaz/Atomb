@@ -38,6 +38,7 @@ public static class SynthesisBoardValidation
             FormulaNode[] an = a.GetOwnNodes(), bn = b.GetOwnNodes(), cn = c.GetOwnNodes();
             Vector3 aPosition = a.transform.position, bPosition = b.transform.position, cPosition = c.transform.position;
             an[0].ConnectTo(bn[0]);
+            ValidatePermanentBondPreview(host.transform, board.transform, an[0]);
             bn[1].ConnectTo(cn[0]);
             cn[1].ConnectTo(an[1]);
             Check(a.GetConnectedParts().Count == 3, "Üçlü döngü kurulamadı.");
@@ -46,8 +47,11 @@ public static class SynthesisBoardValidation
                 && Vector3.Distance(b.transform.position, bPosition) < 0.0001f
                 && Vector3.Distance(c.transform.position, cPosition) < 0.0001f, "Gruplama parçaları ışınladı.");
 
-            an[0].ConnectTo(bn[0]);
+            bn[0].ConnectTo(an[0]);
             Check(an[0].bondType == BondType.Double && bn[0].bondType == BondType.Double && a.UsedCapacity == 3, "Çift bağ yükseltme/kapasite hatalı.");
+            ValidatePermanentBondPreview(host.transform, board.transform, bn[0]);
+            bn[0].ConnectTo(an[0]);
+            Check(bn[0].bondType == BondType.Double && a.UsedCapacity == 3, "Üçüncü çizim mevcut çift bağı değiştirdi.");
             SynthesisGraphData graph = manager.BuildGraph(a);
             Check(graph.parts.Count == 3 && graph.bonds.Count == 3 && graph.bonds.Exists(edge => edge.bondType == BondType.Double), "Grafik döngü/çift bağı kaybetti.");
             an[0].Erase();
@@ -64,19 +68,21 @@ public static class SynthesisBoardValidation
             Check(a.transform.parent == board.transform && b.transform.parent == board.transform && c.transform.parent == board.transform,
                 "Bağımsız parçalarda eski üst formül sahipliği kaldı.");
 
-            an[2].nodeState = FormulaNodeState.Blocked;
+            a.formulaData.initiallyBlockedNodes.Add(2);
+            a.formulaData.initiallyUnstableNodes.Add(1);
+            a.formulaData.doubleBondNodes.Add(2);
+            a.Initialize(a.formulaData);
+            Check(Array.TrueForAll(an, n => n.nodeState == FormulaNodeState.Open), "Eski assetteki kapalı/kararsız uçlar hâlâ açma işlemi istiyor.");
+            Invoke(an[2], "UpdateSocketVisual");
+            Check(an[2].SocketHint == "= 0/2", "Çift bağ yuvası önceden işaretlenmedi.");
             an[2].ConnectTo(bn[2]);
-            Check(!an[2].isOccupied, "Kapalı uç bağlantı kabul etti.");
-            Invoke(an[2], "UpdateBlockedVisual");
-            TMP_Text blocked = an[2].GetComponentInChildren<TMP_Text>();
-            Check(blocked != null && blocked.gameObject.activeSelf && blocked.text == "x", "Kapalı uç işareti oluşturulamadı.");
-            an[2].Erase();
-            Invoke(an[2], "UpdateBlockedVisual");
-            Check(an[2].nodeState == FormulaNodeState.Open && !blocked.gameObject.activeSelf, "Kapalı uç silgisi görseli temizlemedi.");
-            an[2].nodeState = FormulaNodeState.Unstable;
-            an[2].Erase();
-            Check(an[2].nodeState == FormulaNodeState.Open, "Kararsız uç silinemedi.");
-            Check(a.formulaLabel != null && a.formulaLabel.text == "Parça A", "Paylaşılan prefab parça adını göstermiyor.");
+            Check(an[2].isOccupied && an[2].SocketHint == "= 1/2", "Çift bağ yuvasında ilk çizimin ilerlemesi görünmüyor.");
+            an[2].ConnectTo(bn[2]);
+            Invoke(an[2], "UpdateSocketVisual");
+            TMP_Text marker = an[2].GetComponentInChildren<TMP_Text>();
+            Check(marker != null && marker.text == "= 2/2", "Çift bağın tamamlandığı görünmüyor.");
+            an[2].Disconnect();
+            Check(a.formulaLabel != null && a.formulaLabel.text.Contains("Parça A") && a.formulaLabel.text.Contains("ÇİFT BAĞ"), "Parça adı/çift bağ etiketi görünmüyor.");
 
             an[0].ConnectTo(bn[0]);
             an[0].ConnectTo(bn[0]);
@@ -84,6 +90,7 @@ public static class SynthesisBoardValidation
             a.IsSynthesized = true;
             GameData save = new GameData();
             manager.SaveData(ref save);
+            save.savedChalkboard.parts.Find(p => p.itemID == "C").nodeStates[2] = FormulaNodeState.Blocked; // Eski kayıt örneği.
             var restoredSave = JsonUtility.FromJson<GameData>(JsonUtility.ToJson(save));
             Check(restoredSave.savedChalkboard.parts.Count == 3 && restoredSave.savedChalkboard.bonds.Count == 1, "Tahta JSON kaydı eksik.");
             FormulaNode templateNode = a.formulaData.chalkPrefab.GetComponent<DraggableFormula>().GetOwnNodes()[0];
@@ -113,11 +120,11 @@ public static class SynthesisBoardValidation
             Check(restored.Length == 3 && restoredA != null && restoredA.IsSynthesized, "Sentezlenmiş ürün yüklemede kayboldu.");
             Check(restoredA.GetOwnNodes()[0].bondType == BondType.Double && restoredA.GetConnectedParts().Count == 2,
                 "Kayıt çift bağı veya bağlantı grubunu kaybetti.");
-            Check(restoredC != null && restoredC.GetOwnNodes()[2].nodeState == FormulaNodeState.Blocked, "Kayıt kapalı uç durumunu kaybetti.");
+            Check(restoredC != null && restoredC.GetOwnNodes()[2].nodeState == FormulaNodeState.Open, "Eski kayıttaki kapalı uç doğrudan açılmadı.");
             Check(Vector3.Distance(restoredA.transform.position, aPosition) < 0.0001f, "Döndürülmüş tahtada kayıt konumu değişti.");
             manager.ResetBoard();
             Check(board.GetComponentsInChildren<DraggableFormula>(true).Length == 0, "Yeni oyun tahtayı temizlemedi.");
-            Debug.Log("Tahta doğrulaması geçti: döngü gruplaması, çift bağ kapasitesi, uç silgisi, etiketler, JSON kayıt/yükleme.");
+            Debug.Log("Tahta doğrulaması geçti: kalıcı bağ önizlemesi, ters yönden çift bağ, kapasite, açık yuvalar, ilerleme etiketleri, eski JSON kaydı.");
         }
         finally
         {
@@ -149,6 +156,29 @@ public static class SynthesisBoardValidation
         foreach (FormulaNode node in formula.GetOwnNodes()) Invoke(node, "Awake");
         formula.Initialize(data);
         return formula;
+    }
+
+    private static void ValidatePermanentBondPreview(Transform host, Transform board, FormulaNode node)
+    {
+        var cameraObject = new GameObject("Bond preview validation", typeof(Camera));
+        cameraObject.transform.SetParent(host, false);
+        var camera = cameraObject.GetComponent<Camera>();
+        camera.pixelRect = new Rect(0, 0, 1, 1);
+        camera.transform.position = node.transform.position - board.forward * 2;
+        camera.transform.rotation = Quaternion.LookRotation(board.forward, board.up);
+        typeof(FormulaNode).GetField("mainCam", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(node, camera);
+        Invoke(node, "DrawConnection");
+        BondType expected = node.bondType;
+        var second = (LineRenderer)typeof(FormulaNode).GetField("secondLine", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(node);
+        bool secondWasVisible = second != null && second.enabled;
+        var line = node.GetComponent<LineRenderer>();
+        Vector3 originalEnd = line.GetPosition(line.positionCount - 1);
+        Invoke(node, "DrawDraggingLine");
+        Check(line.enabled && Vector3.Distance(line.GetPosition(line.positionCount - 1), originalEnd) < .00001f,
+            "İkinci bağın önizlemesi mevcut bağlı çizgiyi değiştiriyor/siliyor.");
+        Check(second == null || second.enabled == secondWasVisible, "Önizleme mevcut çift bağın ikinci çizgisini gizledi.");
+        Invoke(node, "CancelDrawing");
+        Check(node.isOccupied && node.bondType == expected, "İptal edilen ikinci çizim ilk bağı bozdu.");
     }
 
     private static void SetManager(ChalkboardManager manager)

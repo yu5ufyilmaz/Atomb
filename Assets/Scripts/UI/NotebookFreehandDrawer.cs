@@ -29,7 +29,7 @@ public class NotebookFreehandDrawer : MaskableGraphic, IPointerDownHandler, IDra
         }
     }
 
-    private NotebookTool tool;
+    private NotebookTool tool = NotebookTool.Pen;
     private NotebookStrokeData activeStroke;
     private NotebookStrokeGraphic activeGraphic;
     private bool erasing;
@@ -85,11 +85,24 @@ public class NotebookFreehandDrawer : MaskableGraphic, IPointerDownHandler, IDra
 
     public void OnPointerDown(PointerEventData eventData)
     {
-        if (IsPaused || eventData.button != PointerEventData.InputButton.Left || tool == NotebookTool.Select
+        if (IsPaused || eventData.button == PointerEventData.InputButton.Middle || tool == NotebookTool.Select
             || !TryGetLocalPoint(eventData, out var point))
             return;
+        BeginStroke(point, eventData.button == PointerEventData.InputButton.Right || tool == NotebookTool.Eraser);
+    }
+
+    public void ConfigurePen(Color color, float width)
+    {
+        penColor = color;
+        penWidth = width;
+    }
+
+    // Dünya yüzeyleri aynı çizim/silgi geometrisini kendi yerel koordinatlarıyla kullanır.
+    public void BeginStroke(Vector2 point, bool erase)
+    {
+        if (IsPaused) return;
         EndStroke();
-        if (tool == NotebookTool.Eraser)
+        if (erase)
         {
             erasing = true;
             previousEraserPoint = point;
@@ -111,13 +124,19 @@ public class NotebookFreehandDrawer : MaskableGraphic, IPointerDownHandler, IDra
                 EndStroke();
             return;
         }
-        if (tool == NotebookTool.Eraser && erasing)
+        ContinueStroke(point);
+    }
+
+    public void ContinueStroke(Vector2 point)
+    {
+        if (IsPaused) { EndStroke(); return; }
+        if (erasing)
         {
             Erase(previousEraserPoint, point);
             previousEraserPoint = point;
             return;
         }
-        if (tool != NotebookTool.Pen || activeStroke == null)
+        if (activeStroke == null)
             return;
         Vector2 normalized = Normalize(point);
         if ((Denormalize(activeStroke.points[activeStroke.points.Count - 1]) - point).sqrMagnitude
@@ -132,18 +151,18 @@ public class NotebookFreehandDrawer : MaskableGraphic, IPointerDownHandler, IDra
 
     public void OnPointerUp(PointerEventData eventData)
     {
-        if (eventData.button == PointerEventData.InputButton.Left)
+        if (eventData.button != PointerEventData.InputButton.Middle)
             EndStroke();
     }
 
-    private void EndStroke()
+    public void EndStroke()
     {
         activeStroke = null;
         activeGraphic = null;
         erasing = false;
     }
 
-    private bool TryGetLocalPoint(PointerEventData eventData, out Vector2 point)
+    protected virtual bool TryGetLocalPoint(PointerEventData eventData, out Vector2 point)
     {
         if (!RectTransformUtility.ScreenPointToLocalPointInRectangle(
             rectTransform, eventData.position, eventData.pressEventCamera, out point))
@@ -227,9 +246,12 @@ public class NotebookFreehandDrawer : MaskableGraphic, IPointerDownHandler, IDra
         graphic.StartPoint = start;
         graphic.PointLimit = PointsPerGraphic;
         graphic.SetVerticesDirty();
+        ConfigureGraphic(graphic);
         graphics.Add(graphic);
         return graphic;
     }
+
+    protected virtual void ConfigureGraphic(MaskableGraphic graphic) { }
 
     private void RebuildGraphics()
     {

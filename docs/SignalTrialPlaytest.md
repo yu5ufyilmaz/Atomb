@@ -1,0 +1,47 @@
+# Çift Kayıt — kör oynanış testi
+
+Etkin sahne: `Assets/Scenes/scn_SynthesisBlockout.unity`. Play'e basıldığında defter ve tahta boş başlar. Bu belgede çözüm veya hedef kodu bulunmaz.
+
+Güncel defter görünümü ve kontrol kuralları: [LaboratoryLedger.md](LaboratoryLedger.md). Boştayken **Tab** aç/kapat, **Q / E** bölüm değiştir, **fare tekerleği** mevcut bölümde sayfa değiştir. Kitap, tahta veya makine etkileşiminde bu kısayollar mevcut kontrolleri değiştirmez. Yeni ciltli defter, düz araştırma kayıtları ve DM Sans Medium kullanılır; yırtık etiketler kaldırılmıştır. Sayfa ve bölüm değişimleri kısa bir yaprak/gölge hareketiyle gösterilir.
+
+- **1:** Araştırma Soruları.
+- **2:** Tahta.
+- **3:** Parça Atlası; **A/D** ile diğer sayfalara bakılabilir.
+- **4:** Bağ İlkeleri.
+- **5:** Deney Kayıtları.
+- **6:** Turing deneme kopyası.
+- **F / Esc:** Etkileşimden çıkış. Defterin aç/kapat düğmesi tahtayı görünür bırakır.
+
+Yeni deneyde altı parça ailesi, iki farklı numune ve yönlü giriş/çıkışlar vardır. Parçaların çizimleri ayrıdır. Giriş halkasına çıkış oku bağlanır; fazla yuvalar gösterilmez. Kitap açıklamaları ve karşılaştırmalı çizimler, parçanın görevini anlatır. Genel notlar hedeften önce toplanabilir.
+
+Her parçadan bir tane kullanmak genel kural değildir. Bir ölçüm düzeneğinde tek kaynak ve tek ölçer vardır; işlem parçaları tekrar kullanılabilir ve katalogdaki her parçayı kullanmak gerekmez. **Çift Kayıt** görevinin ayrıca açıkça belirtilen **1 numune** koşulu vardır. Koşula uymayan, fakat çalışan düzenek de ölçüm üretir; görevi tamamlamaz.
+
+Test sahnesindeki defter **Parçalar / Bilgiler / Hedefler / Ölçümler** arşividir. Kitap notu deftere bırakılınca türüne göre ayrılır. Parçalar bölümünde kaydırma yoktur: her sayfada 2×2 düzende en fazla dört kart bulunur; üstteki oklar ve sayfa numarasıyla gezilir. Yeni toplanan parçanın bulunduğu sayfa açılır. Aynı parçayı yeniden toplamak arşiv girdisini çoğaltmaz. Tahtaya sürüklemek kopya üretir, defterdeki aslı tüketmez. Sağ tık defter kaydını silmez. Önceki sayfa verileri korunur; defterde serbest yerleştirme yerine deney tahtada kurulur.
+
+Tahtada parça gövdesi sürüklenebilir; bağlı parçalar **ayrı ayrı** taşınır ve hatlar uçları takip eder. Uçlardan bağlantı kurulur. Bağlı parçalar hâlâ tek deney olarak ölçülür. Hedef ve çıktı grafikleri ortak eksen aralığı ve sabit en/boy oranıyla çizilir; kartın biçimi dalgayı esnetmez.
+
+Kayıtlar ve hedefler de kaydırmasız, sayfa başına yan yana iki kartla gezilir. Defter, özgün spiralli sprite'ın oranında ve bütün bölümlerde aynı boyutta kalır; büyük hedef toplama bandı kaldırılmıştır.
+
+Tahtanın üstündeki **BELGELERİ AÇ / BELGELERİ TOPLA** tutamağı, ayrı mantar yüzeyli stor belge panosunu açıp kapatır. Hedefler, seçtiğin kitap kayıtları ve raptiye ipleri bu paneldedir. Son ölçüm kağıdı doğrudan kara tahtanın **sağ alt köşesinde** bulunur. Belge paneli açıkken de ölçüm kağıdı görünür ve alınabilir. Kapalıyken belgeler kara tahtada yer veya fare girdisi kaplamaz. Yeni bir hedef/kayıt bıraktığında pano açılır; ölçüm almak panoyu açmaz. Defter notunu tutamağa da bırakabilirsin. Kartlar panel içinde sürüklenebilir; ipler doğru/yanlış çözüm onayı vermez. Kartların yerleşimi ve panelin açık/kapalı durumu tahta kaydında korunur; tahta etkileşiminden çıkınca panel toplanır.
+
+Tahtadaki **DENEYİ ÖLÇ** sonuç grafiği ve bir kayıt kodu üretir. Kayıt kodu bir hesap sorusu değildir; ölçümün kimliğidir. Çıktı kağıdı tahtadan deftere sürüklenir ve ayrı **Ölçümler** bölümünde saklanır. Bu bölüm genel kitap bilgilerinden ayrıdır; iki kartlık sayfalarla gezilir. Önceden toplanan ölçümler de buraya ayrılır. Yeni ölçümler eski çıktıların şeklini veya kodunu değiştirmez; başarısız denemeler de saklanabilir.
+
+Turing deneme kopyası artık öneki kendiliğinden doldurmaz. Makineye girince defterin **Ölçümler** bölümü açılır ve fare serbesttir. Ölçüm kartını **sol klavyenin üst kenarındaki kart girişine** bırak. Kartın kendi ölçüm çizimi, kalınlığı olan opak kağıt meshine basılır; kart gerçek klavye düzleminde metal okuyucunun ve gövdenin içine ilerler. Maske veya saydamlaşma kullanılmaz. Kartın aslı defterde kalır; harf, sembol ve sayı çarkları birlikte birkaç tur atar; motor hızlanır, farklı oranlarda dönen çarklar sırayla frenlenip hafif geri oturarak kilitlenir. Konumsal motor yatağına ritmik dişli ve kilit sesleri eşlik eder. Kart beslemesi dahil şimdilik okuma yaklaşık 9–10 saniyedir; test terminalindeki measurementReadSeconds alanı 3–30 saniye aralığında ayarlanabilir. Üst ekrandaki özgün atom, cam, kir ve materyal korunur; yalnız mevcut küçük sayı satırı süre (dakika:saniye) ve durum için canlı güncellenir. Ayrı düz ekran paneli eklenmez. Ayrı okuyucu tabelası ve ekrandaki Turing durum kutusu kaldırılmıştır. Sınama sonucu da CRT ekranda gösterilir. Okuma sırasında yeni kart kabul edilmez ve elle giriş bekletilir. **ENTER: SINA** yazınca **Enter** ile sına. Yanlış ölçüm de okunabilir; görevi yalnız geçerli ölçümün sınaması tamamlar. Mevcut W/S, A/D, oklar ve tekerlekle elle giriş korunur. Duraklatma okumayı, çarkları ve motor sesini durdurur. F/Esc ile çıkış yalnız makine görünümünü ve defteri kapatır; makine dünyada çalışmayı sürdürür. Yeniden girildiğinde kağıt, ilerleme ve tamamlanmış kod korunur. Oyuncu uzaktayken okuma bitebilir; Enter ile sınama adımı oyuncuya kalır. Bu okuyucu yalnız test kopyasında bulunur.
+
+Önceki deneyler korunur. **Senzora > İkinci İz > Test Sahnesine Kur** önceki İkinci İz'i; **Önceki A-B Denemelerine Dön** daha eski araştırma çiftini açar. **Senzora > Çift Kayıt > Test Sahnesine Kur** bu testi yeniden etkinleştirir. Menü komutları Play dışında kullanılır ve yalnız test sahnesini kaydeder.
+
+25 Ekim 2026, Unity 6000.3.10f1: kitap metinleri, atlasın ek sayfası, hedeften önce not toplama, gerçek defterden tahtaya bırakma, fiziksel uçlarla yönlü bağ kurma, ölçüm üretme, tahta JSON gidiş/dönüşü, çıktı notunu toplama ve gerçek Turing çarklarıyla görevi tamamlama kontrol edildi. Farklı model denemelerinin farklı sonuç ürettiği doğrulandı. Son konsol kontrolünde hata yoktu. Deneme durumu Play oturumunda kaldı; sahne boş başlangıca bırakıldı.
+
+26 Ekim 2026, ilk okuyucu sürümü: sağ alttaki kağıdın belge paneliyle gizlenip geri gelmesi; gerçek defter kartının okuyucuya sürüklenmesi; tüm harf/sembol/sayı çarklarının sırayla girişi; başarısız ölçümün Enter sınamasında reddi; manuel giriş ve geçerli ölçümün kabulü; duraklatma, ikinci kartı bekletme ve çıkışta iptal doğrulandı. Defterin aslı değişmedi. Önceden kapatılmış defterin Turing'de Ölçümler bölümüne görünür açılması görsel olarak kontrol edildi. Son Play doğrulaması ve konsol hata kontrolü geçti.
+
+26 Ekim 2026, mekanik hareket güncellemesi: kağıdın açık ve kapalı belge panelinde görünür/etkileşimli kalması; birlikte dönen çarkların tüm kodu doğru yerleştirmesi; duraklatma; işlem sırasında görünümden çıkış; dışarıdayken fiziksel çark hareketi; tekrar girişte kağıdın ve işlemin korunması; uzaktayken tamamlanma; motorun sonunda durması ve defter kaydının değişmemesi Play kontrolünden geçti. Başarısız çıktı kendiliğinden onaylanmadı. Mevcut elle giriş ve geçerli ölçümün kabulü de geçti. Son konsol hata sayısı sıfır; Play durduruldu.
+
+26 Ekim 2026, CRT ve klavye besleme güncellemesi: üst monitör çerçevesine oturan durum/süre ekranı; gerçek ölçüm çiziminin sol klavyedeki maskeli yuvaya çekilmesi; dakika:saniye sayacı; duraklatırken sayacın donması; defter aslının korunması; tekrar giriş ve uzaktayken tamamlanma doğrulandı. Kartın içeri girme anı ve CRT onay ekranı oyun içi görüntülerde kontrol edildi. Mevcut manuel sınama geçti; son konsol hata sayısı sıfır.
+
+Ölçüm kartını tanıma: tahta çıktısı ve defter kartı **ÖLÇÜM KARTI** başlığını taşır. Kartın açıklaması ve Ölçümler alt bilgisi, Turing'in sol klavyesindeki yuvaya sürüklemeyi söyler. CRT aynı kart adını bekler; yuvanın metal dudağında da ÖLÇÜM KARTI etiketi bulunur. Genel kitap kayıtları bu yuvaya kabul edilmez.
+
+26 Ekim 2026, özgün CRT ve fiziksel kart son kontrolü: özgün materyalin yalnız sayı satırının güncellenmesi; opak, kalınlıklı kartın gerçek geometri içinde gizlenmesi; gerçek defter kartını sürükleyerek okuma; yanlış ölçümün reddi; duraklatma; işlem sırasında çıkış ve tekrar giriş; görünüm dışındayken tamamlanma; motorun durması ve defter aslının korunması temiz Play oturumunda geçti. Geçerli son ölçüm mevcut elle çark girişi ve Enter ile ayrıca kabul edildi. Son konsolda hata ve uyarı yoktu. Play durduruldu; test durumu sahneye kaydedilmedi.
+
+26 Ekim 2026, defter görünümü: test sahnesinde mevcut `Assets/Sprites/UI/UIInGame/Notebook.png` kullanılır. Spiraller esnetilmez; Parçalar, Bilgiler, Hedefler ve Ölçümler aynı defter boyutunu paylaşır. Parçalar dört, diğer arşivler iki kartlık sayfalarla gezilir. Mürekkep renkli bölüm başlıkları, seçili bölümün alt çizgisi ve el çizimi düğme çerçeveleri kağıda uyarlanmıştır. Diğer sahneler atanmış sprite olmadıkça eski arayüzlerini kullanır.
+
+Bu görünümle gerçek kitap notlarını deftere toplama, dolu arşiv sayfalarında kartların ve metinlerin sığması, sekmeler arasında boyutun sabit kalması, ölçümlerin ayrı sayfaları ve JSON kayıt dönüşü doğrulandı. Yeni yerleşimden gerçek ölçüm kartını Turing'e sürükleme ve okuyucunun tüm yaşam döngüsü de geçti. Son düğme görünümü temiz Play oturumunda yeniden kontrol edildi; konsolda hata veya uyarı yoktu. Görüntü: `Assets/Screenshots/NotebookArtworkFinal.png`. Play durduruldu; toplanan test notları sahneye kaydedilmedi.

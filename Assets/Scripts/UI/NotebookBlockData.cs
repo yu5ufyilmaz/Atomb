@@ -25,6 +25,7 @@ public class NotebookBlockData
     public string questID;
     public string title;
     public string description;
+    public string measurementCode;
     public int ruleIndex = -1;
     public Vector2 position;
     public float rotation;

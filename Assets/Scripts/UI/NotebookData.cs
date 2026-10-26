@@ -10,6 +10,8 @@ public class NotebookData : ScriptableObject
 
     [Tooltip("Kitaplarda ve kayıt geri yüklemesinde kullanılan kurgusal sentez modülleri.")]
     public List<FormulaItemSO> synthesisCatalog = new List<FormulaItemSO>();
+    [Tooltip("Hile sayfasında gösterilen tarif arşivi; bu liste tahtada yeni tarif açmaz.")]
+    public List<RecipeSO> synthesisRecipes = new List<RecipeSO>();
 
     [Tooltip("Eskizlerin kağıda bırakıldığındaki en fazla açı sapması.")]
     [Range(0f, 15f)] public float sketchRotation = 5f;

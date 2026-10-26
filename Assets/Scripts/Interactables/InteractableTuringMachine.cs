@@ -4,7 +4,7 @@ using Cinemachine;
 using StarterAssets; // Karakter scriptlerini garanti bulmak için
 using UnityEngine;
 
-public class InteractableTuringMachine : MonoBehaviour, IInteractable, IForceExitable
+public partial class InteractableTuringMachine : MonoBehaviour, IInteractable, IForceExitable
 {
     [Header("Player Control")]
     [SerializeField]
@@ -384,6 +384,7 @@ public class InteractableTuringMachine : MonoBehaviour, IInteractable, IForceExi
             UpdateIndicators(PasswordManager.Instance.GetValidatedPasswordCount());
 
         UpdateActiveWheelHighlight();
+        OpenMeasurementReader();
     }
 
     // --- YENİ ADIM 3: MAKİNEDEN ÇIKIŞ ---
@@ -393,6 +394,7 @@ public class InteractableTuringMachine : MonoBehaviour, IInteractable, IForceExi
             yield break;
         isExiting = true;
         inMachineMode = false;
+        CloseMeasurementReader();
 
         PlaySound(exitSound);
         ClearAllHighlights();
@@ -444,11 +446,17 @@ public class InteractableTuringMachine : MonoBehaviour, IInteractable, IForceExi
     {
         if (!inMachineMode || isExiting)
             return;
+        if (IsMeasurementTerminal && ReaderPaused) return;
 
         // ÇIKIŞ
         if (Input.GetKeyDown(KeyCode.F))
         {
             StartCoroutine(ExitMachineView());
+            return;
+        }
+
+        if (IsReadingMeasurement)
+        {
             return;
         }
 
@@ -587,7 +595,10 @@ public class InteractableTuringMachine : MonoBehaviour, IInteractable, IForceExi
 
     private void CheckPassword()
     {
-        if (!PasswordManager.Instance)
+        if (IsReadingMeasurement) return;
+        var experiment = SecondTraceExperiment.Active;
+        bool isTrialTerminal = experiment != null && experiment.terminal == this;
+        if (!PasswordManager.Instance && !isTrialTerminal)
             return;
 
         // Şifre string'ini oluşturma (Burası aynı)
@@ -600,6 +611,16 @@ public class InteractableTuringMachine : MonoBehaviour, IInteractable, IForceExi
             $"{numberChars[numberWheelIndices[0]]}{numberChars[numberWheelIndices[1]]}{numberChars[numberWheelIndices[2]]}";
 
         string pw = $"{wp}_{sp}_{np}";
+
+        // Only the test-scene copy uses an experiment result; production keeps its password flow.
+        if (isTrialTerminal)
+        {
+            bool accepted = experiment.Submit(pw);
+            ShowMeasurementResult(accepted, experiment.TerminalMessage);
+            PlaySound(accepted ? successSound : failSound);
+            UpdateIndicators(accepted ? 1 : 0);
+            return;
+        }
 
         Debug.Log($"GİRİLEN ŞİFRE: '{pw}'");
 

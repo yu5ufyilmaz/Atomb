@@ -41,6 +41,7 @@ public class GameData
 
     [Header("Defter Çalışma Alanı")]
     public List<NotebookPageSaveData> notebookPages = new List<NotebookPageSaveData>();
+    public List<NotebookBlockData> notebookQuests = new List<NotebookBlockData>();
     public int currentNotebookPage;
     public List<string> notebookResearch = new List<string>();
 

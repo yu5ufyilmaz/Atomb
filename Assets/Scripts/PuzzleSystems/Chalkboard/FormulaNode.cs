@@ -13,7 +13,8 @@ public class FormulaNode : MonoBehaviour
     public bool acceptAnyFormula = true;
     public List<FormulaItemSO> allowedFormulas = new List<FormulaItemSO>();
     public ConnectionType connectionType = ConnectionType.Normal;
-    public FormulaNodeState nodeState = FormulaNodeState.Open;
+    [HideInInspector] public FormulaNodeState nodeState = FormulaNodeState.Open; // Eski kayıt/prefab alanı.
+    [HideInInspector] public bool doubleBondSocket;
     public BondType bondType = BondType.Single;
     public bool isOccupied => connectedNode != null;
     [HideInInspector] public FormulaNode connectedNode;
@@ -33,11 +34,17 @@ public class FormulaNode : MonoBehaviour
 
     private LineRenderer lineRenderer;
     private LineRenderer secondLine;
-    private TextMeshPro blockedMark;
+    private LineRenderer previewLine;
+    private ChalkBondStroke chalkConnection, chalkSecond, chalkPreview;
+    private TextMeshPro socketMark;
     private Camera mainCam;
     private bool isDraggingLine;
     private Vector3 originalScale;
     private float noiseSeed;
+
+    public bool IsDoubleBondSocket => doubleBondSocket || connectionType == ConnectionType.DoubleBond;
+    public string SocketHint => IsDoubleBondSocket || (isOccupied && bondType == BondType.Double)
+        ? "= " + (isOccupied ? (int)bondType : 0) + "/2" : "";
 
     private void Awake()
     {
@@ -56,10 +63,13 @@ public class FormulaNode : MonoBehaviour
         transform.localScale = originalScale;
         if (lineRenderer != null) lineRenderer.enabled = false;
         if (secondLine != null) secondLine.enabled = false;
+        if (previewLine != null) previewLine.enabled = false;
+        HideChalk();
     }
 
     private void OnDestroy()
     {
+        DestroyChalk(chalkConnection); DestroyChalk(chalkSecond); DestroyChalk(chalkPreview);
         if (connectedNode == null) return;
         connectedNode.connectedNode = null;
         connectedNode.isLineOwner = false;
@@ -72,9 +82,15 @@ public class FormulaNode : MonoBehaviour
             && (GameManager.Instance == null || !GameManager.Instance.isGamePaused);
         if (active) { HandleInput(); UpdateHeartbeatVisuals(); }
         else { CancelDrawing(); transform.localScale = originalScale; }
-        UpdateBlockedVisual();
+        nodeState = FormulaNodeState.Open;
+        UpdateSocketVisual();
+        DrawConnection();
         if (isDraggingLine) DrawDraggingLine();
-        else DrawConnection();
+        else
+        {
+            if (previewLine != null) previewLine.enabled = false;
+            if (chalkPreview != null) chalkPreview.gameObject.SetActive(false);
+        }
     }
 
     public static bool IsPointerOverUI()
@@ -90,10 +106,8 @@ public class FormulaNode : MonoBehaviour
         if ((Input.GetMouseButtonDown(0) || Input.GetMouseButtonDown(1)) && !overUI)
         {
             if (FindNodeAtPointer() != this) return;
-            var tool = ChalkboardManager.Instance.Tool;
-            if (Input.GetMouseButtonDown(1) || tool == ChalkboardTool.Eraser) { Erase(); return; }
-            if (tool == ChalkboardTool.Move) return;
-            if (nodeState == FormulaNodeState.Open && activeDraggingNode == null)
+            if (Input.GetMouseButtonDown(1)) { Erase(); return; }
+            if (activeDraggingNode == null)
             { isDraggingLine = true; activeDraggingNode = this; }
         }
         if (isDraggingLine && Input.GetMouseButtonUp(0))
@@ -119,12 +133,13 @@ public class FormulaNode : MonoBehaviour
     private void CancelDrawing()
     {
         isDraggingLine = false;
+        if (previewLine != null) previewLine.enabled = false;
+        if (chalkPreview != null) chalkPreview.gameObject.SetActive(false);
         if (activeDraggingNode == this) activeDraggingNode = null;
     }
 
     public void Erase()
     {
-        if (nodeState != FormulaNodeState.Open) { nodeState = FormulaNodeState.Open; return; }
         if (connectedNode == null) return;
         if (bondType == BondType.Double) bondType = connectedNode.bondType = BondType.Single;
         else Disconnect();
@@ -133,8 +148,8 @@ public class FormulaNode : MonoBehaviour
     public bool CanConnect(DraggableFormula otherFormula, FormulaNode otherNode)
     {
         if (otherFormula == null || otherNode == null || otherNode == this || parentFormula == null
-            || parentFormula == otherFormula || nodeState != FormulaNodeState.Open
-            || otherNode.nodeState != FormulaNodeState.Open || connectionType != otherNode.connectionType) return false;
+            || parentFormula == otherFormula || connectionType != otherNode.connectionType) return false;
+        if (!SignalPort.Compatible(this, otherNode)) return false;
         bool upgrade = connectedNode == otherNode && otherNode.connectedNode == this;
         if ((isOccupied || otherNode.isOccupied) && !upgrade) return false;
         if (upgrade && bondType == BondType.Double) return false;
@@ -161,8 +176,8 @@ public class FormulaNode : MonoBehaviour
     {
         if (other == null || other == this || parentFormula == null || other.parentFormula == null
             || parentFormula == other.parentFormula || isOccupied || other.isOccupied
-            || nodeState != FormulaNodeState.Open || other.nodeState != FormulaNodeState.Open
             || connectionType != other.connectionType || (savedType != BondType.Single && savedType != BondType.Double)) return false;
+        if (!SignalPort.Compatible(this, other) || (GetComponent<SignalPort>() != null && savedType != BondType.Single)) return false;
         foreach (FormulaNode own in parentFormula.GetOwnNodes())
             if (own.connectedNode != null && own.connectedNode.parentFormula == other.parentFormula) return false;
         int order = (int)savedType;
@@ -202,12 +217,31 @@ public class FormulaNode : MonoBehaviour
         Vector3 normal = board != null ? board.forward : -mainCam.transform.forward;
         Ray ray = mainCam.ScreenPointToRay(Input.mousePosition);
         if (new Plane(normal, transform.position).Raycast(ray, out float distance))
-            DrawLine(lineRenderer, transform.position, ray.GetPoint(distance), 0f);
-        if (secondLine != null) secondLine.enabled = false;
+        {
+            if (UsesChalk)
+            {
+                DrawChalk(ref chalkPreview, "Tebeşir Bağ Önizlemesi", transform.position, ray.GetPoint(distance), 0);
+                return;
+            }
+            if (previewLine == null) previewLine = CreateExtraLine("Bağ Önizlemesi");
+            DrawLine(previewLine, transform.position, ray.GetPoint(distance), 0f);
+        }
     }
 
     private void DrawConnection()
     {
+        if (UsesChalk)
+        {
+            lineRenderer.enabled = false;
+            if (secondLine != null) secondLine.enabled = false;
+            if (chalkConnection != null) chalkConnection.gameObject.SetActive(false);
+            if (chalkSecond != null) chalkSecond.gameObject.SetActive(false);
+            if (!isOccupied || !isLineOwner) return;
+            bool two = bondType == BondType.Double;
+            DrawChalk(ref chalkConnection, "Tebeşir Bağı", transform.position, connectedNode.transform.position, two ? -doubleBondSpacing * .5f : 0);
+            if (two) DrawChalk(ref chalkSecond, "Tebeşir Çift Bağ", transform.position, connectedNode.transform.position, doubleBondSpacing * .5f);
+            return;
+        }
         lineRenderer.enabled = isOccupied && isLineOwner;
         if (secondLine != null) secondLine.enabled = false;
         if (!lineRenderer.enabled) return;
@@ -215,21 +249,57 @@ public class FormulaNode : MonoBehaviour
         DrawLine(lineRenderer, transform.position, connectedNode.transform.position, isDouble ? -doubleBondSpacing * 0.5f : 0f);
         if (!isDouble) return;
         if (secondLine == null)
-        {
-            GameObject second = new GameObject("Çift Bağ Çizgisi");
-            second.transform.SetParent(transform, false);
-            secondLine = second.AddComponent<LineRenderer>();
-            secondLine.sharedMaterials = lineRenderer.sharedMaterials;
-            secondLine.widthMultiplier = lineRenderer.widthMultiplier;
-            secondLine.widthCurve = lineRenderer.widthCurve;
-            secondLine.colorGradient = lineRenderer.colorGradient;
-            secondLine.numCapVertices = lineRenderer.numCapVertices;
-            secondLine.numCornerVertices = lineRenderer.numCornerVertices;
-            secondLine.sortingLayerID = lineRenderer.sortingLayerID;
-            secondLine.sortingOrder = lineRenderer.sortingOrder;
-            secondLine.useWorldSpace = true;
-        }
+            secondLine = CreateExtraLine("Çift Bağ Çizgisi");
         DrawLine(secondLine, transform.position, connectedNode.transform.position, doubleBondSpacing * 0.5f);
+    }
+
+    private bool UsesChalk => parentFormula != null && parentFormula.GetComponent<ChalkFormulaSketch>() != null
+        && ChalkboardManager.Instance != null && ChalkboardManager.Instance.boardTransform != null;
+
+    private void DrawChalk(ref ChalkBondStroke stroke, string label, Vector3 start, Vector3 end, float offset)
+    {
+        Transform board = ChalkboardManager.Instance.boardTransform;
+        if (stroke == null)
+        {
+            var obj = new GameObject(label);
+            obj.transform.SetParent(board, false);
+            stroke = obj.AddComponent<ChalkBondStroke>();
+        }
+        Vector3 origin = board.InverseTransformPoint(start);
+        stroke.Draw(board, lineRenderer.sharedMaterial, start, end, offset, origin.x * 23.7f + origin.y * 11.3f);
+    }
+
+    private void HideChalk()
+    {
+        if (chalkConnection != null) chalkConnection.gameObject.SetActive(false);
+        if (chalkSecond != null) chalkSecond.gameObject.SetActive(false);
+        if (chalkPreview != null) chalkPreview.gameObject.SetActive(false);
+    }
+
+    private static void DestroyChalk(ChalkBondStroke stroke)
+    {
+        if (stroke == null) return;
+        if (Application.isPlaying) Destroy(stroke.gameObject); else DestroyImmediate(stroke.gameObject);
+    }
+
+    private LineRenderer CreateExtraLine(string label)
+    {
+        var obj = new GameObject(label);
+        obj.transform.SetParent(transform, false);
+        var line = obj.AddComponent<LineRenderer>();
+        line.sharedMaterials = lineRenderer.sharedMaterials;
+        line.widthMultiplier = lineRenderer.widthMultiplier;
+        line.widthCurve = lineRenderer.widthCurve;
+        line.colorGradient = lineRenderer.colorGradient;
+        line.numCapVertices = lineRenderer.numCapVertices;
+        line.numCornerVertices = lineRenderer.numCornerVertices;
+        line.sortingLayerID = lineRenderer.sortingLayerID;
+        line.sortingOrder = lineRenderer.sortingOrder;
+        line.alignment = LineAlignment.View;
+        line.useWorldSpace = true;
+        line.shadowCastingMode = lineRenderer.shadowCastingMode;
+        line.receiveShadows = lineRenderer.receiveShadows;
+        return line;
     }
 
     private void DrawLine(LineRenderer line, Vector3 start, Vector3 end, float offset)
@@ -254,29 +324,31 @@ public class FormulaNode : MonoBehaviour
         }
     }
 
-    private void UpdateBlockedVisual()
+    private void UpdateSocketVisual()
     {
-        bool blocked = nodeState != FormulaNodeState.Open;
-        if (!blocked && blockedMark == null) return;
-        if (blockedMark == null)
+        string hint = SocketHint;
+        if (hint.Length == 0 && socketMark == null) return;
+        if (socketMark == null)
         {
-            GameObject mark = new GameObject("Kapalı Uç (x)");
+            GameObject mark = new GameObject("Bağ Türü");
             mark.transform.SetParent(transform, false);
-            mark.transform.localPosition = new Vector3(0f, 0f, -0.015f);
-            blockedMark = mark.AddComponent<TextMeshPro>();
-            blockedMark.text = "x";
-            blockedMark.alignment = TextAlignmentOptions.Center;
-            blockedMark.fontSize = 5f;
-            blockedMark.rectTransform.sizeDelta = Vector2.one;
-            blockedMark.raycastTarget = false;
+            mark.transform.localPosition = new Vector3(0f, .48f, 0f);
+            mark.transform.localRotation = Quaternion.Euler(0, 180, 0);
+            socketMark = mark.AddComponent<TextMeshPro>();
+            socketMark.alignment = TextAlignmentOptions.Center;
+            socketMark.fontSize = 3.6f;
+            socketMark.rectTransform.sizeDelta = new Vector2(2f, .5f);
+            socketMark.textWrappingMode = TextWrappingModes.NoWrap;
+            socketMark.raycastTarget = false;
+            socketMark.color = new Color(1f, .9f, .52f);
         }
-        blockedMark.gameObject.SetActive(blocked);
-        blockedMark.color = nodeState == FormulaNodeState.Unstable ? new Color(1f, 0.55f, 0.2f) : Color.white;
+        socketMark.gameObject.SetActive(hint.Length > 0);
+        socketMark.text = hint;
     }
 
     private void UpdateHeartbeatVisuals()
     {
-        bool pulse = !isOccupied && nodeState == FormulaNodeState.Open;
+        bool pulse = !isOccupied;
         if (pulse && activeDraggingNode != null && activeDraggingNode != this)
             pulse = CanConnect(activeDraggingNode.parentFormula, activeDraggingNode) && activeDraggingNode.CanConnect(parentFormula, this);
         float scale = pulse ? Mathf.Lerp(1f, maxPulseScale, (Mathf.Sin(Time.time * pulseSpeed) + 1f) * 0.5f) : 1f;

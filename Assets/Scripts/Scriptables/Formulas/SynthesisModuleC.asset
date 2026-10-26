@@ -17,7 +17,6 @@ MonoBehaviour:
   isCore: 0
   connectionCapacity: 4
   chalkPrefab: {fileID: 1000, guid: 3c8489de99f5431abd1313438462e92b, type: 3}
-
   description: Kurgusal sentez modulu. Bag tiplerini ve hedef ipuclarini karsilastirin.
   isDecoy: 0
   sketchSprites: []

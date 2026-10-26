@@ -40,7 +40,7 @@ public class SynthesisRuleData
             case SynthesisRuleType.MaxPartCount: return "En fazla " + amount + " adet [" + Label(itemID) + "] bulunabilir.";
             case SynthesisRuleType.ExactPartCount: return "Tam " + amount + " adet [" + Label(itemID) + "] bulunmalı.";
             case SynthesisRuleType.ForbiddenPart: return "[" + Label(itemID) + "] bu yapıda kullanılamaz.";
-            case SynthesisRuleType.RequireNoBlockedEnds: return "Tüm (x) kapalı/kararsız uçları silgiyle temizleyin.";
+            case SynthesisRuleType.RequireNoBlockedEnds: return "Yuvalar doğrudan kullanılabilir.";
             case SynthesisRuleType.MaxOpenEnds: return "En fazla " + amount + " bağlantısız açık uç kalabilir.";
             default: return "Geçersiz sentez kuralı.";
         }

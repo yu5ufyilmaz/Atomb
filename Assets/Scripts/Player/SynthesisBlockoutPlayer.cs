@@ -12,6 +12,9 @@ public class SynthesisBlockoutPlayer : MonoBehaviour
     public InteractableChalkboard board;
     public Transform bookView;
     public Transform boardView;
+    public InteractableBook[] researchBooks;
+    public InteractableTuringMachine trialTerminal;
+    public Transform terminalView;
     private UnityEngine.CharacterController body;
     private float pitch;
     private IForceExitable session;
@@ -43,8 +46,18 @@ public class SynthesisBlockoutPlayer : MonoBehaviour
             Cursor.visible = false;
         }
         if (active != null || GameManager.Instance.isGamePaused) return;
+        if (NotebookWorkspaceController.Instance != null && NotebookWorkspaceController.Instance.IsStandaloneOpen)
+        {
+            focused?.OnLoseFocus(); focused = null;
+            return;
+        }
         if (Input.GetKeyDown(KeyCode.Alpha1)) { Begin(book, bookView); return; }
         if (Input.GetKeyDown(KeyCode.Alpha2)) { Begin(board, boardView); return; }
+        if (Input.GetKeyDown(KeyCode.Alpha6) && trialTerminal != null && trialTerminal.gameObject.activeInHierarchy)
+        { Begin(trialTerminal, terminalView); return; }
+        if (researchBooks != null)
+            for (int i = 1; i < researchBooks.Length && i < 4; i++)
+                if (Input.GetKeyDown(KeyCode.Alpha3 + i - 1)) { Begin(researchBooks[i], null); return; }
         if (Cursor.lockState != CursorLockMode.Locked)
         {
             if (Input.GetMouseButtonDown(0)) { Cursor.lockState = CursorLockMode.Locked; Cursor.visible = false; }
@@ -64,7 +77,7 @@ public class SynthesisBlockoutPlayer : MonoBehaviour
             focused?.OnLoseFocus(); focused = next; focused?.OnFocus();
         }
         if (focused != null && Input.GetMouseButtonDown(0))
-            Begin(focused, focused is InteractableChalkboard ? boardView : null);
+            Begin(focused, focused is InteractableChalkboard ? boardView : focused == trialTerminal ? terminalView : null);
     }
 
     private void Begin(IInteractable target, Transform pose)
@@ -87,7 +100,13 @@ public class SynthesisBlockoutPlayer : MonoBehaviour
 
     private void OnGUI()
     {
-        GUI.Box(new Rect(12, 12, 600, 76), "SENTEZ BLOCKOUT / SADECE ETKİLEŞİM TESTİ\nWASD: yürü | Fare: bak | Sol tık: etkileş\n1: kitap | 2: tahta | F: etkileşimden çık | Esc: çık");
+        string controls = researchBooks != null && researchBooks.Length == 4
+            ? "ARAŞTIRMA DENEMELERİ / KİTAP → DEFTER → TAHTA\n1: Sorular | 2: Tahta | 3: Parçalar | 4: İlkeler | 5: Deney kayıtları\nWASD / fare: yürü ve bak | Sol tık: etkileş | F / Esc: çık"
+            : "SENTEZ BLOCKOUT / SADECE ETKİLEŞİM TESTİ\nWASD: yürü | Fare: bak | Sol tık: etkileş\n1: kitap | 2: tahta | F: etkileşimden çık | Esc: çık";
+        var research = ResearchPuzzleTrial.Active;
+        if (research != null) controls += "\nAraştırma sonuçları: " + research.Completed.Count + " / " + research.Content.Quests.Count
+            + (SecondTraceExperiment.Active != null ? "  |  6: Turing deneme kopyası" : "  |  Hedef değişince tahta çalışman saklanır.");
+        GUI.Box(new Rect(12, 12, 680, research != null ? 96 : 76), controls);
         if (session == null)
         {
             GUI.Label(new Rect(Screen.width / 2f - 5, Screen.height / 2f - 12, 30, 30), "+");

@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Rendering.HighDefinition;
 
 // Blockout sahnesinin objeleri artık Edit modunda gerçek GameObject'ler olarak sahnede durur
 // (Senzora > Sentez Blockout > Sahneyi Düzenlenebilir Objelerle Oluştur menüsüyle üretilir).
@@ -17,6 +18,7 @@ public class SynthesisBlockoutScene : MonoBehaviour
     public bool enableProceduralQuests;
     [Tooltip("Tek, sabit alıştırma. Doğru çözümde yalnız başarı mesajı verir.")]
     public QuestBlueprintSO starterPuzzle;
+    public List<QuestBlueprintSO> additionalPracticePuzzles = new List<QuestBlueprintSO>();
 
     [Header("Sahne Referansları (menü komutu otomatik atar)")]
     [Tooltip("Sahnedeki test kitabı. Kitabı sildiyseniz veya değiştirdiyseniz buraya yeniden atayın.")]
@@ -50,6 +52,7 @@ public class SynthesisBlockoutScene : MonoBehaviour
             ChalkboardManager.Instance.useProceduralQuests = enableProceduralQuests;
         book.includeProceduralClues = enableProceduralQuests;
         if (starterPuzzle != null) ConfigureStarterPuzzle();
+        GetComponent<ResearchPuzzleTrial>()?.Configure(this);
         book.ClearPassword();
         foreach (var renderer in book.GetComponentsInChildren<Renderer>(true))
             foreach (var material in renderer.materials)
@@ -66,35 +69,63 @@ public class SynthesisBlockoutScene : MonoBehaviour
 
     private void ConfigureStarterPuzzle()
     {
+        // Deneme kamerasındaki bloom, yakın kitap kağıdını ve üstündeki notları yakıyordu.
+        var cameraData = Camera.main != null ? Camera.main.GetComponent<HDAdditionalCameraData>() : null;
+        if (cameraData != null)
+        {
+            cameraData.customRenderingSettings = true;
+            cameraData.renderingPathCustomFrameSettings.SetEnabled(FrameSettingsField.Bloom, false);
+            cameraData.renderingPathCustomFrameSettingsOverrideMask.mask[(uint)FrameSettingsField.Bloom] = true;
+        }
         var board = ChalkboardManager.Instance;
         var generator = ProceduralSynthesisGenerator.Instance;
         if (board == null || generator == null) return;
         board.practiceQuest = starterPuzzle;
         board.useProceduralQuests = false;
-        generator.RegisterCatalog(starterPuzzle.clueParts);
-        board.formulaCatalog = new List<FormulaItemSO>(starterPuzzle.clueParts);
+        board.practicePuzzles = new List<QuestBlueprintSO> { starterPuzzle };
+        foreach (var puzzle in additionalPracticePuzzles)
+            if (puzzle != null && !board.practicePuzzles.Contains(puzzle)) board.practicePuzzles.Add(puzzle);
+        board.formulaCatalog = new List<FormulaItemSO>();
+        foreach (var puzzle in board.practicePuzzles)
+        {
+            generator.RegisterCatalog(puzzle.clueParts);
+            foreach (var part in puzzle.clueParts)
+                if (part != null && !board.formulaCatalog.Contains(part)) board.formulaCatalog.Add(part);
+        }
         if (NotebookWorkspaceController.Instance != null)
             NotebookWorkspaceController.Instance.generateProceduralRun = false;
         book.includeProceduralClues = false;
         // Yalnız bu alıştırmanın Play oturumunda kartları kullan; özgün atlas/UV assetine dokunma.
         book.clueData = null;
         var pages = new List<BookWorkspacePage>();
-        var instructions = new BookWorkspacePage { pageIndex = 0, title = "BAŞLATICI-X / HEDEF VE KURALLAR" };
-        instructions.blocks.Add(new NotebookBlockData { blockType = NotebookBlockType.Quest,
-            questID = starterPuzzle.CreateQuest().questID, title = starterPuzzle.title,
-            description = "?1: nötron üretmeli. ?2: çift bağ tutabilmeli." });
-        for (int i = 0; i < starterPuzzle.clueNotes.Count; i++)
-            instructions.blocks.Add(new NotebookBlockData { blockType = NotebookBlockType.RuleClue,
-                title = i == 0 ? "KRİTİK KURAL" : "OPERASYON / SİLGİ", description = starterPuzzle.clueNotes[i] });
-        pages.Add(instructions);
-        for (int i = 0; i < starterPuzzle.clueParts.Count; i++)
+        int start = 0;
+        foreach (var puzzle in board.practicePuzzles)
         {
-            int pageIndex = 1 + i / 3;
+            AddPracticePages(pages, puzzle, start);
+            int used = 1 + Mathf.CeilToInt(puzzle.clueParts.Count / 3f);
+            start += (used + 1) / 2 * 2;
+        }
+        book.synthesisPages = pages;
+        book.totalPages = Mathf.Max(book.totalPages, start);
+    }
+
+    private static void AddPracticePages(List<BookWorkspacePage> pages, QuestBlueprintSO puzzle, int start)
+    {
+        var instructions = new BookWorkspacePage { pageIndex = start, title = puzzle.title + " / HEDEF VE KURALLAR" };
+        instructions.blocks.Add(new NotebookBlockData { blockType = NotebookBlockType.Quest,
+            questID = puzzle.CreateQuest().questID, title = puzzle.title, description = puzzle.clueSummary });
+        for (int i = 0; i < puzzle.clueNotes.Count; i++)
+            instructions.blocks.Add(new NotebookBlockData { blockType = NotebookBlockType.RuleClue,
+                questID = puzzle.CreateQuest().questID, ruleIndex = i,
+                title = "İPUCU " + (i + 1), description = puzzle.clueNotes[i] });
+        pages.Add(instructions);
+        for (int i = 0; i < puzzle.clueParts.Count; i++)
+        {
+            int pageIndex = start + 1 + i / 3;
             if (i % 3 == 0) pages.Add(new BookWorkspacePage { pageIndex = pageIndex, title = "ADAY PARÇALAR" });
-            var part = starterPuzzle.clueParts[i];
+            var part = puzzle.clueParts[i];
             pages[pages.Count - 1].blocks.Add(new NotebookBlockData { blockType = NotebookBlockType.PartClue,
                 itemID = part.itemID, title = part.itemName, description = part.description });
         }
-        book.synthesisPages = pages;
     }
 }

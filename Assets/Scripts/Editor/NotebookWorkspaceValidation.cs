@@ -11,12 +11,63 @@ public static class NotebookWorkspaceValidation
     [MenuItem("Senzora/Doğrulama/Defter Çalışma Alanı")]
     public static void RunAll()
     {
+        ValidateMouseButtons();
+        ValidateTargetMigrationAndGuide();
+        ValidateBoardDrawing();
         ValidateIndependentCopies();
         ValidateOverloadedMethodSelection();
         ValidateFreehandEraser();
         ValidateDefaultWorkspace();
         ValidateCompletedProductArchive();
         Debug.Log("Defter doğrulaması geçti: bağımsız kopya, JSON, çizgi silgisi, uzun çizim ve varsayılan çalışma alanı kartları.");
+    }
+
+    private static void ValidateBoardDrawing()
+    {
+        var host = new GameObject("Board drawing save validation");
+        try
+        {
+            var board = host.AddComponent<ChalkboardManager>();
+            board.boardTransform = host.transform;
+            var drawer = board.EnsureDrawing();
+            drawer.BeginStroke(Vector2.zero, false);
+            drawer.ContinueStroke(new Vector2(60, 30));
+            drawer.EndStroke();
+            var data = new GameData();
+            board.SaveData(ref data);
+            Check(data.savedChalkboard.strokes.Count == 1, "Tahta çizimi kayda eklenmedi.");
+            drawer.Clear();
+            Check(data.savedChalkboard.strokes.Count == 1, "Canlı çizim silinince kayıt kopyası da silindi.");
+            board.LoadData(JsonUtility.FromJson<GameData>(JsonUtility.ToJson(data)));
+            Check(drawer.Strokes.Count == 1 && drawer.Strokes[0].points.Count == 2, "Tahta çizimi yüklenemedi.");
+            board.ResetBoard();
+            Check(drawer.Strokes.Count == 0, "Yeni oyunda eski tahta çizimi kaldı.");
+        }
+        finally { UnityEngine.Object.DestroyImmediate(host); }
+    }
+
+    private static void ValidateMouseButtons()
+    {
+        var host = new GameObject("Mouse drawing validation", typeof(RectTransform));
+        try
+        {
+            var drawer = host.AddComponent<NotebookFreehandDrawer>();
+            drawer.rectTransform.sizeDelta = new Vector2(100, 100);
+            drawer.Tool = NotebookTool.Pen;
+            drawer.SetStrokes(new List<NotebookStrokeData> { new NotebookStrokeData {
+                points = new List<Vector2> { new Vector2(0, .5f), new Vector2(1, .5f) } } });
+            var pointer = new PointerEventData(EventSystem.current) {
+                position = RectTransformUtility.WorldToScreenPoint(null, host.transform.position),
+                button = PointerEventData.InputButton.Right };
+            drawer.OnPointerDown(pointer);
+            drawer.OnPointerUp(pointer);
+            Check(drawer.Strokes.Count == 0, "Sağ fare düğmesi, araç değiştirmeden çizgiyi silmeli.");
+            pointer.button = PointerEventData.InputButton.Left;
+            drawer.OnPointerDown(pointer);
+            drawer.OnPointerUp(pointer);
+            Check(drawer.Strokes.Count == 1, "Sol fare düğmesi doğrudan çizmeli.");
+        }
+        finally { UnityEngine.Object.DestroyImmediate(host); }
     }
 
     private static void ValidateIndependentCopies()
@@ -114,6 +165,8 @@ public static class NotebookWorkspaceValidation
             Invoke(workspace, "BuildWorkspace");
             workspaceRoot = (GameObject)typeof(NotebookWorkspaceController).GetField("root", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(workspace);
             workspace.RefreshPage();
+            Check(Array.Exists(workspaceRoot.GetComponentsInChildren<RectTransform>(true), r => r.name == "Toplanan Hedefler"),
+                "Hedefler için adı görünen ayrı bir bırakma alanı yok.");
             var cards = workspaceRoot.GetComponentsInChildren<NotebookDraggableBlock>(true);
             foreach (var graphic in workspaceRoot.GetComponentsInChildren<MaskableGraphic>(true))
             {
@@ -137,6 +190,26 @@ public static class NotebookWorkspaceValidation
                 }
             }
             var workspaceProperty = typeof(NotebookWorkspaceController).GetProperty("Instance", BindingFlags.Public | BindingFlags.Static);
+            // Yirminci sayfa önceden eklenmeden açılır; yalnız dolu sayfalar etiketlenir.
+            workspace.ToggleSynthesisGuide();
+            workspace.GoToPage(19);
+            var guidePanel = (RectTransform)typeof(NotebookWorkspaceController).GetField("guidePanel", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(workspace);
+            Check(!guidePanel.gameObject.activeSelf, "Sayfa etiketi seçilince hile görünümü açık kaldı.");
+            Check(notebook.currentWorkspacePage == 19 && notebook.workspacePages.Count == 20, "Sayfalar otomatik açılmadı.");
+            var tabs = (RectTransform)typeof(NotebookWorkspaceController).GetField("bookmarkContent", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(workspace);
+            Check(tabs.childCount == 1, "Boş sayfalar dolu sayfa etiketi oluşturdu.");
+            var drawer = workspaceRoot.GetComponentInChildren<NotebookFreehandDrawer>(true);
+            drawer.BeginStroke(Vector2.zero, false);
+            drawer.EndStroke();
+            Check(tabs.childCount == 2 && notebook.workspacePages[19].strokes.Count == 1, "20. sayfanın çizimi veya etiketi kaydedilmedi.");
+            drawer.BeginStroke(Vector2.zero, true);
+            drawer.EndStroke();
+            Check(tabs.childCount == 1, "Son çizim silinince boş sayfanın etiketi kaldırılmadı.");
+            workspace.GoToPage(0);
+            var restoredPage = new GameData();
+            notebook.SaveData(ref restoredPage);
+            Check(restoredPage.notebookPages.Count == 20 && restoredPage.notebookPages[0].blocks.Count == 2 && restoredPage.notebookQuests.Count == 1,
+                "Otomatik sayfalar eski sayfa içeriğini bozdu.");
             var previousWorkspace = NotebookWorkspaceController.Instance;
             var previousControls = ControlsUIManager.Instance;
             try
@@ -216,6 +289,61 @@ public static class NotebookWorkspaceValidation
     {
         private int Draw(int value) { return value; }
         private string Draw(string value) { return value; }
+    }
+
+    private static void ValidateTargetMigrationAndGuide()
+    {
+        var host = new GameObject("Target collection and guide validation");
+        var notebookData = ScriptableObject.CreateInstance<NotebookData>();
+        var recipe = ScriptableObject.CreateInstance<RecipeSO>();
+        try
+        {
+            var notebook = host.AddComponent<NotebookUI>();
+            var oldSave = new GameData();
+            oldSave.notebookPages.Add(new NotebookPageSaveData());
+            oldSave.notebookPages[0].blocks.Add(new NotebookBlockData { blockType = NotebookBlockType.Quest, questID = "legacy-target", title = "Eski hedef" });
+            oldSave.notebookPages[0].blocks.Add(new NotebookBlockData { blockType = NotebookBlockType.PartClue, title = "Parça" });
+            notebook.LoadData(oldSave);
+            Check(notebook.collectedQuests.Count == 1 && notebook.workspacePages[0].blocks.Count == 1, "Eski kayıt hedefi ayrı bölüme aktarılmadı.");
+            notebook.EnsureCollectedQuests();
+            Check(notebook.collectedQuests.Count == 1 && oldSave.notebookPages[0].blocks.Count == 2, "Hedef geçişi yinelendi veya eski kayıt nesnesini değiştirdi.");
+            var saved = new GameData(); notebook.SaveData(ref saved);
+            notebook.collectedQuests[0].title = "Değişti";
+            Check(saved.notebookQuests[0].title == "Eski hedef", "Hedef kaydı canlı kartla aynı nesneyi paylaşıyor.");
+            notebook.LoadData(JsonUtility.FromJson<GameData>(JsonUtility.ToJson(saved)));
+            Check(notebook.collectedQuests.Count == 1 && notebook.collectedQuests[0].questID == "legacy-target", "Hedef JSON kaydı geri gelmedi.");
+
+            var board = host.AddComponent<ChalkboardManager>();
+            board.practiceQuest = AssetDatabase.LoadAssetAtPath<QuestBlueprintSO>(StarterPuzzleValidation.QuestPath);
+            recipe.inputs.Add(board.practiceQuest.clueParts[0]);
+            recipe.inputs.Add(board.practiceQuest.clueParts[0]);
+            recipe.outputs.Add(board.practiceQuest.clueParts[1]);
+            notebookData.synthesisRecipes.Add(recipe);
+            board.allRecipes.Add(recipe); // Aynı tarif katalogda iki yerde bulunsa da bir kez göster.
+            string original = JsonUtility.ToJson(board.practiceQuest);
+            string random = JsonUtility.ToJson(UnityEngine.Random.state);
+            var entries = NotebookSynthesisGuide.Build(board, null, notebookData);
+            Check(entries.Count == 2, "Hile sayfasında tarif eksik veya aynı tarif iki kez listeleniyor.");
+            Check(entries[0].solution.nodes.TrueForAll(n => !n.isUnknown), "Hile şeması gerçek parça kimliklerini göstermiyor.");
+            Check(entries[0].text.Contains("BE-9") && entries[0].text.Contains("REF") && entries[0].text.Contains("çift bağ")
+                && entries[0].text.Contains("SAĞ TIK") && entries[0].text.Contains("Doğru bildin"), "Hile sayfası çözüm veya işlem adımlarını eksik gösteriyor.");
+            Check(entries[1].text.Contains("2× U-235") && entries[1].text.Contains("BU TAHTADA KAPALI"), "Tarif miktarları veya çalışma modu yanlış gösteriliyor.");
+            Check(original == JsonUtility.ToJson(board.practiceQuest) && random == JsonUtility.ToJson(UnityEngine.Random.state), "Hile sayfası görev verisini veya rastgelelik durumunu değiştirdi.");
+            var generator = host.AddComponent<ProceduralSynthesisGenerator>();
+            var catalog = AssetDatabase.LoadAssetAtPath<NotebookData>("Assets/Scripts/Scriptables/NotebookPages/NewNotebookData.asset");
+            generator.RegisterCatalog(catalog.synthesisCatalog);
+            generator.GenerateRun(123456);
+            Check(generator.Run != null && generator.Run.quests.Count == 5, "Rehberin koşu testi kurulamadı.");
+            string runBefore = JsonUtility.ToJson(generator.Run);
+            entries = NotebookSynthesisGuide.Build(board, generator, notebookData);
+            Check(entries.Count == 7 && runBefore == JsonUtility.ToJson(generator.Run), "Hile rehberi gelecek sentez aşamalarını atladı veya koşuyu değiştirdi.");
+        }
+        finally
+        {
+            UnityEngine.Object.DestroyImmediate(host);
+            UnityEngine.Object.DestroyImmediate(notebookData);
+            UnityEngine.Object.DestroyImmediate(recipe);
+        }
     }
 
     private static void ValidateOverloadedMethodSelection()

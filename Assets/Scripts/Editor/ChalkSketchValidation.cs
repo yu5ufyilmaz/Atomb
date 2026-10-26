@@ -39,7 +39,7 @@ public static class ChalkSketchValidation
                 string randomBefore = JsonUtility.ToJson(UnityEngine.Random.state);
                 formula.Initialize(data);
                 Check(randomBefore == JsonUtility.ToJson(UnityEngine.Random.state), "Drawing consumed random state.");
-                Check(formula.formulaLabel != null && formula.formulaLabel.text == data.itemName, "Missing item label.");
+                Check(formula.formulaLabel != null && formula.formulaLabel.text.Contains(data.itemName), "Missing item label.");
                 var lines = instance.GetComponentsInChildren<LineRenderer>();
                 int strokes = 0;
                 foreach (var line in lines)

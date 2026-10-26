@@ -3,26 +3,19 @@
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject:
-    fileID: 0
-  m_PrefabInstance:
-    fileID: 0
-  m_PrefabAsset:
-    fileID: 0
-  m_GameObject:
-    fileID: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script:
-    fileID: 11500000
-    guid: f7f827a5aa54424caab72cbca29d4790
-    type: 3
+  m_Script: {fileID: 11500000, guid: f7f827a5aa54424caab72cbca29d4790, type: 3}
   m_Name: Quest_StarterX
   m_EditorClassIdentifier: ''
   questID: starter-x
   title: NÖTRON BAŞLATICI SENTEZİ
-  output:
-    fileID: 0
+  clueSummary: '?1: nötron üretmeli. ?2: çift bağ tutabilmeli.'
+  output: {fileID: 0}
   nodes:
   - itemID: starter-BE9
     isUnknown: 1
@@ -71,27 +64,12 @@ MonoBehaviour:
     otherItemID: ''
     bridgeItemID: ''
     amount: 0
-  - ruleType: 8
-    itemID: ''
-    otherItemID: ''
-    bridgeItemID: ''
-    amount: 0
   clueParts:
-  - fileID: 11400000
-    guid: d6b9254927e7439f9041393ff9b78621
-    type: 2
-  - fileID: 11400000
-    guid: 836f4feda5374bca8ea4b099f5ea3d67
-    type: 2
-  - fileID: 11400000
-    guid: fe8e01b3b7fe406fbbbe3c478a16f893
-    type: 2
-  - fileID: 11400000
-    guid: d5966ab95b6540219a40fc67758fbffb
-    type: 2
-  - fileID: 11400000
-    guid: 7865b1f6697546359ce0a36490763844
-    type: 2
+  - {fileID: 11400000, guid: d6b9254927e7439f9041393ff9b78621, type: 2}
+  - {fileID: 11400000, guid: 836f4feda5374bca8ea4b099f5ea3d67, type: 2}
+  - {fileID: 11400000, guid: fe8e01b3b7fe406fbbbe3c478a16f893, type: 2}
+  - {fileID: 11400000, guid: d5966ab95b6540219a40fc67758fbffb, type: 2}
+  - {fileID: 11400000, guid: 7865b1f6697546359ce0a36490763844, type: 2}
   clueNotes:
   - '[PO-210], [U-235] yanına bağlanırsa erir. Nötron üreten başka bir aday seç.'
-  - Kapalı (x) uçlarına SİLGİ ile tıklayarak bağlantıyı aç. TEBEŞİR ile aynı iki uç arasında ikinci kez çizmek çift bağ yapar.
+  - REF üzerindeki (=) işareti çift bağı gösterir. SOL TUŞ ile aynı iki uç arasında iki kez çiz. İlk bağ yerinde kalır; 1/2 ikinci çizimde 2/2 olur. Yuvalar doğrudan kullanılabilir.
