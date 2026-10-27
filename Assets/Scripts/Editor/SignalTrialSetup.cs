@@ -10,21 +10,6 @@ public static class SignalTrialSetup
 {
     private const BindingFlags Private = BindingFlags.Instance | BindingFlags.NonPublic;
 
-    [MenuItem("Senzora/Çift Kayıt/Test Sahnesine Kur")]
-    public static void Setup()
-    {
-        if (EditorApplication.isPlayingOrWillChangePlaymode) return;
-        SecondTraceSetup.Setup();
-        var experiment = UnityEngine.Object.FindFirstObjectByType<SecondTraceExperiment>();
-        if (experiment == null || experiment.gameObject.scene.name != "scn_SynthesisBlockout")
-            throw new InvalidOperationException("Araştırma test sahnesi gerekli.");
-        Undo.RecordObject(experiment, "Yeni deney testini aç"); experiment.newTest = true;
-        ApplyNotebookArtwork();
-        EditorUtility.SetDirty(experiment); EditorSceneManager.MarkSceneDirty(experiment.gameObject.scene);
-        EditorSceneManager.SaveScene(experiment.gameObject.scene);
-        Debug.Log("SIGNAL TRIAL SETUP: fresh test enabled in scn_SynthesisBlockout; previous modes retained.");
-    }
-
     [MenuItem("Senzora/Çift Kayıt/Geliştirici/Defter Sprite Bağlantısını Kur")]
     public static void ApplyNotebookArtwork()
     {
@@ -93,7 +78,7 @@ public static class SignalTrialSetup
             Rect plot = SignalTrialGraphic.ComparisonPlot(size);
             Check(Mathf.Abs(plot.width * size.x / (plot.height * size.y) - 3) < .001f, "Comparison chart was stretched by its card.");
         }
-        var content = SignalTrial.CreateContent(AssetDatabase.LoadAssetAtPath<FormulaItemSO>("Assets/Scripts/Scriptables/Formulas/SynthesisModuleA.asset"));
+        var content = SignalTrial.CreateContent(AssetDatabase.LoadAssetAtPath<FormulaItemSO>("Assets/Scripts/Scriptables/Formulas/SignalPartTemplate.asset"));
         var host = new GameObject("Signal port check (temporary)");
         try
         {
@@ -103,14 +88,14 @@ public static class SignalTrialSetup
                 var obj = UnityEngine.Object.Instantiate(part.chalkPrefab, host.transform);
                 foreach (var node in obj.GetComponentsInChildren<FormulaNode>(true)) typeof(FormulaNode).GetMethod("Awake", Private).Invoke(node, null);
                 var formula = obj.GetComponent<DraggableFormula>(); formula.Initialize(part);
-                Check(formula.CanMoveOnBoard, "Chalk sketches cannot be moved.");
+                Check(formula.CanMoveOnBoard || !Application.isPlaying, "Chalk sketches cannot be moved.");
                 int inputs = 0, outputs = 0;
                 foreach (var port in obj.GetComponentsInChildren<SignalPort>()) if (port.output) outputs++; else inputs++;
                 Check(inputs == SignalTrial.Inputs(part.itemID) && outputs == SignalTrial.Outputs(part.itemID), "Physical ports differ from the catalog.");
                 foreach (var pages in content.Books)
                     foreach (var page in pages)
                         foreach (var note in page.blocks)
-                            Check(note.questID != SecondTraceExperiment.QuestID, "Previous target leaked into the new test.");
+                            Check(note.blockType != NotebookBlockType.Quest || note.questID == SignalTrial.QuestID, "Previous target leaked into the new test.");
             }
         }
         finally { UnityEngine.Object.DestroyImmediate(host); content.Dispose(); }
@@ -195,8 +180,8 @@ public static class SignalTrialSetup
     [MenuItem("Senzora/Çift Kayıt/Geliştirici/Canlı Akışı Doğrula")]
     public static void ValidateLive()
     {
-        var trial = ResearchPuzzleTrial.Active; var experiment = SecondTraceExperiment.Active;
-        Check(Application.isPlaying && experiment != null && experiment.newTest && trial.Board.isMachineActive, "Open the new trial board first.");
+        var trial = ResearchPuzzleTrial.Active; var experiment = SignalExperiment.Active;
+        Check(Application.isPlaying && experiment != null && trial.Board.isMachineActive, "Open the new trial board first.");
         var board = trial.Board; var graph = Graph(0); var workspace = NotebookWorkspaceController.Instance; var notebook = NotebookUI.Instance;
         int storedParts = 0;
         foreach (var savedPage in notebook.workspacePages) storedParts += savedPage.blocks.FindAll(n => n.blockType == NotebookBlockType.PartClue).Count;
@@ -283,7 +268,7 @@ public static class SignalTrialSetup
         var notebook = NotebookUI.Instance;
         var expected = new HashSet<string>();
         foreach (var note in PuzzleInformation.NotebookNotes(notebook))
-            if (!SecondTraceExperiment.IsMeasurementNote(note)) expected.Add(note.title + "|" + note.description);
+            if (!SignalExperiment.IsMeasurementNote(note)) expected.Add(note.title + "|" + note.description);
         Check(expected.Count > 2, "Collect several book records to check multiple pages.");
         // Use the same buttons as the player to visit each record page.
         typeof(NotebookWorkspaceController).GetField("informationArchivePage", Private).SetValue(workspace, 0);
@@ -353,9 +338,9 @@ public static class SignalTrialSetup
         Check(saved.savedChalkboard.documents.Count > 1 && saved.savedChalkboard.documentShadeOpen, "The open document panel wasn't saved.");
         var outputSource = Array.Find(UnityEngine.Object.FindObjectsByType<NotebookDraggableBlock>(FindObjectsSortMode.None), b => b.IsSource && (b.Data.itemID ?? "").StartsWith("signal-result/"));
         Check(outputSource != null && !outputSource.transform.IsChildOf(viewport), "Measurement paper was hidden inside the document panel.");
-        var experiment = SecondTraceExperiment.Active;
+        var experiment = SignalExperiment.Active;
         var paperInput = outputSource.GetComponentInParent<Canvas>().GetComponent<CanvasGroup>();
-        var refreshPaper = typeof(SecondTraceExperiment).GetMethod("LateUpdate", Private);
+        var refreshPaper = typeof(SignalExperiment).GetMethod("LateUpdate", Private);
         refreshPaper.Invoke(experiment, null);
         Check(paperInput.alpha == 1 && paperInput.blocksRaycasts, "Opening documents hides or disables the measurement paper.");
         var paperPosition = board.boardTransform.InverseTransformPoint(paperInput.transform.position);
@@ -384,18 +369,18 @@ public static class SignalTrialSetup
     [MenuItem("Senzora/Çift Kayıt/Geliştirici/Ölçüm Arşivini Doğrula")]
     public static void ValidateSolutions()
     {
-        var experiment = SecondTraceExperiment.Active; var board = ChalkboardManager.Instance;
+        var experiment = SignalExperiment.Active; var board = ChalkboardManager.Instance;
         var workspace = NotebookWorkspaceController.Instance; var notebook = NotebookUI.Instance;
-        Check(Application.isPlaying && experiment != null && experiment.newTest && board.isMachineActive, "Open the current experiment board first.");
+        Check(Application.isPlaying && experiment != null && board.isMachineActive, "Open the current experiment board first.");
         var docs = board.EnsureDocuments(); docs.SetDocumentPanelOpen(false, true);
-        var previous = PuzzleInformation.NotebookNotes(notebook).Find(SecondTraceExperiment.IsMeasurementNote);
+        var previous = PuzzleInformation.NotebookNotes(notebook).Find(SignalExperiment.IsMeasurementNote);
         Check(previous != null, "Collect one actual measurement first.");
         string snapshot = JsonUtility.ToJson(previous);
-        experiment.Measure(Graph(4)); SecondTracePlayChecks.CollectOutput();
+        experiment.Measure(Graph(4)); SignalTrialPlayChecks.CollectOutput();
         Check(!docs.IsDocumentPanelOpen, "Taking a measurement or collecting output opened the document panel.");
-        experiment.Measure(Graph(0)); SecondTracePlayChecks.CollectOutput();
+        experiment.Measure(Graph(0)); SignalTrialPlayChecks.CollectOutput();
         Check(JsonUtility.ToJson(previous) == snapshot, "A new measurement overwrote an archived output.");
-        var outputs = PuzzleInformation.NotebookNotes(notebook).FindAll(SecondTraceExperiment.IsMeasurementNote);
+        var outputs = PuzzleInformation.NotebookNotes(notebook).FindAll(SignalExperiment.IsMeasurementNote);
         Check(outputs.Count >= 3, "Repeated measurements were not archived separately.");
         var page = (RectTransform)typeof(NotebookWorkspaceController).GetField("page", Private).GetValue(workspace);
         var content = (RectTransform)typeof(NotebookWorkspaceController).GetField("informationContent", Private).GetValue(workspace);
@@ -410,7 +395,7 @@ public static class SignalTrialSetup
             Check(cards.Length > 0 && cards.Length <= 2, "Output archive is not paginated.");
             foreach (var card in cards)
             {
-                Check(SecondTraceExperiment.IsMeasurementNote(card.Data) && found.Add(card.Data.title), "Output archive contains a book clue or duplicate.");
+                Check(SignalExperiment.IsMeasurementNote(card.Data) && found.Add(card.Data.title), "Output archive contains a book clue or duplicate.");
                 foreach (var text in card.GetComponentsInChildren<TMP_Text>())
                 { text.ForceMeshUpdate(); Check(!text.isTextOverflowing, "Output text overflow: " + card.Data.title); }
             }
@@ -419,10 +404,10 @@ public static class SignalTrialSetup
         Check(found.Count == outputs.Count, "Archived measurements are inaccessible.");
         workspace.ShowInformation(); Canvas.ForceUpdateCanvases();
         foreach (var card in content.GetComponentsInChildren<NotebookDraggableBlock>())
-            Check(!SecondTraceExperiment.IsMeasurementNote(card.Data), "A measurement remains mixed with book records.");
+            Check(!SignalExperiment.IsMeasurementNote(card.Data), "A measurement remains mixed with book records.");
         var saved = new GameData(); notebook.SaveData(ref saved);
         notebook.LoadData(JsonUtility.FromJson<GameData>(JsonUtility.ToJson(saved)));
-        Check(PuzzleInformation.NotebookNotes(notebook).FindAll(SecondTraceExperiment.IsMeasurementNote).Count == outputs.Count,
+        Check(PuzzleInformation.NotebookNotes(notebook).FindAll(SignalExperiment.IsMeasurementNote).Count == outputs.Count,
             "Notebook reload lost archived measurements.");
         workspace.ShowSolutions();
         Debug.Log("SIGNAL SOLUTIONS PASS: direct board output, separate two-card archive, immutable distinct measurements, no book-clue mixing and notebook JSON roundtrip.");

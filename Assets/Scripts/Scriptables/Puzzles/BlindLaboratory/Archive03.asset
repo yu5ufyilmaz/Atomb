@@ -1,0 +1,185 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6c1fbd7dd552ba046b264bc50576d6a0, type: 3}
+  m_Name: Archive03
+  m_EditorClassIdentifier: Assembly-CSharp::PuzzleDefinitionSO
+  definition:
+    version: 1
+    kind: 0
+    id: archive-c43
+    title: "Kay\u0131t C-43"
+    description: "Uzak istasyondan kalan bu kayd\u0131 geri getir. Referans\u0131n
+      ba\u015Flang\u0131c\u0131n\u0131, tepki say\u0131s\u0131n\u0131 ve izlerin
+      bi\xE7imini birlikte incele."
+    rules:
+      minParts: 3
+      maxParts: 10
+      minSamples: 1
+      maxSamples: 3
+      maxDepth: 10
+      traceCount: 2
+      parts:
+      - itemID: pulse-source
+        allowed: 1
+        minimum: 0
+        maximum: 1
+        explanation: "Ba\u015Flang\u0131\xE7: 0,18 an\u0131nda tek uyar\u0131m yollar.
+          Y\xFCkseklik 1; giri\u015F yok, bir \xE7\u0131k\u0131\u015F."
+      - itemID: pulse-n12
+        allowed: 1
+        minimum: 0
+        maximum: 4
+        explanation: "Tek ba\u015F\u0131na denendi\u011Finde ince ve k\u0131sa bir
+          iz b\u0131rak\u0131r. Uyar\u0131n\u0131n geli\u015F an\u0131n\u0131 ve
+          g\xFCc\xFCn\xFC korur."
+      - itemID: pulse-meter
+        allowed: 1
+        minimum: 0
+        maximum: 1
+        explanation: "Sonu\xE7: bir veya iki giri\u015Ften gelen izleri ayn\u0131
+          kayda \xE7izer. \xC7\u0131k\u0131\u015F yok."
+      - itemID: pulse-splitter
+        allowed: 0
+        minimum: 0
+        maximum: 4
+        explanation: "Gelen her izi iki \xE7\u0131k\u0131\u015F\u0131na da iletir.
+          Her \xE7\u0131k\u0131\u015Fa ayr\u0131 bir hat ba\u011Flan\u0131r."
+      - itemID: pulse-delay
+        allowed: 1
+        minimum: 0
+        maximum: 4
+        explanation: "\u0130\xE7inden ge\xE7en tepki daha sonra g\xF6r\xFCn\xFCr.
+          Geni\u015Flik ve g\xFC\xE7 de\u011Fi\u015Fmez; tekrar kullan\u0131l\u0131rsa
+          bekleme uzar."
+      - itemID: pulse-attenuator
+        allowed: 1
+        minimum: 0
+        maximum: 4
+        explanation: "\u0130\xE7inden ge\xE7en tepkiyi s\xF6n\xFCkle\u015Ftirir.
+          \u0130z ayn\u0131 yerde ve ayn\u0131 geni\u015Flikte kal\u0131r; tekrarlamak
+          onu daha da zay\u0131flat\u0131r."
+      - itemID: pulse-n34
+        allowed: 1
+        minimum: 0
+        maximum: 4
+        explanation: "Tepkiyi geni\u015F bir iz haline getirir. Uyar\u0131n\u0131n
+          geli\u015F an\u0131n\u0131 ve g\xFCc\xFCn\xFC korur."
+      - itemID: pulse-n08
+        allowed: 0
+        minimum: 0
+        maximum: 4
+        explanation: "Gelen tepkiyi k\u0131sa ve s\xF6n\xFCk bir iz haline getirir.
+          Tek ba\u015F\u0131na N-12'den daha zay\u0131f g\xF6r\xFCn\xFCr."
+      - itemID: pulse-n21
+        allowed: 1
+        minimum: 0
+        maximum: 4
+        explanation: "K\u0131sa bir tepki b\u0131rak\u0131r; yan\u0131t\u0131 normal
+          numuneden sonra gelir. Bu bekleme, geciktiricinin beklemesinden daha k\u0131sad\u0131r."
+      - itemID: pulse-n46
+        allowed: 1
+        minimum: 0
+        maximum: 4
+        explanation: "Her uyar\u0131ya aral\u0131kl\u0131 iki yan\u0131t verir. Yan\u0131tlar\u0131n
+          bi\xE7imini ve g\xFCc\xFCn\xFC korur; tek giri\u015F ve tek \xE7\u0131k\u0131\u015F\u0131
+          vard\u0131r."
+    solution:
+      parts:
+      - itemID: pulse-source
+        capacity: 0
+        openEnds: 0
+        blockedEnds: 0
+      - itemID: pulse-n21
+        capacity: 0
+        openEnds: 0
+        blockedEnds: 0
+      - itemID: pulse-n34
+        capacity: 0
+        openEnds: 0
+        blockedEnds: 0
+      - itemID: pulse-n46
+        capacity: 0
+        openEnds: 0
+        blockedEnds: 0
+      - itemID: pulse-attenuator
+        capacity: 0
+        openEnds: 0
+        blockedEnds: 0
+      - itemID: pulse-meter
+        capacity: 0
+        openEnds: 0
+        blockedEnds: 0
+      bonds:
+      - fromIndex: 0
+        toIndex: 1
+        bondType: 1
+        label: 
+        directed: 1
+      - fromIndex: 1
+        toIndex: 2
+        bondType: 1
+        label: 
+        directed: 1
+      - fromIndex: 2
+        toIndex: 3
+        bondType: 1
+        label: 
+        directed: 1
+      - fromIndex: 3
+        toIndex: 4
+        bondType: 1
+        label: 
+        directed: 1
+      - fromIndex: 4
+        toIndex: 5
+        bondType: 1
+        label: 
+        directed: 1
+    positions:
+    - {x: 25, y: 80}
+    - {x: 250, y: 80}
+    - {x: 475, y: 80}
+    - {x: 700, y: 80}
+    - {x: 925, y: 80}
+    - {x: 1150, y: 80}
+    target:
+    - time: 0.34
+      height: 0.5
+      width: 0.075
+      sample: pulse-n46
+    - time: 0.65999997
+      height: 0.5
+      width: 0.075
+      sample: pulse-n46
+    mixtureTarget:
+      red: 0
+      green: 0
+      blue: 0
+      solvent: 0
+    tolerance: 0.005
+    notes:
+    - pageIndex: 0
+      title: "Numune g\xFCnl\xFC\u011F\xFC"
+      explanation: "Numuneler ayn\u0131 \xF6zelli\u011Fi de\u011Fi\u015Ftiriyorsa,
+        daha sonra kar\u015F\u0131la\u015F\u0131lan numunenin izi son kay\u0131tta
+        belirginle\u015Fir. Her i\u015Flemin zaman, bi\xE7im ve g\xFC\xE7 \xFCzerindeki
+        etkisini ayr\u0131 ayr\u0131 g\xF6zle."
+      blocks: []
+    - pageIndex: 0
+      title: "Deney masas\u0131 notu"
+      explanation: "Birden fazla tepki \xFCreten numune de normal bir hat \xFCzerinde
+        \xE7al\u0131\u015Fabilir. Tepki say\u0131s\u0131yla hat say\u0131s\u0131n\u0131
+        ayn\u0131 \u015Fey sanma."
+      blocks: []
+    targetInFirstBook: 1
+    seed: 0
+  includeInPool: 1

@@ -23,6 +23,7 @@ public class MainMenuManager : MonoBehaviour
     private Button continueButton;
 
     private CanvasGroup _menuCanvasGroup;
+    private TMPro.TextMeshProUGUI loadError;
 
     private void Start()
     {
@@ -69,6 +70,8 @@ public class MainMenuManager : MonoBehaviour
         // SaveDatasını sıfırla ki yeni oyun verileriyle başlasın
         if (SaveManager.Instance != null)
             SaveManager.Instance.NewGame();
+        if (SaveManager.Instance != null && SaveManager.Instance.SaveBlocked) { RestoreMenuAfterFailure(); return; }
+        if (loadError != null) loadError.gameObject.SetActive(false);
         // Geçişi başlat (Kayıt Yükleme = FALSE)
         StartCoroutine(StartGameTransitionRoutine(isLoadGame: false));
     }
@@ -153,7 +156,12 @@ public class MainMenuManager : MonoBehaviour
         // =======================================================
         // 2. KAYIT YÜKLENİYORSA
         // =======================================================
-        if (isLoadGame && SaveManager.Instance != null && SaveManager.Instance.LoadGame())
+        if (isLoadGame && (SaveManager.Instance == null || !SaveManager.Instance.LoadGame()))
+        {
+            RestoreMenuAfterFailure();
+            yield break;
+        }
+        if (isLoadGame)
         {
             // YENİ: Masadan kalkma sistemini iptal et ve kamerayı karaktere tak!
             InGameMenuController menuController =
@@ -204,5 +212,22 @@ public class MainMenuManager : MonoBehaviour
                 }
             }
         }
+    }
+
+    private void RestoreMenuAfterFailure()
+    {
+        if (mainMenuPanel != null) mainMenuPanel.SetActive(true);
+        if (_menuCanvasGroup != null) { _menuCanvasGroup.alpha = 1; _menuCanvasGroup.interactable = true; _menuCanvasGroup.blocksRaycasts = true; }
+        Cursor.lockState = CursorLockMode.None; Cursor.visible = true;
+        if (loadError == null && mainMenuPanel != null)
+        {
+            loadError = new GameObject("Kayıt Yükleme Hatası", typeof(RectTransform), typeof(TMPro.TextMeshProUGUI)).GetComponent<TMPro.TextMeshProUGUI>();
+            loadError.transform.SetParent(mainMenuPanel.transform, false);
+            loadError.rectTransform.anchorMin = loadError.rectTransform.anchorMax = new Vector2(.5f, .12f);
+            loadError.rectTransform.sizeDelta = new Vector2(550, 90);
+            loadError.fontSize = 18; loadError.enableAutoSizing = true; loadError.fontSizeMin = 12; loadError.fontSizeMax = 18;
+            loadError.color = new Color(1, .75f, .65f); loadError.alignment = TMPro.TextAlignmentOptions.Center; loadError.raycastTarget = false;
+        }
+        if (loadError != null) { loadError.text = SaveManager.Instance?.LastLoadError ?? "Kayıt yöneticisi bulunamadı."; loadError.gameObject.SetActive(true); }
     }
 }

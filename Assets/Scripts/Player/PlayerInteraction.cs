@@ -97,12 +97,9 @@ public class PlayerInteraction : MonoBehaviour
         // --- YENİ EKLENEN ÇAKIŞMA ÖNLEYİCİ KONTROL ---
         bool isInteracting =
             GameManager.Instance != null && GameManager.Instance.activeInteraction != null;
-        bool isSymbolOverlayActive =
-            PuzzleInventoryManager.Instance != null
-            && PuzzleInventoryManager.Instance.isOverlayActive;
 
-        // Eğer oyuncu şu an bir makineyle etkileşimdeyse VEYA Ekranda 'T' ile açılmış sembol varsa
-        if (isInteracting || isSymbolOverlayActive)
+        // Etkileşim sırasında dünyadaki diğer nesneleri seçme.
+        if (isInteracting)
         {
             // Eğer ekranda takılı kalmış bir vurgu (highlight) veya imleç varsa temizle
             if (currentInteractable != null)

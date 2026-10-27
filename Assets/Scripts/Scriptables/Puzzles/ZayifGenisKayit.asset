@@ -1,0 +1,127 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6c1fbd7dd552ba046b264bc50576d6a0, type: 3}
+  m_Name: ZayifGenisKayit
+  m_EditorClassIdentifier: Assembly-CSharp::PuzzleDefinitionSO
+  definition:
+    version: 1
+    id: workshop-weak-wide
+    title: "Zay\u0131f Geni\u015F Kay\u0131t"
+    description: "G\xF6zlemlerden yararlanarak hedefteki kayd\u0131 \xFCret. Deneyin
+      ko\u015Fullar\u0131 ve par\xE7a adetleri kitaplarda a\xE7\u0131klan\u0131r."
+    rules:
+      minParts: 3
+      maxParts: 10
+      minSamples: 2
+      maxSamples: 2
+      maxDepth: 10
+      traceCount: 1
+      parts:
+      - itemID: pulse-source
+        allowed: 1
+        minimum: 0
+        maximum: 1
+        explanation: 
+      - itemID: pulse-n12
+        allowed: 1
+        minimum: 0
+        maximum: 12
+        explanation: 
+      - itemID: pulse-meter
+        allowed: 1
+        minimum: 0
+        maximum: 1
+        explanation: 
+      - itemID: pulse-splitter
+        allowed: 1
+        minimum: 0
+        maximum: 12
+        explanation: 
+      - itemID: pulse-delay
+        allowed: 1
+        minimum: 0
+        maximum: 12
+        explanation: 
+      - itemID: pulse-attenuator
+        allowed: 1
+        minimum: 0
+        maximum: 12
+        explanation: 
+      - itemID: pulse-n34
+        allowed: 1
+        minimum: 1
+        maximum: 12
+        explanation: 
+      - itemID: pulse-n08
+        allowed: 1
+        minimum: 1
+        maximum: 12
+        explanation: 
+      - itemID: pulse-n21
+        allowed: 1
+        minimum: 0
+        maximum: 12
+        explanation: 
+      - itemID: pulse-n46
+        allowed: 1
+        minimum: 0
+        maximum: 12
+        explanation: 
+    solution:
+      parts:
+      - itemID: pulse-source
+        capacity: 0
+        openEnds: 0
+        blockedEnds: 0
+      - itemID: pulse-n08
+        capacity: 0
+        openEnds: 0
+        blockedEnds: 0
+      - itemID: pulse-n34
+        capacity: 0
+        openEnds: 0
+        blockedEnds: 0
+      - itemID: pulse-meter
+        capacity: 0
+        openEnds: 0
+        blockedEnds: 0
+      bonds:
+      - fromIndex: 0
+        toIndex: 1
+        bondType: 1
+        label: 
+        directed: 1
+      - fromIndex: 1
+        toIndex: 2
+        bondType: 1
+        label: 
+        directed: 1
+      - fromIndex: 2
+        toIndex: 3
+        bondType: 1
+        label: 
+        directed: 1
+    positions:
+    - {x: 35, y: 140}
+    - {x: 220, y: 140}
+    - {x: 405, y: 140}
+    - {x: 590, y: 140}
+    target:
+    - time: 0.18
+      height: 0.5
+      width: 0.075
+      sample: pulse-n34
+    tolerance: 0.005
+    notes: []
+    targetInFirstBook: 1
+    seed: 0
+  includeInPool: 1

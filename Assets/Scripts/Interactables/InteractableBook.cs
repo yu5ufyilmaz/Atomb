@@ -83,8 +83,6 @@ public partial class InteractableBook : MonoBehaviour, IInteractable, IForceExit
     [Tooltip("Açıklamalar basılı kalır; yalnızca özel bloklar deftere sürüklenebilir.")]
     public List<BookWorkspacePage> synthesisPages = new List<BookWorkspacePage>();
 
-    [Tooltip("Bu kitapta prosedürel görev ve kural sayfalarını göster.")]
-    public bool includeProceduralClues = true;
     [Tooltip("Özel blokları ekran penceresi yerine gerçek kitap sayfalarında gösterir.")]
     public bool usePhysicalPageBlocks;
     [Tooltip("Notları kart penceresi yerine sayfanın UV yüzeyine basar.")]
@@ -429,21 +427,8 @@ public partial class InteractableBook : MonoBehaviour, IInteractable, IForceExit
                 if (isPasswordBook && !hasPasswordBeenFound && Input.GetMouseButtonDown(0))
                     CheckForPasswordClick();
 
-                // T TUŞU: Oyuncu sembolü sayfaya koyar veya kaldırır
-                if (Input.GetKeyDown(KeyCode.T))
-                {
-                    PuzzleReceiver receiver = GetComponent<PuzzleReceiver>();
-                    if (receiver != null && receiver.enabled)
-                        receiver.ToggleSymbolMode();
-                }
-
-                // F TUŞU: Önce sembolü kaldırır (açıksa), hemen ardından kitabı kapatır
                 if (Input.GetKeyDown(KeyCode.F))
                 {
-                    PuzzleReceiver receiver = GetComponent<PuzzleReceiver>();
-                    if (receiver != null)
-                        receiver.CloseSymbol();
-
                     StartCoroutine(CloseBook());
                 }
 
@@ -518,7 +503,9 @@ public partial class InteractableBook : MonoBehaviour, IInteractable, IForceExit
     {
         if (isAnimating)
             return "";
-        return isOpen ? "[F] Kitabı Kapat" : "[Sol Tık] Kitabı Aç";
+        string action = isOpen ? "[F] Kitabı Kapat" : "[Sol Tık] Kitabı Aç";
+        var identity = GetComponent<PuzzleBookIdentity>();
+        return identity != null && !string.IsNullOrWhiteSpace(identity.title) ? identity.title + " · " + identity.location + "\n" + action : action;
     }
 
     private IEnumerator OpenBook()
@@ -902,13 +889,6 @@ public partial class InteractableBook : MonoBehaviour, IInteractable, IForceExit
     {
         if (UnityEngine.EventSystems.EventSystem.current != null
             && UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject()) return;
-        if (
-            PuzzleInventoryManager.Instance != null
-            && PuzzleInventoryManager.Instance.isOverlayActive
-        )
-        {
-            return;
-        }
         if (pageIndexL != passwordPage && pageIndexR != passwordPage)
             return;
 
@@ -1087,14 +1067,6 @@ public partial class InteractableBook : MonoBehaviour, IInteractable, IForceExit
     }
 
     // YENİ: Sembol Bulmacası (Makine Mantığı) için basitleştirilmiş şifre atama
-    public void AssignPuzzlePassword(string newPasswordID)
-    {
-        isPasswordBook = true;
-        passwordID = newPasswordID;
-        hasPasswordBeenFound = false;
-        Debug.Log($"[InteractableBook] SEMBOL PUZZLE ŞİFRESİ ATANDI: {passwordID}");
-    }
-
     public void ClearPassword()
     {
         isPasswordBook = false;
@@ -1113,11 +1085,6 @@ public partial class InteractableBook : MonoBehaviour, IInteractable, IForceExit
         if (isOpen && isAnimating) { closeRequested = true; return; }
         if (isOpen && !isAnimating)
         {
-            // Kaçış durumunda sembol de temizlensin
-            PuzzleReceiver receiver = GetComponent<PuzzleReceiver>();
-            if (receiver != null)
-                receiver.CloseSymbol();
-
             StartCoroutine(CloseBook());
         }
     }

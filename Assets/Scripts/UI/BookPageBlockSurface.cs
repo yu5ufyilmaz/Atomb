@@ -12,6 +12,9 @@ public partial class BookPageBlockSurface : MonoBehaviour
     private Canvas surface;
     private int left = -1, right = -1;
     private Mesh bakedPages;
+    private Mesh pageMapSource;
+    private bool[] exposedFaces;
+    private int pageMapVertexCount, pageMapMaterial;
     private readonly List<PageTriangle> pageTriangles = new List<PageTriangle>();
 
     private struct PageTriangle
@@ -40,6 +43,8 @@ public partial class BookPageBlockSurface : MonoBehaviour
         book = GetComponent<InteractableBook>();
         BookClueData.Register(book.clueData);
     }
+
+    public void InvalidatePages() { left = right = -1; }
 
     private void LateUpdate()
     {
@@ -117,8 +122,34 @@ public partial class BookPageBlockSurface : MonoBehaviour
         if (uvs.Count != vertices.Length || bakedPages.subMeshCount == 0) return;
         int submesh = Mathf.Clamp(book.bookMaterialIndex, 0, bakedPages.subMeshCount - 1);
         int[] indices = bakedPages.GetTriangles(submesh);
+        Camera camera = surface != null ? surface.worldCamera : Camera.main;
+        bool selectFaces = exposedFaces == null || exposedFaces.Length != indices.Length / 3
+            || pageMapSource != mesh.sharedMesh || pageMapVertexCount != vertices.Length || pageMapMaterial != submesh;
+        if (selectFaces)
+        {
+            exposedFaces = new bool[indices.Length / 3];
+            pageMapSource = mesh.sharedMesh; pageMapVertexCount = vertices.Length; pageMapMaterial = submesh;
+            bool any = false;
+            for (int i = 0; i < indices.Length; i += 3)
+            {
+                Vector3 a = mesh.transform.TransformPoint(vertices[indices[i]]);
+                Vector3 b = mesh.transform.TransformPoint(vertices[indices[i + 1]]);
+                Vector3 c = mesh.transform.TransformPoint(vertices[indices[i + 2]]);
+                Vector3 normal = Vector3.Cross(b - a, c - a).normalized;
+                float outward = Vector3.Dot(normal, mesh.transform.up);
+                // Establish the authored paper side once in the open pose, independent of where the book is viewed.
+                // Keep those triangle identities as bones rotate; the ink must not jump to the reverse side.
+                bool exposed = Mathf.Abs(outward) > .001f ? outward > 0
+                    : camera != null && Vector3.Dot(normal, camera.transform.position - (a + b + c) / 3) > 0;
+                exposedFaces[i / 3] = exposed;
+                any |= exposed;
+            }
+            // A one-sided mesh can use a different authored axis. Retain its map rather than losing all page input.
+            if (!any) for (int i = 0; i < exposedFaces.Length; i++) exposedFaces[i] = true;
+        }
         for (int i = 0; i < indices.Length; i += 3)
         {
+            if (!exposedFaces[i / 3]) continue;
             int a = indices[i], b = indices[i + 1], c = indices[i + 2];
             bool rightPage = (uvs[a].x + uvs[b].x + uvs[c].x) / 3f >= 0.5f;
             Vector2 offset = rightPage ? Vector2.right : Vector2.zero;
@@ -139,9 +170,19 @@ public partial class BookPageBlockSurface : MonoBehaviour
 
     internal Vector3 MapPagePoint(Vector2 uv, bool rightPage)
     {
+        uv = new Vector2(Mathf.Clamp01(uv.x), Mathf.Clamp01(uv.y));
+        Vector3 result = new Vector3(uv.x * 500 + (rightPage ? 0 : -500), uv.y * 700 - 350, 0);
+        float nearest = float.PositiveInfinity;
+        Camera camera = surface != null ? surface.worldCamera : Camera.main;
         foreach (var triangle in pageTriangles)
-            if (triangle.right == rightPage && triangle.Contains(uv)) return triangle.Map(uv);
-        return new Vector3(uv.x * 500 + (rightPage ? 0 : -500), uv.y * 700 - 350, 0);
+        {
+            if (triangle.right != rightPage || !triangle.Contains(uv)) continue;
+            Vector3 point = triangle.Map(uv);
+            float distance = camera != null ? (surface.transform.TransformPoint(point) - camera.transform.position).sqrMagnitude : point.z;
+            if (distance >= nearest) continue;
+            nearest = distance; result = point;
+        }
+        return result;
     }
 
     internal Vector3 MapPageWorld(Vector2 uv, bool rightPage) => surface.transform.TransformPoint(MapPagePoint(uv, rightPage));
@@ -160,6 +201,11 @@ public partial class BookPageBlockSurface : MonoBehaviour
             polygon = Clip(polygon, 0, uv.xMax, false);
             polygon = Clip(polygon, 1, uv.yMin, true);
             polygon = Clip(polygon, 1, uv.yMax, false);
+            if (polygon.Count < 3) continue;
+            Vector2 center = Vector2.zero;
+            foreach (var point in polygon) center += point;
+            center /= polygon.Count;
+            if ((triangle.Map(center) - MapPagePoint(center, rightPage)).sqrMagnitude > .0001f) continue;
             int start = vh.currentVertCount;
             foreach (Vector2 point in polygon)
                 vh.AddVert(target.InverseTransformPoint(MapPrintedPoint(point, rightPage, pageIndex)), tint, Vector2.zero);
@@ -178,11 +224,13 @@ public partial class BookPageBlockSurface : MonoBehaviour
         if (camera == null) return false;
         Ray worldRay = camera.ScreenPointToRay(screenPoint);
         var ray = new Ray(surface.transform.InverseTransformPoint(worldRay.origin), surface.transform.InverseTransformVector(worldRay.direction));
+        float nearest = float.PositiveInfinity;
+        bool hit = false;
         foreach (var triangle in pageTriangles)
         {
             if (triangle.right != rightPage) continue;
             var plane = new Plane(triangle.pa, triangle.pb, triangle.pc);
-            if (!plane.Raycast(ray, out float distance)) continue;
+            if (!plane.Raycast(ray, out float distance) || distance >= nearest) continue;
             Vector3 ab = triangle.pb - triangle.pa, ac = triangle.pc - triangle.pa, ap = ray.GetPoint(distance) - triangle.pa;
             float aa = Vector3.Dot(ab, ab), bb = Vector3.Dot(ac, ac), cross = Vector3.Dot(ab, ac);
             float det = aa * bb - cross * cross;
@@ -191,9 +239,10 @@ public partial class BookPageBlockSurface : MonoBehaviour
             float w = (aa * Vector3.Dot(ap, ac) - cross * Vector3.Dot(ap, ab)) / det;
             if (v < 0 || w < 0 || v + w > 1f) continue;
             uv = triangle.a + (triangle.b - triangle.a) * v + (triangle.c - triangle.a) * w;
-            return true;
+            nearest = distance;
+            hit = true;
         }
-        return false;
+        return hit;
     }
 
     private static List<Vector2> Clip(List<Vector2> polygon, int axis, float edge, bool keepGreater)
@@ -253,10 +302,15 @@ public partial class BookPageBlockSurface : MonoBehaviour
         AddBookMovePage(true);
         foreach (var page in book.synthesisPages)
         {
-            if (page == null || !IsPresentedPage(page.pageIndex) || page.blocks == null) continue;
+            if (page == null || !IsPresentedPage(page.pageIndex)) continue;
             bool rightPage = (page.pageIndex & 1) != 0;
-            float x = rightPage ? 250 : -250;
-            float y = 270;
+            AddPrintedPageText(page.title, new Rect(.09f, .89f, .82f, .07f), page.pageIndex, 24, true);
+            AddPrintedPageText("s. " + (page.pageIndex + 1), new Rect(.7f, .035f, .2f, .05f), page.pageIndex, 14, false);
+            if (page.blocks == null || page.blocks.Count == 0)
+            {
+                AddPrintedPageText(page.explanation, new Rect(.09f, .23f, .82f, .60f), page.pageIndex, 20, false);
+                continue;
+            }
             for (int i = 0; i < page.blocks.Count; i++)
             {
                 var obj = new GameObject("Sayfa İpucu", typeof(RectTransform), typeof(CanvasGroup), typeof(NotebookDraggableBlock));
@@ -264,13 +318,9 @@ public partial class BookPageBlockSurface : MonoBehaviour
                 var block = obj.GetComponent<NotebookDraggableBlock>();
                 block.Initialize(page.blocks[i], true);
                 var rect = (RectTransform)obj.transform;
-                bool traceVisual = SecondTraceGraphic.IsVisualNote(page.blocks[i])
-                    || (page.blocks[i].itemID ?? "").StartsWith("trace-") && page.blocks[i].blockType == NotebookBlockType.PartClue;
-                float height = page.blocks[i].blockType == NotebookBlockType.Quest ? 230 : traceVisual ? 180 : 145;
-                rect.sizeDelta = new Vector2(410, height);
-                rect.pivot = new Vector2(0.5f, 1);
-                rect.anchoredPosition = new Vector2(x, y);
-                y -= height + 18;
+                bool traceVisual = SignalTrialGraphic.IsNote(page.blocks[i]);
+                Rect region = NoteRegion(page.blocks[i], i, page.blocks.Count);
+                rect.sizeDelta = new Vector2(region.width * 500, region.height * 700);
                 var image = obj.GetComponent<Image>();
                 image.color = new Color(0.96f, 0.92f, 0.79f, 1f);
                 var outline = obj.GetComponent<UnityEngine.UI.Outline>();
@@ -286,6 +336,12 @@ public partial class BookPageBlockSurface : MonoBehaviour
                     label.fontSizeMax = 22;
                 }
                 NotebookWorkspaceController.Instance?.StyleNotebookNote(block);
+                foreach (var label in obj.GetComponentsInChildren<TMP_Text>())
+                {
+                    label.enableAutoSizing = true;
+                    label.fontSizeMin = label.name == "Başlık" ? 14 : 12;
+                    label.overflowMode = TextOverflowModes.Overflow;
+                }
                 if (book.printNotesOnPages)
                 {
                     // Leave the ink and diagrams on the model; the transparent region still supports dragging.
@@ -298,10 +354,11 @@ public partial class BookPageBlockSurface : MonoBehaviour
                         border.color = new Color(.48f, .31f, .09f, .65f);
                     }
                     outline.enabled = false;
+                    var tape = obj.transform.Find("Bant");
+                    if (tape != null) tape.gameObject.SetActive(false);
                     foreach (var label in obj.GetComponentsInChildren<TMP_Text>())
                         label.text = label.text.Replace("◆ HEDEF  ", "").Replace("KAYIT  ", "").Replace("PARÇA  ", "");
                 }
-                var region = new Rect(.09f, (y + 18 + 350) / 700f, .82f, height / 700f);
                 rect.pivot = new Vector2(.5f, .5f);
                 PlaceClueRegion(rect, new BookClueRegion { regionUV = region }, rightPage);
                 foreach (var graphic in obj.GetComponentsInChildren<Graphic>())
@@ -317,6 +374,41 @@ public partial class BookPageBlockSurface : MonoBehaviour
             }
         }
         AddClueRegions();
+    }
+
+    private static Rect NoteRegion(NotebookBlockData note, int index, int count)
+    {
+        Rect assigned = note.bookRegion;
+        if (assigned.width > 0 && assigned.height > 0)
+            return Rect.MinMaxRect(Mathf.Clamp(assigned.xMin, .09f, .91f), Mathf.Clamp(assigned.yMin, .11f, .85f),
+                Mathf.Clamp(assigned.xMax, .09f, .91f), Mathf.Clamp(assigned.yMax, .11f, .85f));
+        float gap = Mathf.Min(.035f, .74f / (Mathf.Max(1, count) * 3));
+        float height = Mathf.Min(note.blockType == NotebookBlockType.Quest && count == 1 ? .74f : .32f,
+            (.74f - gap * (count - 1)) / Mathf.Max(1, count));
+        return new Rect(.09f, .85f - height - index * (height + gap), .82f, height);
+    }
+
+    private void AddPrintedPageText(string content, Rect region, int pageIndex, float size, bool heading)
+    {
+        if (string.IsNullOrWhiteSpace(content)) return;
+        var obj = new GameObject(heading ? "Sayfa Başlığı" : "Kitap Dizini", typeof(RectTransform), typeof(CanvasGroup), typeof(TextMeshProUGUI));
+        obj.transform.SetParent(surface.transform, false);
+        var text = obj.GetComponent<TextMeshProUGUI>();
+        text.font = TMP_Settings.defaultFontAsset;
+        text.text = content;
+        text.fontSize = text.fontSizeMax = size;
+        text.fontSizeMin = heading ? 14 : 12;
+        text.enableAutoSizing = true;
+        text.fontStyle = heading ? FontStyles.Bold : FontStyles.Normal;
+        text.color = new Color(.16f, .12f, .07f);
+        text.alignment = TextAlignmentOptions.TopLeft;
+        text.raycastTarget = false;
+        bool rightPage = (pageIndex & 1) != 0;
+        PlaceClueRegion(text.rectTransform, new BookClueRegion { regionUV = region }, rightPage);
+        var printed = obj.AddComponent<BookPagePrintedGraphic>();
+        printed.Surface = this; printed.RegionRect = text.rectTransform; printed.RegionUV = region;
+        printed.RightPage = rightPage; printed.PageIndex = pageIndex;
+        RegisterInk(obj, pageIndex);
     }
 
     private void AddBookMovePage(bool rightPage)
@@ -359,7 +451,11 @@ public partial class BookPageBlockSurface : MonoBehaviour
     }
 
     private void OnDisable() { if (turning) EndTurn(); if (surface != null) surface.gameObject.SetActive(false); }
-    private void OnDestroy() { ReleaseTurningMesh(); if (bakedPages != null) Destroy(bakedPages); }
+    private void OnDestroy()
+    {
+        ReleaseTurningMesh();
+        if (bakedPages != null) { if (Application.isPlaying) Destroy(bakedPages); else DestroyImmediate(bakedPages); }
+    }
 }
 
 // Mevcut sürükleme ve hover görsellerini, seçilen UV'nin gerçek sayfa yüzeyine taşır.

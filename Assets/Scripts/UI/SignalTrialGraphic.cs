@@ -10,15 +10,15 @@ public sealed class SignalTrialGraphic : MaskableGraphic
     private List<SignalTrial.Pulse> pulses;
     private Rect drawingRect;
     private readonly Color ink = new Color(.12f, .19f, .20f);
-    public static bool IsNote(NotebookBlockData note) => note != null && (SignalTrial.IsPart(note.itemID)
-        || (note.itemID ?? "").StartsWith("signal-result") || ((note.itemID ?? "").StartsWith("signal-note/") && note.itemID != "signal-note/"));
+    public static bool IsNote(NotebookBlockData note) => note != null && (MixtureGraphic.IsNote(note) || SignalTrial.IsPart(note.itemID)
+        || (note.itemID ?? "").StartsWith("signal-result") || (note.itemID ?? "").StartsWith("signal-target")
+        || ((note.itemID ?? "").StartsWith("signal-note/") && note.itemID != "signal-note/"));
 
     public void Configure(string data)
     {
         kind = data ?? ""; raycastTarget = false;
-        if (kind == "target") pulses = new List<SignalTrial.Pulse> {
-            new SignalTrial.Pulse { time = .18f, height = .5f, width = .025f }, new SignalTrial.Pulse { time = .50f, height = 1, width = .025f } };
-        else if (kind.StartsWith("signal-result")) pulses = SignalTrial.Decode(kind);
+        if (kind == "target") pulses = new List<SignalTrial.Pulse>(ResearchPuzzleTrial.Active?.CurrentPuzzle?.target ?? PuzzleDefinition.Legacy().target);
+        else if (kind.StartsWith("signal-result") || kind.StartsWith("signal-target")) pulses = SignalTrial.Decode(kind);
         if (kind == "samples") { Label("N-12", new Vector2(.12f, .75f)); Label("N-34", new Vector2(.12f, .25f)); }
         SetVerticesDirty();
     }
@@ -36,6 +36,7 @@ public sealed class SignalTrialGraphic : MaskableGraphic
 
     public static void Add(RectTransform parent, NotebookBlockData note, Vector2 min, Vector2 max)
     {
+        if (MixtureGraphic.IsNote(note)) { MixtureGraphic.Add(parent, note, min, max); return; }
         if (parent.GetComponentInChildren<SignalTrialGraphic>() != null) return;
         var graphic = new GameObject("Deney Çizimi", typeof(RectTransform), typeof(SignalTrialGraphic)).GetComponent<SignalTrialGraphic>();
         graphic.transform.SetParent(parent, false);
@@ -96,8 +97,13 @@ public sealed class SignalTrialGraphic : MaskableGraphic
         for (int i = 0; i < outputs; i++) Arrow(vh, new Vector2(.81f, outputs == 2 ? .3f + i * .4f : .5f), new Vector2(.95f, outputs == 2 ? .3f + i * .4f : .5f));
         if (id == SignalTrial.Source)
         { Circle(vh, new Vector2(.47f, .5f), .32f); Plot(vh, One(.4f, 1, .04f), .34f, .60f, .28f, .44f, 1.2f); }
-        else if (id == SignalTrial.Narrow || id == SignalTrial.Wide)
-        { Box(vh, .23f, .80f, .14f, .87f); Plot(vh, One(.45f, 1, id == SignalTrial.Narrow ? .025f : .075f), .29f, .73f, .25f, .50f, 1.2f); }
+        else if (SignalPartLibrary.Find(id)?.sample == true)
+        {
+            var part = SignalPartLibrary.Find(id);
+            var traces = One(part.repeats == 2 ? .25f : .45f + part.delay, part.heightFactor, part.width > 0 ? part.width : .045f);
+            if (part.repeats == 2) traces.Add(new SignalTrial.Pulse { time = .25f + part.repeatInterval, height = part.heightFactor, width = .045f });
+            Box(vh, .23f, .80f, .14f, .87f); Plot(vh, traces, .29f, .73f, .25f, .50f, 1.2f);
+        }
         else if (id == SignalTrial.Splitter)
         { Line(vh, .18f, .5f, .48f, .5f); Arrow(vh, new Vector2(.48f, .5f), new Vector2(.76f, .3f)); Arrow(vh, new Vector2(.48f, .5f), new Vector2(.76f, .7f)); }
         else if (id == SignalTrial.Delay)

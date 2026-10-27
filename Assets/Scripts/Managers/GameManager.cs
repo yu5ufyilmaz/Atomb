@@ -170,8 +170,6 @@ public class GameManager : MonoBehaviour
         // 3. Eğer Vana (Valve) çeviriyorsak, fare AÇIK olmalı.
         if (activeInteraction is InteractablePressureValve)
             return true;
-        if (activeInteraction is PuzzleReceiver)
-            return true;
         if (activeInteraction is InteractableChalkboard)
             return true;
         if (activeInteraction is InteractableTuringMachine terminal && terminal.RequiresMeasurementCursor)

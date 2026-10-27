@@ -13,6 +13,11 @@ public sealed partial class ChalkboardDocuments
     private bool shadeExpanded;
     private float shadeReveal;
     public bool IsDocumentPanelOpen => freeLayout && shadeExpanded;
+
+    public void SetScreenControlsActive(bool active)
+    {
+        if (shadeToggle != null) shadeToggle.gameObject.SetActive(!active);
+    }
     private readonly Dictionary<string, Vector2> documentPositions = new Dictionary<string, Vector2>();
     private readonly Dictionary<string, RectTransform> noteCards = new Dictionary<string, RectTransform>();
     private readonly Dictionary<string, RectTransform[]> noteThreads = new Dictionary<string, RectTransform[]>();
@@ -131,13 +136,17 @@ public sealed partial class ChalkboardDocuments
         noteCards.Clear(); noteThreads.Clear();
         if (documentPositions.TryGetValue("target", out var targetPosition)) targetArea.anchoredPosition = targetPosition;
         var quest = board.PinnedQuest;
-        targetArea.sizeDelta = new Vector2(218, quest != null ? 156 : 66);
-        targetArea.Find("Raptiye").GetComponent<RectTransform>().anchoredPosition = new Vector2(-93, targetArea.rect.height / 2 - 9);
+        targetArea.sizeDelta = quest != null ? new Vector2(350, 330) : new Vector2(218, 66);
+        targetArea.Find("Raptiye").GetComponent<RectTransform>().anchoredPosition = new Vector2(-targetArea.rect.width / 2 + 16, targetArea.rect.height / 2 - 9);
         title.text = quest != null ? "HEDEF / " + quest.title : "HEDEFİ TAHTAYA BIRAK";
-        title.rectTransform.anchoredPosition = new Vector2(2, quest != null ? 49 : 7);
+        title.rectTransform.anchoredPosition = new Vector2(2, quest != null ? 143 : 7);
+        title.rectTransform.sizeDelta = new Vector2(quest != null ? 310 : 184, 34);
         hint.text = quest != null ? board.practiceQuest?.clueSummary ?? "Kayıtları karşılaştır." : "Defter > Hedefler";
-        hint.rectTransform.anchoredPosition = new Vector2(0, quest != null ? -53 : -18);
-        hint.rectTransform.sizeDelta = new Vector2(196, quest != null ? 40 : 22);
+        hint.rectTransform.anchoredPosition = new Vector2(0, quest != null ? -56 : -18);
+        hint.rectTransform.sizeDelta = quest != null ? new Vector2(324, 194) : new Vector2(196, 22);
+        hint.alignment = quest != null ? TextAlignmentOptions.TopLeft : TextAlignmentOptions.Center;
+        diagram.rectTransform.sizeDelta = new Vector2(324, 68);
+        diagram.rectTransform.anchoredPosition = new Vector2(0, 85);
         diagram.gameObject.SetActive(quest != null);
         if (quest != null) diagram.SetQuest(quest);
         informationArea.gameObject.SetActive(board.pinnedInformation.Count == 0);
@@ -148,14 +157,15 @@ public sealed partial class ChalkboardDocuments
             string id = "note/" + note.instanceID;
             var card = PinnedCard("Kayıt / " + note.title, new Color(.79f, .86f, .86f));
             card.anchoredPosition = documentPositions.TryGetValue(id, out var position) ? position
+                : quest != null ? new Vector2(documentBoard.rect.xMax - 125, documentBoard.rect.yMax - 90 - index * 175)
                 : new Vector2(documentBoard.rect.xMin + 125 + index % 3 * 238, documentBoard.rect.yMax - 280 - index / 3 * 175);
             ClampDocument(card);
             var heading = Text(card, note.title, new Vector2(0, 49), new Vector2(180, 30), 14);
             heading.fontStyle = FontStyles.Bold;
-            bool visual = SecondTraceGraphic.IsVisualNote(note);
+            bool visual = SignalTrialGraphic.IsNote(note);
             var body = Text(card, note.description, new Vector2(0, visual ? -53 : -16), new Vector2(196, visual ? 40 : 84), 12);
             body.alignment = TextAlignmentOptions.TopLeft;
-            if (visual) SecondTraceGraphic.AddNoteGraphic(card, note, new Vector2(.04f, .31f), new Vector2(.96f, .70f));
+            if (visual) SignalTrialGraphic.Add(card, note, new Vector2(.04f, .31f), new Vector2(.96f, .70f));
             var remove = Paper(card, "Panodan Çıkar", new Vector2(98, 67), new Vector2(18, 18), new Color(.67f, .76f, .76f));
             remove.gameObject.AddComponent<Button>().onClick.AddListener(() => board.RemoveInformation(note));
             Text(remove, "×", Vector2.zero, new Vector2(18, 18), 13);

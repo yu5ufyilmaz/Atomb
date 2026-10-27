@@ -16,8 +16,8 @@ public partial class InteractableTuringMachine
     private AudioSource readerMotor, readerTicks;
     private AudioClip readerMotorClip;
     public bool IsReadingMeasurement { get; private set; }
-    private bool IsMeasurementTerminal => SecondTraceExperiment.Active != null
-        && SecondTraceExperiment.Active.terminal == this;
+    private bool IsMeasurementTerminal => SignalExperiment.Active != null
+        && SignalExperiment.Active.terminal == this;
     public bool RequiresMeasurementCursor => IsMeasurementTerminal && inMachineMode && !isExiting;
     private bool ReaderPaused => GameManager.Instance != null && GameManager.Instance.isGamePaused;
 
@@ -59,7 +59,7 @@ public partial class InteractableTuringMachine
         if (!IsMeasurementTerminal || !inMachineMode || isExiting || ReaderPaused
             || physicalFeed == null || !physicalFeed.ContainsPointer(screenPosition, Camera.main)) return false;
         if (IsReadingMeasurement) return false;
-        if (!SecondTraceExperiment.Active.TryGetMeasurementCode(note, out string code))
+        if (!SignalExperiment.Active.TryGetMeasurementCode(note, out string code))
         { SetReaderDisplay("OLCUM KARTI GEREK"); return false; }
         string[] fields = code.Split('_');
         if (fields.Length != 3 || fields[0].Length != wordWheelIndices.Length
@@ -70,7 +70,7 @@ public partial class InteractableTuringMachine
         physicalFeed.Begin(note);
         readerPaper = physicalFeed.Paper;
         readerFeedback = null;
-        SecondTraceExperiment.Active.TerminalMessage = "Ölçüm okunuyor. Kod yerleşince Enter ile sına.";
+        SignalExperiment.Active.TerminalMessage = "Ölçüm okunuyor. Kod yerleşince Enter ile sına.";
         UpdateIndicators(0);
         IsReadingMeasurement = true;
         measurementRoutine = StartCoroutine(ReadMeasurement(fields));
@@ -93,7 +93,7 @@ public partial class InteractableTuringMachine
         yield return DriveMeasurement(fields);
         yield return ReaderWait(.25f);
         SetReaderDisplay("ENTER: SINA", 0);
-        SecondTraceExperiment.Active.TerminalMessage = "Ölçüm okundu. Enter ile sına.";
+        SignalExperiment.Active.TerminalMessage = "Ölçüm okundu. Enter ile sına.";
         measurementRoutine = null;
         IsReadingMeasurement = false;
     }
@@ -306,6 +306,15 @@ public partial class InteractableTuringMachine
     }
 
     private void OnDisable() => CloseMeasurementReader(true);
+
+    public void ResetMeasurementSession()
+    {
+        CloseMeasurementReader(true);
+        physicalFeed?.Dispose(); physicalFeed = null;
+        screenInk?.Dispose(); screenInk = null;
+        measurementReader = readerPaper = null;
+        readerSeconds = -1; readerText = readerFeedback = null;
+    }
 
     private void OnDestroy()
     {

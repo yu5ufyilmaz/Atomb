@@ -2,6 +2,7 @@
 using System;
 using System.Collections;
 using System.Reflection;
+using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
@@ -29,7 +30,7 @@ public static class BookMotionChecks
             Require(game.isGameStarted, "New game did not start.");
             yield return new WaitForSeconds(2);
         }
-        var book = ResearchPuzzleTrial.Active.books[1];
+        var book = ResearchPuzzleTrial.Active.books.First(b => b.totalPages >= 4 && b.synthesisPages.Any(p => p.pageIndex < 2 && p.blocks.Count > 0));
         Vector3 home = book.transform.position;
         Quaternion rotation = book.transform.rotation;
         float duration = book.pageFlipDuration;

@@ -7783,6 +7783,9 @@ MonoBehaviour:
   pageFlipDuration: 0.5
   totalPages: 8
   allowLoop: 0
+  startOpen: 0
+  initialState: 0
+  startPageIndex: 0
   bookSkinnedMeshRenderer: {fileID: 1319707423}
   bookMaterialIndex: 2
   bookPagesMaterial: {fileID: 2100000, guid: 69e30c5a7e7ed5b49940173fac6e380f, type: 2}
@@ -7803,15 +7806,15 @@ MonoBehaviour:
   moveDuration: 0.5
   bookUI: {fileID: 0}
   pageNumberText: {fileID: 0}
+  synthesisPages: []
+  usePhysicalPageBlocks: 0
+  printNotesOnPages: 0
+  clueData: {fileID: 0}
   singlePageSize: {x: 0.9, y: 1.25}
   gizmoYOffset: 0.18
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: 2633f89b3a7c9c24d9891c9441650338, type: 2}
   canContainPassword: 1
-  isSymbolTargetBook: 0
-  requiredSymbolID: 0
-  symbolPuzzlePage: -1
-  targetSymbolAnchor: {fileID: 0}
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -10745,6 +10748,9 @@ MonoBehaviour:
   pageFlipDuration: 0.5
   totalPages: 8
   allowLoop: 0
+  startOpen: 0
+  initialState: 0
+  startPageIndex: 0
   bookSkinnedMeshRenderer: {fileID: 2020866759}
   bookMaterialIndex: 2
   bookPagesMaterial: {fileID: 2100000, guid: 46b35a0c68af1eb48bc1b759ae2d7f16, type: 2}
@@ -10765,15 +10771,15 @@ MonoBehaviour:
   moveDuration: 0.5
   bookUI: {fileID: 0}
   pageNumberText: {fileID: 0}
+  synthesisPages: []
+  usePhysicalPageBlocks: 0
+  printNotesOnPages: 0
+  clueData: {fileID: 0}
   singlePageSize: {x: 0.9, y: 1.25}
   gizmoYOffset: 0.18
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: 18f4c2f2e786f504085a2ca1bc9ebfd9, type: 2}
   canContainPassword: 0
-  isSymbolTargetBook: 1
-  requiredSymbolID: 0
-  symbolPuzzlePage: 0
-  targetSymbolAnchor: {fileID: 344478638}
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -11618,11 +11624,10 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 534758935}
-  - {fileID: 976795123}
-  - {fileID: 275662683}
-  - {fileID: 732777727}
-  - {fileID: 902863349}
+  - {fileID: 8170603486208800728}
+  - {fileID: 8170603485576676720}
+  - {fileID: 8170603485966814932}
+  - {fileID: 8170603486071954398}
   m_Father: {fileID: 1327619677}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &195466652
@@ -11852,6 +11857,9 @@ MonoBehaviour:
   pageFlipDuration: 0.5
   totalPages: 8
   allowLoop: 0
+  startOpen: 0
+  initialState: 0
+  startPageIndex: 0
   bookSkinnedMeshRenderer: {fileID: 578885955}
   bookMaterialIndex: 2
   bookPagesMaterial: {fileID: 2100000, guid: 37c55300fc9614140a503bb52b9b1832, type: 2}
@@ -11872,15 +11880,15 @@ MonoBehaviour:
   moveDuration: 0.5
   bookUI: {fileID: 0}
   pageNumberText: {fileID: 0}
+  synthesisPages: []
+  usePhysicalPageBlocks: 0
+  printNotesOnPages: 0
+  clueData: {fileID: 0}
   singlePageSize: {x: 0.9, y: 1.25}
   gizmoYOffset: 0.18
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: 2a0f195687fb3034f9280cd43ec4cf0a, type: 2}
   canContainPassword: 1
-  isSymbolTargetBook: 0
-  requiredSymbolID: 0
-  symbolPuzzlePage: -1
-  targetSymbolAnchor: {fileID: 0}
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -13502,6 +13510,14 @@ MonoBehaviour:
   oscilloscopePanel: {fileID: 274197051}
   pressureValvePanel: {fileID: 141209665}
   bookPanel: {fileID: 1972073139}
+  hidingSpotPanel: {fileID: 0}
+  chalkboardFocus: 0.8
+  genericFocus: 0.5
+  massSpectrometerFocus: 0.95
+  turingMachineFocus: 0.77
+  oscilloscopeFocus: 0.69
+  pressureValveFocus: 1.3
+  bookFocus: 0.32
 --- !u!1 &232751193
 GameObject:
   m_ObjectHideFlags: 0
@@ -13848,30 +13864,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 90d07dbaed662f640a0a55b01c294c5f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TutorialManager
-  objectiveUI: {fileID: 0}
-  innerVoiceSource: {fileID: 919132148867769551}
-  playerInputs: {fileID: 919132148867769549}
-  introTimeline: {fileID: 0}
-  tutorialSequence:
-  - stepName: Waking Up
-    objectiveText: bla bla
-    subtitleID: zla zla
-    voiceClip: {fileID: 0}
-    allowedInteractables:
-    - {fileID: 698574202}
-    focusTarget: {fileID: 698574203}
-    focusDuration: 2
-    initialDelay: 0
-  - stepName: door Opne
-    objectiveText: bla bla
-    subtitleID: zla zla
-    voiceClip: {fileID: 0}
-    allowedInteractables:
-    - {fileID: 958033078}
-    focusTarget: {fileID: 757386503}
-    focusDuration: 2
-    initialDelay: 0
-  personnelSpaceDoor: {fileID: 958033079}
+  tutorialEventsParent: {fileID: 0}
+  isTutorialEnabled: 1
 --- !u!1 &248875050
 GameObject:
   m_ObjectHideFlags: 0
@@ -14179,6 +14173,9 @@ MonoBehaviour:
   pageFlipDuration: 0.5
   totalPages: 8
   allowLoop: 0
+  startOpen: 0
+  initialState: 0
+  startPageIndex: 0
   bookSkinnedMeshRenderer: {fileID: 1041783631}
   bookMaterialIndex: 2
   bookPagesMaterial: {fileID: 2100000, guid: 3dcb944c19c7ab94c8ce1445f43be89f, type: 2}
@@ -14199,15 +14196,15 @@ MonoBehaviour:
   moveDuration: 0.5
   bookUI: {fileID: 0}
   pageNumberText: {fileID: 0}
+  synthesisPages: []
+  usePhysicalPageBlocks: 0
+  printNotesOnPages: 0
+  clueData: {fileID: 0}
   singlePageSize: {x: 0.9, y: 1.25}
   gizmoYOffset: 0.18
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
   canContainPassword: 0
-  isSymbolTargetBook: 0
-  requiredSymbolID: 0
-  symbolPuzzlePage: -1
-  targetSymbolAnchor: {fileID: 0}
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -15577,88 +15574,6 @@ Transform:
   - {fileID: 1450520207}
   m_Father: {fileID: 2087873348}
   m_LocalEulerAnglesHint: {x: -89.99999, y: 90, z: 0}
---- !u!1001 &275662682
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 194501664}
-    m_Modifications:
-    - target: {fileID: 7183481043247707516, guid: cf3acd635b1c70e4eb4e58255a641cf6, type: 3}
-      propertyPath: 'm_Materials.Array.data[0]'
-      value: 
-      objectReference: {fileID: 2100000, guid: 2413b52a7e37cae4c96dd1b0bbb215f9, type: 2}
-    - target: {fileID: 8170603485305471530, guid: cf3acd635b1c70e4eb4e58255a641cf6, type: 3}
-      propertyPath: m_LocalScale.x
-      value: 0.02
-      objectReference: {fileID: 0}
-    - target: {fileID: 8170603485305471530, guid: cf3acd635b1c70e4eb4e58255a641cf6, type: 3}
-      propertyPath: m_LocalScale.y
-      value: 0.02
-      objectReference: {fileID: 0}
-    - target: {fileID: 8170603485305471530, guid: cf3acd635b1c70e4eb4e58255a641cf6, type: 3}
-      propertyPath: m_LocalScale.z
-      value: 0.02
-      objectReference: {fileID: 0}
-    - target: {fileID: 8170603485305471530, guid: cf3acd635b1c70e4eb4e58255a641cf6, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 10.052
-      objectReference: {fileID: 0}
-    - target: {fileID: 8170603485305471530, guid: cf3acd635b1c70e4eb4e58255a641cf6, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0.7381
-      objectReference: {fileID: 0}
-    - target: {fileID: 8170603485305471530, guid: cf3acd635b1c70e4eb4e58255a641cf6, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 1.9771
-      objectReference: {fileID: 0}
-    - target: {fileID: 8170603485305471530, guid: cf3acd635b1c70e4eb4e58255a641cf6, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 0.8701451
-      objectReference: {fileID: 0}
-    - target: {fileID: 8170603485305471530, guid: cf3acd635b1c70e4eb4e58255a641cf6, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8170603485305471530, guid: cf3acd635b1c70e4eb4e58255a641cf6, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: -0.49279568
-      objectReference: {fileID: 0}
-    - target: {fileID: 8170603485305471530, guid: cf3acd635b1c70e4eb4e58255a641cf6, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8170603485305471530, guid: cf3acd635b1c70e4eb4e58255a641cf6, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8170603485305471530, guid: cf3acd635b1c70e4eb4e58255a641cf6, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: -59.049
-      objectReference: {fileID: 0}
-    - target: {fileID: 8170603485305471530, guid: cf3acd635b1c70e4eb4e58255a641cf6, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 9018318074293804226, guid: cf3acd635b1c70e4eb4e58255a641cf6, type: 3}
-      propertyPath: m_Name
-      value: Symbol
-      objectReference: {fileID: 0}
-    - target: {fileID: 9018318074293804226, guid: cf3acd635b1c70e4eb4e58255a641cf6, type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: cf3acd635b1c70e4eb4e58255a641cf6, type: 3}
---- !u!4 &275662683 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 8170603485305471530, guid: cf3acd635b1c70e4eb4e58255a641cf6, type: 3}
-  m_PrefabInstance: {fileID: 275662682}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &277125256
 GameObject:
   m_ObjectHideFlags: 0
@@ -16104,6 +16019,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a7f4c5e275af047f39895883265eb587, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::NotebookUI
+  workspacePages: []
+  collectedQuests: []
+  currentWorkspacePage: 0
+  useScreenSpaceNotebook: 0
   notebookData: {fileID: 11400000, guid: 289396c7566699f4eb79431127577f01, type: 2}
   notebookPanel: {fileID: 267656256}
   categoryTitleText: {fileID: 1139890728}
@@ -16111,6 +16030,9 @@ MonoBehaviour:
   controlsHintText: {fileID: 818670352}
   playerAnimator: {fileID: 919132148867769543}
   animatorParameterName: IsNotebookOpen
+  globalVolume: {fileID: 0}
+  notebookFocusDistance: 0.3
+  dofTransitionDuration: 0.25
   isNotebookOpen: 0
   isOnMachine: 0
 --- !u!114 &286014761
@@ -16154,6 +16076,8 @@ MonoBehaviour:
   fadeImage: {fileID: 1241742880}
   fadeDuration: 3
   fadeDelay: 1
+  deathReasonText: {fileID: 0}
+  typeSpeed: 0.05
 --- !u!1001 &286326850
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -19573,6 +19497,9 @@ MonoBehaviour:
   pageFlipDuration: 0.5
   totalPages: 8
   allowLoop: 0
+  startOpen: 0
+  initialState: 0
+  startPageIndex: 0
   bookSkinnedMeshRenderer: {fileID: 599838837}
   bookMaterialIndex: 2
   bookPagesMaterial: {fileID: 2100000, guid: 34b1f78dde9d786419d5dc7e1c06bdcf, type: 2}
@@ -19593,15 +19520,15 @@ MonoBehaviour:
   moveDuration: 0.5
   bookUI: {fileID: 0}
   pageNumberText: {fileID: 0}
+  synthesisPages: []
+  usePhysicalPageBlocks: 0
+  printNotesOnPages: 0
+  clueData: {fileID: 0}
   singlePageSize: {x: 0.9, y: 1.25}
   gizmoYOffset: 0.18
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
   canContainPassword: 0
-  isSymbolTargetBook: 0
-  requiredSymbolID: 0
-  symbolPuzzlePage: -1
-  targetSymbolAnchor: {fileID: 0}
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -20350,6 +20277,9 @@ MonoBehaviour:
   pageFlipDuration: 0.5
   totalPages: 8
   allowLoop: 0
+  startOpen: 0
+  initialState: 0
+  startPageIndex: 0
   bookSkinnedMeshRenderer: {fileID: 1729006556}
   bookMaterialIndex: 2
   bookPagesMaterial: {fileID: 2100000, guid: aa3c71730f0fca6488e5c7db3cc5137a, type: 2}
@@ -20370,15 +20300,15 @@ MonoBehaviour:
   moveDuration: 0.5
   bookUI: {fileID: 0}
   pageNumberText: {fileID: 0}
+  synthesisPages: []
+  usePhysicalPageBlocks: 0
+  printNotesOnPages: 0
+  clueData: {fileID: 0}
   singlePageSize: {x: 0.9, y: 1.25}
   gizmoYOffset: 0.18
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
   canContainPassword: 0
-  isSymbolTargetBook: 0
-  requiredSymbolID: 0
-  symbolPuzzlePage: -1
-  targetSymbolAnchor: {fileID: 0}
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -22457,6 +22387,9 @@ MonoBehaviour:
   pageFlipDuration: 0.5
   totalPages: 8
   allowLoop: 0
+  startOpen: 0
+  initialState: 0
+  startPageIndex: 0
   bookSkinnedMeshRenderer: {fileID: 104965845}
   bookMaterialIndex: 2
   bookPagesMaterial: {fileID: 2100000, guid: 1240c3c7861875343b1e12f765ea7c4b, type: 2}
@@ -22477,15 +22410,15 @@ MonoBehaviour:
   moveDuration: 0.5
   bookUI: {fileID: 0}
   pageNumberText: {fileID: 0}
+  synthesisPages: []
+  usePhysicalPageBlocks: 0
+  printNotesOnPages: 0
+  clueData: {fileID: 0}
   singlePageSize: {x: 0.9, y: 1.25}
   gizmoYOffset: 0.18
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
   canContainPassword: 0
-  isSymbolTargetBook: 1
-  requiredSymbolID: 0
-  symbolPuzzlePage: 0
-  targetSymbolAnchor: {fileID: 1654305758}
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -26907,6 +26840,9 @@ MonoBehaviour:
   alignDuration: 0.5
   cameraDockDuration: 0.6
   enterAnimDuration: 4.6
+  peekYawLimit: 35
+  peekPitchLimit: 20
+  peekLookSensitivity: 2
   propAnimator: {fileID: 454887308}
   propOpenTrigger: Open
   propCloseTrigger: Close
@@ -26918,6 +26854,7 @@ MonoBehaviour:
   unhideSound: {fileID: 8300000, guid: a3c6518f71ee459418ba1a2cd277cc92, type: 3}
   peekSound: {fileID: 0}
   canExit: 1
+  maxPeekTimeWhileDangerous: 2
   doorOpenDelay: 1
 --- !u!65 &454887306
 BoxCollider:
@@ -28425,6 +28362,9 @@ MonoBehaviour:
   pageFlipDuration: 0.5
   totalPages: 8
   allowLoop: 0
+  startOpen: 0
+  initialState: 0
+  startPageIndex: 0
   bookSkinnedMeshRenderer: {fileID: 158820216}
   bookMaterialIndex: 2
   bookPagesMaterial: {fileID: 2100000, guid: 00987600bd6648746b9d4a4e56615249, type: 2}
@@ -28445,15 +28385,15 @@ MonoBehaviour:
   moveDuration: 0.5
   bookUI: {fileID: 0}
   pageNumberText: {fileID: 0}
+  synthesisPages: []
+  usePhysicalPageBlocks: 0
+  printNotesOnPages: 0
+  clueData: {fileID: 0}
   singlePageSize: {x: 0.9, y: 1.25}
   gizmoYOffset: 0.18
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: 07341820b2684904898940bff856a3e3, type: 2}
   canContainPassword: 1
-  isSymbolTargetBook: 0
-  requiredSymbolID: 0
-  symbolPuzzlePage: -1
-  targetSymbolAnchor: {fileID: 0}
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -29455,7 +29395,6 @@ Transform:
   - {fileID: 232295850}
   - {fileID: 88059968}
   - {fileID: 1488042625}
-  - {fileID: 732131667}
   - {fileID: 866179817}
   - {fileID: 555620813}
   - {fileID: 1530810478}
@@ -30774,37 +30713,6 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 86938240}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &534758934
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 534758935}
-  m_Layer: 0
-  m_Name: SymbolSpawnPoint
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &534758935
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 534758934}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 10.753, y: 1.1492, z: 10.523}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 194501664}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &536905301
 GameObject:
@@ -32607,6 +32515,9 @@ MonoBehaviour:
   pageFlipDuration: 0.5
   totalPages: 8
   allowLoop: 0
+  startOpen: 0
+  initialState: 0
+  startPageIndex: 0
   bookSkinnedMeshRenderer: {fileID: 1316817673}
   bookMaterialIndex: 2
   bookPagesMaterial: {fileID: 2100000, guid: b55bb5699807ccd45b5691c044ec65ab, type: 2}
@@ -32627,15 +32538,15 @@ MonoBehaviour:
   moveDuration: 0.5
   bookUI: {fileID: 0}
   pageNumberText: {fileID: 0}
+  synthesisPages: []
+  usePhysicalPageBlocks: 0
+  printNotesOnPages: 0
+  clueData: {fileID: 0}
   singlePageSize: {x: 0.9, y: 1.25}
   gizmoYOffset: 0.18
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
   canContainPassword: 0
-  isSymbolTargetBook: 0
-  requiredSymbolID: 0
-  symbolPuzzlePage: -1
-  targetSymbolAnchor: {fileID: 0}
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -33562,6 +33473,9 @@ MonoBehaviour:
   pageFlipDuration: 0.5
   totalPages: 8
   allowLoop: 0
+  startOpen: 0
+  initialState: 0
+  startPageIndex: 0
   bookSkinnedMeshRenderer: {fileID: 1335711373}
   bookMaterialIndex: 2
   bookPagesMaterial: {fileID: 2100000, guid: a983986b3d57c474cabcaa5ca6c0ca63, type: 2}
@@ -33582,15 +33496,15 @@ MonoBehaviour:
   moveDuration: 0.5
   bookUI: {fileID: 0}
   pageNumberText: {fileID: 0}
+  synthesisPages: []
+  usePhysicalPageBlocks: 0
+  printNotesOnPages: 0
+  clueData: {fileID: 0}
   singlePageSize: {x: 0.9, y: 1.25}
   gizmoYOffset: 0.18
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
   canContainPassword: 0
-  isSymbolTargetBook: 0
-  requiredSymbolID: 0
-  symbolPuzzlePage: -1
-  targetSymbolAnchor: {fileID: 0}
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -34759,6 +34673,16 @@ MonoBehaviour:
   maxTimeSetting: 10
   correctVoltsSetting: 3
   correctTimeSetting: 5
+  screenRadius: 5
+  paddleAngle: 0
+  paddleWidth: 40
+  paddleSpeed: 150
+  ballPosition: {x: 0, y: 0}
+  ballVelocity: {x: 0, y: 0}
+  ballSpeed: 3
+  lives: 3
+  scoreToWin: 5
+  targetPosition: {x: 0, y: 0}
 --- !u!65 &601288414
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -35214,9 +35138,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::NoteAction
   delay: 0
-  operation: 0
   targetPassword: {fileID: 11400000, guid: 51515ebaa232ea446892709aafa79e1c, type: 2}
-  targetSymbol: {fileID: 11400000, guid: 32e8809b6981d3d4cac16e6be17100f6, type: 2}
 --- !u!114 &605129805
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -37652,6 +37574,9 @@ MonoBehaviour:
   pageFlipDuration: 0.5
   totalPages: 8
   allowLoop: 0
+  startOpen: 0
+  initialState: 0
+  startPageIndex: 0
   bookSkinnedMeshRenderer: {fileID: 1362495162}
   bookMaterialIndex: 2
   bookPagesMaterial: {fileID: 2100000, guid: 69a4f74b524c9b9419b6ead9005c0a86, type: 2}
@@ -37672,15 +37597,15 @@ MonoBehaviour:
   moveDuration: 0.5
   bookUI: {fileID: 0}
   pageNumberText: {fileID: 0}
+  synthesisPages: []
+  usePhysicalPageBlocks: 0
+  printNotesOnPages: 0
+  clueData: {fileID: 0}
   singlePageSize: {x: 0.9, y: 1.25}
   gizmoYOffset: 0.18
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
   canContainPassword: 0
-  isSymbolTargetBook: 0
-  requiredSymbolID: 0
-  symbolPuzzlePage: -1
-  targetSymbolAnchor: {fileID: 0}
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -38176,6 +38101,9 @@ MonoBehaviour:
   pageFlipDuration: 0.5
   totalPages: 8
   allowLoop: 0
+  startOpen: 0
+  initialState: 0
+  startPageIndex: 0
   bookSkinnedMeshRenderer: {fileID: 559434528}
   bookMaterialIndex: 2
   bookPagesMaterial: {fileID: 2100000, guid: 7914beb819449934f9670fb4391e9dfe, type: 2}
@@ -38196,15 +38124,15 @@ MonoBehaviour:
   moveDuration: 0.5
   bookUI: {fileID: 0}
   pageNumberText: {fileID: 0}
+  synthesisPages: []
+  usePhysicalPageBlocks: 0
+  printNotesOnPages: 0
+  clueData: {fileID: 0}
   singlePageSize: {x: 0.9, y: 1.25}
   gizmoYOffset: 0.18
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
   canContainPassword: 0
-  isSymbolTargetBook: 0
-  requiredSymbolID: 0
-  symbolPuzzlePage: -1
-  targetSymbolAnchor: {fileID: 0}
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -38593,6 +38521,9 @@ MonoBehaviour:
   pageFlipDuration: 0.5
   totalPages: 8
   allowLoop: 0
+  startOpen: 0
+  initialState: 0
+  startPageIndex: 0
   bookSkinnedMeshRenderer: {fileID: 133299410}
   bookMaterialIndex: 2
   bookPagesMaterial: {fileID: 2100000, guid: 2e9d9129fc2856e48980223537229e6f, type: 2}
@@ -38613,15 +38544,15 @@ MonoBehaviour:
   moveDuration: 0.5
   bookUI: {fileID: 0}
   pageNumberText: {fileID: 0}
+  synthesisPages: []
+  usePhysicalPageBlocks: 0
+  printNotesOnPages: 0
+  clueData: {fileID: 0}
   singlePageSize: {x: 0.9, y: 1.25}
   gizmoYOffset: 0.18
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: edb514d172dfc2e49acc780fede64633, type: 2}
   canContainPassword: 1
-  isSymbolTargetBook: 0
-  requiredSymbolID: 0
-  symbolPuzzlePage: -1
-  targetSymbolAnchor: {fileID: 0}
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -39740,6 +39671,9 @@ MonoBehaviour:
   pageFlipDuration: 0.8
   totalPages: 8
   allowLoop: 0
+  startOpen: 0
+  initialState: 0
+  startPageIndex: 0
   bookSkinnedMeshRenderer: {fileID: 2107611422}
   bookMaterialIndex: 0
   bookPagesMaterial: {fileID: 0}
@@ -39760,15 +39694,15 @@ MonoBehaviour:
   moveDuration: 0.5
   bookUI: {fileID: 0}
   pageNumberText: {fileID: 0}
+  synthesisPages: []
+  usePhysicalPageBlocks: 0
+  printNotesOnPages: 0
+  clueData: {fileID: 0}
   singlePageSize: {x: 0.16, y: 0.32}
   gizmoYOffset: 0.005
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: 725e301b34f00429ca9064b7d0eaa616, type: 2}
   canContainPassword: 1
-  isSymbolTargetBook: 0
-  requiredSymbolID: 0
-  symbolPuzzlePage: -1
-  targetSymbolAnchor: {fileID: 0}
   outlineController: {fileID: 0}
   highlightColor: {r: 0.2, g: 0.2, b: 0.1, a: 1}
   emissionIntensity: 10
@@ -41312,6 +41246,9 @@ MonoBehaviour:
   pageFlipDuration: 0.5
   totalPages: 8
   allowLoop: 0
+  startOpen: 0
+  initialState: 0
+  startPageIndex: 0
   bookSkinnedMeshRenderer: {fileID: 582640250}
   bookMaterialIndex: 2
   bookPagesMaterial: {fileID: 2100000, guid: bbce74d6d3728f3429cf3edc2929ef2d, type: 2}
@@ -41332,15 +41269,15 @@ MonoBehaviour:
   moveDuration: 0.5
   bookUI: {fileID: 0}
   pageNumberText: {fileID: 0}
+  synthesisPages: []
+  usePhysicalPageBlocks: 0
+  printNotesOnPages: 0
+  clueData: {fileID: 0}
   singlePageSize: {x: 0.9, y: 1.25}
   gizmoYOffset: 0.18
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
   canContainPassword: 0
-  isSymbolTargetBook: 1
-  requiredSymbolID: 2
-  symbolPuzzlePage: 0
-  targetSymbolAnchor: {fileID: 83496114}
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -42133,279 +42070,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 730842563}
   m_CullTransparentMesh: 1
---- !u!1 &732131666
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 732131667}
-  - component: {fileID: 732131669}
-  - component: {fileID: 732131668}
-  - component: {fileID: 732131670}
-  - component: {fileID: 732131671}
-  m_Layer: 0
-  m_Name: SymbolManager
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &732131667
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 732131666}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 491873391}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!82 &732131668
-AudioSource:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 732131666}
-  m_Enabled: 1
-  serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: -5450689512536956137, guid: eb77e92b6f1d5b840b1b4a3d85cc0cd7, type: 2}
-  m_audioClip: {fileID: 0}
-  m_Resource: {fileID: 0}
-  m_PlayOnAwake: 1
-  m_Volume: 1
-  m_Pitch: 1
-  Loop: 0
-  Mute: 0
-  Spatialize: 0
-  SpatializePostEffects: 0
-  Priority: 128
-  DopplerLevel: 1
-  MinDistance: 1
-  MaxDistance: 500
-  Pan2D: 0
-  rolloffMode: 0
-  BypassEffects: 0
-  BypassListenerEffects: 0
-  BypassReverbZones: 0
-  rolloffCustomCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 1
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 1
-      value: 0
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  panLevelCustomCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 0
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  spreadCustomCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 0
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  reverbZoneMixCustomCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 1
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
---- !u!114 &732131669
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 732131666}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cb358ea69e64af644b81cc47387a3175, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::SymbolOverlayManager
-  symbolPrefabs:
-  - {fileID: 3348829901132193419, guid: 26751fb8ec58b724ba6b5e142a3f26ea, type: 3}
-  hoverDistance: 0.55
-  moveSpeed: 0.005
-  puzzleRotationSpeed: 10
-  scrollRotationAxis: {x: 0, y: 1, z: 0}
-  inspectDistance: 0.2
-  freeRotationSpeed: 10
-  spawnScaleOffset: {x: 0.7, y: 0.7, z: 0.7}
-  spawnRotationOffset: {x: 90, y: 0, z: 180}
-  distanceTolerance: 0.01
-  angleTolerance: 5
-  successSound: {fileID: 0}
-  errorSound: {fileID: 0}
---- !u!114 &732131670
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 732131666}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d1c87ea3a48d9194b9cad42c2c8cddb9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PuzzleInventoryManager
-  hasSymbol: 0
-  currentSymbolID: 0
-  isOverlayActive: 0
---- !u!114 &732131671
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 732131666}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a74d87d44210afa49b7b287a5586175d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::SymbolSpawner
-  symbolPrefabs:
-  - {fileID: 3348829901132193419, guid: 26751fb8ec58b724ba6b5e142a3f26ea, type: 3}
-  spawnPoints:
-  - {fileID: 1211442166}
-  - {fileID: 534758935}
-  spawnedSymbolID: -1
---- !u!1001 &732777726
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 194501664}
-    m_Modifications:
-    - target: {fileID: 7183481043247707516, guid: 7dff596009815a04ea2ba55dbebf3f4e, type: 3}
-      propertyPath: 'm_Materials.Array.data[0]'
-      value: 
-      objectReference: {fileID: 2100000, guid: 8a211a23ac513ac449c38d1d3371cd5f, type: 2}
-    - target: {fileID: 8170603485305471530, guid: 7dff596009815a04ea2ba55dbebf3f4e, type: 3}
-      propertyPath: m_LocalScale.x
-      value: 0.02
-      objectReference: {fileID: 0}
-    - target: {fileID: 8170603485305471530, guid: 7dff596009815a04ea2ba55dbebf3f4e, type: 3}
-      propertyPath: m_LocalScale.y
-      value: 0.02
-      objectReference: {fileID: 0}
-    - target: {fileID: 8170603485305471530, guid: 7dff596009815a04ea2ba55dbebf3f4e, type: 3}
-      propertyPath: m_LocalScale.z
-      value: 0.02
-      objectReference: {fileID: 0}
-    - target: {fileID: 8170603485305471530, guid: 7dff596009815a04ea2ba55dbebf3f4e, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 22.3435
-      objectReference: {fileID: 0}
-    - target: {fileID: 8170603485305471530, guid: 7dff596009815a04ea2ba55dbebf3f4e, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 1.1356
-      objectReference: {fileID: 0}
-    - target: {fileID: 8170603485305471530, guid: 7dff596009815a04ea2ba55dbebf3f4e, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0.5385
-      objectReference: {fileID: 0}
-    - target: {fileID: 8170603485305471530, guid: 7dff596009815a04ea2ba55dbebf3f4e, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 0.9256594
-      objectReference: {fileID: 0}
-    - target: {fileID: 8170603485305471530, guid: 7dff596009815a04ea2ba55dbebf3f4e, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8170603485305471530, guid: 7dff596009815a04ea2ba55dbebf3f4e, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0.3783578
-      objectReference: {fileID: 0}
-    - target: {fileID: 8170603485305471530, guid: 7dff596009815a04ea2ba55dbebf3f4e, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8170603485305471530, guid: 7dff596009815a04ea2ba55dbebf3f4e, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8170603485305471530, guid: 7dff596009815a04ea2ba55dbebf3f4e, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 44.464
-      objectReference: {fileID: 0}
-    - target: {fileID: 8170603485305471530, guid: 7dff596009815a04ea2ba55dbebf3f4e, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 9018318074293804226, guid: 7dff596009815a04ea2ba55dbebf3f4e, type: 3}
-      propertyPath: m_Name
-      value: Symbol 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 9018318074293804226, guid: 7dff596009815a04ea2ba55dbebf3f4e, type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 7dff596009815a04ea2ba55dbebf3f4e, type: 3}
---- !u!4 &732777727 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 8170603485305471530, guid: 7dff596009815a04ea2ba55dbebf3f4e, type: 3}
-  m_PrefabInstance: {fileID: 732777726}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &732919425
 GameObject:
   m_ObjectHideFlags: 0
@@ -43837,6 +43501,9 @@ MonoBehaviour:
   pageFlipDuration: 0.5
   totalPages: 8
   allowLoop: 0
+  startOpen: 0
+  initialState: 0
+  startPageIndex: 0
   bookSkinnedMeshRenderer: {fileID: 287704979}
   bookMaterialIndex: 2
   bookPagesMaterial: {fileID: 2100000, guid: e17b704cb5405644e998e1737762edd5, type: 2}
@@ -43857,15 +43524,15 @@ MonoBehaviour:
   moveDuration: 0.5
   bookUI: {fileID: 0}
   pageNumberText: {fileID: 0}
+  synthesisPages: []
+  usePhysicalPageBlocks: 0
+  printNotesOnPages: 0
+  clueData: {fileID: 0}
   singlePageSize: {x: 0.9, y: 1.25}
   gizmoYOffset: 0.18
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
   canContainPassword: 0
-  isSymbolTargetBook: 0
-  requiredSymbolID: 0
-  symbolPuzzlePage: -1
-  targetSymbolAnchor: {fileID: 0}
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -51493,88 +51160,6 @@ Transform:
   - {fileID: 434765306}
   m_Father: {fileID: 1398550128}
   m_LocalEulerAnglesHint: {x: 89.99999, y: 0, z: 0}
---- !u!1001 &902863348
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 194501664}
-    m_Modifications:
-    - target: {fileID: 7183481043247707516, guid: 8928adc95eccbd942adeb575026c8174, type: 3}
-      propertyPath: 'm_Materials.Array.data[0]'
-      value: 
-      objectReference: {fileID: 2100000, guid: e5ab5ab7e42257441829af5cc301e3d6, type: 2}
-    - target: {fileID: 8170603485305471530, guid: 8928adc95eccbd942adeb575026c8174, type: 3}
-      propertyPath: m_LocalScale.x
-      value: 0.02
-      objectReference: {fileID: 0}
-    - target: {fileID: 8170603485305471530, guid: 8928adc95eccbd942adeb575026c8174, type: 3}
-      propertyPath: m_LocalScale.y
-      value: 0.02
-      objectReference: {fileID: 0}
-    - target: {fileID: 8170603485305471530, guid: 8928adc95eccbd942adeb575026c8174, type: 3}
-      propertyPath: m_LocalScale.z
-      value: 0.02
-      objectReference: {fileID: 0}
-    - target: {fileID: 8170603485305471530, guid: 8928adc95eccbd942adeb575026c8174, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 22.3408
-      objectReference: {fileID: 0}
-    - target: {fileID: 8170603485305471530, guid: 8928adc95eccbd942adeb575026c8174, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 1.1387
-      objectReference: {fileID: 0}
-    - target: {fileID: 8170603485305471530, guid: 8928adc95eccbd942adeb575026c8174, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: -0.2626
-      objectReference: {fileID: 0}
-    - target: {fileID: 8170603485305471530, guid: 8928adc95eccbd942adeb575026c8174, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 0.917491
-      objectReference: {fileID: 0}
-    - target: {fileID: 8170603485305471530, guid: 8928adc95eccbd942adeb575026c8174, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8170603485305471530, guid: 8928adc95eccbd942adeb575026c8174, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: -0.39775646
-      objectReference: {fileID: 0}
-    - target: {fileID: 8170603485305471530, guid: 8928adc95eccbd942adeb575026c8174, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8170603485305471530, guid: 8928adc95eccbd942adeb575026c8174, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8170603485305471530, guid: 8928adc95eccbd942adeb575026c8174, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: -46.876
-      objectReference: {fileID: 0}
-    - target: {fileID: 8170603485305471530, guid: 8928adc95eccbd942adeb575026c8174, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 9018318074293804226, guid: 8928adc95eccbd942adeb575026c8174, type: 3}
-      propertyPath: m_Name
-      value: Symbol 3
-      objectReference: {fileID: 0}
-    - target: {fileID: 9018318074293804226, guid: 8928adc95eccbd942adeb575026c8174, type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 8928adc95eccbd942adeb575026c8174, type: 3}
---- !u!4 &902863349 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 8170603485305471530, guid: 8928adc95eccbd942adeb575026c8174, type: 3}
-  m_PrefabInstance: {fileID: 902863348}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &906046682
 GameObject:
   m_ObjectHideFlags: 0
@@ -52013,7 +51598,7 @@ MonoBehaviour:
   - .
   - ','
   - '>='
-  oscilloscope: {fileID: 601288413}
+  oscilloscope: {fileID: 0}
   spectrometer: {fileID: 210862872}
   allBooksInLevel:
   - {fileID: 1189130147}
@@ -53056,6 +52641,9 @@ MonoBehaviour:
   pageFlipDuration: 0.8
   totalPages: 8
   allowLoop: 0
+  startOpen: 0
+  initialState: 0
+  startPageIndex: 0
   bookSkinnedMeshRenderer: {fileID: 67646252}
   bookMaterialIndex: 0
   bookPagesMaterial: {fileID: 0}
@@ -53076,15 +52664,15 @@ MonoBehaviour:
   moveDuration: 0.5
   bookUI: {fileID: 0}
   pageNumberText: {fileID: 0}
+  synthesisPages: []
+  usePhysicalPageBlocks: 0
+  printNotesOnPages: 0
+  clueData: {fileID: 0}
   singlePageSize: {x: 0.16, y: 0.32}
   gizmoYOffset: 0.005
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: 725e301b34f00429ca9064b7d0eaa616, type: 2}
   canContainPassword: 1
-  isSymbolTargetBook: 0
-  requiredSymbolID: 0
-  symbolPuzzlePage: -1
-  targetSymbolAnchor: {fileID: 0}
   outlineController: {fileID: 0}
   highlightColor: {r: 0.2, g: 0.2, b: 0.1, a: 1}
   emissionIntensity: 10
@@ -54749,72 +54337,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1666612827}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1001 &976795122
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 194501664}
-    m_Modifications:
-    - target: {fileID: 8170603485305471530, guid: 47ea034f8d7cb8148aa30fc0134e3e66, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 10.753
-      objectReference: {fileID: 0}
-    - target: {fileID: 8170603485305471530, guid: 47ea034f8d7cb8148aa30fc0134e3e66, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 1.124
-      objectReference: {fileID: 0}
-    - target: {fileID: 8170603485305471530, guid: 47ea034f8d7cb8148aa30fc0134e3e66, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 10.5230255
-      objectReference: {fileID: 0}
-    - target: {fileID: 8170603485305471530, guid: 47ea034f8d7cb8148aa30fc0134e3e66, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 8170603485305471530, guid: 47ea034f8d7cb8148aa30fc0134e3e66, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8170603485305471530, guid: 47ea034f8d7cb8148aa30fc0134e3e66, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8170603485305471530, guid: 47ea034f8d7cb8148aa30fc0134e3e66, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8170603485305471530, guid: 47ea034f8d7cb8148aa30fc0134e3e66, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8170603485305471530, guid: 47ea034f8d7cb8148aa30fc0134e3e66, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8170603485305471530, guid: 47ea034f8d7cb8148aa30fc0134e3e66, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 9018318074293804226, guid: 47ea034f8d7cb8148aa30fc0134e3e66, type: 3}
-      propertyPath: m_Name
-      value: Symbol 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 9018318074293804226, guid: 47ea034f8d7cb8148aa30fc0134e3e66, type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 47ea034f8d7cb8148aa30fc0134e3e66, type: 3}
---- !u!4 &976795123 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 8170603485305471530, guid: 47ea034f8d7cb8148aa30fc0134e3e66, type: 3}
-  m_PrefabInstance: {fileID: 976795122}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &977247221
 GameObject:
   m_ObjectHideFlags: 0
@@ -59001,6 +58523,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LeesCondition
   targetState: 0
+  triggerOnSpotted: 1
 --- !u!114 &1052328702
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -59918,6 +59441,9 @@ MonoBehaviour:
   pageFlipDuration: 0.5
   totalPages: 8
   allowLoop: 0
+  startOpen: 0
+  initialState: 0
+  startPageIndex: 0
   bookSkinnedMeshRenderer: {fileID: 1339178069}
   bookMaterialIndex: 2
   bookPagesMaterial: {fileID: 2100000, guid: f56064b2fd13a91408feaf83a0a31733, type: 2}
@@ -59938,15 +59464,15 @@ MonoBehaviour:
   moveDuration: 0.5
   bookUI: {fileID: 0}
   pageNumberText: {fileID: 0}
+  synthesisPages: []
+  usePhysicalPageBlocks: 0
+  printNotesOnPages: 0
+  clueData: {fileID: 0}
   singlePageSize: {x: 0.9, y: 1.25}
   gizmoYOffset: 0.18
   animationDuration: 1
   bookIdentity: {fileID: 0}
   canContainPassword: 0
-  isSymbolTargetBook: 0
-  requiredSymbolID: 0
-  symbolPuzzlePage: -1
-  targetSymbolAnchor: {fileID: 0}
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -60391,6 +59917,9 @@ MonoBehaviour:
   pageFlipDuration: 0.5
   totalPages: 8
   allowLoop: 0
+  startOpen: 0
+  initialState: 0
+  startPageIndex: 0
   bookSkinnedMeshRenderer: {fileID: 205156307}
   bookMaterialIndex: 2
   bookPagesMaterial: {fileID: 2100000, guid: a983986b3d57c474cabcaa5ca6c0ca63, type: 2}
@@ -60411,15 +59940,15 @@ MonoBehaviour:
   moveDuration: 0.5
   bookUI: {fileID: 0}
   pageNumberText: {fileID: 0}
+  synthesisPages: []
+  usePhysicalPageBlocks: 0
+  printNotesOnPages: 0
+  clueData: {fileID: 0}
   singlePageSize: {x: 0.9, y: 1.25}
   gizmoYOffset: 0.18
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: e8e70f6881874c346a915ed2051a4797, type: 2}
   canContainPassword: 1
-  isSymbolTargetBook: 0
-  requiredSymbolID: 0
-  symbolPuzzlePage: -1
-  targetSymbolAnchor: {fileID: 0}
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -61504,6 +61033,9 @@ MonoBehaviour:
   pageFlipDuration: 0.5
   totalPages: 8
   allowLoop: 0
+  startOpen: 0
+  initialState: 0
+  startPageIndex: 0
   bookSkinnedMeshRenderer: {fileID: 1619770252}
   bookMaterialIndex: 2
   bookPagesMaterial: {fileID: 2100000, guid: 91150cebdb8f39b4b9564c20fbe43d75, type: 2}
@@ -61524,15 +61056,15 @@ MonoBehaviour:
   moveDuration: 0.5
   bookUI: {fileID: 0}
   pageNumberText: {fileID: 0}
+  synthesisPages: []
+  usePhysicalPageBlocks: 0
+  printNotesOnPages: 0
+  clueData: {fileID: 0}
   singlePageSize: {x: 0.9, y: 1.25}
   gizmoYOffset: 0.18
   animationDuration: 1
   bookIdentity: {fileID: 0}
   canContainPassword: 0
-  isSymbolTargetBook: 0
-  requiredSymbolID: 0
-  symbolPuzzlePage: -1
-  targetSymbolAnchor: {fileID: 0}
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -62727,6 +62259,9 @@ MonoBehaviour:
   pageFlipDuration: 0.5
   totalPages: 8
   allowLoop: 0
+  startOpen: 0
+  initialState: 0
+  startPageIndex: 0
   bookSkinnedMeshRenderer: {fileID: 1677516475}
   bookMaterialIndex: 2
   bookPagesMaterial: {fileID: 2100000, guid: 38cb09f207ce2c142810bdc510e4073b, type: 2}
@@ -62747,15 +62282,15 @@ MonoBehaviour:
   moveDuration: 0.5
   bookUI: {fileID: 0}
   pageNumberText: {fileID: 0}
+  synthesisPages: []
+  usePhysicalPageBlocks: 0
+  printNotesOnPages: 0
+  clueData: {fileID: 0}
   singlePageSize: {x: 0.9, y: 1.25}
   gizmoYOffset: 0.18
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
   canContainPassword: 0
-  isSymbolTargetBook: 1
-  requiredSymbolID: 0
-  symbolPuzzlePage: 1
-  targetSymbolAnchor: {fileID: 1946379272}
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -66067,6 +65602,9 @@ MonoBehaviour:
   pageFlipDuration: 0.5
   totalPages: 8
   allowLoop: 0
+  startOpen: 0
+  initialState: 0
+  startPageIndex: 0
   bookSkinnedMeshRenderer: {fileID: 190613085684978951}
   bookMaterialIndex: 2
   bookPagesMaterial: {fileID: 2100000, guid: 876d2055738d96b4aa98058bd891eb3e, type: 2}
@@ -66087,15 +65625,15 @@ MonoBehaviour:
   moveDuration: 0.5
   bookUI: {fileID: 0}
   pageNumberText: {fileID: 0}
+  synthesisPages: []
+  usePhysicalPageBlocks: 0
+  printNotesOnPages: 0
+  clueData: {fileID: 0}
   singlePageSize: {x: 0.9, y: 1.25}
   gizmoYOffset: 0.18
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
   canContainPassword: 0
-  isSymbolTargetBook: 0
-  requiredSymbolID: 0
-  symbolPuzzlePage: -1
-  targetSymbolAnchor: {fileID: 0}
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -66811,6 +66349,9 @@ MonoBehaviour:
   pageFlipDuration: 0.5
   totalPages: 8
   allowLoop: 0
+  startOpen: 0
+  initialState: 0
+  startPageIndex: 0
   bookSkinnedMeshRenderer: {fileID: 1423535043}
   bookMaterialIndex: 2
   bookPagesMaterial: {fileID: 2100000, guid: b55bb5699807ccd45b5691c044ec65ab, type: 2}
@@ -66831,15 +66372,15 @@ MonoBehaviour:
   moveDuration: 0.5
   bookUI: {fileID: 0}
   pageNumberText: {fileID: 0}
+  synthesisPages: []
+  usePhysicalPageBlocks: 0
+  printNotesOnPages: 0
+  clueData: {fileID: 0}
   singlePageSize: {x: 0.9, y: 1.25}
   gizmoYOffset: 0.18
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
   canContainPassword: 0
-  isSymbolTargetBook: 0
-  requiredSymbolID: 0
-  symbolPuzzlePage: -1
-  targetSymbolAnchor: {fileID: 0}
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -67223,37 +66764,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1326418402}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &1211442165
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1211442166}
-  m_Layer: 0
-  m_Name: SpawnPoint
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1211442166
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1211442165}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: 0.00023577086, y: 0.00083499914, z: -0.00082478457}
-  m_LocalScale: {x: 0.010000001, y: 0.01, z: 0.009999999}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 2972458828465131256}
-  m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
 --- !u!1 &1213402607
 GameObject:
   m_ObjectHideFlags: 0
@@ -67511,6 +67021,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f53c5a4e4f0e5456db0d882442bb79b2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SaveManager
+  sessionOnly: 0
 --- !u!1 &1220311047
 GameObject:
   m_ObjectHideFlags: 0
@@ -68029,6 +67540,9 @@ MonoBehaviour:
   pageFlipDuration: 0.5
   totalPages: 8
   allowLoop: 0
+  startOpen: 0
+  initialState: 0
+  startPageIndex: 0
   bookSkinnedMeshRenderer: {fileID: 711327218}
   bookMaterialIndex: 2
   bookPagesMaterial: {fileID: 2100000, guid: c2741606969a5ee4887fe99017afdb6d, type: 2}
@@ -68049,15 +67563,15 @@ MonoBehaviour:
   moveDuration: 0.5
   bookUI: {fileID: 0}
   pageNumberText: {fileID: 0}
+  synthesisPages: []
+  usePhysicalPageBlocks: 0
+  printNotesOnPages: 0
+  clueData: {fileID: 0}
   singlePageSize: {x: 0.9, y: 1.25}
   gizmoYOffset: 0.18
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
   canContainPassword: 0
-  isSymbolTargetBook: 0
-  requiredSymbolID: 0
-  symbolPuzzlePage: -1
-  targetSymbolAnchor: {fileID: 0}
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -70289,6 +69803,9 @@ MonoBehaviour:
   pageFlipDuration: 0.5
   totalPages: 8
   allowLoop: 0
+  startOpen: 0
+  initialState: 0
+  startPageIndex: 0
   bookSkinnedMeshRenderer: {fileID: 93577044}
   bookMaterialIndex: 2
   bookPagesMaterial: {fileID: 2100000, guid: e75bcb023d3cc52498294c49267e294a, type: 2}
@@ -70309,15 +69826,15 @@ MonoBehaviour:
   moveDuration: 0.5
   bookUI: {fileID: 0}
   pageNumberText: {fileID: 0}
+  synthesisPages: []
+  usePhysicalPageBlocks: 0
+  printNotesOnPages: 0
+  clueData: {fileID: 0}
   singlePageSize: {x: 0.9, y: 1.25}
   gizmoYOffset: 0.18
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: 4784611e90dfbfc4c9ca6a2f2d182815, type: 2}
   canContainPassword: 1
-  isSymbolTargetBook: 0
-  requiredSymbolID: 0
-  symbolPuzzlePage: -1
-  targetSymbolAnchor: {fileID: 0}
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -70869,6 +70386,9 @@ MonoBehaviour:
   pageFlipDuration: 0.5
   totalPages: 8
   allowLoop: 0
+  startOpen: 0
+  initialState: 0
+  startPageIndex: 0
   bookSkinnedMeshRenderer: {fileID: 1461831950}
   bookMaterialIndex: 2
   bookPagesMaterial: {fileID: 2100000, guid: 38cb09f207ce2c142810bdc510e4073b, type: 2}
@@ -70889,15 +70409,15 @@ MonoBehaviour:
   moveDuration: 0.5
   bookUI: {fileID: 0}
   pageNumberText: {fileID: 0}
+  synthesisPages: []
+  usePhysicalPageBlocks: 0
+  printNotesOnPages: 0
+  clueData: {fileID: 0}
   singlePageSize: {x: 0.9, y: 1.25}
   gizmoYOffset: 0.18
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
   canContainPassword: 0
-  isSymbolTargetBook: 0
-  requiredSymbolID: 0
-  symbolPuzzlePage: -1
-  targetSymbolAnchor: {fileID: 0}
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -72652,88 +72172,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1303795837}
   m_Mesh: {fileID: 5983478594553984798, guid: 7a43d867f85205b4e92deb7a55edc28f, type: 3}
---- !u!1001 &1304024819
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 1946379272}
-    m_Modifications:
-    - target: {fileID: 3348829901132193419, guid: 26751fb8ec58b724ba6b5e142a3f26ea, type: 3}
-      propertyPath: m_Name
-      value: Symbol_P
-      objectReference: {fileID: 0}
-    - target: {fileID: 3348829901132193419, guid: 26751fb8ec58b724ba6b5e142a3f26ea, type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 9218884625941125702, guid: 26751fb8ec58b724ba6b5e142a3f26ea, type: 3}
-      propertyPath: m_LocalScale.x
-      value: 0.07
-      objectReference: {fileID: 0}
-    - target: {fileID: 9218884625941125702, guid: 26751fb8ec58b724ba6b5e142a3f26ea, type: 3}
-      propertyPath: m_LocalScale.y
-      value: 0.065
-      objectReference: {fileID: 0}
-    - target: {fileID: 9218884625941125702, guid: 26751fb8ec58b724ba6b5e142a3f26ea, type: 3}
-      propertyPath: m_LocalScale.z
-      value: 0.065
-      objectReference: {fileID: 0}
-    - target: {fileID: 9218884625941125702, guid: 26751fb8ec58b724ba6b5e142a3f26ea, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 9218884625941125702, guid: 26751fb8ec58b724ba6b5e142a3f26ea, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 9218884625941125702, guid: 26751fb8ec58b724ba6b5e142a3f26ea, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 9218884625941125702, guid: 26751fb8ec58b724ba6b5e142a3f26ea, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 9218884625941125702, guid: 26751fb8ec58b724ba6b5e142a3f26ea, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 9218884625941125702, guid: 26751fb8ec58b724ba6b5e142a3f26ea, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 9218884625941125702, guid: 26751fb8ec58b724ba6b5e142a3f26ea, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 9218884625941125702, guid: 26751fb8ec58b724ba6b5e142a3f26ea, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 9218884625941125702, guid: 26751fb8ec58b724ba6b5e142a3f26ea, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 9218884625941125702, guid: 26751fb8ec58b724ba6b5e142a3f26ea, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 9218884625941125702, guid: 26751fb8ec58b724ba6b5e142a3f26ea, type: 3}
-      propertyPath: m_ConstrainProportionsScale
-      value: 0
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 26751fb8ec58b724ba6b5e142a3f26ea, type: 3}
---- !u!4 &1304024820 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 9218884625941125702, guid: 26751fb8ec58b724ba6b5e142a3f26ea, type: 3}
-  m_PrefabInstance: {fileID: 1304024819}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1307582200
 GameObject:
   m_ObjectHideFlags: 0
@@ -73739,6 +73177,9 @@ MonoBehaviour:
   pageFlipDuration: 0.5
   totalPages: 8
   allowLoop: 0
+  startOpen: 0
+  initialState: 0
+  startPageIndex: 0
   bookSkinnedMeshRenderer: {fileID: 858498579}
   bookMaterialIndex: 2
   bookPagesMaterial: {fileID: 2100000, guid: bbce74d6d3728f3429cf3edc2929ef2d, type: 2}
@@ -73759,15 +73200,15 @@ MonoBehaviour:
   moveDuration: 0.5
   bookUI: {fileID: 0}
   pageNumberText: {fileID: 0}
+  synthesisPages: []
+  usePhysicalPageBlocks: 0
+  printNotesOnPages: 0
+  clueData: {fileID: 0}
   singlePageSize: {x: 0.9, y: 1.25}
   gizmoYOffset: 0.18
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
   canContainPassword: 0
-  isSymbolTargetBook: 0
-  requiredSymbolID: 0
-  symbolPuzzlePage: -1
-  targetSymbolAnchor: {fileID: 0}
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -75166,6 +74607,9 @@ MonoBehaviour:
   pageFlipDuration: 0.5
   totalPages: 8
   allowLoop: 0
+  startOpen: 0
+  initialState: 0
+  startPageIndex: 0
   bookSkinnedMeshRenderer: {fileID: 955825966}
   bookMaterialIndex: 0
   bookPagesMaterial: {fileID: 0}
@@ -75186,15 +74630,15 @@ MonoBehaviour:
   moveDuration: 0.5
   bookUI: {fileID: 0}
   pageNumberText: {fileID: 0}
+  synthesisPages: []
+  usePhysicalPageBlocks: 0
+  printNotesOnPages: 0
+  clueData: {fileID: 0}
   singlePageSize: {x: 0.9, y: 1.25}
   gizmoYOffset: 0.18
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: 51515ebaa232ea446892709aafa79e1c, type: 2}
   canContainPassword: 0
-  isSymbolTargetBook: 0
-  requiredSymbolID: 0
-  symbolPuzzlePage: -1
-  targetSymbolAnchor: {fileID: 0}
   outlineController: {fileID: 0}
   highlightColor: {r: 0.2, g: 0.2, b: 0.1, a: 0.53333336}
   emissionIntensity: 1
@@ -77036,6 +76480,9 @@ MonoBehaviour:
   pageFlipDuration: 0.5
   totalPages: 8
   allowLoop: 0
+  startOpen: 0
+  initialState: 0
+  startPageIndex: 0
   bookSkinnedMeshRenderer: {fileID: 1507797518}
   bookMaterialIndex: 2
   bookPagesMaterial: {fileID: 2100000, guid: 7d745d00caa70d4479a274e3b8eb367b, type: 2}
@@ -77056,15 +76503,15 @@ MonoBehaviour:
   moveDuration: 0.5
   bookUI: {fileID: 0}
   pageNumberText: {fileID: 0}
+  synthesisPages: []
+  usePhysicalPageBlocks: 0
+  printNotesOnPages: 0
+  clueData: {fileID: 0}
   singlePageSize: {x: 0.9, y: 1.25}
   gizmoYOffset: 0.18
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
   canContainPassword: 0
-  isSymbolTargetBook: 0
-  requiredSymbolID: 0
-  symbolPuzzlePage: -1
-  targetSymbolAnchor: {fileID: 0}
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -79164,6 +78611,9 @@ MonoBehaviour:
   pageFlipDuration: 0.5
   totalPages: 8
   allowLoop: 0
+  startOpen: 0
+  initialState: 0
+  startPageIndex: 0
   bookSkinnedMeshRenderer: {fileID: 571203284}
   bookMaterialIndex: 2
   bookPagesMaterial: {fileID: 2100000, guid: 4171cf39c1da36f4190613d5d6df3ef6, type: 2}
@@ -79184,15 +78634,15 @@ MonoBehaviour:
   moveDuration: 0.5
   bookUI: {fileID: 0}
   pageNumberText: {fileID: 0}
+  synthesisPages: []
+  usePhysicalPageBlocks: 0
+  printNotesOnPages: 0
+  clueData: {fileID: 0}
   singlePageSize: {x: 0.9, y: 1.25}
   gizmoYOffset: 0.18
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
   canContainPassword: 0
-  isSymbolTargetBook: 0
-  requiredSymbolID: 0
-  symbolPuzzlePage: -1
-  targetSymbolAnchor: {fileID: 0}
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -80183,6 +79633,9 @@ MonoBehaviour:
   alignDuration: 0.5
   cameraDockDuration: 0.6
   enterAnimDuration: 4.6
+  peekYawLimit: 35
+  peekPitchLimit: 20
+  peekLookSensitivity: 2
   propAnimator: {fileID: 1430485574}
   propOpenTrigger: Open
   propCloseTrigger: Close
@@ -80194,6 +79647,7 @@ MonoBehaviour:
   unhideSound: {fileID: 8300000, guid: a3c6518f71ee459418ba1a2cd277cc92, type: 3}
   peekSound: {fileID: 0}
   canExit: 1
+  maxPeekTimeWhileDangerous: 2
   doorOpenDelay: 1
 --- !u!65 &1430485573
 BoxCollider:
@@ -81757,6 +81211,9 @@ MonoBehaviour:
   pageFlipDuration: 0.5
   totalPages: 8
   allowLoop: 0
+  startOpen: 0
+  initialState: 0
+  startPageIndex: 0
   bookSkinnedMeshRenderer: {fileID: 854579938}
   bookMaterialIndex: 2
   bookPagesMaterial: {fileID: 2100000, guid: 850829d72f1e33244a7d4e3c81a3ac70, type: 2}
@@ -81777,15 +81234,15 @@ MonoBehaviour:
   moveDuration: 0.5
   bookUI: {fileID: 0}
   pageNumberText: {fileID: 0}
+  synthesisPages: []
+  usePhysicalPageBlocks: 0
+  printNotesOnPages: 0
+  clueData: {fileID: 0}
   singlePageSize: {x: 0.9, y: 1.25}
   gizmoYOffset: 0.18
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
   canContainPassword: 0
-  isSymbolTargetBook: 0
-  requiredSymbolID: 0
-  symbolPuzzlePage: -1
-  targetSymbolAnchor: {fileID: 0}
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -81998,6 +81455,9 @@ MonoBehaviour:
   pageFlipDuration: 0.5
   totalPages: 8
   allowLoop: 0
+  startOpen: 0
+  initialState: 0
+  startPageIndex: 0
   bookSkinnedMeshRenderer: {fileID: 849419969}
   bookMaterialIndex: 2
   bookPagesMaterial: {fileID: 2100000, guid: 7914beb819449934f9670fb4391e9dfe, type: 2}
@@ -82018,15 +81478,15 @@ MonoBehaviour:
   moveDuration: 0.5
   bookUI: {fileID: 0}
   pageNumberText: {fileID: 0}
+  synthesisPages: []
+  usePhysicalPageBlocks: 0
+  printNotesOnPages: 0
+  clueData: {fileID: 0}
   singlePageSize: {x: 0.9, y: 1.25}
   gizmoYOffset: 0.18
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
   canContainPassword: 0
-  isSymbolTargetBook: 0
-  requiredSymbolID: 0
-  symbolPuzzlePage: -1
-  targetSymbolAnchor: {fileID: 0}
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -82844,6 +82304,9 @@ MonoBehaviour:
   pageFlipDuration: 0.5
   totalPages: 8
   allowLoop: 0
+  startOpen: 0
+  initialState: 0
+  startPageIndex: 0
   bookSkinnedMeshRenderer: {fileID: 319562207}
   bookMaterialIndex: 2
   bookPagesMaterial: {fileID: 2100000, guid: 025650ec2de64a54a9d6ca3505fde977, type: 2}
@@ -82864,15 +82327,15 @@ MonoBehaviour:
   moveDuration: 0.5
   bookUI: {fileID: 0}
   pageNumberText: {fileID: 0}
+  synthesisPages: []
+  usePhysicalPageBlocks: 0
+  printNotesOnPages: 0
+  clueData: {fileID: 0}
   singlePageSize: {x: 0.9, y: 1.25}
   gizmoYOffset: 0.18
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
   canContainPassword: 0
-  isSymbolTargetBook: 0
-  requiredSymbolID: 0
-  symbolPuzzlePage: -1
-  targetSymbolAnchor: {fileID: 0}
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -83891,6 +83354,9 @@ MonoBehaviour:
   pageFlipDuration: 0.5
   totalPages: 8
   allowLoop: 0
+  startOpen: 0
+  initialState: 0
+  startPageIndex: 0
   bookSkinnedMeshRenderer: {fileID: 1335914312}
   bookMaterialIndex: 2
   bookPagesMaterial: {fileID: 2100000, guid: bc6c5286f90200d4e894080e289dded1, type: 2}
@@ -83911,15 +83377,15 @@ MonoBehaviour:
   moveDuration: 0.5
   bookUI: {fileID: 0}
   pageNumberText: {fileID: 0}
+  synthesisPages: []
+  usePhysicalPageBlocks: 0
+  printNotesOnPages: 0
+  clueData: {fileID: 0}
   singlePageSize: {x: 0.9, y: 1.25}
   gizmoYOffset: 0.18
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
   canContainPassword: 0
-  isSymbolTargetBook: 0
-  requiredSymbolID: 0
-  symbolPuzzlePage: -1
-  targetSymbolAnchor: {fileID: 0}
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -87088,6 +86554,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b2d937150188cda42b236106f4d6da42, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  timelineAtDoor: {fileID: 0}
+  timelineBehindPlayer: {fileID: 0}
+  timelineInFront: {fileID: 0}
+  timelineLocker: {fileID: 0}
   currentState: 0
   agent: {fileID: 1552689769}
   checkInterval: 60
@@ -87095,6 +86565,7 @@ MonoBehaviour:
   chanceIncreaseStep: 5
   minTimeBetweenAttacks: 180
   currentSpawnChance: 0
+  playerCurrentRoom: {fileID: 0}
   baseSearchDuration: 20
   timePerLight: 10
   footstepInterval: 0.8
@@ -87118,6 +86589,7 @@ MonoBehaviour:
   doorOpenSound: {fileID: 8300000, guid: 89c69006d3e1d3a49b6ace2eac335c70, type: 3}
   jumpscareSound: {fileID: 8300000, guid: f3ddbf121115dcc4b86bc1ff8c094d4b, type: 3}
   searchHumSound: {fileID: 8300000, guid: 2cd738cff21fc234f8ba36d6e75d1f8f, type: 3}
+  rummageSounds: []
   debugStatus: 
   debugSearchProgress: 0
   debugBreachProgress: 0
@@ -88102,6 +87574,9 @@ MonoBehaviour:
   pageFlipDuration: 0.5
   totalPages: 8
   allowLoop: 0
+  startOpen: 0
+  initialState: 0
+  startPageIndex: 0
   bookSkinnedMeshRenderer: {fileID: 1013532068}
   bookMaterialIndex: 2
   bookPagesMaterial: {fileID: 2100000, guid: 8923ea5454aeae542a302eac214de26d, type: 2}
@@ -88122,15 +87597,15 @@ MonoBehaviour:
   moveDuration: 0.5
   bookUI: {fileID: 0}
   pageNumberText: {fileID: 0}
+  synthesisPages: []
+  usePhysicalPageBlocks: 0
+  printNotesOnPages: 0
+  clueData: {fileID: 0}
   singlePageSize: {x: 0.9, y: 1.25}
   gizmoYOffset: 0.18
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
   canContainPassword: 0
-  isSymbolTargetBook: 0
-  requiredSymbolID: 0
-  symbolPuzzlePage: -1
-  targetSymbolAnchor: {fileID: 0}
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -93401,6 +92876,9 @@ MonoBehaviour:
   pageFlipDuration: 0.5
   totalPages: 8
   allowLoop: 0
+  startOpen: 0
+  initialState: 0
+  startPageIndex: 0
   bookSkinnedMeshRenderer: {fileID: 2058655943}
   bookMaterialIndex: 2
   bookPagesMaterial: {fileID: 2100000, guid: 06bfa30846cbe6a4ebffff9f53caaa64, type: 2}
@@ -93421,15 +92899,15 @@ MonoBehaviour:
   moveDuration: 0.5
   bookUI: {fileID: 0}
   pageNumberText: {fileID: 0}
+  synthesisPages: []
+  usePhysicalPageBlocks: 0
+  printNotesOnPages: 0
+  clueData: {fileID: 0}
   singlePageSize: {x: 0.9, y: 1.25}
   gizmoYOffset: 0.18
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
   canContainPassword: 0
-  isSymbolTargetBook: 0
-  requiredSymbolID: 0
-  symbolPuzzlePage: -1
-  targetSymbolAnchor: {fileID: 0}
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -94413,6 +93891,9 @@ MonoBehaviour:
   pageFlipDuration: 0.5
   totalPages: 8
   allowLoop: 0
+  startOpen: 0
+  initialState: 0
+  startPageIndex: 0
   bookSkinnedMeshRenderer: {fileID: 1447602795}
   bookMaterialIndex: 2
   bookPagesMaterial: {fileID: 2100000, guid: 34b1f78dde9d786419d5dc7e1c06bdcf, type: 2}
@@ -94433,15 +93914,15 @@ MonoBehaviour:
   moveDuration: 0.5
   bookUI: {fileID: 0}
   pageNumberText: {fileID: 0}
+  synthesisPages: []
+  usePhysicalPageBlocks: 0
+  printNotesOnPages: 0
+  clueData: {fileID: 0}
   singlePageSize: {x: 0.9, y: 1.25}
   gizmoYOffset: 0.18
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
   canContainPassword: 0
-  isSymbolTargetBook: 0
-  requiredSymbolID: 0
-  symbolPuzzlePage: -1
-  targetSymbolAnchor: {fileID: 0}
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -95006,6 +94487,9 @@ MonoBehaviour:
   pageFlipDuration: 0.5
   totalPages: 8
   allowLoop: 0
+  startOpen: 0
+  initialState: 0
+  startPageIndex: 0
   bookSkinnedMeshRenderer: {fileID: 202958269}
   bookMaterialIndex: 2
   bookPagesMaterial: {fileID: 2100000, guid: 06bfa30846cbe6a4ebffff9f53caaa64, type: 2}
@@ -95026,15 +94510,15 @@ MonoBehaviour:
   moveDuration: 0.5
   bookUI: {fileID: 0}
   pageNumberText: {fileID: 0}
+  synthesisPages: []
+  usePhysicalPageBlocks: 0
+  printNotesOnPages: 0
+  clueData: {fileID: 0}
   singlePageSize: {x: 0.9, y: 1.25}
   gizmoYOffset: 0.18
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
   canContainPassword: 0
-  isSymbolTargetBook: 0
-  requiredSymbolID: 0
-  symbolPuzzlePage: -1
-  targetSymbolAnchor: {fileID: 0}
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -96243,6 +95727,9 @@ MonoBehaviour:
   pageFlipDuration: 0.5
   totalPages: 8
   allowLoop: 0
+  startOpen: 0
+  initialState: 0
+  startPageIndex: 0
   bookSkinnedMeshRenderer: {fileID: 430555463}
   bookMaterialIndex: 2
   bookPagesMaterial: {fileID: 2100000, guid: c2e1d0137075cf44fbcd16ebd0236257, type: 2}
@@ -96263,15 +95750,15 @@ MonoBehaviour:
   moveDuration: 0.5
   bookUI: {fileID: 0}
   pageNumberText: {fileID: 0}
+  synthesisPages: []
+  usePhysicalPageBlocks: 0
+  printNotesOnPages: 0
+  clueData: {fileID: 0}
   singlePageSize: {x: 0.9, y: 1.25}
   gizmoYOffset: 0.18
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: a7f2861ca145c7e409e842cae9482924, type: 2}
   canContainPassword: 1
-  isSymbolTargetBook: 0
-  requiredSymbolID: 0
-  symbolPuzzlePage: -1
-  targetSymbolAnchor: {fileID: 0}
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -97442,6 +96929,9 @@ MonoBehaviour:
   pageFlipDuration: 0.5
   totalPages: 8
   allowLoop: 0
+  startOpen: 0
+  initialState: 0
+  startPageIndex: 0
   bookSkinnedMeshRenderer: {fileID: 1316199766}
   bookMaterialIndex: 2
   bookPagesMaterial: {fileID: 2100000, guid: 4171cf39c1da36f4190613d5d6df3ef6, type: 2}
@@ -97462,15 +96952,15 @@ MonoBehaviour:
   moveDuration: 0.5
   bookUI: {fileID: 0}
   pageNumberText: {fileID: 0}
+  synthesisPages: []
+  usePhysicalPageBlocks: 0
+  printNotesOnPages: 0
+  clueData: {fileID: 0}
   singlePageSize: {x: 0.9, y: 1.25}
   gizmoYOffset: 0.18
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
   canContainPassword: 0
-  isSymbolTargetBook: 0
-  requiredSymbolID: 0
-  symbolPuzzlePage: -1
-  targetSymbolAnchor: {fileID: 0}
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -97715,6 +97205,9 @@ MonoBehaviour:
   pageFlipDuration: 0.5
   totalPages: 8
   allowLoop: 0
+  startOpen: 0
+  initialState: 0
+  startPageIndex: 0
   bookSkinnedMeshRenderer: {fileID: 1867093109}
   bookMaterialIndex: 2
   bookPagesMaterial: {fileID: 2100000, guid: 6734d680374516d4c883e119fe12a733, type: 2}
@@ -97735,15 +97228,15 @@ MonoBehaviour:
   moveDuration: 0.5
   bookUI: {fileID: 0}
   pageNumberText: {fileID: 0}
+  synthesisPages: []
+  usePhysicalPageBlocks: 0
+  printNotesOnPages: 0
+  clueData: {fileID: 0}
   singlePageSize: {x: 0.9, y: 1.25}
   gizmoYOffset: 0.18
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
   canContainPassword: 0
-  isSymbolTargetBook: 0
-  requiredSymbolID: 0
-  symbolPuzzlePage: -1
-  targetSymbolAnchor: {fileID: 0}
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -101058,6 +100551,9 @@ MonoBehaviour:
   pageFlipDuration: 0.5
   totalPages: 8
   allowLoop: 0
+  startOpen: 0
+  initialState: 0
+  startPageIndex: 0
   bookSkinnedMeshRenderer: {fileID: 1667261058}
   bookMaterialIndex: 2
   bookPagesMaterial: {fileID: 2100000, guid: 4666a28fb589b704290a8d51b2bd3799, type: 2}
@@ -101078,15 +100574,15 @@ MonoBehaviour:
   moveDuration: 0.5
   bookUI: {fileID: 0}
   pageNumberText: {fileID: 0}
+  synthesisPages: []
+  usePhysicalPageBlocks: 0
+  printNotesOnPages: 0
+  clueData: {fileID: 0}
   singlePageSize: {x: 0.9, y: 1.25}
   gizmoYOffset: 0.18
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
   canContainPassword: 0
-  isSymbolTargetBook: 0
-  requiredSymbolID: 0
-  symbolPuzzlePage: -1
-  targetSymbolAnchor: {fileID: 0}
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -107098,6 +106594,9 @@ MonoBehaviour:
   pageFlipDuration: 0.5
   totalPages: 8
   allowLoop: 0
+  startOpen: 0
+  initialState: 0
+  startPageIndex: 0
   bookSkinnedMeshRenderer: {fileID: 1077382135}
   bookMaterialIndex: 2
   bookPagesMaterial: {fileID: 2100000, guid: 7914beb819449934f9670fb4391e9dfe, type: 2}
@@ -107118,15 +106617,15 @@ MonoBehaviour:
   moveDuration: 0.5
   bookUI: {fileID: 0}
   pageNumberText: {fileID: 0}
+  synthesisPages: []
+  usePhysicalPageBlocks: 0
+  printNotesOnPages: 0
+  clueData: {fileID: 0}
   singlePageSize: {x: 0.9, y: 1.25}
   gizmoYOffset: 0.18
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
   canContainPassword: 0
-  isSymbolTargetBook: 0
-  requiredSymbolID: 0
-  symbolPuzzlePage: -1
-  targetSymbolAnchor: {fileID: 0}
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -107913,7 +107412,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 1304024820}
+  - {fileID: 9218884626959699125}
   m_Father: {fileID: 1109607866}
   m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
 --- !u!1 &1947202376
@@ -108847,6 +108346,9 @@ MonoBehaviour:
   pageFlipDuration: 0.5
   totalPages: 8
   allowLoop: 0
+  startOpen: 0
+  initialState: 0
+  startPageIndex: 0
   bookSkinnedMeshRenderer: {fileID: 1056081695}
   bookMaterialIndex: 2
   bookPagesMaterial: {fileID: 2100000, guid: e46cad149d1ceb54aa782c9bb27458c5, type: 2}
@@ -108867,15 +108369,15 @@ MonoBehaviour:
   moveDuration: 0.5
   bookUI: {fileID: 0}
   pageNumberText: {fileID: 0}
+  synthesisPages: []
+  usePhysicalPageBlocks: 0
+  printNotesOnPages: 0
+  clueData: {fileID: 0}
   singlePageSize: {x: 0.9, y: 1.25}
   gizmoYOffset: 0.18
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: d8450f206ca080d45a4fee43aaad03ce, type: 2}
   canContainPassword: 1
-  isSymbolTargetBook: 0
-  requiredSymbolID: 0
-  symbolPuzzlePage: -1
-  targetSymbolAnchor: {fileID: 0}
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -109290,6 +108792,9 @@ MonoBehaviour:
   pageFlipDuration: 0.5
   totalPages: 8
   allowLoop: 0
+  startOpen: 0
+  initialState: 0
+  startPageIndex: 0
   bookSkinnedMeshRenderer: {fileID: 1770822732}
   bookMaterialIndex: 2
   bookPagesMaterial: {fileID: 2100000, guid: 4f2b00d7d3f009f4d9244177ac9e8f56, type: 2}
@@ -109310,15 +108815,15 @@ MonoBehaviour:
   moveDuration: 0.5
   bookUI: {fileID: 0}
   pageNumberText: {fileID: 0}
+  synthesisPages: []
+  usePhysicalPageBlocks: 0
+  printNotesOnPages: 0
+  clueData: {fileID: 0}
   singlePageSize: {x: 0.9, y: 1.25}
   gizmoYOffset: 0.18
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
   canContainPassword: 0
-  isSymbolTargetBook: 0
-  requiredSymbolID: 0
-  symbolPuzzlePage: -1
-  targetSymbolAnchor: {fileID: 0}
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -109733,6 +109238,9 @@ MonoBehaviour:
   pageFlipDuration: 0.5
   totalPages: 8
   allowLoop: 0
+  startOpen: 0
+  initialState: 0
+  startPageIndex: 0
   bookSkinnedMeshRenderer: {fileID: 1466325453}
   bookMaterialIndex: 2
   bookPagesMaterial: {fileID: 2100000, guid: 91150cebdb8f39b4b9564c20fbe43d75, type: 2}
@@ -109753,15 +109261,15 @@ MonoBehaviour:
   moveDuration: 0.5
   bookUI: {fileID: 0}
   pageNumberText: {fileID: 0}
+  synthesisPages: []
+  usePhysicalPageBlocks: 0
+  printNotesOnPages: 0
+  clueData: {fileID: 0}
   singlePageSize: {x: 0.9, y: 1.25}
   gizmoYOffset: 0.18
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: eb8cfc1405e5cca4399af1013ce54b9c, type: 2}
   canContainPassword: 1
-  isSymbolTargetBook: 0
-  requiredSymbolID: 0
-  symbolPuzzlePage: -1
-  targetSymbolAnchor: {fileID: 0}
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -111068,6 +110576,9 @@ MonoBehaviour:
   pageFlipDuration: 0.5
   totalPages: 8
   allowLoop: 0
+  startOpen: 0
+  initialState: 0
+  startPageIndex: 0
   bookSkinnedMeshRenderer: {fileID: 1075626359}
   bookMaterialIndex: 2
   bookPagesMaterial: {fileID: 2100000, guid: b2fe69c3b3724834ab3e15523cf33dd5, type: 2}
@@ -111088,15 +110599,15 @@ MonoBehaviour:
   moveDuration: 0.5
   bookUI: {fileID: 0}
   pageNumberText: {fileID: 0}
+  synthesisPages: []
+  usePhysicalPageBlocks: 0
+  printNotesOnPages: 0
+  clueData: {fileID: 0}
   singlePageSize: {x: 0.9, y: 1.25}
   gizmoYOffset: 0.18
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
   canContainPassword: 0
-  isSymbolTargetBook: 0
-  requiredSymbolID: 0
-  symbolPuzzlePage: -1
-  targetSymbolAnchor: {fileID: 0}
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -112187,6 +111698,9 @@ MonoBehaviour:
   pageFlipDuration: 0.5
   totalPages: 8
   allowLoop: 0
+  startOpen: 0
+  initialState: 0
+  startPageIndex: 0
   bookSkinnedMeshRenderer: {fileID: 1473245984}
   bookMaterialIndex: 2
   bookPagesMaterial: {fileID: 2100000, guid: 3aa26a4d8f69838478b01ba77712bd26, type: 2}
@@ -112207,15 +111721,15 @@ MonoBehaviour:
   moveDuration: 0.5
   bookUI: {fileID: 0}
   pageNumberText: {fileID: 0}
+  synthesisPages: []
+  usePhysicalPageBlocks: 0
+  printNotesOnPages: 0
+  clueData: {fileID: 0}
   singlePageSize: {x: 0.9, y: 1.25}
   gizmoYOffset: 0.18
   animationDuration: 1
   bookIdentity: {fileID: 0}
   canContainPassword: 0
-  isSymbolTargetBook: 0
-  requiredSymbolID: 0
-  symbolPuzzlePage: -1
-  targetSymbolAnchor: {fileID: 0}
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -116975,6 +116489,9 @@ MonoBehaviour:
   pageFlipDuration: 0.5
   totalPages: 8
   allowLoop: 0
+  startOpen: 0
+  initialState: 0
+  startPageIndex: 0
   bookSkinnedMeshRenderer: {fileID: 339449632}
   bookMaterialIndex: 2
   bookPagesMaterial: {fileID: 2100000, guid: 2cb853e2f30b9c843a1855e4e5b5dca0, type: 2}
@@ -116995,15 +116512,15 @@ MonoBehaviour:
   moveDuration: 0.5
   bookUI: {fileID: 0}
   pageNumberText: {fileID: 0}
+  synthesisPages: []
+  usePhysicalPageBlocks: 0
+  printNotesOnPages: 0
+  clueData: {fileID: 0}
   singlePageSize: {x: 0.9, y: 1.25}
   gizmoYOffset: 0.18
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: a7f2861ca145c7e409e842cae9482924, type: 2}
   canContainPassword: 1
-  isSymbolTargetBook: 0
-  requiredSymbolID: 0
-  symbolPuzzlePage: -1
-  targetSymbolAnchor: {fileID: 0}
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -118328,6 +117845,9 @@ MonoBehaviour:
   pageFlipDuration: 0.5
   totalPages: 8
   allowLoop: 0
+  startOpen: 0
+  initialState: 0
+  startPageIndex: 0
   bookSkinnedMeshRenderer: {fileID: 1244344475}
   bookMaterialIndex: 2
   bookPagesMaterial: {fileID: 2100000, guid: 887f2af2e16b59b458acf906329f36c2, type: 2}
@@ -118348,15 +117868,15 @@ MonoBehaviour:
   moveDuration: 0.5
   bookUI: {fileID: 0}
   pageNumberText: {fileID: 0}
+  synthesisPages: []
+  usePhysicalPageBlocks: 0
+  printNotesOnPages: 0
+  clueData: {fileID: 0}
   singlePageSize: {x: 0.9, y: 1.25}
   gizmoYOffset: 0.18
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
   canContainPassword: 0
-  isSymbolTargetBook: 1
-  requiredSymbolID: 1
-  symbolPuzzlePage: 0
-  targetSymbolAnchor: {fileID: 1196805567}
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -119719,6 +119239,9 @@ MonoBehaviour:
   pageFlipDuration: 0.5
   totalPages: 8
   allowLoop: 0
+  startOpen: 0
+  initialState: 0
+  startPageIndex: 0
   bookSkinnedMeshRenderer: {fileID: 2073331779}
   bookMaterialIndex: 2
   bookPagesMaterial: {fileID: 2100000, guid: f55d8dfc0b0015c4cb6675cd9535b9cb, type: 2}
@@ -119739,15 +119262,15 @@ MonoBehaviour:
   moveDuration: 0.5
   bookUI: {fileID: 0}
   pageNumberText: {fileID: 0}
+  synthesisPages: []
+  usePhysicalPageBlocks: 0
+  printNotesOnPages: 0
+  clueData: {fileID: 0}
   singlePageSize: {x: 0.9, y: 1.25}
   gizmoYOffset: 0.18
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
   canContainPassword: 0
-  isSymbolTargetBook: 0
-  requiredSymbolID: 0
-  symbolPuzzlePage: -1
-  targetSymbolAnchor: {fileID: 0}
   outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
@@ -124963,6 +124486,20 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 2147483647
   m_IsActive: 1
+--- !u!114 &626278586242020318
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3348829899879680120}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2350ebc7d48054446bec7126651cd467, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EventLogicController
+  requireAllConditions: 1
+  triggerOnlyOnce: 1
 --- !u!23 &633726593501255746
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -127881,6 +127418,8 @@ MonoBehaviour:
   - {fileID: 1085410607540858363}
   - {fileID: 1795492764566375225}
   - {fileID: 4803465846855539074}
+  gameMusicSource: {fileID: 0}
+  gameMusicFadeDuration: 3
 --- !u!82 &919132148867769551
 AudioSource:
   m_ObjectHideFlags: 0
@@ -134872,6 +134411,7 @@ MonoBehaviour:
   failSound: {fileID: 8300000, guid: 77506dd3104ff304aae2e71477b76193, type: 3}
   accessSound: {fileID: 8300000, guid: 3dbfa94600403474cb7fb421a8e428f1, type: 3}
   exitSound: {fileID: 8300000, guid: 4cf664f8f688345489a5f3d21c6e9dcd, type: 3}
+  measurementReadSeconds: 8
 --- !u!65 &2120274076800254779
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -138902,8 +138442,7 @@ Transform:
   m_LocalPosition: {x: 10.1355, y: 0.82057846, z: 2.000677}
   m_LocalScale: {x: 100, y: 100, z: 100}
   m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 1211442166}
+  m_Children: []
   m_Father: {fileID: 1926461757}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &2977836954801153125
@@ -141384,6 +140923,27 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!1 &3348829899879680120
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 9218884626959699125}
+  - component: {fileID: 6909607170015642654}
+  - component: {fileID: 8648531336315647794}
+  - component: {fileID: 6003526441322753485}
+  - component: {fileID: 626278586242020318}
+  - component: {fileID: 3859814207963808399}
+  m_Layer: 0
+  m_Name: Symbol_P
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
 --- !u!4 &3350891727849065378
 Transform:
   m_ObjectHideFlags: 0
@@ -143999,6 +143559,20 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 2147483647
   m_IsActive: 0
+--- !u!114 &3859814207963808399
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3348829899879680120}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 16c36d6ebf880b846880c74234269153, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::InteractionCondition
+  targetInteractable: {fileID: 3348829899879680120}
+  completionMode: 0
 --- !u!4 &3863956416915400782
 Transform:
   m_ObjectHideFlags: 0
@@ -144617,6 +144191,90 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2715700213811072869}
   m_Mesh: {fileID: 7484406363597526619, guid: 2841bca57b47792499c0f29af269564d, type: 3}
+--- !u!65 &3987978947675194854
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9018318073928411440}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 10, y: 10, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!65 &3987978947810994656
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9018318074064192822}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 10, y: 10, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!65 &3987978947919838442
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9018318073633509436}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 10, y: 10, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!65 &3987978948309710670
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9018318074560519064}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 10, y: 10, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &3990409854183404528
 GameObject:
   m_ObjectHideFlags: 0
@@ -148238,6 +147896,55 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.005933287, y: 0.005865511, z: 0.001700971}
   m_Center: {x: 0.0027229183, y: -9.313226e-10, z: -0.000000001193257}
+--- !u!23 &4625122783609710218
+MeshRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6570541688974002015}
+  m_Enabled: 1
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: 73c176f402d2c2f4d929aa5da7585d17, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_MaskInteraction: 0
+  m_AdditionalVertexStreams: {fileID: 0}
 --- !u!33 &4644791842440066998
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -150551,6 +150258,38 @@ Transform:
   m_Children: []
   m_Father: {fileID: 7189378660456921391}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!33 &5174981105158592715
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9018318074560519064}
+  m_Mesh: {fileID: -6713763143423365579, guid: b4f950179623c1a4d9c041084b89b8be, type: 3}
+--- !u!33 &5174981105347269487
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9018318073633509436}
+  m_Mesh: {fileID: -6713763143423365579, guid: b4f950179623c1a4d9c041084b89b8be, type: 3}
+--- !u!33 &5174981105589217891
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9018318073928411440}
+  m_Mesh: {fileID: -6713763143423365579, guid: b4f950179623c1a4d9c041084b89b8be, type: 3}
+--- !u!33 &5174981105654744677
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9018318074064192822}
+  m_Mesh: {fileID: -6713763143423365579, guid: b4f950179623c1a4d9c041084b89b8be, type: 3}
 --- !u!33 &5177354059514547448
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -153002,6 +152741,20 @@ MonoBehaviour:
   audioSource: {fileID: 0}
   openSound: {fileID: 0}
   closeSound: {fileID: 0}
+--- !u!114 &5599975425190707821
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9018318074064192822}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 16c36d6ebf880b846880c74234269153, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::InteractionCondition
+  targetInteractable: {fileID: 9018318074064192822}
+  completionMode: 0
 --- !u!23 &5600266688478612642
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -154015,6 +153768,21 @@ Transform:
   - {fileID: 7410462538512489562}
   m_Father: {fileID: 2420202491384422999}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!4 &5792913857244601829
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6570541688974002015}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 4.238701, y: -4.653269, z: 3.4386663}
+  m_LocalScale: {x: -2.9386778, y: -2.9386778, z: -2.9386778}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 8170603485576676720}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &5800887346936530419
 Transform:
   m_ObjectHideFlags: 0
@@ -154571,6 +154339,8 @@ MonoBehaviour:
   currentState: 0
   ignorePlayer: 0
   leesAnimator: {fileID: 5866666021288599346}
+  timelineJumpscare: {fileID: 0}
+  timelineJumpscareBehind: {fileID: 0}
   obstacleMask:
     serializedVersion: 2
     m_Bits: 375
@@ -154607,9 +154377,19 @@ MonoBehaviour:
   debugIgnoranceTimer: 0
   debugIsVisible: 0
   debugHasBeenSpotted: 0
+  HasBeenSpotted: 0
   playerTransform: {fileID: 543450652787342972}
   playerCamera: {fileID: 326973883}
+  playerMovementScript: {fileID: 0}
+  playerLookScript: {fileID: 0}
   isSafeSpawn: 0
+  useShockEffect: 1
+  shockDuration: 0.5
+  peakFOVOffset: -15
+  peakVignette: 0.65
+  peakLensDistortion: -0.7
+  peakAberration: 1
+  shockSound: {fileID: 0}
 --- !u!82 &5866666021288599349
 AudioSource:
   m_ObjectHideFlags: 0
@@ -155672,6 +155452,27 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 9182181831692972254}
   m_Mesh: {fileID: -3106690485308197814, guid: 538baa5b4da66974e96819119c03972c, type: 3}
+--- !u!65 &6003526441322753485
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3348829899879680120}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 2.842832, y: 1.4612281, z: 2.4759505}
+  m_Center: {x: -0.08685151, y: -0.17482814, z: -0.071131185}
 --- !u!4 &6003704745657602117
 Transform:
   m_ObjectHideFlags: 0
@@ -159241,6 +159042,24 @@ Transform:
   m_Children: []
   m_Father: {fileID: 2120274076800254777}
   m_LocalEulerAnglesHint: {x: -90, y: 0, z: 0}
+--- !u!1 &6570541688974002015
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5792913857244601829}
+  - component: {fileID: 7479155045675536960}
+  - component: {fileID: 4625122783609710218}
+  m_Layer: 0
+  m_Name: Symbol1
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
 --- !u!1 &6571357039272573567
 GameObject:
   m_ObjectHideFlags: 0
@@ -161079,6 +160898,14 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1926461757}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!33 &6909607170015642654
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3348829899879680120}
+  m_Mesh: {fileID: -2124705421725058983, guid: 58b43f19169e4c044ad0e7ad5ebcee6d, type: 3}
 --- !u!23 &6917000457905994399
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -162534,6 +162361,202 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1449707718}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!23 &7183481042344378510
+MeshRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9018318073928411440}
+  m_Enabled: 1
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: 68f99c64436bb4141a50fe27975fbbb8, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_MaskInteraction: 0
+  m_AdditionalVertexStreams: {fileID: 0}
+--- !u!23 &7183481042489617544
+MeshRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9018318074064192822}
+  m_Enabled: 1
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: e5ab5ab7e42257441829af5cc301e3d6, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_MaskInteraction: 0
+  m_AdditionalVertexStreams: {fileID: 0}
+--- !u!23 &7183481042586925442
+MeshRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9018318073633509436}
+  m_Enabled: 1
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: 8a211a23ac513ac449c38d1d3371cd5f, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_MaskInteraction: 0
+  m_AdditionalVertexStreams: {fileID: 0}
+--- !u!23 &7183481042985447974
+MeshRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9018318074560519064}
+  m_Enabled: 1
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: 2413b52a7e37cae4c96dd1b0bbb215f9, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_MaskInteraction: 0
+  m_AdditionalVertexStreams: {fileID: 0}
 --- !u!4 &7189378660456921391
 Transform:
   m_ObjectHideFlags: 0
@@ -162637,6 +162660,20 @@ Transform:
   m_Children: []
   m_Father: {fileID: 2918888750415832047}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &7212727202228888585
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9018318074064192822}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2350ebc7d48054446bec7126651cd467, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EventLogicController
+  requireAllConditions: 1
+  triggerOnlyOnce: 1
 --- !u!23 &7216963857535635107
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -164402,6 +164439,14 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!33 &7479155045675536960
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6570541688974002015}
+  m_Mesh: {fileID: -2124705421725058983, guid: d1c355a6b2400f444bf8478dfd7d25fa, type: 3}
 --- !u!1 &7479375608660879626
 GameObject:
   m_ObjectHideFlags: 0
@@ -168787,6 +168832,67 @@ Transform:
   - {fileID: 5477181764669828217}
   m_Father: {fileID: 5465940247109002716}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!4 &8170603485576676720
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9018318074560519064}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: -0.49279568, z: 0, w: 0.8701451}
+  m_LocalPosition: {x: 10.052, y: 0.7381, z: 1.9771}
+  m_LocalScale: {x: 0.02, y: 0.02, z: 0.02}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 5792913857244601829}
+  m_Father: {fileID: 194501664}
+  m_LocalEulerAnglesHint: {x: 0, y: -59.049, z: 0}
+--- !u!4 &8170603485966814932
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9018318073633509436}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0.3783578, z: 0, w: 0.9256594}
+  m_LocalPosition: {x: 22.3435, y: 1.1356, z: 0.5385}
+  m_LocalScale: {x: 0.02, y: 0.02, z: 0.02}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 194501664}
+  m_LocalEulerAnglesHint: {x: 0, y: 44.464, z: 0}
+--- !u!4 &8170603486071954398
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9018318074064192822}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: -0.39775646, z: 0, w: 0.917491}
+  m_LocalPosition: {x: 22.3408, y: 1.1387, z: -0.2626}
+  m_LocalScale: {x: 0.02, y: 0.02, z: 0.02}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 194501664}
+  m_LocalEulerAnglesHint: {x: 0, y: -46.876, z: 0}
+--- !u!4 &8170603486208800728
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9018318073928411440}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 10.753, y: 1.124, z: 10.5230255}
+  m_LocalScale: {x: 0.02, y: 0.02, z: 0.02}
+  m_ConstrainProportionsScale: 1
+  m_Children: []
+  m_Father: {fileID: 194501664}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &8180098578780626482
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -172182,6 +172288,55 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!23 &8648531336315647794
+MeshRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3348829899879680120}
+  m_Enabled: 1
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: 8f265c6e7b835a048b962168d7c12d6d, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_MaskInteraction: 0
+  m_AdditionalVertexStreams: {fileID: 0}
 --- !u!4 &8655570254426408369
 Transform:
   m_ObjectHideFlags: 0
@@ -174693,6 +174848,84 @@ Transform:
   m_Children: []
   m_Father: {fileID: 543450652832420294}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &9018318073633509436
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8170603485966814932}
+  - component: {fileID: 5174981105347269487}
+  - component: {fileID: 7183481042586925442}
+  - component: {fileID: 3987978947919838442}
+  m_Layer: 0
+  m_Name: Symbol 2
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!1 &9018318073928411440
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8170603486208800728}
+  - component: {fileID: 5174981105589217891}
+  - component: {fileID: 7183481042344378510}
+  - component: {fileID: 3987978947675194854}
+  m_Layer: 0
+  m_Name: Symbol 1
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!1 &9018318074064192822
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8170603486071954398}
+  - component: {fileID: 5174981105654744677}
+  - component: {fileID: 7183481042489617544}
+  - component: {fileID: 3987978947810994656}
+  - component: {fileID: 7212727202228888585}
+  - component: {fileID: 5599975425190707821}
+  m_Layer: 6
+  m_Name: Symbol 3
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!1 &9018318074560519064
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8170603485576676720}
+  - component: {fileID: 5174981105158592715}
+  - component: {fileID: 7183481042985447974}
+  - component: {fileID: 3987978948309710670}
+  m_Layer: 0
+  m_Name: Symbol
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
 --- !u!1 &9019515343788609188
 GameObject:
   m_ObjectHideFlags: 0
@@ -176326,6 +176559,21 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.005933287, y: 0.0058655106, z: 0.0017009699}
   m_Center: {x: 0.0027229183, y: 6.9849193e-10, z: -5.820766e-10}
+--- !u!4 &9218884626959699125
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3348829899879680120}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0, y: 0, z: 0}
+  m_LocalScale: {x: 0.07, y: 0.065, z: 0.065}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1946379272}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

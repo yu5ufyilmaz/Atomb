@@ -12,6 +12,13 @@ private List<ISaveable> saveableObjects = new List<ISaveable>(); // Liste artık
 private string saveFileName = "SenzoraLocalSave.json";
     [Tooltip("Geçiş denemesinde ana oyunun kayıt dosyasını okumaz veya değiştirmez.")]
     public bool sessionOnly;
+    [Tooltip("Geliştirici denemeleri için ayrı dosya yolu; boşsa normal kayıt kullanılır.")]
+    public string isolatedSavePath;
+    private string SavePath => string.IsNullOrEmpty(isolatedSavePath) ? Path.Combine(Application.persistentDataPath, saveFileName) : isolatedSavePath;
+    public bool SaveBlocked { get; private set; }
+    public string LastLoadError { get; private set; }
+    private ResearchPuzzleTrial SceneTrial => ResearchPuzzleTrial.Active != null ? ResearchPuzzleTrial.Active
+        : FindFirstObjectByType<ResearchPuzzleTrial>(FindObjectsInactive.Include);
 
     private void Awake()
     {
@@ -41,14 +48,15 @@ private string saveFileName = "SenzoraLocalSave.json";
 
     public void NewGame()
     {
+        try { SceneTrial?.StartNewSession(); }
+        catch (System.Exception exception) { FailLoad("Yeni puzzle başlatılamadı: " + exception.Message); return; }
         gameData = new GameData();
         if (NotebookUI.Instance != null) NotebookUI.Instance.ResetWorkspace();
-        if (ProceduralSynthesisGenerator.Instance != null)
-            ProceduralSynthesisGenerator.Instance.GenerateRun(UnityEngine.Random.Range(1, int.MaxValue));
         if (ChalkboardManager.Instance != null) ChalkboardManager.Instance.ResetBoard();
+        SaveBlocked = false; LastLoadError = null;
 
         if (sessionOnly) return;
-        string path = Path.Combine(Application.persistentDataPath, saveFileName);
+        string path = SavePath;
         if (File.Exists(path))
         {
             File.Delete(path);
@@ -59,47 +67,55 @@ private string saveFileName = "SenzoraLocalSave.json";
     public bool HasSaveFile()
     {
         if (sessionOnly) return false;
-        string path = System.IO.Path.Combine(Application.persistentDataPath, saveFileName);
+        string path = SavePath;
         return System.IO.File.Exists(path);
     }
 
     public bool LoadGame()
     {
-        if (sessionOnly) return false;
-        string path = Path.Combine(Application.persistentDataPath, saveFileName);
+        if (sessionOnly) return FailLoad("Bu deneme sahnesinde kalıcı kayıt yükleme kapalı.");
+        string path = SavePath;
 
         // Gelecekte buraya Steamworks Load mantığı eklenecek
 
-        if (File.Exists(path))
+        try
         {
+            if (!File.Exists(path)) return FailLoad("Kayıt dosyası bulunamadı.");
             string json = File.ReadAllText(path);
-            gameData = JsonUtility.FromJson<GameData>(json);
-
-            // Çalışma anında üretilen SO kimlikleri, defter ve tahta çözümlemesinden önce hazır olmalı.
-            var synthesisGenerator = ProceduralSynthesisGenerator.Instance;
-            if (synthesisGenerator != null) synthesisGenerator.LoadData(gameData);
+            var loaded = JsonUtility.FromJson<GameData>(json);
+            if (loaded == null) return FailLoad("Kayıt verisi okunamadı.");
+            var trial = SceneTrial;
+            if (loaded.puzzleSession != null && trial == null) return FailLoad("Kayıtlı puzzle için sahne bağlantısı eksik.");
+            trial?.RestoreSession(loaded);
+            gameData = loaded;
 
             // Tüm objelere veriyi yükle
             foreach (ISaveable saveable in saveableObjects.ToArray())
             {
-                if (ReferenceEquals(saveable, synthesisGenerator)) continue;
                 saveable.LoadData(gameData);
             }
+            SaveBlocked = false; LastLoadError = null;
             Debug.Log("Kayıt Yüklendi: " + path);
             return true; // Kayıt var ve yüklendi
         }
+        catch (System.Exception exception) { return FailLoad("Kayıt yüklenemedi; dosya korundu: " + exception.Message); }
+    }
 
-        Debug.Log("Kayıt bulunamadı!");
-        return false; // Kayıt yok
+    private bool FailLoad(string message)
+    {
+        SaveBlocked = true; LastLoadError = message;
+        Debug.LogWarning(message); return false;
     }
 
     public void SaveGame()
     {
-        if (sessionOnly) return;
+        if (sessionOnly || SaveBlocked) return;
+        if (SceneTrial != null && SceneTrial.CurrentPuzzle == null) { FailLoad("Puzzle bağlantısı kurulmadı; mevcut kayıt korunuyor."); return; }
         if (gameData == null)
             gameData = new GameData();
 
         gameData.lastSavedTime = System.DateTime.Now.ToString();
+        ResearchPuzzleTrial.Active?.CaptureSession(gameData);
 
         // Sahnedeki tüm objelerden veriyi topla
         foreach (ISaveable saveable in saveableObjects.ToArray())
@@ -109,7 +125,9 @@ private string saveFileName = "SenzoraLocalSave.json";
 
         // JSON olarak AppData'ya kaydet
         string json = JsonUtility.ToJson(gameData, true);
-        string path = Path.Combine(Application.persistentDataPath, saveFileName);
+        string path = SavePath;
+        string directory = Path.GetDirectoryName(path);
+        if (!string.IsNullOrEmpty(directory)) Directory.CreateDirectory(directory);
         File.WriteAllText(path, json);
 
         // Gelecekte buraya Steamworks Save mantığı eklenecek

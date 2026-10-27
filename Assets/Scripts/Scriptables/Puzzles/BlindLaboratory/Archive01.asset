@@ -1,0 +1,170 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6c1fbd7dd552ba046b264bc50576d6a0, type: 3}
+  m_Name: Archive01
+  m_EditorClassIdentifier: Assembly-CSharp::PuzzleDefinitionSO
+  definition:
+    version: 1
+    kind: 1
+    id: archive-a17
+    title: "Kay\u0131t A-17"
+    description: "Koruyucu kaplaman\u0131n ar\u015Fiv numunesi bulundu. Analiz\xF6rde
+      bu referans\u0131n rengini, yo\u011Funlu\u011Funu ve miktar\u0131n\u0131 yeniden
+      elde et."
+    rules:
+      minParts: 3
+      maxParts: 10
+      minSamples: 1
+      maxSamples: 3
+      maxDepth: 10
+      traceCount: 2
+      parts:
+      - itemID: mix-source
+        allowed: 1
+        minimum: 0
+        maximum: 1
+        explanation: "1 doz renksiz ta\u015F\u0131y\u0131c\u0131 s\u0131v\u0131 verir.
+          Pigment i\xE7ermez."
+      - itemID: mix-red
+        allowed: 1
+        minimum: 0
+        maximum: 4
+        explanation: "Ge\xE7en kar\u0131\u015F\u0131ma 1 doz k\u0131rm\u0131z\u0131
+          pigment ekler. Miktar da 1 doz artar."
+      - itemID: mix-green
+        allowed: 1
+        minimum: 0
+        maximum: 4
+        explanation: "Ge\xE7en kar\u0131\u015F\u0131ma 1 doz ye\u015Fil pigment ekler.
+          Miktar da 1 doz artar."
+      - itemID: mix-blue
+        allowed: 1
+        minimum: 0
+        maximum: 4
+        explanation: "Ge\xE7en kar\u0131\u015F\u0131ma 1 doz mavi pigment ekler.
+          Miktar da 1 doz artar."
+      - itemID: mix-solvent
+        allowed: 1
+        minimum: 0
+        maximum: 4
+        explanation: "1 doz renksiz ta\u015F\u0131y\u0131c\u0131 ekler. Pigment oranlar\u0131
+          korunur; yo\u011Funluk azal\u0131r, toplam miktar artar."
+      - itemID: mix-concentrator
+        allowed: 1
+        minimum: 0
+        maximum: 4
+        explanation: "Renksiz ta\u015F\u0131y\u0131c\u0131n\u0131n yar\u0131s\u0131n\u0131
+          uzakla\u015Ft\u0131r\u0131r. Pigment miktar\u0131 korunur; yo\u011Funluk
+          artar, toplam miktar azal\u0131r."
+      - itemID: mix-splitter
+        allowed: 0
+        minimum: 0
+        maximum: 4
+        explanation: "Kar\u0131\u015F\u0131m\u0131 iki e\u015Fit kola b\xF6ler. Her
+          kolda b\xFCt\xFCn bile\u015Fenlerin yar\u0131s\u0131 bulunur; toplam miktar
+          korunur."
+      - itemID: mix-mixer
+        allowed: 0
+        minimum: 0
+        maximum: 4
+        explanation: "\u0130ki giri\u015Ften gelen s\u0131v\u0131lar\u0131 toplar.
+          Renk pigment miktarlar\u0131na g\xF6re olu\u015Fur; iki giri\u015F de ba\u011Flanmal\u0131."
+      - itemID: mix-meter
+        allowed: 1
+        minimum: 0
+        maximum: 1
+        explanation: "Son kar\u0131\u015F\u0131m\u0131n rengini, pigment yo\u011Funlu\u011Funu
+          ve toplam miktar\u0131n\u0131 \xF6l\xE7er. \xC7\u0131k\u0131\u015F\u0131
+          yoktur."
+    solution:
+      parts:
+      - itemID: mix-source
+        capacity: 0
+        openEnds: 0
+        blockedEnds: 0
+      - itemID: mix-blue
+        capacity: 0
+        openEnds: 0
+        blockedEnds: 0
+      - itemID: mix-green
+        capacity: 0
+        openEnds: 0
+        blockedEnds: 0
+      - itemID: mix-concentrator
+        capacity: 0
+        openEnds: 0
+        blockedEnds: 0
+      - itemID: mix-solvent
+        capacity: 0
+        openEnds: 0
+        blockedEnds: 0
+      - itemID: mix-meter
+        capacity: 0
+        openEnds: 0
+        blockedEnds: 0
+      bonds:
+      - fromIndex: 0
+        toIndex: 1
+        bondType: 1
+        label: 
+        directed: 1
+      - fromIndex: 1
+        toIndex: 2
+        bondType: 1
+        label: 
+        directed: 1
+      - fromIndex: 2
+        toIndex: 3
+        bondType: 1
+        label: 
+        directed: 1
+      - fromIndex: 3
+        toIndex: 4
+        bondType: 1
+        label: 
+        directed: 1
+      - fromIndex: 4
+        toIndex: 5
+        bondType: 1
+        label: 
+        directed: 1
+    positions:
+    - {x: 25, y: 80}
+    - {x: 250, y: 80}
+    - {x: 475, y: 80}
+    - {x: 700, y: 80}
+    - {x: 925, y: 80}
+    - {x: 1150, y: 80}
+    target: []
+    mixtureTarget:
+      red: 0
+      green: 1
+      blue: 1
+      solvent: 1.5
+    tolerance: 0.005
+    notes:
+    - pageIndex: 0
+      title: "\u0130\u015Flem g\xFCnl\xFC\u011F\xFC"
+      explanation: "Yo\u011Funla\u015Ft\u0131rma yaln\u0131z renksiz ta\u015F\u0131y\u0131c\u0131y\u0131
+        azalt\u0131r. \xC7\xF6z\xFCc\xFC yeniden ta\u015F\u0131y\u0131c\u0131 ekler.
+        Ayn\u0131 iki i\u015Flemi farkl\u0131 s\u0131rada deneyince farkl\u0131 numuneler
+        elde edildi."
+      blocks: []
+    - pageIndex: 0
+      title: "Referans\u0131n kullan\u0131m\u0131"
+      explanation: "Benzer renk tek ba\u015F\u0131na yeterli de\u011Fildir. Referans
+        numunenin yo\u011Funlu\u011Funu ve kapta kalan miktar\u0131 da kar\u015F\u0131la\u015Ft\u0131r;
+        k\xFC\xE7\xFCk denemelerle ilerle."
+      blocks: []
+    targetInFirstBook: 1
+    seed: 0
+  includeInPool: 1

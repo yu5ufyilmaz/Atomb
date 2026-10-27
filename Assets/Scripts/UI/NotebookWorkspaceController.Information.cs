@@ -49,7 +49,7 @@ public partial class NotebookWorkspaceController
         var notes = PuzzleInformation.NotebookNotes(notebook);
         if (IsArchiveNotebook)
         {
-            notes.RemoveAll(n => SecondTraceExperiment.IsMeasurementNote(n) != solutions);
+            notes.RemoveAll(n => SignalExperiment.IsMeasurementNote(n) != solutions);
             var unique = new List<NotebookBlockData>();
             foreach (var note in notes) if (!unique.Exists(n => SameInformation(n, note))) unique.Add(note);
             notes = unique;

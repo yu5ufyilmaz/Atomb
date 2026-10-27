@@ -93,16 +93,32 @@ public sealed class ChalkFormulaSketch : MonoBehaviour
         string id = data.itemID;
         void Path(params Vector3[] points) => Stroke(drawing, new List<Vector3>(points), .055f);
         void Box(float x, float y) => Path(new Vector3(-x, -y), new Vector3(x, -y), new Vector3(x, y), new Vector3(-x, y), new Vector3(-x, -y));
-        if (id == SignalTrial.Source)
+        if (ColorMixtureLibrary.Find(id) != null)
+        {
+            if (id == ColorMixtureLibrary.Splitter) Path(new Vector3(1, 0), Vector3.zero, new Vector3(-1, .65f), Vector3.zero, new Vector3(-1, -.65f));
+            else if (id == ColorMixtureLibrary.Mixer) Path(new Vector3(1, .65f), Vector3.zero, new Vector3(-1, 0), Vector3.zero, new Vector3(1, -.65f));
+            else
+            {
+                Box(.7f, .7f); Path(new Vector3(-.55f, -.15f), new Vector3(.55f, -.15f));
+                int marks = id == ColorMixtureLibrary.Red ? 1 : id == ColorMixtureLibrary.Green ? 2 : id == ColorMixtureLibrary.Blue ? 3 : 0;
+                for (int i = 0; i < marks; i++) Ring(drawing, new Vector3(-.3f + i * .3f, -.4f), .08f, 0);
+                if (id == ColorMixtureLibrary.Solvent) Path(new Vector3(-.3f, .3f), new Vector3(.3f, .3f));
+                if (id == ColorMixtureLibrary.Concentrator) Path(new Vector3(-.3f, .25f), new Vector3(.3f, .25f), new Vector3(0, .5f), new Vector3(-.3f, .25f));
+            }
+        }
+        else if (id == SignalTrial.Source)
         {
             Ring(drawing, Vector3.zero, .72f, 0);
             Path(new Vector3(.4f, -.1f), new Vector3(.05f, -.1f), new Vector3(.05f, .4f), new Vector3(-.2f, .4f), new Vector3(-.2f, -.1f), new Vector3(-.5f, -.1f));
         }
-        else if (id == SignalTrial.Narrow || id == SignalTrial.Wide)
+        else if (SignalPartLibrary.Find(id)?.sample == true)
         {
             Path(new Vector3(-.45f, .85f), new Vector3(-.45f, .4f), new Vector3(-.78f, -.65f), new Vector3(.78f, -.65f), new Vector3(.45f, .4f), new Vector3(.45f, .85f));
             Path(new Vector3(-.65f, -.2f), new Vector3(.65f, -.2f));
             if (id == SignalTrial.Wide) Path(new Vector3(-.4f, -.45f), new Vector3(.4f, -.45f));
+            if (id == "pulse-n08") Path(new Vector3(-.4f, -.42f), new Vector3(0, -.42f), new Vector3(0, -.3f));
+            if (id == "pulse-n21") { Ring(drawing, new Vector3(0, .35f), .2f, 0); Path(new Vector3(0, .5f), new Vector3(0, .35f), new Vector3(.12f, .35f)); }
+            if (id == "pulse-n46") { Ring(drawing, new Vector3(-.25f, -.42f), .09f, 0); Ring(drawing, new Vector3(.25f, -.42f), .09f, 0); }
         }
         else if (id == SignalTrial.Splitter)
             Path(new Vector3(1, 0), Vector3.zero, new Vector3(-1, .65f));

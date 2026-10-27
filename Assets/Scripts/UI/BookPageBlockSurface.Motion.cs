@@ -125,8 +125,12 @@ public partial class BookPageBlockSurface
 
     internal Vector3 MapPrintedPoint(Vector2 uv, bool rightPage, int pageIndex)
     {
-        if (!IsMovingPage(pageIndex)) return MapPageWorld(uv, rightPage);
-        return MapTurningPage(new Vector2(rightPage ? uv.x : 1 - uv.x, uv.y));
+        Vector3 point = IsMovingPage(pageIndex)
+            ? MapTurningPage(new Vector2(rightPage ? uv.x : 1 - uv.x, uv.y)) : MapPageWorld(uv, rightPage);
+        Camera camera = surface.worldCamera != null ? surface.worldCamera : Camera.main;
+        // Every ink type, including region highlights, stays just above the visible paper side.
+        Vector3 outward = camera != null ? (camera.transform.position - point).normalized : book.bookSkinnedMeshRenderer.transform.up;
+        return point + outward * .0005f;
     }
 
     private void RefreshInkGeometry()

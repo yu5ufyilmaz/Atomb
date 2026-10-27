@@ -96,17 +96,17 @@ public static class TuringSurfaceAudit
 
     private static InteractableTuringMachine FindTerminal()
     {
-        var active = SecondTraceExperiment.Active;
+        var active = SignalExperiment.Active;
         if (active != null && active.terminal != null && active.terminal.gameObject.scene.name == SceneName)
             return active.terminal;
-        foreach (var experiment in Object.FindObjectsByType<SecondTraceExperiment>(FindObjectsInactive.Include, FindObjectsSortMode.None))
+        foreach (var experiment in Object.FindObjectsByType<SignalExperiment>(FindObjectsInactive.Include, FindObjectsSortMode.None))
             if (experiment.gameObject.scene.name == SceneName && experiment.terminal != null
                 && experiment.terminal.gameObject.scene.name == SceneName) return experiment.terminal;
         InteractableTuringMachine found = null;
         foreach (var terminal in Object.FindObjectsByType<InteractableTuringMachine>(FindObjectsInactive.Include, FindObjectsSortMode.None))
         {
             if (terminal.gameObject.scene.name != SceneName) continue;
-            if (found != null) throw new InvalidOperationException("Test sahnesinde birden fazla bağımsız Turing var; SecondTraceExperiment.terminal referansını seçin.");
+            if (found != null) throw new InvalidOperationException("Test sahnesinde birden fazla bağımsız Turing var; SignalExperiment.terminal referansını seçin.");
             found = terminal;
         }
         if (found == null) throw new InvalidOperationException("scn_SynthesisBlockout açık olmalı ve Turing test kopyasını içermeli.");

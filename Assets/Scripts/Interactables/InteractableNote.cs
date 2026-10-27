@@ -257,13 +257,7 @@ public class InteractableNote : MonoBehaviour, IInteractable, IForceExitable
 
     private void CheckForPasswordClick()
     {
-        if (
-            PuzzleInventoryManager.Instance != null
-            && PuzzleInventoryManager.Instance.isOverlayActive
-        )
-            return;
-
-        if (paperCollider == null)
+if (paperCollider == null)
         {
             Debug.LogWarning(
                 "InteractableNote: paperCollider atanmamış! Lütfen Inspector'dan kağıdın collider'ını sürükle."

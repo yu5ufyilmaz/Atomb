@@ -38,6 +38,15 @@ public class NotebookDraggableBlock : MonoBehaviour, IBeginDragHandler, IDragHan
 
     public NotebookBlockData Data { get; private set; }
     public bool IsSource { get; private set; }
+    public string DisplayTitle
+    {
+        get
+        {
+            var part = Data?.blockType == NotebookBlockType.PartClue ? PuzzleParts.Find(Data.itemID) : null;
+            string role = part == null ? null : part.inputs == 0 ? "BAŞLATICI ›" : part.outputs == 0 ? "› SONLANDIRICI" : "› İŞLEM ›";
+            return part == null ? Data?.title : Data.title + "\n<size=65%>" + role + "</size>";
+        }
+    }
 
     private RectTransform floatingRect;
     private CanvasGroup canvasGroup;
@@ -51,8 +60,8 @@ public class NotebookDraggableBlock : MonoBehaviour, IBeginDragHandler, IDragHan
         CancelDrag();
         Data = data != null ? data.Clone() : new NotebookBlockData();
         IsSource = source;
-        var formula = Data.blockType == NotebookBlockType.PartClue && ProceduralSynthesisGenerator.Instance != null
-            ? ProceduralSynthesisGenerator.Instance.ResolveFormula(Data.itemID) : null;
+        var formula = Data.blockType == NotebookBlockType.PartClue && FormulaCatalog.Instance != null
+            ? FormulaCatalog.Instance.ResolveFormula(Data.itemID) : null;
         if (formula != null)
         {
             if (formula.doubleBondNodes != null && formula.doubleBondNodes.Count > 0 && !(Data.title ?? "").Contains("ÇİFT BAĞ"))
@@ -74,9 +83,10 @@ public class NotebookDraggableBlock : MonoBehaviour, IBeginDragHandler, IDragHan
         RectTransform rect = (RectTransform)transform;
         if (TryRenderClueBlock(rect)) return;
         bool quest = Data.blockType == NotebookBlockType.Quest;
+        bool researchNote = ResearchPuzzleTrial.IsResearch(ChalkboardManager.Instance);
         bool autoBuilt = background == null && titleText == null;
         if (autoBuilt || rect.sizeDelta.x <= 1f || rect.sizeDelta.y <= 1f)
-            rect.sizeDelta = quest ? new Vector2(320f, 190f)
+            rect.sizeDelta = quest ? researchNote ? new Vector2(380f, 370f) : new Vector2(320f, 190f)
                 : new Vector2(Data.blockType == NotebookBlockType.RuleClue ? 320f : 200f, 115f);
         if (background == null)
             background = GetComponent<Image>() ?? gameObject.AddComponent<Image>();
@@ -143,11 +153,15 @@ public class NotebookDraggableBlock : MonoBehaviour, IBeginDragHandler, IDragHan
         titleText.enableAutoSizing = true;
         titleText.fontSizeMin = 11f;
         titleText.fontSizeMax = 17f;
-        bool researchNote = ResearchPuzzleTrial.IsResearch(ChalkboardManager.Instance);
-        bool measurement = SecondTraceExperiment.IsMeasurementNote(Data);
+        bool measurement = SignalExperiment.IsMeasurementNote(Data);
         titleText.text = (quest ? "◆ HEDEF  " : measurement ? "ÖLÇÜM KARTI  "
             : Data.blockType == NotebookBlockType.RuleClue ? researchNote ? "KAYIT  " : "KURAL  " : "PARÇA  ") + Data.title;
         if (measurement) titleText.text = "ÖLÇÜM KARTI  " + (Data.title ?? "").Replace("ÖLÇÜM / ", "");
+        if (Data.blockType == NotebookBlockType.PartClue && PuzzleParts.Find(Data.itemID) != null)
+        {
+            titleText.text = DisplayTitle;
+            titleText.rectTransform.offsetMin = new Vector2(10, -54);
+        }
         if (descriptionText == null)
             descriptionText = CreateText("Açıklama", new Vector2(10f, -39f), new Vector2(-10f, 8f), 13f);
         descriptionText.text = measurement && researchNote
@@ -177,7 +191,7 @@ public class NotebookDraggableBlock : MonoBehaviour, IBeginDragHandler, IDragHan
         }
 
         rect.localRotation = IsSource ? Quaternion.identity : Quaternion.Euler(0f, 0f, Data.rotation);
-        var generator = ProceduralSynthesisGenerator.Instance;
+        var generator = FormulaCatalog.Instance;
         if (quest)
         {
             var blueprint = NotebookWorkspaceController.FindQuest(Data.questID);
@@ -190,7 +204,7 @@ public class NotebookDraggableBlock : MonoBehaviour, IBeginDragHandler, IDragHan
                     diagramObject.transform.SetParent(transform, false);
                     diagram = diagramObject.AddComponent<QuestDiagramGraphic>();
                     RectTransform diagramRect = diagram.rectTransform;
-                    diagramRect.anchorMin = new Vector2(0f, ResearchTrialContent.OwnsQuest(Data.questID) ? .26f : .18f);
+                    diagramRect.anchorMin = new Vector2(0f, researchNote ? .56f : SignalTrialContent.OwnsQuest(Data.questID) ? .26f : .18f);
                     diagramRect.anchorMax = new Vector2(1f, 0.8f);
                     diagramRect.offsetMin = new Vector2(8f, 0f);
                     diagramRect.offsetMax = new Vector2(-8f, 0f);
@@ -198,14 +212,27 @@ public class NotebookDraggableBlock : MonoBehaviour, IBeginDragHandler, IDragHan
                 diagram.raycastTarget = false;
                 diagram.SetQuest(blueprint);
                 descriptionText.rectTransform.anchorMin = Vector2.zero;
-                descriptionText.rectTransform.anchorMax = new Vector2(1f, ResearchTrialContent.OwnsQuest(Data.questID) ? .24f : .18f);
+                descriptionText.rectTransform.anchorMax = new Vector2(1f, researchNote ? .52f : SignalTrialContent.OwnsQuest(Data.questID) ? .24f : .18f);
                 descriptionText.rectTransform.offsetMin = new Vector2(10f, 3f);
                 descriptionText.rectTransform.offsetMax = new Vector2(-10f, 0f);
                 descriptionText.fontSize = 11f;
+                if (researchNote)
+                {
+                    descriptionText.enableAutoSizing = true;
+                    descriptionText.fontSizeMin = 13; descriptionText.fontSizeMax = 18;
+                    descriptionText.textWrappingMode = TextWrappingModes.Normal;
+                    descriptionText.overflowMode = TextOverflowModes.Ellipsis;
+                }
             }
         }
 
-        SecondTraceGraphic.Decorate(this, titleText, descriptionText);
+        if (!quest) SignalTrialGraphic.Decorate(this, descriptionText);
+        if (Data.blockType == NotebookBlockType.PartClue && PuzzleParts.Find(Data.itemID) != null)
+        {
+            var drawing = GetComponentInChildren<SignalTrialGraphic>()?.rectTransform
+                ?? GetComponentInChildren<MixtureGraphic>()?.rectTransform;
+            if (drawing != null) drawing.anchorMax = new Vector2(drawing.anchorMax.x, .64f);
+        }
 
         if (IsSource || Data.blockType != NotebookBlockType.PartClue || generator == null)
             return;
@@ -286,17 +313,19 @@ public class NotebookDraggableBlock : MonoBehaviour, IBeginDragHandler, IDragHan
             floatingRect.localScale = Vector3.one;
             floatingRect.localRotation = Quaternion.identity;
             floatingRect.pivot = new Vector2(.5f, .5f);
-            floatingRect.sizeDelta = new Vector2(300, 230);
+            floatingRect.sizeDelta = Data.blockType == NotebookBlockType.Quest ? new Vector2(380, 370) : new Vector2(300, 230);
             workspace.StyleNotebookNote(copyBlock);
-            var fill = copy.GetComponent<Image>();
-            if (fill != null) fill.color = new Color(.96f, .93f, .83f, 1);
-            var shadow = copy.AddComponent<Shadow>();
-            shadow.effectColor = new Color(0, 0, 0, .35f); shadow.effectDistance = new Vector2(5, -6);
         }
+        // Notebook ink is transparent on the page; every detached copy needs its own paper.
+        var fill = copy.GetComponent<Image>();
+        if (fill != null) { fill.sprite = null; fill.color = new Color(.96f, .93f, .83f, 1); }
+        var shadow = copy.AddComponent<Shadow>();
+        shadow.effectColor = new Color(0, 0, 0, .35f); shadow.effectDistance = new Vector2(5, -6);
         floatingRect.SetAsLastSibling();
         var floatingGroup = copy.GetComponent<CanvasGroup>();
         floatingGroup.blocksRaycasts = false;
         floatingGroup.interactable = false;
+        floatingGroup.alpha = 1;
         canvasGroup = GetComponent<CanvasGroup>();
         originalAlpha = canvasGroup.alpha;
         originalRaycastState = canvasGroup.blocksRaycasts;
@@ -390,7 +419,7 @@ public class NotebookDraggableBlock : MonoBehaviour, IBeginDragHandler, IDragHan
         if (!IsSource)
         {
             // Parça için elle çizilmiş eskiz hazırsa defterde o kullanılır; kırpılan görüntü yer tutucudur.
-            var generator = ProceduralSynthesisGenerator.Instance;
+            var generator = FormulaCatalog.Instance;
             FormulaItemSO formula = generator != null ? generator.ResolveFormula(Data.itemID) : null;
             if (formula != null && formula.sketchSprites != null && formula.sketchSprites.Length > 0) return false;
         }

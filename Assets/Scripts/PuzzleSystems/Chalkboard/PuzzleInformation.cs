@@ -23,9 +23,6 @@ public static class PuzzleInformation
             foreach (var quest in board.practicePuzzles)
                 if (quest != null && !ids.Contains(ID(quest))) ids.Add(ID(quest));
         }
-        var run = ProceduralSynthesisGenerator.Instance != null ? ProceduralSynthesisGenerator.Instance.Run : null;
-        if (run != null)
-            foreach (var quest in run.quests) if (quest != null && !ids.Contains(quest.questID)) ids.Add(quest.questID);
         return ids;
     }
 
@@ -35,8 +32,7 @@ public static class PuzzleInformation
     {
         var practice = board != null ? board.FindPracticeQuest(id) : null;
         if (practice != null) return practice.title;
-        var quest = ProceduralSynthesisGenerator.Instance?.Run?.quests.Find(q => q.questID == id);
-        return quest != null ? quest.title : "Bağlantısı belirsiz bilgiler";
+        return "Bağlantısı belirsiz bilgiler";
     }
 
     public static bool TryResolve(NotebookBlockData note, ChalkboardManager board)
@@ -75,8 +71,7 @@ public static class PuzzleInformation
     {
         var practice = board != null ? board.FindPracticeQuest(id) : null;
         if (practice != null) return practice.clueNotes ?? new List<string>();
-        var quest = ProceduralSynthesisGenerator.Instance?.Run?.quests.Find(q => q.questID == id);
-        return quest != null && quest.rules != null ? quest.rules.ConvertAll(r => r != null ? r.GetDescription() : "") : new List<string>();
+        return new List<string>();
     }
     private static string ID(QuestBlueprintSO quest) => string.IsNullOrEmpty(quest.questID) ? quest.name : quest.questID;
 }

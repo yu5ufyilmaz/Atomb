@@ -113,7 +113,7 @@ public partial class NotebookWorkspaceController
         if (view == NotebookView.Information || showingSolutions) RefreshInformation();
         if (view == NotebookView.Guide)
         {
-            guideEntries = NotebookSynthesisGuide.Build(ChalkboardManager.Instance, ProceduralSynthesisGenerator.Instance, notebook.notebookData);
+            guideEntries = NotebookSynthesisGuide.Build(ChalkboardManager.Instance, FormulaCatalog.Instance, notebook.notebookData);
             RefreshGuidePage();
             statusLabel.text = "Hile sayfası • Oklar: tarif değiştir • Tekerlek: adımları kaydır";
         }
@@ -136,7 +136,7 @@ public partial class NotebookWorkspaceController
     {
         if (UsesNotebookSkin) { LayoutNotebookSkin(); return; }
         var window = (RectTransform)page.parent;
-        float half = view == NotebookView.Notes ? 300 : 210;
+        float half = view == NotebookView.Notes || view == NotebookView.Targets ? 300 : 210;
         window.sizeDelta = new Vector2(540, half * 2);
         pageLabel.rectTransform.anchoredPosition = new Vector2(0, half - 56);
         partsPager.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, half - 56);
@@ -146,7 +146,8 @@ public partial class NotebookWorkspaceController
             tab.anchoredPosition = new Vector2(tab.anchoredPosition.x, half - 95);
         }
         page.anchoredPosition = targetPanel.anchoredPosition = informationPanel.anchoredPosition = new Vector2(0, -18);
-        targetPanel.sizeDelta = informationPanel.sizeDelta = new Vector2(508, 220);
+        targetPanel.sizeDelta = new Vector2(508, view == NotebookView.Targets ? 410 : 220);
+        informationPanel.sizeDelta = new Vector2(508, 220);
         statusLabel.rectTransform.anchoredPosition = new Vector2(0, -half + 63);
         archiveFooter.rectTransform.anchoredPosition = new Vector2(0, -half + 26);
     }
@@ -159,7 +160,7 @@ public partial class NotebookWorkspaceController
         targetCount.text = "TOPLANAN HEDEFLER (" + targets.Count + ")";
         if (IsArchiveNotebook)
         {
-            int pages = Mathf.Max(1, (targets.Count + 1) / 2);
+            int pages = Mathf.Max(1, targets.Count);
             targetArchivePage = Mathf.Clamp(targetArchivePage, 0, pages - 1);
             if (targetPanel.gameObject.activeSelf)
             {
@@ -172,13 +173,11 @@ public partial class NotebookWorkspaceController
                 var empty = Label(targetContent, "Kitaptaki hedef notunu deftere bırak.\nTopladığın hedefler bu sayfalarda saklanır.", Vector2.zero, new Vector2(450, 110), 17);
                 Top(empty.rectTransform, new Vector2(0, -20));
             }
-            for (int slot = 0; slot < 2; slot++)
+            if (targetArchivePage < targets.Count)
             {
-                int index = targetArchivePage * 2 + slot;
-                if (index >= targets.Count) break;
-                var block = CreateBlock(targets[index], false, targetContent);
-                var rect = (RectTransform)block.transform; rect.sizeDelta = new Vector2(UsesNotebookSkin ? 218 : 234, UsesNotebookSkin ? 240 : 200);
-                Top(rect, new Vector2(slot == 0 ? -(UsesNotebookSkin ? 116 : 125) : (UsesNotebookSkin ? 116 : 125), UsesNotebookSkin ? -58 : -10)); ApplyArchiveNotePose(rect, targets[index]);
+                var block = CreateBlock(targets[targetArchivePage], false, targetContent);
+                var rect = (RectTransform)block.transform; rect.sizeDelta = new Vector2(440, 380);
+                Top(rect, new Vector2(0, -12)); ApplyArchiveNotePose(rect, targets[targetArchivePage]);
             }
             if (UsesNotebookSkin) ShowEmptyArchivePaper(targetPanel, targets.Count == 0);
             return;

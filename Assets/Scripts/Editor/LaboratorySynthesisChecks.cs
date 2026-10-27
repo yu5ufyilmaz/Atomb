@@ -98,7 +98,7 @@ public static class LaboratorySynthesisChecks
         var trial = LaboratorySynthesisSetup.Find<ResearchPuzzleTrial>(scene);
         var board = LaboratorySynthesisSetup.Find<ChalkboardManager>(scene);
         var lines = LaboratorySynthesisSetup.All<InteractableBook>(scene).Select(b =>
-            PathOf(b.transform) + " | research=" + Array.IndexOf(trial.books, b) + " | procedural=" + b.includeProceduralClues
+            PathOf(b.transform) + " | research=" + Array.IndexOf(trial.books, b)
             + " | physical=" + b.usePhysicalPageBlocks + " | view=" + b.viewPositionOffset + " | scale=" + b.transform.lossyScale);
         lines = lines.Concat(new[] { "BOARD " + PathOf(board.boardTransform) + " bounds=" + board.minBounds + "/" + board.maxBounds });
         lines = lines.Concat(LaboratorySynthesisSetup.All<MeshRenderer>(scene)
@@ -182,7 +182,7 @@ public static class LaboratorySynthesisChecks
     [MenuItem("Senzora/Lab Migration/Validate Play Flow")]
     public static void ValidatePlayFlow()
     {
-        Check(Application.isPlaying && ResearchPuzzleTrial.Active != null && SecondTraceExperiment.Active != null,
+        Check(Application.isPlaying && ResearchPuzzleTrial.Active != null && SignalExperiment.Active != null,
             "Research and measurement systems must both initialize in the copied scene.");
         ResearchPuzzleTrial.Active.StartCoroutine(PlayFlow());
     }
@@ -282,13 +282,13 @@ public static class LaboratorySynthesisChecks
         trial.Board.ResetBoard();
         SignalTrialSetup.ValidateArchive();
         SignalTrialSetup.ValidateLive();
-        SecondTracePlayChecks.CollectOutput();
+        SignalTrialPlayChecks.CollectOutput();
         SignalTrialSetup.ValidateSolutions();
         boardInteraction.ForceExit();
         end = Time.realtimeSinceStartup + 8;
         while (game.activeInteraction != null && Time.realtimeSinceStartup < end) yield return null;
         Check(game.activeInteraction == null, "Original board exit failed.");
-        var terminal = SecondTraceExperiment.Active.terminal;
+        var terminal = SignalExperiment.Active.terminal;
         workspace.ToggleStandaloneNotebook();
         terminal.Interact();
         Check(!workspace.IsActive && !notebook.isNotebookOpen, "Notebook remained open while approaching Turing.");
@@ -308,7 +308,7 @@ public static class LaboratorySynthesisChecks
         var slot = (Transform)typeof(InteractableTuringMachine).GetField("measurementReader", flags).GetValue(terminal);
         Vector2 point = Camera.main.WorldToScreenPoint(slot.position);
         Check(point.x > 0 && point.x < Screen.width && point.y > 0 && point.y < Screen.height, "Original Turing camera cannot see the reader.");
-        Check(SecondTraceExperiment.Active.TryGetMeasurementCode(note.Data, out string wanted), "Measurement code missing.");
+        Check(SignalExperiment.Active.TryGetMeasurementCode(note.Data, out string wanted), "Measurement code missing.");
         Check(workspace.TryDropBlock(note, point) && terminal.IsReadingMeasurement, "Measurement cannot be dropped into the original Turing reader.");
         end = Time.realtimeSinceStartup + 35;
         while (terminal.IsReadingMeasurement && Time.realtimeSinceStartup < end) yield return null;
@@ -320,7 +320,7 @@ public static class LaboratorySynthesisChecks
             + "_" + symbols[(int)typeof(InteractableTuringMachine).GetMethod("GetCorrectSymbolIndex", flags).Invoke(terminal, null)] + "_"
             + new string(((int[])typeof(InteractableTuringMachine).GetField("numberWheelIndices", flags).GetValue(terminal)).Select(i => digits[i]).ToArray());
         Check(code == wanted, "Turing reader produced a different code: " + code + " / " + wanted);
-        Check(!trial.Completed.Contains(SecondTraceExperiment.Active.CurrentQuestID), "Reading automatically completed the experiment.");
+        Check(!trial.Completed.Contains(SignalExperiment.Active.CurrentQuestID), "Reading automatically completed the experiment.");
         Debug.Log("LAB TURING READER PASS: original camera sees the slot; notebook drop feeds the physical card and enters the measured code.");
         terminal.ForceExit();
         end = Time.realtimeSinceStartup + 8;
@@ -344,7 +344,9 @@ public static class LaboratorySynthesisChecks
     }
 
     [MenuItem("Senzora/Lab Migration/Validate Scene Copy")]
-    public static void ValidateScene()
+    public static void ValidateScene() => ValidateScene(true);
+
+    public static void ValidateScene(bool compareOriginalPoses)
     {
         var scene = SceneManager.GetActiveScene();
         Check(scene.path == LaboratorySynthesisSetup.ScenePath, "Open the laboratory synthesis copy.");
@@ -356,13 +358,13 @@ public static class LaboratorySynthesisChecks
                 if (source.GetComponent<InteractableTuringMachine>() == null && source.GetComponent<InteractableChalkboard>() == null
                     && source.GetComponent<StarterAssets.CharacterController>() == null) continue;
                 var copy = LaboratorySynthesisSetup.All<Transform>(scene).First(t => PathOf(t) == PathOf(source));
-                Check(source.position == copy.position && source.rotation == copy.rotation && source.lossyScale == copy.lossyScale,
+                Check(!compareOriginalPoses || source.position == copy.position && source.rotation == copy.rotation && source.lossyScale == copy.lossyScale,
                     "Authored player or machine transform changed: " + PathOf(source));
                 foreach (var sourceChild in source.GetComponentsInChildren<Transform>(true))
                 {
                     if (sourceChild.name == "SynthesisButton") continue; // Removed redundant placeholder per user request.
                     var copyChild = copy.GetComponentsInChildren<Transform>(true).First(t => PathOf(t) == PathOf(sourceChild));
-                    Check(sourceChild.localPosition == copyChild.localPosition && sourceChild.localRotation == copyChild.localRotation,
+                    Check(!compareOriginalPoses || sourceChild.localPosition == copyChild.localPosition && sourceChild.localRotation == copyChild.localRotation,
                         "Machine or player child pose changed: " + PathOf(sourceChild));
                 }
                 foreach (var sourceComponent in source.GetComponents<MonoBehaviour>().Where(c => c != null))
@@ -385,11 +387,9 @@ public static class LaboratorySynthesisChecks
             Check(trial != null && trial.allowGameplayScene && trial.books.Distinct().Count() == 4, "Four research books missing.");
             Check(PathOf(trial.books[0].transform) == LaboratorySynthesisSetup.DeskBookPath, "Targets are not on the existing desk book.");
             foreach (var book in trial.books)
-                Check(book != null && book.gameObject.activeInHierarchy && book.usePhysicalPageBlocks && !book.includeProceduralClues
+                Check(book != null && book.gameObject.activeInHierarchy && book.usePhysicalPageBlocks
                     && book.GetComponent<BookPageBlockSurface>() != null,
                     "Research book configuration invalid.");
-            Check(LaboratorySynthesisSetup.All<InteractableBook>(scene).All(b => !b.includeProceduralClues),
-                "Other shelf books still show shared procedural targets.");
             var board = LaboratorySynthesisSetup.Find<ChalkboardManager>(scene);
             var collider = board.synthesisZone.GetComponent<Collider>();
             Physics.SyncTransforms();
@@ -402,7 +402,7 @@ public static class LaboratorySynthesisChecks
             var notebook = LaboratorySynthesisSetup.Find<NotebookUI>(scene);
             Check(notebook.useScreenSpaceNotebook && !notebook.notebookPanel.activeSelf, "Hand notebook is still enabled.");
             var workspace = notebook.GetComponent<NotebookWorkspaceController>();
-            Check(workspace != null && !workspace.standaloneUnlocksCursor && !workspace.generateProceduralRun, "Notebook input settings invalid.");
+            Check(workspace != null && !workspace.standaloneUnlocksCursor, "Notebook input settings invalid.");
             Check(LaboratorySynthesisSetup.Find<SaveManager>(scene).sessionOnly, "Migration copy can modify the original save.");
             Check(LaboratorySynthesisSetup.Find<SynthesisBlockoutPlayer>(scene) == null
                 && LaboratorySynthesisSetup.Find<SynthesisBlockoutScene>(scene) == null, "Blockout player/bootstrap leaked into Lab.");

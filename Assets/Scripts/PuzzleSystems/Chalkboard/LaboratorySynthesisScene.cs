@@ -13,7 +13,7 @@ public sealed class LaboratorySynthesisScene : MonoBehaviour
 
     private void Start()
     {
-        if (!GetComponent<ResearchPuzzleTrial>().Configure(null))
+        if (!GetComponent<ResearchPuzzleTrial>().Configure())
             Debug.LogError("Laboratuvar araştırma bağlantıları eksik.", this);
         // ScreenPointToRay uses the camera projection before post-processing distortion.
         // A local override keeps printed pages and chalk under the pointer without changing walking effects.

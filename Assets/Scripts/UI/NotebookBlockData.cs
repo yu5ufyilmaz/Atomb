@@ -26,17 +26,25 @@ public class NotebookBlockData
     public string title;
     public string description;
     public string measurementCode;
+    public string measurementSessionID;
+    public string puzzleFingerprint;
     public int ruleIndex = -1;
     public Vector2 position;
     public float rotation;
     public int sketchVariant;
+    [Tooltip("Kitap sayfasındaki 0..1 UV alanı; sıfır boyut eski otomatik yerleşimi kullanır.")]
+    public Rect bookRegion;
+    public List<PuzzleResearchReference> sourceReferences = new List<PuzzleResearchReference>();
     [Tooltip("Kitaptan kırpılan gerçek görüntünün kaynağı (BookClueData.ID); boşsa metin kartı çizilir.")]
     public string clueDataID;
     public int clueRegionIndex = -1;
 
     public NotebookBlockData Clone()
     {
-        return (NotebookBlockData)MemberwiseClone();
+        var copy = (NotebookBlockData)MemberwiseClone();
+        copy.sourceReferences = new List<PuzzleResearchReference>();
+        if (sourceReferences != null) foreach (var source in sourceReferences) copy.sourceReferences.Add(source.Clone());
+        return copy;
     }
 }
 

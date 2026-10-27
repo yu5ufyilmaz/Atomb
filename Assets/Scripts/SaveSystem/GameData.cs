@@ -21,11 +21,6 @@ public class GameData
     public float remainingGlobalCooldown;
     public float savedPressure;
 
-    // Sembol verileri
-    public bool isSymbolInWorld;
-    public int spawnedSymbolID;
-    public int spawnedSymbolLocationIndex;
-
     // ==========================================
     // YENİ EKLENENLER: ELEKTRİK VE IŞIK SİSTEMİ
     // ==========================================
@@ -33,20 +28,15 @@ public class GameData
     public int breakerCycleCount;
     public List<LightSaveData> savedLights = new List<LightSaveData>();
 
-    public List<string> inventoryItemIDs = new List<string>();
 
-    // Eski kayıt dosyalarında null kalır; ilk çalışma alanı açılışında yeni koşu üretilir.
-    public SynthesisRunData synthesisRun;
     public SynthesisBoardSaveData savedChalkboard;
+    public PuzzleSessionData puzzleSession;
 
     [Header("Defter Çalışma Alanı")]
     public List<NotebookPageSaveData> notebookPages = new List<NotebookPageSaveData>();
     public List<NotebookBlockData> notebookQuests = new List<NotebookBlockData>();
     public int currentNotebookPage;
-    public List<string> notebookResearch = new List<string>();
 
-    // ESKİ: public int spawnedSymbolID;
-    public string spawnedItemID = "";
 
     public GameData()
     {
@@ -58,9 +48,6 @@ public class GameData
         isBreakerTripped = false;
         breakerCycleCount = 0;
         savedPressure = 0f;
-        isSymbolInWorld = false;
-        spawnedSymbolID = -1;
-        spawnedSymbolLocationIndex = -1;
     }
 
     [System.Serializable]
@@ -69,7 +56,6 @@ public class GameData
         public string objectName;
         public string password;
         public int locationIndex;
-        public bool isPuzzleBook;
     }
 
     [System.Serializable]

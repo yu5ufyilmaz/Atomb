@@ -10,8 +10,6 @@ public partial class NotebookWorkspaceController : MonoBehaviour
 {
     public static NotebookWorkspaceController Instance { get; private set; }
     [Header("Prototip Ayarları")]
-    [Tooltip("Kapalıysa çalışma alanı yalnız kitaptaki sabit blokları kullanır.")]
-    public bool generateProceduralRun = true;
     [SerializeField] private Sprite notebookSprite;
     [SerializeField] private Sprite notePaperSprite;
     [SerializeField] private TMP_FontAsset notebookHeadingFont;
@@ -43,7 +41,7 @@ public partial class NotebookWorkspaceController : MonoBehaviour
     private GameObject boardControls;
     private TextMeshProUGUI boardFeedback;
     private InteractableBook activeBook;
-    private int clueChapter, displayedStage = -1, displayedSeed;
+    private int clueChapter;
     private readonly List<NotebookDraggableBlock> pageBlocks = new List<NotebookDraggableBlock>();
     private readonly Color paper = new Color(0.89f, 0.85f, 0.72f);
     private readonly Color ink = new Color(0.13f, 0.15f, 0.13f);
@@ -53,10 +51,10 @@ public partial class NotebookWorkspaceController : MonoBehaviour
         if (Instance != null && Instance != this) { Destroy(this); return; }
         Instance = this;
         notebook = GetComponent<NotebookUI>();
-        if (ProceduralSynthesisGenerator.Instance == null)
-            gameObject.AddComponent<ProceduralSynthesisGenerator>();
+        if (FormulaCatalog.Instance == null)
+            gameObject.AddComponent<FormulaCatalog>();
         if (notebook != null && notebook.notebookData != null)
-            ProceduralSynthesisGenerator.Instance.RegisterCatalog(notebook.notebookData.synthesisCatalog);
+            FormulaCatalog.Instance.RegisterCatalog(notebook.notebookData.synthesisCatalog);
     }
 
     private void OnDestroy()
@@ -85,10 +83,8 @@ public partial class NotebookWorkspaceController : MonoBehaviour
         }
         activeBook = book;
         if (archiveFooter != null && IsArchiveNotebook) archiveFooter.text = "NOTU SÜRÜKLE  /  ASLI DEFTERDE KALIR";
-        if (generateProceduralRun) ProceduralSynthesisGenerator.Instance.EnsureRun();
         bookWindow.gameObject.SetActive(book != null && !book.usePhysicalPageBlocks
-            && (book.includeProceduralClues || book.synthesisPages.Count > 0));
-        clueChapter = Mathf.Clamp(ProceduralSynthesisGenerator.Instance.Run != null ? ProceduralSynthesisGenerator.Instance.Run.currentStage : 0, 0, 4);
+            && book.synthesisPages.Count > 0);
         if (ChalkboardManager.Instance != null)
         {
             ChalkboardManager.Instance.SynthesisFeedback -= ShowFeedback;
@@ -101,11 +97,13 @@ public partial class NotebookWorkspaceController : MonoBehaviour
         RefreshPage();
         RefreshBook(book);
         RefreshPinnedQuest();
+        RefreshResearchControls();
         openingNotebook = false;
     }
 
     public void Close()
     {
+        if (researchControls != null) ChalkboardManager.Instance?.EnsureDocuments()?.SetScreenControlsActive(false);
         ResetNotebookPageTurn();
         bool restoreCursor = IsStandaloneOpen;
         IsStandaloneOpen = false;
@@ -151,17 +149,10 @@ public partial class NotebookWorkspaceController : MonoBehaviour
         if (IsPaused) ResetNotebookPageTurn();
         else
         {
+            if (IsArchiveNotebook && !IsStandaloneOpen && Input.GetKeyDown(KeyCode.Tab)) ToggleNotebook();
             UpdateNotebookPopup(Time.unscaledDeltaTime);
             UpdateNotebookPageTurn(Time.unscaledDeltaTime);
-        }
-        var generator = ProceduralSynthesisGenerator.Instance;
-        if (generator != null && generator.Run != null
-            && (displayedStage != generator.Run.currentStage || displayedSeed != generator.Run.seed))
-        {
-            displayedStage = generator.Run.currentStage;
-            displayedSeed = generator.Run.seed;
-            RefreshPinnedQuest();
-            if (activeBook != null) RefreshBook(activeBook);
+            RefreshResearchControls();
         }
     }
 
@@ -265,7 +256,7 @@ public partial class NotebookWorkspaceController : MonoBehaviour
         boardControls = controls.gameObject;
         Label(controls, IsArchiveNotebook ? "Gövdeyi sürükle: taşı • Uçları bağla\nBoşlukta çiz • Sağ tık: tahtadan kaldır"
             : "Sol tık: çiz / uçları bağla\nSağ tık: sil • Yazılar sabittir", new Vector2(-164, 25), new Vector2(365, 42), 16);
-        Button(controls, SecondTraceExperiment.Active != null ? "DENEYİ ÖLÇ" : "SENTEZLE / TEST ET", new Vector2(199, 25), new Vector2(280, 34), () => ChalkboardManager.Instance?.AttemptSynthesis());
+        Button(controls, SignalExperiment.Active != null ? "DENEYİ ÖLÇ" : "SENTEZLE / TEST ET", new Vector2(199, 25), new Vector2(280, 34), () => ChalkboardManager.Instance?.AttemptSynthesis());
         boardFeedback = Label(controls, "Boş tahtada çiz; uçtan uca bağla. İkinci bağ çizimi çift bağ yapar.", new Vector2(0, -22), new Vector2(700, 43), 16);
         root.SetActive(false);
     }
@@ -348,7 +339,7 @@ public partial class NotebookWorkspaceController : MonoBehaviour
             : targets ? targetArchivePage : partsArchivePage;
         int count = information ? InformationNotes(showingSolutions).Count
             : targets ? notebook.EnsureCollectedQuests().Count : ArchivedParts().Count;
-        int perPage = information || targets ? 2 : PartsPerPage;
+        int perPage = information ? 2 : targets ? 1 : PartsPerPage;
         int pages = Mathf.Max(1, (count + perPage - 1) / perPage);
         int next = Mathf.Clamp(previous + delta, 0, pages - 1);
         if (next == previous) return;
@@ -467,15 +458,15 @@ public partial class NotebookWorkspaceController : MonoBehaviour
         {
             if (block.IsSource) StoreArchiveNote(block.Data);
             ShowNotebookView(block.Data.blockType == NotebookBlockType.Quest ? NotebookView.Targets
-                : SecondTraceExperiment.IsMeasurementNote(block.Data) ? NotebookView.Solutions
+                : SignalExperiment.IsMeasurementNote(block.Data) ? NotebookView.Solutions
                 : block.Data.blockType == NotebookBlockType.RuleClue ? NotebookView.Information : NotebookView.Notes);
             if (block.Data.blockType == NotebookBlockType.PartClue) ShowCollectedPart(block.Data.itemID);
-            if (SecondTraceExperiment.IsMeasurementNote(block.Data))
+            if (SignalExperiment.IsMeasurementNote(block.Data))
                 solutionsArchivePage = Mathf.Max(0, InformationNotes(true).FindIndex(n => SameInformation(n, block.Data))) / 2;
             else if (block.Data.blockType == NotebookBlockType.RuleClue)
                 informationArchivePage = Mathf.Max(0, InformationNotes().FindIndex(n => SameInformation(n, block.Data))) / 2;
             if (block.Data.blockType == NotebookBlockType.Quest)
-                targetArchivePage = Mathf.Max(0, notebook.EnsureCollectedQuests().FindIndex(n => n.questID == block.Data.questID)) / 2;
+                targetArchivePage = Mathf.Max(0, notebook.EnsureCollectedQuests().FindIndex(n => n.questID == block.Data.questID));
             RefreshPage();
             ShowFeedback("Kayıt arşivde saklanır. Tahtaya sürüklediğinde bir kopyasını kullanırsın.", true);
             return true;
@@ -541,7 +532,7 @@ public partial class NotebookWorkspaceController : MonoBehaviour
             }
             return true;
         }
-        var experiment = SecondTraceExperiment.Active;
+        var experiment = SignalExperiment.Active;
         if (!block.IsSource && experiment != null && experiment.terminal != null
             && GameManager.Instance != null && GameManager.Instance.activeInteraction == experiment.terminal)
         {
@@ -572,7 +563,7 @@ public partial class NotebookWorkspaceController : MonoBehaviour
         if (IsWorkspaceAt(screenPosition)) return false;
         if (block.Data.blockType == NotebookBlockType.PartClue)
         {
-            var formula = ProceduralSynthesisGenerator.Instance.ResolveFormula(block.Data.itemID);
+            var formula = FormulaCatalog.Instance.ResolveFormula(block.Data.itemID);
             return formula != null && board.SpawnFormula(formula, screenPosition) != null;
         }
         if (block.Data.blockType == NotebookBlockType.Quest && board.TryGetBoardPoint(screenPosition, out _))
@@ -705,9 +696,9 @@ public partial class NotebookWorkspaceController : MonoBehaviour
         for (int i = bookContent.childCount - 1; i >= 0; i--) Destroy(bookContent.GetChild(i).gameObject);
         var header = bookWindow.GetComponentInChildren<DraggableWorkspaceItem>();
         if (header != null) header.worldTarget = book.transform;
-        chapterLabel.text = book.includeProceduralClues ? $"SENTEZ DOSYASI {clueChapter + 1} / 5" : "SABİT TEST BLOKLARI";
+        chapterLabel.text = "ARAŞTIRMA NOTLARI";
         float y = 12;
-        string explanation = "Araştırma arşivi. Hedef şemadaki [?] yuvalarını parça ve kural bloklarından çöz. Önceki sentez çıktısı sonraki aşamada kullanılır.\n";
+        string explanation = "Araştırma arşivi. Hedefi, parça atlasını ve deney gözlemlerini karşılaştır.\n";
         if (book.synthesisPages != null)
             foreach (var printed in book.synthesisPages)
                 if (printed != null && book.IsOnPage(printed.pageIndex)) explanation += printed.title + "\n" + printed.explanation + "\n";
@@ -717,35 +708,6 @@ public partial class NotebookWorkspaceController : MonoBehaviour
                 if (printed != null && book.IsOnPage(printed.pageIndex) && printed.blocks != null)
                     foreach (var data in printed.blocks) AddSource(data, ref y);
 
-        var generator = ProceduralSynthesisGenerator.Instance;
-        if (book.includeProceduralClues && generator.Run != null && generator.Run.quests.Count > clueChapter)
-        {
-            var quest = generator.Run.quests[clueChapter];
-            AddSource(new NotebookBlockData { blockType = NotebookBlockType.Quest, questID = quest.questID, title = quest.title, description = "Bilinmeyen modülleri kural ipuçlarından çöz." }, ref y);
-            for (int i = 0; i < quest.rules.Count; i++)
-                AddSource(new NotebookBlockData { blockType = NotebookBlockType.RuleClue, questID = quest.questID, ruleIndex = i, title = "KURAL " + (i + 1), description = quest.rules[i].GetDescription() }, ref y);
-            var produced = new HashSet<string>();
-            foreach (var stage in generator.Run.quests) produced.Add(stage.outputItemID);
-            foreach (var formula in generator.formulaCatalog)
-            {
-                if (formula == null || produced.Contains(formula.itemID)) continue;
-                AddPrintedText(formula.isDecoy ? "UYARI: Bu modül kararsızdır; deney yapısında kullanmayın." : formula.description, ref y);
-                AddSource(PartBlock(formula), ref y);
-            }
-            bool archiveHeading = false;
-            foreach (var stage in generator.Run.quests)
-            {
-                if (!stage.completed) continue;
-                var output = generator.ResolveFormula(stage.outputItemID);
-                if (output == null) continue;
-                if (!archiveHeading)
-                {
-                    AddPrintedText("SENTEZ ARŞİVİ\nTamamladığınız aşamaların ürünlerini kaybettiğinizde buradan tekrar deftere alabilirsiniz.", ref y);
-                    archiveHeading = true;
-                }
-                AddSource(PartBlock(output), ref y);
-            }
-        }
         bookContent.sizeDelta = new Vector2(0, y + 12);
         bookContent.anchoredPosition = Vector2.zero;
     }
@@ -755,7 +717,7 @@ public partial class NotebookWorkspaceController : MonoBehaviour
     {
         var practice = ChalkboardManager.Instance != null ? ChalkboardManager.Instance.FindPracticeQuest(id) : null;
         if (practice != null) return practice.CreateQuest();
-        return ProceduralSynthesisGenerator.Instance?.Run?.quests.Find(q => q.questID == id);
+        return null;
     }
 
     private void AddSource(NotebookBlockData data, ref float y)

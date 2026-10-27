@@ -105,7 +105,7 @@ public class SynthesisBlockoutPlayer : MonoBehaviour
             : "SENTEZ BLOCKOUT / SADECE ETKİLEŞİM TESTİ\nWASD: yürü | Fare: bak | Sol tık: etkileş\n1: kitap | 2: tahta | F: etkileşimden çık | Esc: çık";
         var research = ResearchPuzzleTrial.Active;
         if (research != null) controls += "\nAraştırma sonuçları: " + research.Completed.Count + " / " + research.Content.Quests.Count
-            + (SecondTraceExperiment.Active != null ? "  |  6: Turing deneme kopyası" : "  |  Hedef değişince tahta çalışman saklanır.");
+            + (SignalExperiment.Active != null ? "  |  6: Turing deneme kopyası" : "  |  Hedef değişince tahta çalışman saklanır.");
         GUI.Box(new Rect(12, 12, 680, research != null ? 96 : 76), controls);
         if (session == null)
         {

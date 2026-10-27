@@ -51,13 +51,11 @@ public class NotebookUI : MonoBehaviour, ISaveable
     private enum NotebookCategory
     {
         Passwords = 0,
-        Research = 1,
-        Logs = 2,
+        Logs = 1,
     }
 
     private int currentCategoryIndex = 0;
     private int currentTutorialPage = 0;
-    private string currentSymbolInfo = "No active research found in the field.";
 
     public bool isNotebookOpen = false;
     public bool isOnMachine = false;
@@ -226,7 +224,6 @@ public class NotebookUI : MonoBehaviour, ISaveable
         foreach (var page in workspacePages) data.notebookPages.Add(page.Clone());
         data.notebookQuests = collectedQuests.ConvertAll(q => q.Clone());
         data.currentNotebookPage = currentWorkspacePage;
-        data.notebookResearch = new List<string>(unlockedSymbols);
     }
 
     public void LoadData(GameData data)
@@ -239,7 +236,6 @@ public class NotebookUI : MonoBehaviour, ISaveable
             foreach (var page in data.notebookPages)
                 workspacePages.Add(page != null ? page.Clone() : new NotebookPageSaveData());
         currentWorkspacePage = data.currentNotebookPage;
-        unlockedSymbols = data.notebookResearch != null ? new List<string>(data.notebookResearch) : new List<string>();
         EnsureWorkspacePage();
         EnsureCollectedQuests();
         if (workspace != null) workspace.RefreshPage();
@@ -251,7 +247,6 @@ public class NotebookUI : MonoBehaviour, ISaveable
         collectedQuests = new List<NotebookBlockData>();
         workspacePages = new List<NotebookPageSaveData> { new NotebookPageSaveData() };
         currentWorkspacePage = 0;
-        unlockedSymbols.Clear();
         if (workspace != null) workspace.RefreshPage();
     }
 
@@ -317,24 +312,6 @@ public class NotebookUI : MonoBehaviour, ISaveable
         }
     }
 
-    private List<string> unlockedSymbols = new List<string>();
-
-    public void UnlockSymbolResearch(int symbolID)
-    {
-        if (notebookData != null)
-        {
-            string newInfo = notebookData.GetSymbolDescription(symbolID);
-            // Listeye ekleme mantığımız (önceki düzeltmeden gelen)
-            if (!unlockedSymbols.Contains(newInfo))
-            {
-                unlockedSymbols.Add(newInfo);
-            }
-        }
-
-        // 1 = Research (Sembol) kategorisi
-        OpenNotebookToCategory(1);
-    }
-
     private void ShowTutorial()
     {
         if (notebookData == null || notebookData.tutorialPages.Count == 0)
@@ -366,27 +343,6 @@ public class NotebookUI : MonoBehaviour, ISaveable
                 if (categoryTitleText != null)
                     categoryTitleText.text = "DISCOVERED CLUES";
                 ShowPasswords();
-                break;
-            case NotebookCategory.Research:
-                if (categoryTitleText != null)
-                    categoryTitleText.text = "SYMBOL ANALYSIS";
-
-                if (contentText != null)
-                {
-                    if (unlockedSymbols.Count == 0)
-                    {
-                        contentText.text = "No active research found in the field.";
-                    }
-                    else
-                    {
-                        string allSymbols = "";
-                        foreach (var sym in unlockedSymbols)
-                        {
-                            allSymbols += "> " + sym + "\n\n";
-                        }
-                        contentText.text = allSymbols;
-                    }
-                }
                 break;
             case NotebookCategory.Logs:
                 ShowTutorial();

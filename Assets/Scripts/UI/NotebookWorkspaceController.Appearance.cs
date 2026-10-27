@@ -57,11 +57,11 @@ public partial class NotebookWorkspaceController
         StyleNotebookDivider(close, false, true);
         notebookToggle.GetComponent<Image>().sprite = null;
         notebookToggle.GetComponent<Image>().color = new Color(.09f, .12f, .10f, .95f);
-        notebookToggle.sizeDelta = new Vector2(192, 44);
         notebookToggleText.font = notebookHeadingFont; notebookToggleText.fontSize = 15;
-        notebookToggleText.rectTransform.sizeDelta = new Vector2(180, 40);
+        notebookToggleText.rectTransform.sizeDelta = new Vector2(200, 44);
         notebookToggleText.color = new Color(.82f, .84f, .78f);
-        notebookToggle.gameObject.SetActive(!notebookExpanded);
+        if (documentToggleText != null) documentToggleText.font = notebookHeadingFont;
+        notebookToggle.gameObject.SetActive(true);
         pageLabel.font = notebookHeadingFont; pageLabel.color = NotebookInk;
         statusLabel.font = notebookBodyFont; statusLabel.color = NotebookInk;
         archiveFooter.font = notebookBodyFont; archiveFooter.color = NotebookInk;
@@ -159,13 +159,13 @@ public partial class NotebookWorkspaceController
     }
 
     private bool UsesHandwriting(NotebookDraggableBlock block) => !block.IsSource && notebookHandwritingFont != null
-        && !SecondTraceExperiment.IsMeasurementNote(block.Data);
+        && !SignalExperiment.IsMeasurementNote(block.Data);
 
     private void ApplyArchiveNotePose(RectTransform rect, NotebookBlockData note)
     {
         int hash = 17;
         foreach (char c in note.title ?? "") hash = unchecked(hash * 31 + c);
-        float angle = UsesNotebookSkin && notebookHandwritingFont != null && !SecondTraceExperiment.IsMeasurementNote(note)
+        float angle = UsesNotebookSkin && notebookHandwritingFont != null && !SignalExperiment.IsMeasurementNote(note)
             ? ((hash & 255) / 255f - .5f) * 1.4f : 0;
         rect.localRotation = Quaternion.Euler(0, 0, angle);
     }
@@ -201,24 +201,32 @@ public partial class NotebookWorkspaceController
             label.fontSizeMin = handwritten ? heading ? 21 : 16 : heading ? bookSource ? 16 : 13 : notebookCard || bookSource ? 14 : 11;
             label.fontSizeMax = handwritten ? heading ? 27 : 24 : bookSource ? heading ? 22 : 18 : 16;
             label.fontSize = label.fontSizeMax; label.enableAutoSizing = true;
-            if (heading && handwritten) label.text = block.Data.title;
-            if (heading) { label.rectTransform.offsetMin = new Vector2(14, -50); label.rectTransform.offsetMax = new Vector2(-14, -16); }
+            if (heading && handwritten) label.text = block.DisplayTitle;
+            if (heading)
+            {
+                bool part = block.Data.blockType == NotebookBlockType.PartClue && PuzzleParts.Find(block.Data.itemID) != null;
+                label.rectTransform.offsetMin = new Vector2(14, part ? -66 : -50);
+                label.rectTransform.offsetMax = new Vector2(-14, part ? -10 : -16);
+            }
         }
         var body = block.transform.Find("Açıklama")?.GetComponent<TMP_Text>();
-        var drawing = block.GetComponentInChildren<SignalTrialGraphic>();
+        var trace = block.GetComponentInChildren<SignalTrialGraphic>();
+        RectTransform drawing = trace != null ? trace.rectTransform : block.GetComponentInChildren<MixtureGraphic>()?.rectTransform;
         var target = block.GetComponentInChildren<QuestDiagramGraphic>();
         if (body != null && drawing != null && block.Data.blockType != NotebookBlockType.Quest)
         {
             bool part = block.Data.blockType == NotebookBlockType.PartClue;
             body.rectTransform.anchorMax = new Vector2(1, part ? .36f : .30f);
             body.rectTransform.offsetMin = new Vector2(12, 10); body.rectTransform.offsetMax = new Vector2(-12, 0);
-            drawing.rectTransform.anchorMin = new Vector2(.06f, part ? .42f : .36f); drawing.rectTransform.anchorMax = new Vector2(.94f, .72f);
+            drawing.anchorMin = new Vector2(.06f, part ? .42f : .36f); drawing.anchorMax = new Vector2(.94f, part ? .64f : .72f);
         }
         else if (body != null && target != null)
         {
-            body.rectTransform.anchorMax = new Vector2(1, .40f);
+            body.rectTransform.anchorMax = new Vector2(1, .52f);
             body.rectTransform.offsetMin = new Vector2(12, 10); body.rectTransform.offsetMax = new Vector2(-12, 0);
-            target.rectTransform.anchorMin = new Vector2(.06f, .46f); target.rectTransform.anchorMax = new Vector2(.94f, .74f);
+            body.fontSizeMin = 13; body.fontSizeMax = 18;
+            body.overflowMode = TextOverflowModes.Ellipsis;
+            target.rectTransform.anchorMin = new Vector2(.06f, .56f); target.rectTransform.anchorMax = new Vector2(.94f, .80f);
         }
         else if (body != null)
         {

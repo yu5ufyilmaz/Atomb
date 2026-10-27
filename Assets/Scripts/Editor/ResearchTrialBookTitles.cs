@@ -88,7 +88,7 @@ public static class ResearchTrialBookTitles
     public static bool Apply(ResearchPuzzleTrial trial)
     {
         if (EditorApplication.isPlayingOrWillChangePlaymode || trial == null
-            || (trial.gameObject.scene.path != ScenePath && !trial.allowGameplayScene) || trial.books == null || trial.books.Length != 4) return false;
+            || (trial.gameObject.scene.path != ScenePath && !trial.allowGameplayScene) || trial.books == null) return false;
         var material = AssetDatabase.LoadAssetAtPath<Material>("Assets/Materials/SynthesisBlockout/Blockout_Tahta.mat");
         var sample = trial.GetComponentInChildren<TextMeshPro>(true);
         var font = sample != null ? sample.font : TMP_Settings.defaultFontAsset;
@@ -109,17 +109,62 @@ public static class ResearchTrialBookTitles
                 if (!SurfaceBounds(renderer, baked, cover, out var coverBounds)
                     || !SurfaceBounds(renderer, baked, spine, out var spineBounds))
                 { Debug.LogError("Kitabın kapak yüzeyi bulunamadı.", book); return false; }
-                Plate(cover, "Araştırma Kitap Adı / Kapak", Titles[i].Replace(" ", "\n"), coverBounds,
+                string title = book.TryGetComponent<PuzzleBookIdentity>(out var identity) && !string.IsNullOrWhiteSpace(identity.title) ? identity.title : Titles[i % Titles.Length];
+                Plate(cover, "Araştırma Kitap Adı / Kapak", title, coverBounds,
                     new Vector2(coverBounds.size.y * 0.78f, coverBounds.size.x * 0.55f), 90, material, font);
-                Plate(spine, "Araştırma Kitap Adı / Sırt", Titles[i], spineBounds,
+                Plate(spine, "Araştırma Kitap Adı / Sırt", title, spineBounds,
                     new Vector2(spineBounds.size.x * 0.80f, spineBounds.size.y * 0.65f), 0, material, font);
                 if (i == 0) Debug.Log($"RESEARCH BOOK TITLES: cover bone bounds {coverBounds}; spine bone bounds {spineBounds}.", book);
             }
             finally { Object.DestroyImmediate(baked); }
         }
         EditorSceneManager.MarkSceneDirty(trial.gameObject.scene);
+        ApplyShelfSigns(trial, material, font);
         Debug.Log("Araştırma kitaplarının kapak ve sırt başlıkları test sahnesine eklendi.", trial);
         return true;
+    }
+
+    private static void ApplyShelfSigns(ResearchPuzzleTrial trial, Material material, TMP_FontAsset font)
+    {
+        var groups = new Dictionary<Transform, List<InteractableBook>>();
+        foreach (var book in trial.books)
+        {
+            var shelf = book.transform.parent;
+            while (shelf != null && !shelf.name.StartsWith("RAF")) shelf = shelf.parent;
+            if (shelf == null) continue;
+            if (!groups.ContainsKey(shelf)) groups[shelf] = new List<InteractableBook>();
+            groups[shelf].Add(book);
+        }
+        foreach (var group in groups)
+        {
+            var bounds = new Bounds(group.Value[0].transform.position, Vector3.zero);
+            foreach (var book in group.Value) foreach (var collider in book.GetComponentsInChildren<Collider>()) bounds.Encapsulate(collider.bounds);
+            var holder = Child(group.Key, "Araştırma Raf İsimliği");
+            Vector3 point = bounds.center + Vector3.up * (bounds.extents.y + .14f);
+            Vector3 viewer = Camera.main != null ? Camera.main.transform.position : trial.Board != null ? trial.Board.transform.position : point + Vector3.forward;
+            Vector3 facing = viewer - point; facing.y = 0;
+            if (facing.sqrMagnitude < .01f) facing = Vector3.forward;
+            holder.SetPositionAndRotation(point + facing.normalized * .08f, Quaternion.LookRotation(-facing.normalized));
+            holder.localScale = Vector3.one;
+            var plate = Child(holder, "Plaka");
+            var filter = plate.GetComponent<MeshFilter>();
+            if (filter == null)
+            {
+                var primitive = GameObject.CreatePrimitive(PrimitiveType.Cube);
+                filter = plate.gameObject.AddComponent<MeshFilter>(); filter.sharedMesh = primitive.GetComponent<MeshFilter>().sharedMesh;
+                Object.DestroyImmediate(primitive);
+                plate.gameObject.AddComponent<MeshRenderer>();
+            }
+            plate.localPosition = Vector3.zero; plate.localRotation = Quaternion.identity; plate.localScale = new Vector3(.52f, .13f, .012f);
+            plate.GetComponent<MeshRenderer>().sharedMaterial = material;
+            var textHolder = Child(holder, "Başlık");
+            var text = textHolder.GetComponent<TextMeshPro>() ?? textHolder.gameObject.AddComponent<TextMeshPro>();
+            text.transform.localPosition = new Vector3(0, 0, -.008f); text.transform.localRotation = Quaternion.identity; text.transform.localScale = Vector3.one;
+            text.rectTransform.sizeDelta = new Vector2(.49f, .115f); text.font = font;
+            text.fontSize = text.fontSizeMax = 1.1f; text.fontSizeMin = .4f; text.enableAutoSizing = true;
+            text.text = group.Value[0].GetComponent<PuzzleBookIdentity>().location;
+            text.color = new Color(.96f, .89f, .70f); text.alignment = TextAlignmentOptions.Center; text.raycastTarget = false;
+        }
     }
 
     private static bool SurfaceBounds(SkinnedMeshRenderer renderer, Mesh baked, Transform bone, out Bounds bounds)
@@ -190,7 +235,7 @@ public static class ResearchTrialBookTitles
         text.enableAutoSizing = true;
         text.fontSize = text.fontSizeMax = size.y * 7 * textUnits;
         text.fontSizeMin = size.y * textUnits;
-        text.textWrappingMode = TextWrappingModes.NoWrap;
+        text.textWrappingMode = name.EndsWith("Kapak") ? TextWrappingModes.Normal : TextWrappingModes.NoWrap;
         text.raycastTarget = false;
         EditorUtility.SetDirty(text);
     }

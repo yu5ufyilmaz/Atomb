@@ -14,7 +14,7 @@ public static class TuringMeasurementReaderChecks
     [MenuItem("Senzora/Çift Kayıt/Geliştirici/Kağıt Okuyucuyu Doğrula")]
     public static void Run()
     {
-        var machine = SecondTraceExperiment.Active?.terminal;
+        var machine = SignalExperiment.Active?.terminal;
         Check(Application.isPlaying && machine != null && GameManager.Instance.activeInteraction == machine,
             "Collect an output, then open the test terminal first.");
         machine.StartCoroutine(Verify(machine));
@@ -47,8 +47,8 @@ public static class TuringMeasurementReaderChecks
         var notes = content.GetComponentsInChildren<NotebookDraggableBlock>();
         Check(notes.Length > 0, "Collect measurement cards before testing the reader.");
         var note = notes[notes.Length - 1];
-        Check(note != null && !note.IsSource && SecondTraceExperiment.Active.TryGetMeasurementCode(note.Data, out _), "No collected measurement is available.");
-        SecondTraceExperiment.Active.TryGetMeasurementCode(note.Data, out string wanted);
+        Check(note != null && !note.IsSource && SignalExperiment.Active.TryGetMeasurementCode(note.Data, out _), "No collected measurement is available.");
+        SignalExperiment.Active.TryGetMeasurementCode(note.Data, out string wanted);
         var drag = new PointerEventData(EventSystem.current) { button = PointerEventData.InputButton.Left,
             position = RectTransformUtility.WorldToScreenPoint(null, note.transform.position) };
         note.OnBeginDrag(drag); drag.position = point; note.OnDrag(drag); note.OnEndDrag(drag);
@@ -61,7 +61,7 @@ public static class TuringMeasurementReaderChecks
         Vector3 feedStart = insertedPaper.position;
         Check(!workspace.TryDropBlock(note, point), "A second insertion interrupted an active reading.");
         Call(machine, "CheckPassword");
-        Check(!ResearchPuzzleTrial.Active.Completed.Contains(SecondTraceExperiment.Active.CurrentQuestID), "Inserting paper completed the quest before testing.");
+        Check(!ResearchPuzzleTrial.Active.Completed.Contains(SignalExperiment.Active.CurrentQuestID), "Inserting paper completed the quest before testing.");
         string initial = Code(machine);
         yield return new WaitForSeconds(.22f);
         ScreenCapture.CaptureScreenshot("Temp/ResearchTrialChecks/KeyboardCardFeed.png");
@@ -94,7 +94,7 @@ public static class TuringMeasurementReaderChecks
         Quaternion outside = wheel.localRotation;
         yield return new WaitForSeconds(.3f);
         Check(Quaternion.Angle(outside, wheel.localRotation) > 1, "Wheels stopped moving outside the machine view.");
-        SecondTracePlayChecks.OpenTerminal();
+        SignalTrialPlayChecks.OpenTerminal();
         yield return new WaitForSeconds(1.8f);
         Check(machine.IsReadingMeasurement && workspace.IsActive && slot.gameObject.activeSelf
             && ((Transform)Field(machine, "readerPaper")) == insertedPaper, "Re-entering reset the ongoing reading or its inserted paper.");
@@ -110,12 +110,12 @@ public static class TuringMeasurementReaderChecks
             "The card was faded/hidden instead of physically transported inside the body.");
         var after = new GameData(); notebook.SaveData(ref after);
         Check(JsonUtility.ToJson(after) == snapshot, "Reading consumed or modified the notebook source.");
-        Check(!ResearchPuzzleTrial.Active.Completed.Contains(SecondTraceExperiment.Active.CurrentQuestID), "Reader submitted the code without Enter.");
+        Check(!ResearchPuzzleTrial.Active.Completed.Contains(SignalExperiment.Active.CurrentQuestID), "Reader submitted the code without Enter.");
         bool expected = false;
-        foreach (var reading in (System.Collections.Generic.Dictionary<string, SecondTraceExperiment.Reading>)Field(SecondTraceExperiment.Active, "readings"))
+        foreach (var reading in (System.Collections.Generic.Dictionary<string, SignalExperiment.Reading>)Field(SignalExperiment.Active, "readings"))
             if (reading.Key == wanted) expected = reading.Value.MeetsTarget;
         Call(machine, "CheckPassword");
-        Check(ResearchPuzzleTrial.Active.Completed.Contains(SecondTraceExperiment.Active.CurrentQuestID) == expected,
+        Check(ResearchPuzzleTrial.Active.Completed.Contains(SignalExperiment.Active.CurrentQuestID) == expected,
             "Manual Enter did not validate the loaded measurement correctly.");
         Check(!expected, "Collect a failed measurement on the first solutions page for the rejection check.");
         // Retain the existing manual rotation path after the automatic reading.
@@ -132,7 +132,7 @@ public static class TuringMeasurementReaderChecks
         while (machine.IsReadingMeasurement && Time.realtimeSinceStartup < deadline) yield return null;
         Check(!machine.IsReadingMeasurement && Code(machine) == wanted && GameManager.Instance.activeInteraction == null,
             "Reading did not finish correctly while the player was away.");
-        Check(!ResearchPuzzleTrial.Active.Completed.Contains(SecondTraceExperiment.Active.CurrentQuestID), "Background reading submitted a failed measurement.");
+        Check(!ResearchPuzzleTrial.Active.Completed.Contains(SignalExperiment.Active.CurrentQuestID), "Background reading submitted a failed measurement.");
         after = new GameData(); notebook.SaveData(ref after);
         Check(JsonUtility.ToJson(after) == snapshot, "Background reading changed the notebook source.");
         Check(!((AudioSource)Field(machine, "readerMotor")).isPlaying, "Motor audio kept looping after completion.");
@@ -147,15 +147,15 @@ public static class TuringMeasurementReaderChecks
         var graph = typeof(SignalTrialSetup).GetMethod("Graph", BindingFlags.Static | BindingFlags.NonPublic);
         foreach (int variant in new[] { 0, 4, 0 })
         {
-            SecondTraceExperiment.Active.Measure((SynthesisGraphData)graph.Invoke(null, new object[] { variant }));
-            SecondTracePlayChecks.CollectOutput();
+            SignalExperiment.Active.Measure((SynthesisGraphData)graph.Invoke(null, new object[] { variant }));
+            SignalTrialPlayChecks.CollectOutput();
         }
     }
 
     [MenuItem("Senzora/Çift Kayıt/Canlı/Çözüm Kağıdını Okuyucuya Bırak")]
     public static void InsertVisibleOutput()
     {
-        var machine = SecondTraceExperiment.Active.terminal;
+        var machine = SignalExperiment.Active.terminal;
         var workspace = NotebookWorkspaceController.Instance;
         workspace.ShowSolutions(); Canvas.ForceUpdateCanvases();
         var note = ((RectTransform)Field(workspace, "informationContent")).GetComponentInChildren<NotebookDraggableBlock>();

@@ -30,21 +30,19 @@ public static class LaboratorySynthesisSetup
         SceneManager.MoveGameObjectToScene(host, scene);
         var trial = host.AddComponent<ResearchPuzzleTrial>();
         trial.allowGameplayScene = true;
-        trial.partTemplate = AssetDatabase.LoadAssetAtPath<FormulaItemSO>("Assets/Scripts/Scriptables/Formulas/SynthesisModuleA.asset");
+        trial.partTemplate = AssetDatabase.LoadAssetAtPath<FormulaItemSO>("Assets/Scripts/Scriptables/Formulas/SignalPartTemplate.asset");
         var books = All<InteractableBook>(scene);
         for (int i = 0; i < 4; i++)
         {
             string shelf = "RAF" + (i + 1);
             trial.books[i] = books.FirstOrDefault(b => b.gameObject.activeInHierarchy && b.transform.parent.name == shelf);
             if (trial.books[i] == null) throw new InvalidOperationException("Research book shelf missing: " + shelf);
-            trial.books[i].includeProceduralClues = false;
             trial.books[i].usePhysicalPageBlocks = true;
             trial.books[i].canContainPassword = false;
         }
         if (!ResearchTrialBookTitles.Apply(trial)) throw new InvalidOperationException("Research book labels could not be applied.");
-        var experiment = host.AddComponent<SecondTraceExperiment>();
+        var experiment = host.AddComponent<SignalExperiment>();
         experiment.terminal = terminal;
-        experiment.newTest = true;
         host.AddComponent<LaboratorySynthesisScene>();
 
         notebook.useScreenSpaceNotebook = true;
@@ -60,9 +58,7 @@ public static class LaboratorySynthesisSetup
             EditorUtility.CopySerialized(source, workspace);
         }
         finally { EditorSceneManager.ClosePreviewScene(preview); }
-        workspace.generateProceduralRun = false;
         workspace.standaloneUnlocksCursor = false;
-        board.useProceduralQuests = false;
         foreach (var placer in All<MachineNotebookPlacer>(scene)) placer.enabled = false;
         // Let the migrated books and original machines be reached without tutorial gating.
         var interaction = Find<PlayerInteraction>(scene);
@@ -103,7 +99,6 @@ public static class LaboratorySynthesisSetup
         var trial = Find<ResearchPuzzleTrial>(scene);
         foreach (var book in All<InteractableBook>(scene))
         {
-            book.includeProceduralClues = false;
             book.usePhysicalPageBlocks = true;
             book.viewPositionOffset = new Vector3(-1.1f, -.1f, 7.5f);
             if (trial.books.Contains(book))
@@ -165,19 +160,9 @@ public static class LaboratorySynthesisSetup
             trial.books[0] = desk;
         }
         desk.printNotesOnPages = desk.usePhysicalPageBlocks = true;
-        desk.includeProceduralClues = desk.canContainPassword = false;
+        desk.canContainPassword = false;
         desk.startPageIndex = 0; desk.initialState = InteractableBook.BookInitialState.Closed;
         if (desk.GetComponent<BookPageBlockSurface>() == null) desk.gameObject.AddComponent<BookPageBlockSurface>();
-        var receiver = desk.GetComponent<PuzzleReceiver>();
-        if (receiver != null)
-        {
-            if (receiver.debugPreviewSymbol != null)
-            {
-                receiver.debugPreviewSymbol.gameObject.SetActive(false);
-                PrefabUtility.RecordPrefabInstancePropertyModifications(receiver.debugPreviewSymbol.gameObject);
-            }
-            receiver.enabled = false; EditorUtility.SetDirty(receiver); PrefabUtility.RecordPrefabInstancePropertyModifications(receiver);
-        }
         EditorUtility.SetDirty(desk); PrefabUtility.RecordPrefabInstancePropertyModifications(desk);
         EditorUtility.SetDirty(trial);
         ResearchTrialBookTitles.Apply(trial);

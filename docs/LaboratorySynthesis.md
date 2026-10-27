@@ -1,5 +1,7 @@
 # Laboratuvar araştırma geçişi
 
+27 Ekim 2026 temizliği: tek etkin puzzle **Çift Kayıt**tır. Eski sembol yerleştirme, başlangıç/ikinci alıştırma, A/B araştırmaları, İkinci İz ve beş aşamalı prosedürel üretim kaldırıldı. `SignalExperiment`, `SignalTrialContent` ve `FormulaCatalog` mevcut akışı yürütür. Ortak çizim şablonu `SignalPartTemplate.asset`, prefabı `P_SignalPart.prefab`dır; GUID bağlantıları korundu. Önceki kurulum menüleri kaldırıldı. Aşağıdaki notlar geçişin tarihsel kaydıdır; güncel temizlik kapsamı `docs/PuzzleCleanup.md` içindedir.
+
 Çalışma sahnesi: `Assets/Scenes/scn_LaboratorySynthesis.unity`.
 
 `scn_labratory` kopyasındaki gerçek oyuncu, Turing Machine, tahta, etkileşim noktaları ve kamera referansları kullanılır. Yeni deney içeriği `Laboratory Synthesis` nesnesindedir. Kitapların mevcut sahne konumları korunur; kapak ve sırtlarında araştırma adları bulunur.

@@ -152,12 +152,12 @@ public sealed partial class ChalkboardDocuments : MonoBehaviour
             body.rectTransform.anchorMin = body.rectTransform.anchorMax = new Vector2(.5f, 1);
             body.rectTransform.pivot = new Vector2(.5f, 1);
             body.rectTransform.sizeDelta = new Vector2(216, height - 49);
-            if (!missing && SecondTraceGraphic.IsVisualNote(note))
+            if (!missing && SignalTrialGraphic.IsNote(note))
             {
                 card.sizeDelta = new Vector2(238, 180);
                 body.rectTransform.anchoredPosition = new Vector2(0, -143);
                 body.rectTransform.sizeDelta = new Vector2(216, 32);
-                SecondTraceGraphic.AddNoteGraphic(card, note, new Vector2(.04f, .24f), new Vector2(.96f, .77f));
+                SignalTrialGraphic.Add(card, note, new Vector2(.04f, .24f), new Vector2(.96f, .77f));
                 height = 180;
             }
             var tack = Paper(card, "Bilgi Raptiyesi", new Vector2(-108, -10), new Vector2(7, 7), new Color(.62f, .14f, .1f));

@@ -90,38 +90,9 @@ public class PasswordManager : MonoBehaviour, ISaveable
 
         Debug.Log("PasswordManager: Yeni oyun başlatılıyor...");
 
-        if (SymbolSpawner.Instance != null)
-        {
-            SymbolSpawner.Instance.SpawnRandomSymbol();
-        }
-
         if (tutorialNote != null)
         {
             tutorialNote.AssignPassword(tutorialPassword); // Sadece şifreyi veriyoruz, sayfa no yok!
-        }
-
-        // --- BULMACA KİTABI ---
-        var puzzleBooks = allBooksInLevel
-            .Where(b => b != null && b.GetComponent<PuzzleReceiver>() != null)
-            .ToList();
-
-        // Bulunan her bir kitaba ayrı ayrı şifre ata
-        foreach (var pBook in puzzleBooks)
-        {
-            string puzzlePass = GenerateRandomPassword();
-            pBook.AssignPuzzlePassword(puzzlePass);
-            requiredPasswords.Add(puzzlePass);
-
-            currentSessionPasswords.Add(
-                new GameData.ObjectPasswordPair
-                {
-                    objectName = pBook.gameObject.name,
-                    password = puzzlePass,
-                    locationIndex = 0,
-                    isPuzzleBook = true,
-                }
-            );
-            Debug.Log($"[Oyun Şifresi - SEMBOL KİTABI] {pBook.name}: {puzzlePass}");
         }
 
         int machineCount = 2; // Osiloskop + Spektrometre
@@ -166,12 +137,9 @@ public class PasswordManager : MonoBehaviour, ISaveable
                 && b.bookIdentity != null
                 && b.bookIdentity.possibleLocations.Count > 0
                 && b != tutorialNote
-                && !puzzleBooks.Contains(b) // DÜZELTME 2: Bulmaca kitaplarının HEPSİNİ hariç tut
             )
             .ToList();
 
-        // DÜZELTME 3: Sahnede kaç bulmaca kitabı varsa, rastgele dağıtılacak kitap sayısından o kadar düş
-        bookCount -= puzzleBooks.Count;
 
         var selectedBooks = eligibleBooks.OrderBy(x => Random.value).Take(bookCount).ToList();
 
@@ -190,7 +158,6 @@ public class PasswordManager : MonoBehaviour, ISaveable
                     objectName = book.gameObject.name,
                     password = bookPass,
                     locationIndex = randomLocIndex,
-                    isPuzzleBook = false,
                 }
             );
             Debug.Log($"[Oyun Şifresi - RASTGELE KİTAP] {book.name}: {bookPass}");
@@ -236,10 +203,7 @@ public class PasswordManager : MonoBehaviour, ISaveable
             );
             if (foundBook != null)
             {
-                if (pair.isPuzzleBook)
-                    foundBook.AssignPuzzlePassword(pair.password);
-                else
-                    foundBook.AssignPassword(pair.password, pair.locationIndex);
+                foundBook.AssignPassword(pair.password, pair.locationIndex);
             }
         }
 

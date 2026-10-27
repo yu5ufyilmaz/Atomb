@@ -1,0 +1,125 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6c1fbd7dd552ba046b264bc50576d6a0, type: 3}
+  m_Name: YogunYesil
+  m_EditorClassIdentifier: Assembly-CSharp::PuzzleDefinitionSO
+  definition:
+    version: 1
+    kind: 1
+    id: mixture-YogunYesil
+    title: "Yo\u011Fun Ye\u015Fil"
+    description: "Hedefteki kar\u0131\u015F\u0131m\u0131 \xFCret. Renk oranlar\u0131,
+      pigment yo\u011Funlu\u011Fu ve toplam miktar birlikte tutmal\u0131; deney ko\u015Fullar\u0131
+      kitaplarda."
+    rules:
+      minParts: 3
+      maxParts: 9
+      minSamples: 1
+      maxSamples: 3
+      maxDepth: 10
+      traceCount: 2
+      parts:
+      - itemID: mix-source
+        allowed: 1
+        minimum: 0
+        maximum: 1
+        explanation: 
+      - itemID: mix-red
+        allowed: 1
+        minimum: 0
+        maximum: 12
+        explanation: 
+      - itemID: mix-green
+        allowed: 1
+        minimum: 0
+        maximum: 12
+        explanation: 
+      - itemID: mix-blue
+        allowed: 1
+        minimum: 0
+        maximum: 12
+        explanation: 
+      - itemID: mix-solvent
+        allowed: 1
+        minimum: 0
+        maximum: 12
+        explanation: 
+      - itemID: mix-concentrator
+        allowed: 1
+        minimum: 0
+        maximum: 12
+        explanation: 
+      - itemID: mix-splitter
+        allowed: 1
+        minimum: 0
+        maximum: 12
+        explanation: 
+      - itemID: mix-mixer
+        allowed: 1
+        minimum: 0
+        maximum: 12
+        explanation: 
+      - itemID: mix-meter
+        allowed: 1
+        minimum: 0
+        maximum: 1
+        explanation: 
+    solution:
+      parts:
+      - itemID: mix-source
+        capacity: 0
+        openEnds: 0
+        blockedEnds: 0
+      - itemID: mix-green
+        capacity: 0
+        openEnds: 0
+        blockedEnds: 0
+      - itemID: mix-concentrator
+        capacity: 0
+        openEnds: 0
+        blockedEnds: 0
+      - itemID: mix-meter
+        capacity: 0
+        openEnds: 0
+        blockedEnds: 0
+      bonds:
+      - fromIndex: 0
+        toIndex: 1
+        bondType: 1
+        label: 
+        directed: 1
+      - fromIndex: 1
+        toIndex: 2
+        bondType: 1
+        label: 
+        directed: 1
+      - fromIndex: 2
+        toIndex: 3
+        bondType: 1
+        label: 
+        directed: 1
+    positions:
+    - {x: 25, y: 80}
+    - {x: 250, y: 80}
+    - {x: 475, y: 80}
+    - {x: 700, y: 80}
+    target: []
+    mixtureTarget:
+      red: 0
+      green: 1
+      blue: 0
+      solvent: 0.5
+    tolerance: 0.005
+    notes: []
+    targetInFirstBook: 1
+    seed: 0
+  includeInPool: 1

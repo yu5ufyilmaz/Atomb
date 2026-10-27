@@ -600,7 +600,7 @@ public partial class InteractableTuringMachine : MonoBehaviour, IInteractable, I
     private void CheckPassword()
     {
         if (IsReadingMeasurement) return;
-        var experiment = SecondTraceExperiment.Active;
+        var experiment = SignalExperiment.Active;
         bool isTrialTerminal = experiment != null && experiment.terminal == this;
         if (!PasswordManager.Instance && !isTrialTerminal)
             return;

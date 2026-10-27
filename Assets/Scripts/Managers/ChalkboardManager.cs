@@ -15,11 +15,8 @@ public class ChalkboardManager : MonoBehaviour, ISaveable
     public Vector2 maxBounds = new Vector2(1.5f, 1f);
     [Header("Sentez Ayarları")]
     public ReactionZone synthesisZone;
-    public List<RecipeSO> allRecipes = new List<RecipeSO>();
     [Tooltip("Kitap ve prosedürel görevlerde kullanılabilecek parça kataloğu")]
     public List<FormulaItemSO> formulaCatalog = new List<FormulaItemSO>();
-    [Tooltip("Yeni oyun başına beş aşamalı görev zincirini başlat")]
-    public bool useProceduralQuests = true;
 
     [Tooltip("Atanırsa yalnız bu alıştırma doğrulanır; parçalar tüketilmez ve çıktı üretilmez.")]
     public QuestBlueprintSO practiceQuest;
@@ -114,24 +111,6 @@ public class ChalkboardManager : MonoBehaviour, ISaveable
         else if (freehand != null && freehand.Drawer != null) freehand.Drawer.EndStroke();
         if (state) AdoptSceneFormulas();
         if (state) KeepFormulasInWorkingArea();
-        if (state && useProceduralQuests)
-        {
-            ProceduralSynthesisGenerator generator = ProceduralSynthesisGenerator.Instance;
-            if (generator == null) generator = new GameObject("Prosedürel Sentez Görevleri").AddComponent<ProceduralSynthesisGenerator>();
-            generator.RegisterCatalog(formulaCatalog);
-            if (allRecipes != null)
-                foreach (RecipeSO recipe in allRecipes)
-                {
-                    if (recipe == null) continue;
-                    generator.RegisterCatalog(recipe.inputs);
-                    generator.RegisterCatalog(recipe.outputs);
-                }
-            if (boardTransform != null)
-                foreach (DraggableFormula part in boardTransform.GetComponentsInChildren<DraggableFormula>(true))
-                    generator.RegisterFormula(part.formulaData);
-            generator.EnsureRun();
-            if (generator.ActiveQuest != null) TryPinQuest(generator.ActiveQuest);
-        }
         if (NotebookUI.Instance != null) NotebookUI.Instance.SetWorkspaceMode(state);
     }
 
@@ -339,132 +318,35 @@ public class ChalkboardManager : MonoBehaviour, ISaveable
         return graph;
     }
 
-    [Button("Sentezi Dene")]
+    [Button("Deneyi Ölç")]
     public void AttemptSynthesis()
     {
-        AttemptSynthesis(synthesisZone, allRecipes);
-    }
-
-    public void AttemptSynthesis(ReactionZone zone, List<RecipeSO> recipes)
-    {
+        var zone = synthesisZone;
         if (!isMachineActive || zone == null || boardTransform == null)
-        { Report("Sentez alanı hazır değil.", false); return; }
+        { Report("Deney alanı hazır değil.", false); return; }
+        if (PinnedQuest == null || SignalExperiment.Active == null || PinnedQuest.questID != SignalExperiment.Active.CurrentQuestID)
+        { Report("Önce defterindeki HEDEF notunu tahtaya sürükle.", false); return; }
         zone.RefreshItems();
-        HashSet<DraggableFormula> roots = new HashSet<DraggableFormula>();
-        var visitedParts = new HashSet<DraggableFormula>();
-        foreach (DraggableFormula part in zone.currentItems)
+        var roots = new HashSet<DraggableFormula>();
+        var visited = new HashSet<DraggableFormula>();
+        foreach (var part in zone.currentItems)
         {
-            if (part == null || !visitedParts.Add(part)) continue;
+            if (part == null || !visited.Add(part)) continue;
             roots.Add(part.GetRootFormula());
-            if (IndividualPartMovement) foreach (var connected in part.GetConnectedParts()) visitedParts.Add(connected);
+            foreach (var connected in part.GetConnectedParts()) visited.Add(connected);
         }
-        if (roots.Count == 0) { Report("Sentez çemberi boş.", false); return; }
-
-        if (practiceQuest != null)
+        if (roots.Count == 0) { Report("Deney alanı boş.", false); return; }
+        if (roots.Count != 1)
+        { Report("Parçaları tek bir yapıda birleştir; fazlalıkları silgiyle kaldır.", false); return; }
+        foreach (var root in roots)
         {
-            if (PinnedQuest == null || PinnedQuest.questID != practiceQuest.CreateQuest().questID)
-            { Report("Önce defterindeki HEDEF notunu tahtaya sürükle.", false); return; }
-            if (roots.Count != 1)
-            { Report("Parçaları tek bir yapıda birleştir; fazlalıkları silgiyle kaldır.", false); return; }
-            foreach (var root in roots)
-            {
-                foreach (var part in root.GetConnectedParts())
-                    if (!zone.ContainsFormula(part))
-                    { Report("Yapının tamamını tahta alanına yerleştir.", false); return; }
-                // Alıştırmanın gizli parça kimlikleri ayrıntılı kural hatalarında açığa çıkmamalı.
-                if (ResearchPuzzleTrial.IsResearch(this) && ResearchTrialContent.OwnsQuest(practiceQuest.questID))
-                {
-                    if ((practiceQuest.questID == SecondTraceExperiment.QuestID || practiceQuest.questID == SignalTrial.QuestID) && SecondTraceExperiment.Active != null)
-                    {
-                        SecondTraceExperiment.Active.Measure(BuildGraph(root));
-                        return;
-                    }
-                    bool success = ResearchPuzzleTrial.Active.Content.Evaluate(practiceQuest.questID, BuildGraph(root), out string observation);
-                    if (success)
-                    {
-                        PinnedQuest.completed = true;
-                        ResearchPuzzleTrial.Active.MarkCompleted(practiceQuest.questID);
-                    }
-                    Report(observation, success);
-                    return;
-                }
-                if (!SynthesisGraphValidator.Validate(BuildGraph(root), practiceQuest.CreateQuest(), out _))
-                { Report("Parça seçimi veya bağlar hedefle uyuşmuyor. Kitaptaki ipuçlarını kontrol et.", false); return; }
-            }
-            PinnedQuest.completed = true;
-            Report("Doğru bildin", true);
-            return;
+            foreach (var part in root.GetConnectedParts())
+                if (!zone.ContainsFormula(part))
+                { Report("Yapının tamamını tahta alanına yerleştir.", false); return; }
+            if (SignalExperiment.Active == null || !ResearchPuzzleTrial.IsResearch(this))
+            { Report("Deney bağlantıları hazır değil.", false); return; }
+            SignalExperiment.Active.Measure(BuildGraph(root));
         }
-
-        ProceduralSynthesisGenerator generator = ProceduralSynthesisGenerator.Instance;
-        SynthesisQuestData quest = useProceduralQuests && generator != null ? generator.ActiveQuest : null;
-        bool proceduralRun = useProceduralQuests && generator != null && generator.Run != null;
-        if (proceduralRun && quest == null) { Report("Beş aşamalı sentez zinciri tamamlandı.", false); return; }
-        string reason = "Şema hiçbir tarifle uyuşmuyor.";
-        foreach (DraggableFormula root in roots)
-        {
-            // Çemberin kenarına tek bir parça sokarak dışarıdaki molekülü tüketme.
-            bool entirelyInside = true;
-            foreach (DraggableFormula part in root.GetConnectedParts())
-                if (!zone.ContainsFormula(part)) { entirelyInside = false; break; }
-            if (!entirelyInside) { reason = "Bağlı şemanın bütün parçalarını sentez çemberine yerleştirin."; continue; }
-            SynthesisGraphData graph = BuildGraph(root);
-            if (quest != null)
-            {
-                if (!SynthesisGraphValidator.Validate(graph, quest, out reason)) continue;
-                FormulaItemSO output = generator.ResolveFormula(quest.outputItemID);
-                if (!TryReplaceMolecule(root, new List<FormulaItemSO> { output }, out reason)) continue;
-                generator.CompleteActiveQuest();
-                PinnedQuest = generator.ActiveQuest;
-                QuestPinned?.Invoke(PinnedQuest);
-                Report("Sentez başarılı: " + output.itemName, true);
-                return;
-            }
-            if (recipes == null) continue;
-            foreach (RecipeSO recipe in recipes)
-            {
-                if (recipe == null || recipe.recipeType != RecipeType.Synthesis) continue;
-                if (!SynthesisGraphValidator.ValidateRecipe(graph, recipe, out reason)) continue;
-                if (!TryReplaceMolecule(root, recipe.outputs, out reason)) continue;
-                Report("Sentez başarılı: " + recipe.recipeName, true);
-                return;
-            }
-        }
-        Report(reason, false);
-    }
-
-    private bool TryReplaceMolecule(DraggableFormula root, List<FormulaItemSO> outputs, out string reason)
-    {
-        reason = string.Empty;
-        if (outputs == null || outputs.Count == 0) { reason = "Tarifin çıktı ürünü atanmamış."; return false; }
-        foreach (FormulaItemSO output in outputs)
-            if (!HasValidPrefab(output)) { reason = "Çıktı parçasının tebeşir prefabı eksik; girdiler korundu."; return false; }
-
-        List<DraggableFormula> created = new List<DraggableFormula>();
-        Vector3 point = root.transform.position;
-        try
-        {
-            for (int i = 0; i < outputs.Count; i++)
-            {
-                DraggableFormula output = CreateFormula(outputs[i], point + boardTransform.right * (i * 0.25f), true);
-                if (output == null) throw new InvalidOperationException("Çıktı oluşturulamadı.");
-                created.Add(output);
-            }
-        }
-        catch (Exception exception)
-        {
-            foreach (DraggableFormula item in created) Destroy(item.gameObject);
-            reason = "Sentez çıktısı oluşturulamadı; girdiler korundu: " + exception.Message;
-            return false;
-        }
-        List<DraggableFormula> consumed = root.GetConnectedParts();
-        foreach (DraggableFormula part in consumed)
-        {
-            if (synthesisZone != null) synthesisZone.currentItems.Remove(part);
-            part.gameObject.SetActive(false);
-        }
-        Destroy(root.gameObject);
-        return true;
     }
 
     private void Report(string message, bool success)
@@ -534,22 +416,8 @@ public class ChalkboardManager : MonoBehaviour, ISaveable
         if (data == null || data.savedChalkboard == null || boardTransform == null) return;
         SynthesisBoardSaveData snapshot = data.savedChalkboard;
         if (snapshot.parts == null || snapshot.bonds == null) return;
-        ProceduralSynthesisGenerator generator = ProceduralSynthesisGenerator.Instance;
-        if (generator == null && data.synthesisRun != null)
-            generator = new GameObject("Prosedürel Sentez Görevleri").AddComponent<ProceduralSynthesisGenerator>();
-        if (generator != null)
-        {
-            generator.RegisterCatalog(formulaCatalog);
-            if (allRecipes != null)
-                foreach (RecipeSO recipe in allRecipes)
-                {
-                    if (recipe == null) continue;
-                    generator.RegisterCatalog(recipe.inputs);
-                    generator.RegisterCatalog(recipe.outputs);
-                }
-            if (data.synthesisRun != null && (generator.Run == null || generator.Run.seed != data.synthesisRun.seed))
-                generator.LoadData(data);
-        }
+        FormulaCatalog generator = FormulaCatalog.Instance;
+        if (generator != null) generator.RegisterCatalog(formulaCatalog);
 
         DraggableFormula[] oldParts = boardTransform.GetComponentsInChildren<DraggableFormula>(true);
         var definitions = new List<FormulaItemSO>();
@@ -606,8 +474,7 @@ public class ChalkboardManager : MonoBehaviour, ISaveable
         if (synthesisZone != null) synthesisZone.RefreshItems();
         var practice = FindPracticeQuest(snapshot.pinnedQuestID);
         if (practice != null) practiceQuest = practice;
-        PinnedQuest = practice != null ? practice.CreateQuest() : generator != null && generator.Run != null
-            ? generator.Run.quests.Find(quest => quest.questID == snapshot.pinnedQuestID) : null;
+        PinnedQuest = practice != null ? practice.CreateQuest() : null;
         pinnedInformation = snapshot.information != null
             ? snapshot.information.FindAll(n => n != null && n.blockType == NotebookBlockType.RuleClue).ConvertAll(n => n.Clone())
             : new List<NotebookBlockData>();
@@ -619,19 +486,12 @@ public class ChalkboardManager : MonoBehaviour, ISaveable
         QuestPinned?.Invoke(PinnedQuest);
     }
 
-    private FormulaItemSO ResolveSavedFormula(string itemID, ProceduralSynthesisGenerator generator, DraggableFormula[] current)
+    private FormulaItemSO ResolveSavedFormula(string itemID, FormulaCatalog generator, DraggableFormula[] current)
     {
         FormulaItemSO item = generator != null ? generator.ResolveFormula(itemID) : null;
         if (item != null) return item;
         foreach (FormulaItemSO candidate in formulaCatalog) if (candidate != null && candidate.itemID == itemID) return candidate;
         foreach (DraggableFormula part in current) if (part.formulaData != null && part.formulaData.itemID == itemID) return part.formulaData;
-        if (allRecipes != null)
-            foreach (RecipeSO recipe in allRecipes)
-            {
-                if (recipe == null) continue;
-                foreach (FormulaItemSO candidate in recipe.inputs) if (candidate != null && candidate.itemID == itemID) return candidate;
-                foreach (FormulaItemSO candidate in recipe.outputs) if (candidate != null && candidate.itemID == itemID) return candidate;
-            }
         return null;
     }
 

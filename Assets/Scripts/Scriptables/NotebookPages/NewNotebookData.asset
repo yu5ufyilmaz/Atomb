@@ -12,25 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 678071f77bacfdd439997b9eb5d5ad24, type: 3}
   m_Name: NewNotebookData
   m_EditorClassIdentifier: Assembly-CSharp::NotebookData
+  workspaceBlockPrefab: {fileID: 0}
+  synthesisCatalog:
+  - {fileID: 11400000, guid: dd80648d25f7481d8f1a8f5d7aab7518, type: 2}
+  sketchRotation: 5
   tutorialPages:
   - {fileID: 11400000, guid: ff938c8f1b4e19143be86c52149b6f2e, type: 2}
   - {fileID: 11400000, guid: ddd0b5657a1384c409dc3a124e3bd142, type: 2}
   - {fileID: 11400000, guid: 0b8462d05e698254d86193135c886376, type: 2}
-  symbolDataList:
-  - {fileID: 11400000, guid: 32e8809b6981d3d4cac16e6be17100f6, type: 2}
-  - {fileID: 11400000, guid: 3931f28d2b8d3fb4ebf31b04c541c9f7, type: 2}
-
-  synthesisRecipes:
-  - {fileID: 11400000, guid: a734090a0a526d44b8e82f86f2b1ce5b, type: 2}
-  - {fileID: 11400000, guid: 1c901af678b72a241bbb8a30bb726e18, type: 2}
-  workspaceBlockPrefab: {fileID: 0}
-  sketchRotation: 5
-  synthesisCatalog:
-  - {fileID: 11400000, guid: dd80648d25f7481d8f1a8f5d7aab7518, type: 2}
-  - {fileID: 11400000, guid: 698a21a0628a4b29905108ba73c807be, type: 2}
-  - {fileID: 11400000, guid: 4743287aebc8463880870245d7c882ce, type: 2}
-  - {fileID: 11400000, guid: c8b01d6e2d9b46c49b672b99530630c3, type: 2}
-  - {fileID: 11400000, guid: 3dfbb2a3461f46019a48b198d27dd023, type: 2}
-  - {fileID: 11400000, guid: e75d860b94db4c7b87981258aeea7820, type: 2}
-  - {fileID: 11400000, guid: d81533e3bfba46bca3a0dec1165225cd, type: 2}
-  - {fileID: 11400000, guid: 2f48d28a8c4446d38da6a0961adae73f, type: 2}

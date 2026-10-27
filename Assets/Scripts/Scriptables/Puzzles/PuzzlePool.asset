@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e0a811f8c57720a47bcf9adb30b9ef34, type: 3}
+  m_Name: PuzzlePool
+  m_EditorClassIdentifier: Assembly-CSharp::PuzzlePoolSO
+  puzzles:
+  - {fileID: 11400000, guid: 0a0ad611b516d324b8cb1d047fbb6872, type: 2}
+  - {fileID: 11400000, guid: ea73f9379de5135419145921e2790fa9, type: 2}
+  - {fileID: 11400000, guid: b391b65d7439b67408e25755014031c3, type: 2}
+  - {fileID: 11400000, guid: 7f6ca3f0885b4df4482707c086aa3c55, type: 2}
+  - {fileID: 11400000, guid: 8fa15141685167940b34c821c68f4612, type: 2}
+  - {fileID: 11400000, guid: 7a29d656df55a2b44b5d1b071d3e3478, type: 2}
+  - {fileID: 11400000, guid: 041d3b842402e0c4b8550c083a23533d, type: 2}
