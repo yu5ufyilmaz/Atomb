@@ -176,7 +176,7 @@ public partial class NotebookWorkspaceController
             if (targetArchivePage < targets.Count)
             {
                 var block = CreateBlock(targets[targetArchivePage], false, targetContent);
-                var rect = (RectTransform)block.transform; rect.sizeDelta = new Vector2(440, 380);
+                var rect = (RectTransform)block.transform; rect.sizeDelta = new Vector2(440, 400);
                 Top(rect, new Vector2(0, -12)); ApplyArchiveNotePose(rect, targets[targetArchivePage]);
             }
             if (UsesNotebookSkin) ShowEmptyArchivePaper(targetPanel, targets.Count == 0);

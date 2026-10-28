@@ -16,7 +16,8 @@ public static class ResearchGuidanceChecks
 
     private static IEnumerator CaptureFlow()
     {
-        var game = GameManager.Instance; game.StartGameMode();
+        yield return EnterNormalGame();
+        var game = GameManager.Instance;
         if (game.activeInteraction != null) game.activeInteraction.ForceExit();
         float end = Time.realtimeSinceStartup + 15;
         while (game.activeInteraction != null && Time.realtimeSinceStartup < end) yield return null;
@@ -29,6 +30,29 @@ public static class ResearchGuidanceChecks
         book.ForceExit();
         while (game.activeInteraction != null) yield return null;
         Debug.Log("RESEARCH VISUAL CAPTURE PASS: Temp/research-book-goal.png");
+    }
+
+    public static IEnumerator EnterNormalGame()
+    {
+        Application.runInBackground = true;
+        EditorApplication.isPaused = false;
+        EditorWindow.GetWindow(Type.GetType("UnityEditor.GameView,UnityEditor")).Focus();
+        var game = GameManager.Instance;
+        if (game.activeInteraction != null) game.activeInteraction.ForceExit();
+        float end = Time.realtimeSinceStartup + 15;
+        while (game.activeInteraction != null && Time.realtimeSinceStartup < end) yield return null;
+        Require(game.activeInteraction == null, "Önceki etkileşim kapanmadı.");
+        var menu = UnityEngine.Object.FindFirstObjectByType<MainMenuManager>();
+        var panel = menu != null ? new SerializedObject(menu).FindProperty("mainMenuPanel").objectReferenceValue as GameObject : null;
+        if (menu != null && panel != null && panel.activeInHierarchy)
+        {
+            var sequence = UnityEngine.Object.FindFirstObjectByType<InGameMenuController>();
+            bool awaitSequence = sequence != null && sequence.enabled;
+            menu.PlayGame(); end = Time.realtimeSinceStartup + 90;
+            while ((panel.activeInHierarchy || !game.isGameStarted || awaitSequence && sequence.enabled) && Time.realtimeSinceStartup < end) yield return null;
+            Require(!panel.activeInHierarchy && game.isGameStarted && (!awaitSequence || !sequence.enabled), "Gerçek Yeni Oyun geçişi bitmedi.");
+        }
+        else if (!game.isGameStarted) game.StartGameMode();
     }
 
     [MenuItem("Senzora/Puzzle Atölyesi/Doğrulama/Araştırma Hedef Görseli")]

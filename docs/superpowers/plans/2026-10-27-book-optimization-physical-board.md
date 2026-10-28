@@ -1,0 +1,14 @@
+# Book performance and physical blackboard
+
+User explicitly requested fixing severe book opening/turn lag, removing notebook open/close buttons (keep Tab and notebook ×), compact blackboard goal presentation, physical document/meter objects, and keeping documents open after leaving the board.
+
+1. Capture the current actual three-goal47book layout using the same CPU/Canvas/GC and live frame benchmark before and after. Existing diagnostic reports already identify repeated per-vertex UV searches, all-page updates and rebuilding contents at turn boundaries; verify the current regression.
+2. Cache printed geometry and its UV/turn bindings. Reuse meshes, buffers and page objects; update only visible moving ink; keep stationary and hidden content out of the per-frame path. Preserve paper curvature, readable contents and normal drag/drop. Avoid broad scene/quality downgrades.
+3. Remove redundant overlay notebook controls. Keep Tab/×. Mount the existing document surface and experiment controls on physical board backing; compact goal card with access to its complete sources; preserve open document state and world rendering after exit, while interaction input stays scoped to the board.
+4. Verify reduced warm CPU/allocations with measured budgets, real open/forward/back/reopen frame captures, geometry/readability/drag checks, physical board persistence and full puzzle/Turing/save flow. Leave the user scene ready for an unsolved playtest.
+
+Root controls the shared Unity editor. Separate UI implementation and benchmark harness are delegated under dispatching-parallel-agents; production book optimization belongs to root. Preserve pre-existing dirty changes and the user's current scene setup.
+
+Completed 28 October: all requested behavior implemented. Fresh fixed-content 63-sample medians0.91/0.92/0.94ms versus baseline600.16/617.47/575.66ms; baseline content fingerprints match. Reopen1.69–2.22ms; initial prepare+canvas52–233ms remains distinct from warm costs. Cached projection2450points, Book Surface projection/layout, physical world controls/persistence with initially open/closed goal updates, research UI readability/drag and full47book/3goal/Turing/snapshot/normal-save-protection flows passed. No runtime errors in final Play run. Natural book motion/pause/queued exit was verified with the unchanged book implementation in the prior run.
+
+Fresh complete-scene live medians18.43ms idle and19–24ms book animation; occasional98.09ms frame retained in report.30-frame normal editor profiler median22.10ms/p9524.98ms, focused. Earlier500ms state did not reproduce after editor restart; no speculative cause assigned. Standalone FPS and zero allocations are not claimed. Evidence preserved under UserSettings/PuzzleWorkshop/evidence; report docs/BookPerformanceAudit.md. Play stopped so test completion is not left in the session. Current user scene preserved without rerunning setup.

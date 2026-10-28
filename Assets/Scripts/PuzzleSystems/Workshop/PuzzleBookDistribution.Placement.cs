@@ -10,7 +10,10 @@ public static partial class PuzzleBookDistribution
         public NotebookBlockData note;
         public PuzzleBookTopic topic;
         public HashSet<string> quests = new HashSet<string>();
+        public Slot slot;
     }
+
+    private sealed class Slot { public int book, index; public Entry owner; }
 
     // Plan the entire assignment before the live session is touched. References are derived last.
     public static List<BookWorkspacePage>[] Build(List<PuzzleDefinition> puzzles, List<PuzzleBookProfile> books, int seed)
@@ -63,20 +66,29 @@ public static partial class PuzzleBookDistribution
                 }
         }
         var locations = new Dictionary<string, PuzzleResearchReference>();
-        var candidates = new Dictionary<PuzzleBookTopic, List<int>>();
+        var candidates = new Dictionary<PuzzleBookTopic, List<Slot>>();
+        var available = new List<List<Slot>>();
+        for (int b = 0; b < books.Count; b++)
+        {
+            var slots = Enumerable.Range(0, occupied[b].Length).Where(i => !occupied[b][i])
+                .Select(i => new Slot { book = b, index = i }).ToList();
+            Shuffle(slots, random); available.Add(slots);
+        }
         Shuffle(entries, random);
         foreach (var entry in entries)
         {
-            if (!candidates.TryGetValue(entry.topic, out var eligible))
+            if (!candidates.ContainsKey(entry.topic))
             {
-                eligible = Enumerable.Range(0, books.Count).Where(i => (books[i].topics & entry.topic) != 0).ToList();
-                Shuffle(eligible, random); candidates.Add(entry.topic, eligible);
+                var eligible = Enumerable.Range(0, books.Count).Where(i => (books[i].topics & entry.topic) != 0).ToList();
+                Shuffle(eligible, random); candidates.Add(entry.topic, eligible.SelectMany(b => available[b]).ToList());
             }
-            int candidate = eligible.FindIndex(i => occupied[i].Any(used => !used));
-            if (candidate < 0) throw new InvalidOperationException("Uygun kitap sayfa alanı yetersiz: " + entry.topic + ". Kitap konusunu veya sayfa kapasitesini artır.");
-            int book = eligible[candidate];
-            var slots = Enumerable.Range(0, occupied[book].Length).Where(i => !occupied[book][i]).ToList();
-            int slot = slots[random.Next(slots.Count)]; occupied[book][slot] = true;
+        }
+        foreach (var entry in entries)
+            if (!AssignSlot(entry, candidates, new HashSet<Slot>()))
+                throw new InvalidOperationException("Uygun kitap sayfa alanı yetersiz: " + entry.topic + ". Kitap konusunu veya sayfa kapasitesini artır.");
+        foreach (var entry in entries)
+        {
+            int book = entry.slot.book, slot = entry.slot.index;
             int page = slot / 2;
             // Small variation stays inside the tested physical page margins.
             float x = .09f + (float)random.NextDouble() * .015f;
@@ -93,8 +105,7 @@ public static partial class PuzzleBookDistribution
                 var first = g.First();
                 return "• " + first.bookTitle + " · " + first.location + " · s. " + string.Join(", ", g.Select(r => r.pageIndex + 1).Distinct().OrderBy(p => p));
             });
-            goal.description = puzzle.description + "\n\nARAŞTIRMA KAYNAKLARI\n" + string.Join("\n", directions)
-                + "\nAkışı başlatıcıdan işlemlere, oradan sonlandırıcıya taşı; sonucu referansla karşılaştır.";
+            goal.description = puzzle.description + "\n\nARAŞTIRMA KAYNAKLARI\n" + string.Join("\n", directions);
         }
         for (int book = 0; book < books.Count; book++)
         {
@@ -104,6 +115,18 @@ public static partial class PuzzleBookDistribution
             foreach (var page in pages[book]) page.explanation = "İÇİNDEKİLER\n" + (contents.Length > 0 ? contents : "Bu ciltteki konular için hedef kaydının kaynakçasını takip et.");
         }
         return pages;
+    }
+
+    private static bool AssignSlot(Entry entry, Dictionary<PuzzleBookTopic, List<Slot>> candidates, HashSet<Slot> visited)
+    {
+        // Prefer free slots, then move a flexible note to make room for a more constrained topic.
+        // This augmenting path finds a complete assignment whenever eligible capacity exists.
+        foreach (var slot in candidates[entry.topic])
+            if (slot.owner == null && visited.Add(slot)) { slot.owner = entry; entry.slot = slot; return true; }
+        foreach (var slot in candidates[entry.topic])
+            if (visited.Add(slot) && AssignSlot(slot.owner, candidates, visited))
+            { slot.owner = entry; entry.slot = slot; return true; }
+        return false;
     }
 
     public static PuzzleBookTopic TopicFor(NotebookBlockData note, PuzzleKind kind)

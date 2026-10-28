@@ -135,7 +135,7 @@ public static class LaboratoryBlindPackChecks
         var experiment = SignalExperiment.Active; var notebook = NotebookUI.Instance; var workspace = NotebookWorkspaceController.Instance;
         string path = Path.Combine(Application.persistentDataPath, "SenzoraLocalSave.json");
         string normalBefore = File.Exists(path) ? Convert.ToBase64String(File.ReadAllBytes(path)) : null;
-        game.StartGameMode();
+        yield return ResearchGuidanceChecks.EnterNormalGame();
         var player = UnityEngine.Object.FindFirstObjectByType<SynthesisBlockoutPlayer>();
         var begin = typeof(SynthesisBlockoutPlayer).GetMethod("Begin", Private);
         int checkedBooks = 0;
@@ -146,7 +146,7 @@ public static class LaboratoryBlindPackChecks
             for (int spread = 0; spread < book.totalPages / 2; spread++)
             {
                 yield return null;
-                if (book.GetComponentsInChildren<NotebookDraggableBlock>().Any(n => n.IsSource && n.isActiveAndEnabled))
+                if (book.GetComponentsInChildren<NotebookDraggableBlock>().Any(n => n.IsSource && ResearchTrialBookChecks.Visible(n)))
                 { ResearchTrialBookChecks.CheckReadability(); ResearchTrialBookChecks.CollectVisible(); }
                 if (spread + 1 < book.totalPages / 2) { book.NextPage(); yield return WaitFor(() => !book.isAnimating, "Page turn"); }
             }

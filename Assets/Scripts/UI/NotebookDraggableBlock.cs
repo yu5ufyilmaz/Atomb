@@ -86,7 +86,7 @@ public class NotebookDraggableBlock : MonoBehaviour, IBeginDragHandler, IDragHan
         bool researchNote = ResearchPuzzleTrial.IsResearch(ChalkboardManager.Instance);
         bool autoBuilt = background == null && titleText == null;
         if (autoBuilt || rect.sizeDelta.x <= 1f || rect.sizeDelta.y <= 1f)
-            rect.sizeDelta = quest ? researchNote ? new Vector2(380f, 370f) : new Vector2(320f, 190f)
+            rect.sizeDelta = quest ? researchNote ? new Vector2(380f, 400f) : new Vector2(320f, 190f)
                 : new Vector2(Data.blockType == NotebookBlockType.RuleClue ? 320f : 200f, 115f);
         if (background == null)
             background = GetComponent<Image>() ?? gameObject.AddComponent<Image>();
@@ -204,15 +204,15 @@ public class NotebookDraggableBlock : MonoBehaviour, IBeginDragHandler, IDragHan
                     diagramObject.transform.SetParent(transform, false);
                     diagram = diagramObject.AddComponent<QuestDiagramGraphic>();
                     RectTransform diagramRect = diagram.rectTransform;
-                    diagramRect.anchorMin = new Vector2(0f, researchNote ? .56f : SignalTrialContent.OwnsQuest(Data.questID) ? .26f : .18f);
-                    diagramRect.anchorMax = new Vector2(1f, 0.8f);
+                    diagramRect.anchorMin = new Vector2(0f, researchNote ? .68f : SignalTrialContent.OwnsQuest(Data.questID) ? .26f : .18f);
+                    diagramRect.anchorMax = new Vector2(1f, researchNote ? .86f : .8f);
                     diagramRect.offsetMin = new Vector2(8f, 0f);
                     diagramRect.offsetMax = new Vector2(-8f, 0f);
                 }
                 diagram.raycastTarget = false;
                 diagram.SetQuest(blueprint);
                 descriptionText.rectTransform.anchorMin = Vector2.zero;
-                descriptionText.rectTransform.anchorMax = new Vector2(1f, researchNote ? .52f : SignalTrialContent.OwnsQuest(Data.questID) ? .24f : .18f);
+                descriptionText.rectTransform.anchorMax = new Vector2(1f, researchNote ? .64f : SignalTrialContent.OwnsQuest(Data.questID) ? .24f : .18f);
                 descriptionText.rectTransform.offsetMin = new Vector2(10f, 3f);
                 descriptionText.rectTransform.offsetMax = new Vector2(-10f, 0f);
                 descriptionText.fontSize = 11f;
@@ -313,7 +313,7 @@ public class NotebookDraggableBlock : MonoBehaviour, IBeginDragHandler, IDragHan
             floatingRect.localScale = Vector3.one;
             floatingRect.localRotation = Quaternion.identity;
             floatingRect.pivot = new Vector2(.5f, .5f);
-            floatingRect.sizeDelta = Data.blockType == NotebookBlockType.Quest ? new Vector2(380, 370) : new Vector2(300, 230);
+            floatingRect.sizeDelta = Data.blockType == NotebookBlockType.Quest ? new Vector2(380, 400) : new Vector2(300, 230);
             workspace.StyleNotebookNote(copyBlock);
         }
         // Notebook ink is transparent on the page; every detached copy needs its own paper.
@@ -402,6 +402,8 @@ public class NotebookDraggableBlock : MonoBehaviour, IBeginDragHandler, IDragHan
             canvasGroup.blocksRaycasts = originalRaycastState;
         }
     }
+
+    internal void CancelSourceDrag() { if (IsSource) CancelDrag(); }
 
     private void OnDisable() { CancelDrag(); SetClueHighlight(false); }
 

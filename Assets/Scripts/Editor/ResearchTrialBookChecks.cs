@@ -21,7 +21,7 @@ public static class ResearchTrialBookChecks
         var targetArea = (RectTransform)typeof(NotebookWorkspaceController).GetField("targetDropZone", Private).GetValue(workspace);
         var sources = new List<NotebookDraggableBlock>();
         foreach (var note in UnityEngine.Object.FindObjectsByType<NotebookDraggableBlock>(FindObjectsSortMode.None))
-            if (note.IsSource && note.isActiveAndEnabled && note.GetComponentInParent<InteractableBook>() == book) sources.Add(note);
+            if (note.IsSource && Visible(note) && note.GetComponentInParent<InteractableBook>() == book) sources.Add(note);
         Check(sources.Count > 0, "Fiziksel kitap yüzeyinde kaynak notlar üretilmedi.");
         foreach (var source in sources)
         {
@@ -44,7 +44,7 @@ public static class ResearchTrialBookChecks
         int blocks = 0;
         foreach (var source in book.GetComponentsInChildren<NotebookDraggableBlock>())
         {
-            if (!source.IsSource || !source.isActiveAndEnabled) continue;
+            if (!source.IsSource || !Visible(source)) continue;
             blocks++;
             foreach (var text in source.GetComponentsInChildren<TMP_Text>())
             {
@@ -54,6 +54,13 @@ public static class ResearchTrialBookChecks
         }
         Check(blocks > 0, "Açık kitapta görünür not yok.");
         Debug.Log("RESEARCH BOOK READABILITY PASS: " + blocks + " visible source blocks fit their text regions.");
+    }
+
+    public static bool Visible(NotebookDraggableBlock note)
+    {
+        if (!note.isActiveAndEnabled) return false;
+        foreach (var group in note.GetComponentsInParent<CanvasGroup>()) if (group.alpha == 0) return false;
+        return true;
     }
 
     private static void Check(bool condition, string message) { if (!condition) throw new InvalidOperationException(message); }

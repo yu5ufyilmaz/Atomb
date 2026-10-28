@@ -23,7 +23,7 @@ public static class ResearchUiExperienceChecks
     private static IEnumerator OpenAndCheck()
     {
         Application.runInBackground = true;
-        GameManager.Instance.StartGameMode();
+        yield return ResearchGuidanceChecks.EnterNormalGame();
         var interaction = UnityEngine.Object.FindFirstObjectByType<InteractableChalkboard>();
         Require(interaction != null, "Araştırma tahtası bulunamadı.");
         if (GameManager.Instance.activeInteraction != null && GameManager.Instance.activeInteraction != interaction)
@@ -53,40 +53,7 @@ public static class ResearchUiExperienceChecks
         Debug.Log("RESEARCH UI EXPERIENCE PASS: persistent clickable controls, opaque screen/world drag paper, catalog-derived part roles, readable source directions.");
     }
 
-    public static void Controls()
-    {
-        var workspace = NotebookWorkspaceController.Instance;
-        var notebook = Field<RectTransform>(workspace, "notebookToggle");
-        var documents = Field<RectTransform>(workspace, "documentToggle");
-        Require(documents != null, "Belge açma düğmesi sabit ekran araçlarına bağlı değil.");
-        Require(notebook.parent == documents.parent, "Defter ve Belgeler aynı sabit araç grubunda olmalı.");
-        Require(notebook.rect.height >= 44 && documents.rect.height >= 44, "Açma düğmeleri kolay tıklanacak büyüklükte değil.");
-        bool originalNotebookOpen = Field<bool>(workspace, "notebookExpanded");
-        bool notebookOpen = originalNotebookOpen;
-        var panel = ChalkboardManager.Instance.EnsureDocuments();
-        bool originalDocumentsOpen = panel.IsDocumentPanelOpen;
-        bool documentsOpen = originalDocumentsOpen;
-        try
-        {
-            for (int state = 0; state < 2; state++)
-            {
-                RequireReachable(notebook); RequireReachable(documents);
-                Require(Field<TextMeshProUGUI>(workspace, "notebookToggleText").text.Contains(notebookOpen ? "KAPAT" : "AÇ"), "Defter düğmesi gerçek açılma durumunu söylemiyor.");
-                notebook.GetComponent<Button>().onClick.Invoke(); notebookOpen = !notebookOpen;
-                Invoke(workspace, "UpdateNotebookPopup", 1f);
-                documents.GetComponent<Button>().onClick.Invoke();
-                Require(panel.IsDocumentPanelOpen != documentsOpen, "Belgeler düğmesi panoyu açıp kapatmıyor.");
-                documentsOpen = !documentsOpen;
-                Require(Field<TextMeshProUGUI>(workspace, "documentToggleText").text.Contains(documentsOpen ? "TOPLA" : "AÇ"), "Belgeler düğmesi gerçek pano durumunu söylemiyor.");
-            }
-        }
-        finally
-        {
-            if (Field<bool>(workspace, "notebookExpanded") != originalNotebookOpen) workspace.ToggleNotebook();
-            Invoke(workspace, "UpdateNotebookPopup", 1f);
-            panel.SetDocumentPanelOpen(originalDocumentsOpen, true);
-        }
-    }
+    public static void Controls() => PhysicalBoardChecks.Controls();
 
     public static void DragPaper()
     {

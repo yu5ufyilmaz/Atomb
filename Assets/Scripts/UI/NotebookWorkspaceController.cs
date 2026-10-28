@@ -97,13 +97,11 @@ public partial class NotebookWorkspaceController : MonoBehaviour
         RefreshPage();
         RefreshBook(book);
         RefreshPinnedQuest();
-        RefreshResearchControls();
         openingNotebook = false;
     }
 
     public void Close()
     {
-        if (researchControls != null) ChalkboardManager.Instance?.EnsureDocuments()?.SetScreenControlsActive(false);
         ResetNotebookPageTurn();
         bool restoreCursor = IsStandaloneOpen;
         IsStandaloneOpen = false;
@@ -152,7 +150,6 @@ public partial class NotebookWorkspaceController : MonoBehaviour
             if (IsArchiveNotebook && !IsStandaloneOpen && Input.GetKeyDown(KeyCode.Tab)) ToggleNotebook();
             UpdateNotebookPopup(Time.unscaledDeltaTime);
             UpdateNotebookPageTurn(Time.unscaledDeltaTime);
-            RefreshResearchControls();
         }
     }
 
@@ -250,14 +247,16 @@ public partial class NotebookWorkspaceController : MonoBehaviour
         bookContent.pivot = new Vector2(0.5f, 1);
         scroll.content = bookContent;
 
-        var controls = Panel("Tahta Araçları", bounds, new Vector2(720, 100), paper);
-        controls.anchorMin = controls.anchorMax = Vector2.zero;
-        controls.anchoredPosition = new Vector2(395, 85);
-        boardControls = controls.gameObject;
-        Label(controls, IsArchiveNotebook ? "Gövdeyi sürükle: taşı • Uçları bağla\nBoşlukta çiz • Sağ tık: tahtadan kaldır"
-            : "Sol tık: çiz / uçları bağla\nSağ tık: sil • Yazılar sabittir", new Vector2(-164, 25), new Vector2(365, 42), 16);
-        Button(controls, SignalExperiment.Active != null ? "DENEYİ ÖLÇ" : "SENTEZLE / TEST ET", new Vector2(199, 25), new Vector2(280, 34), () => ChalkboardManager.Instance?.AttemptSynthesis());
-        boardFeedback = Label(controls, "Boş tahtada çiz; uçtan uca bağla. İkinci bağ çizimi çift bağ yapar.", new Vector2(0, -22), new Vector2(700, 43), 16);
+        if (!IsArchiveNotebook)
+        {
+            var controls = Panel("Tahta Araçları", bounds, new Vector2(720, 100), paper);
+            controls.anchorMin = controls.anchorMax = Vector2.zero;
+            controls.anchoredPosition = new Vector2(395, 85);
+            boardControls = controls.gameObject;
+            Label(controls, "Sol tık: çiz / uçları bağla\nSağ tık: sil • Yazılar sabittir", new Vector2(-164, 25), new Vector2(365, 42), 16);
+            Button(controls, "SENTEZLE / TEST ET", new Vector2(199, 25), new Vector2(280, 34), () => ChalkboardManager.Instance?.AttemptSynthesis());
+            boardFeedback = Label(controls, "Boş tahtada çiz; uçtan uca bağla. İkinci bağ çizimi çift bağ yapar.", new Vector2(0, -22), new Vector2(700, 43), 16);
+        }
         root.SetActive(false);
     }
 

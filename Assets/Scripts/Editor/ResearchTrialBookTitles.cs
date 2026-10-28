@@ -11,6 +11,22 @@ public static class ResearchTrialBookTitles
     private const string ScenePath = "Assets/Scenes/scn_SynthesisBlockout.unity";
     private static readonly string[] Titles = { "Araştırma Soruları", "Parça Atlası", "Bağ İlkeleri", "Deney Kayıtları" };
 
+    [MenuItem("Senzora/Araştırma Denemeleri/Açık Sahnenin Kitap İsimliklerini Düzelt")]
+    public static void ApplyCurrent()
+    {
+        if (EditorApplication.isPlayingOrWillChangePlaymode) return;
+        var scene = SceneManager.GetActiveScene();
+        ResearchPuzzleTrial trial = null;
+        foreach (var root in scene.GetRootGameObjects())
+        { trial = root.GetComponentInChildren<ResearchPuzzleTrial>(true); if (trial != null) break; }
+        if (trial == null) throw new System.InvalidOperationException("Açık sahnede araştırma kitapları bulunamadı.");
+        System.IO.Directory.CreateDirectory("UserSettings/PuzzleWorkshop");
+        string backup = "UserSettings/PuzzleWorkshop/scene-before-shelf-labels-" + System.DateTime.UtcNow.ToString("yyyyMMdd-HHmmss") + ".unity";
+        if (!EditorSceneManager.SaveScene(scene, backup, true))
+            throw new System.InvalidOperationException("Mevcut sahnenin yedeği alınamadı; isimliklere dokunulmadı.");
+        if (!Apply(trial)) throw new System.InvalidOperationException("İsimlik güncellemesi tamamlanmadı.");
+    }
+
     [MenuItem("Senzora/Araştırma Denemeleri/Kitap Başlıklarını Görüntüle")]
     public static void CaptureTitles()
     {
@@ -90,8 +106,7 @@ public static class ResearchTrialBookTitles
         if (EditorApplication.isPlayingOrWillChangePlaymode || trial == null
             || (trial.gameObject.scene.path != ScenePath && !trial.allowGameplayScene) || trial.books == null) return false;
         var material = AssetDatabase.LoadAssetAtPath<Material>("Assets/Materials/SynthesisBlockout/Blockout_Tahta.mat");
-        var sample = trial.GetComponentInChildren<TextMeshPro>(true);
-        var font = sample != null ? sample.font : TMP_Settings.defaultFontAsset;
+        var font = AssetDatabase.LoadAssetAtPath<TMP_FontAsset>("Assets/TextMesh Pro/Fonts/SpecialElite-Regular SDF.asset");
         if (material == null || font == null) { Debug.LogError("Kitap etiketi için mevcut materyal veya yazı tipi bulunamadı."); return false; }
         for (int i = 0; i < trial.books.Length; i++)
         {
@@ -102,6 +117,16 @@ public static class ResearchTrialBookTitles
             var cover = book.transform.Find("Armature.001/Root/Binding/Page.L");
             var spine = book.transform.Find("Armature.001/Root/Binding");
             if (cover == null || spine == null) return false;
+            var shelf = book.transform.parent;
+            while (shelf != null && !shelf.name.StartsWith("RAF", System.StringComparison.OrdinalIgnoreCase)) shelf = shelf.parent;
+            if (shelf != null)
+            {
+                Vector3 outward = -spine.forward;
+                outward = Mathf.Abs(outward.x) > Mathf.Abs(outward.z) ? Vector3.right * Mathf.Sign(outward.x) : Vector3.forward * Mathf.Sign(outward.z);
+                Undo.RecordObject(book, "Raftan Alma Yönü");
+                book.shelfPullDirection = book.transform.parent.InverseTransformDirection(outward);
+                EditorUtility.SetDirty(book);
+            }
             var baked = new Mesh();
             try
             {
@@ -120,12 +145,16 @@ public static class ResearchTrialBookTitles
         }
         EditorSceneManager.MarkSceneDirty(trial.gameObject.scene);
         ApplyShelfSigns(trial, material, font);
+        foreach (var book in trial.books) foreach (var label in book.GetComponentsInChildren<TextMeshPro>(true))
+            if (label.font == font) label.ForceMeshUpdate(true);
+        AssetDatabase.SaveAssetIfDirty(font);
         Debug.Log("Araştırma kitaplarının kapak ve sırt başlıkları test sahnesine eklendi.", trial);
         return true;
     }
 
     private static void ApplyShelfSigns(ResearchPuzzleTrial trial, Material material, TMP_FontAsset font)
     {
+        var cabinets = Object.FindObjectsByType<MeshRenderer>(FindObjectsSortMode.None);
         var groups = new Dictionary<Transform, List<InteractableBook>>();
         foreach (var book in trial.books)
         {
@@ -140,11 +169,20 @@ public static class ResearchTrialBookTitles
             var bounds = new Bounds(group.Value[0].transform.position, Vector3.zero);
             foreach (var book in group.Value) foreach (var collider in book.GetComponentsInChildren<Collider>()) bounds.Encapsulate(collider.bounds);
             var holder = Child(group.Key, "Araştırma Raf İsimliği");
-            Vector3 point = bounds.center + Vector3.up * (bounds.extents.y + .14f);
-            Vector3 viewer = Camera.main != null ? Camera.main.transform.position : trial.Board != null ? trial.Board.transform.position : point + Vector3.forward;
-            Vector3 facing = viewer - point; facing.y = 0;
-            if (facing.sqrMagnitude < .01f) facing = Vector3.forward;
-            holder.SetPositionAndRotation(point + facing.normalized * .08f, Quaternion.LookRotation(-facing.normalized));
+            Vector3 facing = group.Value[0].transform.parent.TransformDirection(group.Value[0].shelfPullDirection).normalized;
+            Bounds front = bounds;
+            float nearest = float.PositiveInfinity;
+            foreach (var cabinet in cabinets)
+            {
+                if (cabinet.gameObject.scene != trial.gameObject.scene || cabinet.name.IndexOf("BookCase", System.StringComparison.OrdinalIgnoreCase) < 0) continue;
+                float distance = (cabinet.bounds.ClosestPoint(bounds.center) - bounds.center).sqrMagnitude;
+                if (distance >= nearest) continue;
+                nearest = distance; front = cabinet.bounds;
+            }
+            float reach = Vector3.Dot(front.extents, new Vector3(Mathf.Abs(facing.x), 0, Mathf.Abs(facing.z)));
+            Vector3 point = front.center + facing * (reach + .035f);
+            point.y = front.max.y - .115f;
+            holder.SetPositionAndRotation(point, Quaternion.LookRotation(-facing));
             holder.localScale = Vector3.one;
             var plate = Child(holder, "Plaka");
             var filter = plate.GetComponent<MeshFilter>();
@@ -155,14 +193,16 @@ public static class ResearchTrialBookTitles
                 Object.DestroyImmediate(primitive);
                 plate.gameObject.AddComponent<MeshRenderer>();
             }
-            plate.localPosition = Vector3.zero; plate.localRotation = Quaternion.identity; plate.localScale = new Vector3(.52f, .13f, .012f);
+            plate.localPosition = Vector3.zero; plate.localRotation = Quaternion.identity; plate.localScale = new Vector3(.65f, .16f, .012f);
             plate.GetComponent<MeshRenderer>().sharedMaterial = material;
             var textHolder = Child(holder, "Başlık");
             var text = textHolder.GetComponent<TextMeshPro>() ?? textHolder.gameObject.AddComponent<TextMeshPro>();
-            text.transform.localPosition = new Vector3(0, 0, -.008f); text.transform.localRotation = Quaternion.identity; text.transform.localScale = Vector3.one;
-            text.rectTransform.sizeDelta = new Vector2(.49f, .115f); text.font = font;
-            text.fontSize = text.fontSizeMax = 1.1f; text.fontSizeMin = .4f; text.enableAutoSizing = true;
-            text.text = group.Value[0].GetComponent<PuzzleBookIdentity>().location;
+            text.transform.localPosition = new Vector3(0, 0, -.008f); text.transform.localRotation = Quaternion.identity; text.transform.localScale = Vector3.one * .001f;
+            text.rectTransform.sizeDelta = new Vector2(600, 140); text.font = font; text.fontSharedMaterial = font.material;
+            text.fontSize = text.fontSizeMax = 1000; text.fontSizeMin = 600; text.enableAutoSizing = true;
+            text.fontStyle = FontStyles.Normal; text.characterSpacing = 2; text.extraPadding = true;
+            text.textWrappingMode = TextWrappingModes.NoWrap;
+            text.text = group.Value[0].GetComponent<PuzzleBookIdentity>().location.ToUpperInvariant();
             text.color = new Color(.96f, .89f, .70f); text.alignment = TextAlignmentOptions.Center; text.raycastTarget = false;
         }
     }
@@ -229,6 +269,11 @@ public static class ResearchTrialBookTitles
         text.rectTransform.sizeDelta = size * (0.87f * textUnits);
         Undo.RecordObject(text, "Kitap Başlığını Yaz");
         text.font = font;
+        text.fontSharedMaterial = font.material;
+        text.fontStyle = FontStyles.Normal;
+        text.characterSpacing = 1.5f;
+        text.lineSpacing = 4;
+        text.extraPadding = true;
         text.text = title;
         text.color = new Color(0.96f, 0.89f, 0.70f, 1);
         text.alignment = TextAlignmentOptions.Center;

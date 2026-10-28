@@ -55,13 +55,6 @@ public partial class NotebookWorkspaceController
         closeLabel.text = "×"; closeLabel.fontSize = 22; closeLabel.rectTransform.sizeDelta = new Vector2(26, 32);
         closeLabel.rectTransform.anchoredPosition = new Vector2(-3, 1);
         StyleNotebookDivider(close, false, true);
-        notebookToggle.GetComponent<Image>().sprite = null;
-        notebookToggle.GetComponent<Image>().color = new Color(.09f, .12f, .10f, .95f);
-        notebookToggleText.font = notebookHeadingFont; notebookToggleText.fontSize = 15;
-        notebookToggleText.rectTransform.sizeDelta = new Vector2(200, 44);
-        notebookToggleText.color = new Color(.82f, .84f, .78f);
-        if (documentToggleText != null) documentToggleText.font = notebookHeadingFont;
-        notebookToggle.gameObject.SetActive(true);
         pageLabel.font = notebookHeadingFont; pageLabel.color = NotebookInk;
         statusLabel.font = notebookBodyFont; statusLabel.color = NotebookInk;
         archiveFooter.font = notebookBodyFont; archiveFooter.color = NotebookInk;
@@ -222,11 +215,11 @@ public partial class NotebookWorkspaceController
         }
         else if (body != null && target != null)
         {
-            body.rectTransform.anchorMax = new Vector2(1, .52f);
+            body.rectTransform.anchorMax = new Vector2(1, .64f);
             body.rectTransform.offsetMin = new Vector2(12, 10); body.rectTransform.offsetMax = new Vector2(-12, 0);
             body.fontSizeMin = 13; body.fontSizeMax = 18;
             body.overflowMode = TextOverflowModes.Ellipsis;
-            target.rectTransform.anchorMin = new Vector2(.06f, .56f); target.rectTransform.anchorMax = new Vector2(.94f, .80f);
+            target.rectTransform.anchorMin = new Vector2(.06f, .68f); target.rectTransform.anchorMax = new Vector2(.94f, .86f);
         }
         else if (body != null)
         {

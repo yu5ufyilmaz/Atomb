@@ -4,9 +4,52 @@ public partial class InteractableBook
 {
     public bool IsOpening { get; private set; }
     public bool IsClosing { get; private set; }
+    public bool IsShelfPulling { get; private set; }
+    [Header("Raftan Alma")]
+    [Min(.1f)] public float shelfPullDuration = .28f;
+    [Min(.01f)] public float shelfPullClearance = .08f;
+    [Tooltip("Raf ebeveynine göre dış yön. Sıfırsa kitap sırtından hesaplanır.")]
+    public Vector3 shelfPullDirection;
+    private bool shelfPickup;
+    private Vector3 shelfExitLocalPosition;
     private AnimationClip coverMotion;
     private bool coverAnimatorEnabled, coverSoundPlayed;
     private bool closeRequested;
+
+    private bool ShelfExit(out Vector3 exit)
+    {
+        exit = transform.position;
+        var shelf = transform.parent;
+        while (shelf != null && !shelf.name.StartsWith("RAF", System.StringComparison.OrdinalIgnoreCase)) shelf = shelf.parent;
+        if (shelf == null || bookSkinnedMeshRenderer == null) return false;
+        Vector3 direction = originalParent.TransformDirection(shelfPullDirection);
+        if (direction.sqrMagnitude < .01f)
+        {
+            var binding = transform.Find("Armature.001/Root/Binding");
+            if (binding == null) return false;
+            direction = -binding.forward;
+        }
+        direction.y = 0; direction.Normalize();
+        var bounds = bookSkinnedMeshRenderer.bounds;
+        float depth = 2 * Vector3.Dot(bounds.extents, new Vector3(Mathf.Abs(direction.x), 0, Mathf.Abs(direction.z)));
+        exit += direction * (depth + shelfPullClearance);
+        return true;
+    }
+
+    private System.Collections.IEnumerator SlideShelf(Vector3 from, Vector3 to, Quaternion rotation)
+    {
+        IsShelfPulling = true;
+        float t = 0;
+        while (t < 1)
+        {
+            if (GameManager.Instance != null && GameManager.Instance.isGamePaused) { yield return null; continue; }
+            t = Mathf.Clamp01(t + Time.deltaTime / Mathf.Max(.1f, shelfPullDuration));
+            transform.SetPositionAndRotation(Vector3.Lerp(from, to, Mathf.SmoothStep(0, 1, t)), rotation);
+            yield return null;
+        }
+        transform.SetPositionAndRotation(to, rotation);
+        IsShelfPulling = false;
+    }
 
     private void BeginCoverMotion(bool opening, bool skip)
     {

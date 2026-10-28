@@ -88,8 +88,6 @@ Ortak akış sabittir; yeni aile için yeni kitap/defter/Turing sistemi gerekmez
 
 Bu, mevcut iki aile arasında çalışan ayrımdır; henüz eklenmemiş bağlantı mantığı veya madde dönüşümü simülatörü varmış gibi davranılmaz.
 
-## Geliştirici kontrolleri
-
 ## Konulu kitaplar ve otomatik kaynakça
 
 Laboratuvardaki 47 kitabın kapağında ve sırtında kalıcı, benzersiz bir başlık vardır. Etkileşim yazısı kitap adını ve rafını gösterir; rafların da isimlikleri bulunur. `PuzzleBookIdentity` üzerinden konu kabulünü ve sayfa kapasitesini ayarlayabilirsin. Konular temel aygıtlar, sinyal numuneleri, sinyal işlemleri, pigmentler ve karışım işlemleridir; bir kitap birden fazla konuyu kabul edebilir.
@@ -98,9 +96,17 @@ Kaydedilmiş veya rastgele üretilmiş hedef aynı dağıtıcıdan geçer. Önce
 
 Yeni oturum kitap ve sayfa seçimini değiştirir. Devam Et aynı yerleşimi, kaynakçayı ve kart alanlarını yükler. Yeterli uygun alan bulunmazsa sistem yanlış kitaplara yerleştirmek yerine kurulumu açıklamalı olarak reddeder.
 
-Araştırma sırasında ekranın üstündeki **Defter** ve tahtadayken **Belgeler** düğmeleri açık/kapalı durumda görünür kalır. **Tab** defteri açıp kapatır. Parçaların başlığı başlatıcı, işlem veya sonlandırıcı rolünü gösterir; sürüklenen notun kâğıt zemini korunur.
+**Tab** defteri açıp kapatır; defterdeki **×** de kapatır. Ayrı Defteri Aç/Kapat ekran düğmeleri yoktur. **Belgeler** tutamağı ve **Deneyi Ölç** cihazı doğrudan tahtanın üzerindedir. Açık bırakılan belge panosu tahtadan çıkınca dünyada açık kalır; tekrar girişte kullanılabilir. Tahtadaki hedef kartı daha küçüktür, uzun kaynak yönlendirmeleri tekerlekle kaydırılır; defterdeki büyük hedef kartı korunur. Parçaların başlığı başlatıcı, işlem veya sonlandırıcı rolünü gösterir; sürüklenen notun kâğıt zemini korunur.
+
+Kitap sayfaları ve basılı grafikler yeniden kullanılmak üzere önbelleğe alınır. Sayfa dönüşünde yalnız hareket eden görünür mürekkep güncellenir. Görünmez sürükleme alanları ayrıntılı kağıt geometrisi oluşturmaz. Performans ölçümleri için **Senzora → Book Motion → Optimization Capture After / Optimization Check Regression**, gerçek Play kareleri için **Optimization Live Frames After (Play)** kullanılabilir. Mikro ölçüm toplam oyun FPS'i değildir; ayrıntılar `docs/BookPerformanceAudit.md` dosyasındadır.
 
 Yeni kontroller: **Araştırma Dağıtımı**, **Ortak Konulu Kitap Kapasitesi**, **Araştırma Hedef Görseli**, Play sırasında **Araştırma Arayüzü**. Fiziksel geometri için **Senzora → Book Surface → Projection Regression / Layout Regression** kullanılabilir.
+
+## Geliştirici kontrolleri
+
+Kitap kapak/sırt isimleri ve raf tabelaları **Special Elite** fontunu kullanır. **Senzora → Araştırma Denemeleri → Açık Sahnenin Kitap İsimliklerini Düzelt** yalnız isimlikleri ve raf çıkış yönlerini günceller; mevcut sahnenin kopyasını `UserSettings/PuzzleWorkshop` altında korur. Tabelalar gerçek raf gövdesinin ön yüzüne yerleşir. Sahne değişikliklerini kaydetmek gerekir.
+
+`InteractableBook → Raftan Alma` bölümünde çekilme süresi ve açıklık payı ayarlanır. Raftaki kapalı kitap önce dönmeden/kapağını açmadan dışarı kayar; sonra okuyucuya yaklaşır. Geri dönüşte önce kapalı şekilde rafın önüne gelir, sonra aynı yuvaya girer. Masadaki kitaplar normal yaklaşımı kullanır. **Senzora → Book Motion → Shelf Labels Check / Shelf Pickup Live Check / Shelf Capture Labels** kontrolleri vardır.
 
 **Senzora → Puzzle Atölyesi → Doğrulama → Şema Yerleşimi**: gerçek editör penceresinde iki aileyi, farklı pencere boylarını, yakınlaştırmayı, kaydırmayı ve 64 parçanın sığdırılmasını denetler. Çizilen ilk/son düğüm ve kırpma alanı piksel konumlarıyla kontrol edilir; seçim, bağ kurma ve sürükleme gerçek IMGUI olaylarıyla sınanır. Görüntüleme/zoom belgeyi değiştirmemelidir. Kontrol geçici pencerede çalışır ve mevcut taslak dosyalarını geri koyar.
 

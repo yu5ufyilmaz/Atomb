@@ -548,6 +548,14 @@ public partial class InteractableBook : MonoBehaviour, IInteractable, IForceExit
         originalLocalPosition = transform.localPosition;
         originalLocalRotation = transform.localRotation;
         originalLocalScale = transform.localScale; // BUNU EKLEs
+        shelfPickup = !alreadyOpen && ShelfExit(out _);
+        if (shelfPickup)
+        {
+            ShelfExit(out var exit);
+            shelfExitLocalPosition = originalParent.InverseTransformPoint(exit);
+            IsShelfPulling = true;
+            yield return SlideShelf(transform.position, exit, transform.rotation);
+        }
         transform.SetParent(cameraTransform, true);
 
         pageIndexL = (startPageIndex % 2 == 0) ? startPageIndex : startPageIndex - 1;
@@ -677,7 +685,7 @@ public partial class InteractableBook : MonoBehaviour, IInteractable, IForceExit
         Quaternion targetWorldRotation;
         if (originalParent != null)
         {
-            targetWorldPosition = originalParent.TransformPoint(originalLocalPosition);
+            targetWorldPosition = originalParent.TransformPoint(shelfPickup ? shelfExitLocalPosition : originalLocalPosition);
             targetWorldRotation = originalParent.rotation * originalLocalRotation;
         }
         else
@@ -704,6 +712,8 @@ public partial class InteractableBook : MonoBehaviour, IInteractable, IForceExit
             yield return null;
         }
         EndCoverMotion(false);
+        if (shelfPickup)
+            yield return SlideShelf(transform.position, originalParent.TransformPoint(originalLocalPosition), targetWorldRotation);
         transform.SetParent(originalParent, true);
         transform.localPosition = originalLocalPosition;
         transform.localRotation = originalLocalRotation;

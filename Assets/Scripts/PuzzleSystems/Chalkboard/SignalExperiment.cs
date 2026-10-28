@@ -16,6 +16,7 @@ public sealed class SignalExperiment : MonoBehaviour
     private ResearchPuzzleTrial trial;
     private NotebookDraggableBlock output;
     private CanvasGroup outputInput;
+    private TextMeshProUGUI deviceFeedback;
     private readonly Dictionary<string, Reading> readings = new Dictionary<string, Reading>();
     public string TerminalMessage { get; internal set; } = "Ölçümler'deki ölçüm kağıdını okuyucuya bırak veya kodu elle gir.";
     public Reading LastReading { get; private set; }
@@ -42,6 +43,8 @@ public sealed class SignalExperiment : MonoBehaviour
         if (gameObject.scene.name != "scn_SynthesisBlockout" && !research.allowGameplayScene) return;
         Active = this;
         trial = research;
+        trial.Board.SynthesisFeedback -= ShowFeedback;
+        trial.Board.SynthesisFeedback += ShowFeedback;
         terminal?.ResetMeasurementSession();
         readings.Clear();
         if (output != null)
@@ -53,15 +56,30 @@ public sealed class SignalExperiment : MonoBehaviour
         var root = new GameObject("İz Ölçüm Çıktısı", typeof(RectTransform), typeof(Canvas), typeof(GraphicRaycaster), typeof(CanvasGroup));
         var rect = (RectTransform)root.transform;
         rect.SetParent(trial.Board.boardTransform, false);
-        rect.localPosition = new Vector3(trial.Board.minBounds.x + .40f, trial.Board.minBounds.y + .30f, .045f);
+        rect.localPosition = new Vector3(trial.Board.minBounds.x + .375f, trial.Board.minBounds.y + .42f, .045f);
         rect.localRotation = Quaternion.Euler(0, 180, 0);
         rect.localScale = Vector3.one / 300;
-        rect.sizeDelta = new Vector2(218, 156);
+        rect.sizeDelta = new Vector2(218, 246);
         var canvas = root.GetComponent<Canvas>();
         canvas.renderMode = RenderMode.WorldSpace; canvas.worldCamera = Camera.main; canvas.sortingOrder = 7;
         outputInput = root.GetComponent<CanvasGroup>();
+        PhysicalBoardFixture.Attach(rect, "Ölçüm Cihazı", Vector2.zero, rect.sizeDelta, new Color(.14f, .18f, .16f));
+        var measure = new GameObject("Deneyi Ölç", typeof(RectTransform), typeof(Image), typeof(Button));
+        var measureRect = (RectTransform)measure.transform;
+        measureRect.SetParent(rect, false); measureRect.sizeDelta = new Vector2(206, 36); measureRect.anchoredPosition = new Vector2(0, 100);
+        measure.GetComponent<Image>().color = new Color(.65f, .51f, .27f);
+        measure.GetComponent<Button>().onClick.AddListener(() =>
+        {
+            if (trial.Board.isMachineActive && (GameManager.Instance == null || !GameManager.Instance.isGamePaused))
+                trial.Board.AttemptSynthesis();
+        });
+        DeviceLabel(measureRect, "DENEYİ ÖLÇ", Vector2.zero, new Vector2(200, 32), 15);
+        deviceFeedback = DeviceLabel(rect, "Ölçüm kağıdını deftere al.", new Vector2(0, 68), new Vector2(206, 24), 10);
+        deviceFeedback.color = new Color(.94f, .90f, .75f);
+        var outputSlot = new GameObject("Ölçüm Kağıdı Yuvası", typeof(RectTransform)).GetComponent<RectTransform>();
+        outputSlot.SetParent(rect, false); outputSlot.sizeDelta = new Vector2(218, 156); outputSlot.anchoredPosition = new Vector2(0, -28);
         var paper = new GameObject("Ölçüm Kağıdı", typeof(RectTransform), typeof(CanvasGroup), typeof(NotebookDraggableBlock));
-        paper.transform.SetParent(rect, false);
+        paper.transform.SetParent(outputSlot, false);
         output = paper.GetComponent<NotebookDraggableBlock>();
         ShowOutput(new Reading { problem = "Önce bir düzen kur; ÖLÇ düğmesine bas." });
     }
@@ -79,6 +97,7 @@ public sealed class SignalExperiment : MonoBehaviour
         LastReading = reading;
         if (LastReading.Measurable) readings[LastReading.Code] = LastReading;
         ShowOutput(LastReading);
+        ShowFeedback(LastReading.Measurable ? "Ölçüm hazır. Kağıdı deftere al." : LastReading.problem, LastReading.Measurable);
         Debug.Log($"SIGNAL TRIAL MEASUREMENT: main={LastReading.main:F2}, echo={LastReading.echo:F2}, code={(LastReading.Measurable ? LastReading.Code : LastReading.problem)}");
     }
 
@@ -155,5 +174,26 @@ public sealed class SignalExperiment : MonoBehaviour
             && (GameManager.Instance == null || !GameManager.Instance.isGamePaused);
     }
 
-    private void OnDestroy() { if (Active == this) Active = null; }
+    private static TextMeshProUGUI DeviceLabel(Transform parent, string value, Vector2 position, Vector2 size, float fontSize)
+    {
+        var obj = new GameObject("Metin", typeof(RectTransform), typeof(TextMeshProUGUI));
+        obj.transform.SetParent(parent, false);
+        var label = obj.GetComponent<TextMeshProUGUI>();
+        label.text = value; label.fontSize = fontSize; label.enableAutoSizing = true; label.fontSizeMin = 8; label.fontSizeMax = fontSize;
+        label.color = new Color(.12f, .15f, .13f); label.alignment = TextAlignmentOptions.Center; label.raycastTarget = false;
+        label.rectTransform.sizeDelta = size; label.rectTransform.anchoredPosition = position;
+        return label;
+    }
+
+    private void ShowFeedback(string message, bool success)
+    {
+        if (deviceFeedback != null) deviceFeedback.text = message;
+    }
+
+    private void OnDestroy()
+    {
+        if (trial != null && trial.Board != null) trial.Board.SynthesisFeedback -= ShowFeedback;
+        if (outputInput != null) Destroy(outputInput.gameObject);
+        if (Active == this) Active = null;
+    }
 }
