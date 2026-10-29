@@ -46,6 +46,7 @@ public class SubtitleEntry
 {
     public string id;
     public string note;
+    public AudioClip voiceClip;
     public List<SubtitleSegment> segments = new List<SubtitleSegment>();
 }
 

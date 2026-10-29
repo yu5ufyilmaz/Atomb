@@ -29,9 +29,14 @@ public sealed class PhysicalBoardFixture : MonoBehaviour
         var box = GameObject.CreatePrimitive(PrimitiveType.Cube);
         box.name = label; box.transform.SetParent(transform, false);
         box.transform.localPosition = position; box.transform.localScale = size;
-        var collider = box.GetComponent<Collider>(); collider.enabled = false; Destroy(collider);
+        var collider = box.GetComponent<Collider>(); collider.enabled = false;
+        if (Application.isPlaying) Destroy(collider); else DestroyImmediate(collider);
         box.GetComponent<MeshRenderer>().sharedMaterial = material;
     }
 
-    private void OnDestroy() { if (material != null) Destroy(material); }
+    private void OnDestroy()
+    {
+        if (material == null) return;
+        if (Application.isPlaying) Destroy(material); else DestroyImmediate(material);
+    }
 }

@@ -103,14 +103,15 @@ public class SynthesisBlockoutPlayer : MonoBehaviour
         string controls = researchBooks != null && researchBooks.Length == 4
             ? "ARAŞTIRMA DENEMELERİ / KİTAP → DEFTER → TAHTA\n1: Sorular | 2: Tahta | 3: Parçalar | 4: İlkeler | 5: Deney kayıtları\nWASD / fare: yürü ve bak | Sol tık: etkileş | F / Esc: çık"
             : "SENTEZ BLOCKOUT / SADECE ETKİLEŞİM TESTİ\nWASD: yürü | Fare: bak | Sol tık: etkileş\n1: kitap | 2: tahta | F: etkileşimden çık | Esc: çık";
+        controls = GameLocalization.Translate(controls);
         var research = ResearchPuzzleTrial.Active;
-        if (research != null) controls += "\nAraştırma sonuçları: " + research.Completed.Count + " / " + research.Content.Quests.Count
-            + (SignalExperiment.Active != null ? "  |  6: Turing deneme kopyası" : "  |  Hedef değişince tahta çalışman saklanır.");
+        if (research != null) controls += GameLocalization.Format("\nAraştırma sonuçları: {0} / {1}", research.Completed.Count, research.Content.Quests.Count)
+            + GameLocalization.Translate(SignalExperiment.Active != null ? "  |  6: Turing deneme kopyası" : "  |  Hedef değişince tahta çalışman saklanır.");
         GUI.Box(new Rect(12, 12, 680, research != null ? 96 : 76), controls);
         if (session == null)
         {
             GUI.Label(new Rect(Screen.width / 2f - 5, Screen.height / 2f - 12, 30, 30), "+");
-            if (focused != null) GUI.Box(new Rect(Screen.width / 2f - 170, Screen.height - 65, 340, 30), focused.GetInteractionPrompt());
+            if (focused != null) GUI.Box(new Rect(Screen.width / 2f - 170, Screen.height - 65, 340, 30), GameLocalization.Translate(focused.GetInteractionPrompt()));
         }
     }
 }

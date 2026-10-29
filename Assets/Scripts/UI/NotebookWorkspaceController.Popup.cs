@@ -48,7 +48,7 @@ public partial class NotebookWorkspaceController
             notebookWindow.anchoredPosition = notebookOpenPosition + Vector2.down * (notebookWindow.sizeDelta.y + 40);
         }
         if (boardControls != null) boardControls.SetActive(false);
-        archiveFooter.text = "TAB: KAPAT   /   Q E: BÖLÜM   /   TEKERLEK: SAYFA";
+        GameLocalization.Set(archiveFooter, "TAB: KAPAT   /   Q E: BÖLÜM   /   TEKERLEK: SAYFA");
         Cursor.lockState = standaloneUnlocksCursor ? CursorLockMode.None : CursorLockMode.Locked;
         Cursor.visible = standaloneUnlocksCursor;
     }
@@ -101,7 +101,7 @@ public partial class NotebookWorkspaceController
         notebookVisibility.interactable = notebookVisibility.blocksRaycasts = notebookExpanded && notebookReveal >= 1;
         notebookWindow.gameObject.SetActive(true);
         if (notebookToggleText != null)
-            notebookToggleText.text = notebookExpanded ? "DEFTERİ KAPAT  ›" : "‹  DEFTERİ AÇ";
+            GameLocalization.Set(notebookToggleText, notebookExpanded ? "DEFTERİ KAPAT  ›" : "‹  DEFTERİ AÇ");
     }
 
     private void UpdateNotebookPopup(float delta)

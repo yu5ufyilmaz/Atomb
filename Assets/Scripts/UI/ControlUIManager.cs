@@ -110,7 +110,7 @@ public class ControlsUIManager : MonoBehaviour
                 currentActivePanel = genericTextPanel;
                 DoFManager.Instance.SetFocus(genericFocus); // Sabit 0.28f yerine değişkeni kullandık
                 if (genericText != null)
-                    genericText.text = optionalText;
+                    GameLocalization.Set(genericText, optionalText);
                 break;
             case MachineType.MassSpectrometer:
                 currentActivePanel = massSpectrometerPanel;

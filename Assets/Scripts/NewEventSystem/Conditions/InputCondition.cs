@@ -36,6 +36,8 @@ public class InputCondition : MonoBehaviour, ICondition
 
     private void Update()
     {
+        if (GameManager.Instance != null && (!GameManager.Instance.isGameStarted || GameManager.Instance.isGamePaused)) return;
+        foreach (var prereq in GetComponents<PrerequisiteCondition>()) if (!prereq.IsMet()) return;
         // Şart zaten sağlandıysa sistemi yorma
         if (conditionMet)
             return;

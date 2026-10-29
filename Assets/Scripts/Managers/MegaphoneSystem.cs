@@ -97,7 +97,7 @@ public class MegaphoneSystem : MonoBehaviour
         // Altyazıyı Tetikle
         if (GlobalSubtitleManager.Instance != null)
         {
-            GlobalSubtitleManager.Instance.Show(subtitleID);
+            GlobalSubtitleManager.Instance.Show(subtitleID, voiceSource: clip != null ? speakerSource : null);
         }
     }
 

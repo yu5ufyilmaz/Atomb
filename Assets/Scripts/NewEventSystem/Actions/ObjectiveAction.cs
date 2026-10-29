@@ -21,13 +21,14 @@ public class ObjectiveAction : ActionBase
         // 1. Ekrandaki Görev Yazısını Güncelle
         if (objectiveTextUI != null)
         {
-            objectiveTextUI.text = newObjectiveText;
+            GameLocalization.Set(objectiveTextUI, newObjectiveText);
         }
 
         // 2. Altyazı Göster
-        if (!string.IsNullOrEmpty(subtitleID) && GlobalSubtitleManager.Instance != null)
+        if (GlobalSubtitleManager.Instance != null && (!string.IsNullOrEmpty(subtitleID)
+            || (voiceClip != null && innerVoiceSource != null)))
         {
-            GlobalSubtitleManager.Instance.Show(subtitleID);
+            GlobalSubtitleManager.Instance.Show(subtitleID, voiceSource: voiceClip != null ? innerVoiceSource : null);
         }
 
         // 3. Karakterin İç Sesini Çal

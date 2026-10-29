@@ -224,6 +224,30 @@ public partial class InteractableBook : MonoBehaviour, IInteractable, IForceExit
         }
     }
 
+    private void OnEnable()
+    {
+        GameLocalization.LanguageChanged -= RefreshLocalizedPageTexture;
+        GameLocalization.LanguageChanged += RefreshLocalizedPageTexture;
+        RefreshLocalizedPageTexture();
+    }
+
+    private void OnDisable()
+    {
+        GameLocalization.LanguageChanged -= RefreshLocalizedPageTexture;
+    }
+
+    public void RefreshLocalizedPageTexture()
+    {
+        if (printNotesOnPages) return;
+        Texture2D tex = clueData != null ? clueData.GetPageTexture()
+            : bookIdentity != null ? bookIdentity.GetPageTexture() : null;
+        if (tex == null) return;
+        if (bookPagesMaterial != null && bookPagesMaterial.HasProperty("_PagesTex"))
+            bookPagesMaterial.SetTexture("_PagesTex", tex);
+        if (pageTurnMaterial != null && pageTurnMaterial.HasProperty("_PagesTex"))
+            pageTurnMaterial.SetTexture("_PagesTex", tex);
+    }
+
     private void Start()
     {
         pagePropertyBlock = new MaterialPropertyBlock();
@@ -396,6 +420,7 @@ public partial class InteractableBook : MonoBehaviour, IInteractable, IForceExit
         pageIndexL = (startPageIndex % 2 == 0) ? startPageIndex : startPageIndex - 1;
         pageIndexR = pageIndexL + 1;
 
+        RefreshLocalizedPageTexture();
         if (bookPagesMaterial != null)
         {
             bookPagesMaterial.SetFloat("_PageCount", totalPages);
@@ -484,6 +509,8 @@ public partial class InteractableBook : MonoBehaviour, IInteractable, IForceExit
 
     public void Interact()
     {
+        if (GameManager.Instance != null && (!GameManager.Instance.isGameStarted || GameManager.Instance.isGamePaused)) return;
+        if (PlayerInteraction.Instance != null && !PlayerInteraction.Instance.CanInteractWithWorld) return;
         if (isAnimating)
             return;
 
@@ -505,7 +532,9 @@ public partial class InteractableBook : MonoBehaviour, IInteractable, IForceExit
             return "";
         string action = isOpen ? "[F] Kitabı Kapat" : "[Sol Tık] Kitabı Aç";
         var identity = GetComponent<PuzzleBookIdentity>();
-        return identity != null && !string.IsNullOrWhiteSpace(identity.title) ? identity.title + " · " + identity.location + "\n" + action : action;
+        return identity != null && !string.IsNullOrWhiteSpace(identity.title)
+            ? GameLocalization.Format("{0} · {1}\n{2}", identity.title, identity.location, action)
+            : action;
     }
 
     private IEnumerator OpenBook()

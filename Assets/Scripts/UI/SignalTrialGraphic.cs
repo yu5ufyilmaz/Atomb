@@ -133,9 +133,10 @@ public sealed class SignalTrialGraphic : MaskableGraphic
     private void Label(string text, Vector2 at)
     {
         var label = new GameObject(text, typeof(TextMeshProUGUI)).GetComponent<TextMeshProUGUI>(); label.transform.SetParent(transform, false);
-        label.text = text; label.fontSize = 12; label.color = ink; label.alignment = TextAlignmentOptions.Center; label.raycastTarget = false;
+        label.fontSize = 12; label.color = ink; label.alignment = TextAlignmentOptions.Center; label.raycastTarget = false;
         label.rectTransform.anchorMin = label.rectTransform.anchorMax = at; label.rectTransform.sizeDelta = new Vector2(75, 24);
         label.textWrappingMode = TextWrappingModes.NoWrap;
+        GameLocalization.Set(label, text);
     }
     private void Arrow(VertexHelper vh, Vector2 from, Vector2 to)
     {

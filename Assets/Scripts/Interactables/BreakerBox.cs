@@ -105,64 +105,36 @@ public class BreakerBox : MonoBehaviour, IInteractable
     #endregion
 
     #region Breaker Döngüsü (PDF Akışı)
+    private bool CanCheckRisk => isSystemActive && !isTripped
+        && (GameManager.Instance == null || (GameManager.Instance.isGameStarted && !GameManager.Instance.isGamePaused))
+        && (TutorialManager.Instance == null || !TutorialManager.Instance.IsRunning);
+
     private IEnumerator CheckBreakerLoop()
     {
+        float timer = 0f;
         while (true)
         {
-            // YENİ EKLENEN KONTROL: Eğer oyun duraklatıldıysa veya HENÜZ BAŞLAMADIYSA bekle!
-            if (
-                GameManager.Instance != null
-                && (
-                    !GameManager.Instance.isGameStarted
-                    || GameManager.Instance.isGamePaused
-                    || !isSystemActive
-                )
-            )
+            if (!CanCheckRisk)
             {
+                // Eğitimden/kapalı sistemden sonra tam bir güvenli aralık bırak.
+                if (!isSystemActive || isTripped || (TutorialManager.Instance != null && TutorialManager.Instance.IsRunning))
+                    timer = 0f;
                 yield return null;
                 continue;
             }
-
-            if (isTripped)
+            timer += Time.deltaTime;
+            if (timer >= checkInterval)
             {
-                // ŞARTEL ATIK: Oyuncu düzeltene kadar bekle
-                yield return null;
+                timer = 0f;
+                RunRiskCheck();
             }
-            else
-            {
-                // YENİ EKLENEN KISIM: WaitForSeconds yerine kendi zamanlayıcımızı yazıyoruz.
-                // Çünkü WaitForSeconds arka planda durdurulamaz. Kendi sayacımız duraklamaya saygı duyar.
-                float timer = 0f;
-                while (timer < checkInterval)
-                {
-                    // Oyun durdurulursa sayacı durdur
-                    if (
-                        GameManager.Instance != null
-                        && (
-                            !GameManager.Instance.isGameStarted || GameManager.Instance.isGamePaused
-                        )
-                    )
-                    {
-                        yield return null;
-                    }
-                    else
-                    {
-                        timer += Time.deltaTime; // Sadece oyun akarken saniyeleri say
-                        yield return null;
-                    }
-                }
-
-                // Süre dolduğunda şartel atmamışsa risk kontrolü yap
-                if (!isTripped)
-                {
-                    RunRiskCheck();
-                }
-            }
+            yield return null;
         }
     }
 
     private void RunRiskCheck()
     {
+        if (!CanCheckRisk) return;
         // Sadece risk oluşturanları hesaba kat (Koridor ışıkları hariç)
         int activeRiskLights = GetActiveLightCount();
         int totalRiskLights = allLights.Count(l => l.ContributesToRisk); // Toplam riskli cihaz sayısı

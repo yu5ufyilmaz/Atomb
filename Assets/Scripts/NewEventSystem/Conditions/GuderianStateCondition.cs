@@ -17,6 +17,8 @@ public class GuderianStateCondition : MonoBehaviour, ICondition
         if (conditionMet || GuderianAI.Instance == null)
             return;
 
+        foreach (var prereq in GetComponents<PrerequisiteCondition>()) if (!prereq.IsMet()) return;
+
         // Guderian beklenen duruma (örneğin Hidden) geçti mi?
         if (GuderianAI.Instance.currentState == targetState)
         {

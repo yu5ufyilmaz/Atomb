@@ -10,8 +10,9 @@ public abstract class ActionBase : MonoBehaviour, IAction
 
     // EventLogicController hala burayı çağıracak.
     // Gecikme varsa bekleyecek, yoksa anında çalıştıracak.
-    public void Execute()
+    public virtual void Execute()
     {
+        if (!isActiveAndEnabled) return;
         if (delay > 0)
             StartCoroutine(DelayRoutine());
         else
@@ -21,7 +22,7 @@ public abstract class ActionBase : MonoBehaviour, IAction
     private IEnumerator DelayRoutine()
     {
         yield return new WaitForSeconds(delay);
-        PerformAction();
+        if (isActiveAndEnabled) PerformAction();
     }
 
     // Alt scriptler (DialogAction, DoorAction vb.) asıl kodlarını buraya yazacak

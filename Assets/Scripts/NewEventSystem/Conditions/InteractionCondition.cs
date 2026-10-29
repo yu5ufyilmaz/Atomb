@@ -35,6 +35,7 @@ public class InteractionCondition : MonoBehaviour, ICondition
 
     private void HandlePlayerInteracted(GameObject interactedObj)
     {
+        if (!CanObserve()) return;
         if (interactedObj == targetInteractable)
         {
             if (completionMode == CompletionMode.OnInteractStart)
@@ -46,6 +47,7 @@ public class InteractionCondition : MonoBehaviour, ICondition
 
     private void HandleInteractionExit(GameObject exitedObj)
     {
+        if (!CanObserve()) return;
         // Kapanan obje hedefimizse ve mod OnInteractExit ise koşulu sağla
         if (
             exitedObj == targetInteractable
@@ -55,6 +57,13 @@ public class InteractionCondition : MonoBehaviour, ICondition
         {
             TriggerConditionMet();
         }
+    }
+
+    private bool CanObserve()
+    {
+        if (!isActiveAndEnabled) return false;
+        foreach (var prereq in GetComponents<PrerequisiteCondition>()) if (!prereq.IsMet()) return false;
+        return true;
     }
 
     private void TriggerConditionMet()

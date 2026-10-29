@@ -7194,7 +7194,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &93539963
 Transform:
   m_ObjectHideFlags: 0
@@ -19720,7 +19720,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TutorialManager
   tutorialEventsParent: {fileID: 1006456095}
-  isTutorialEnabled: 0
+  isTutorialEnabled: 1
 --- !u!1 &248875050
 GameObject:
   m_ObjectHideFlags: 0
@@ -22149,11 +22149,11 @@ RectTransform:
   m_LocalScale: {x: 0, y: 0, z: 0}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 120310974}
   - {fileID: 2094938276}
   - {fileID: 1735270669}
   - {fileID: 2126680184}
   - {fileID: 2032837738}
-  - {fileID: 120310974}
   - {fileID: 1253818054}
   - {fileID: 310412475}
   - {fileID: 2103762615}
@@ -38477,7 +38477,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 487760399}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 942e52852a30b8d4981b66bc52f37d43, type: 3}
   m_Name: 
@@ -38539,7 +38539,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 94c302089fc46c14da95ce9bbb054fa3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::HidingSpotControlAction
-  delay: 4
+  delay: 0
   hidingSpot: {fileID: 454887305}
   lockExit: 1
 --- !u!114 &487760408
@@ -39290,10 +39290,10 @@ GameObject:
   - component: {fileID: 498599961}
   - component: {fileID: 498599966}
   - component: {fileID: 498599964}
-  - component: {fileID: 498599967}
   - component: {fileID: 498599963}
   - component: {fileID: 498599968}
   - component: {fileID: 498599969}
+  - component: {fileID: 498599970}
   m_Layer: 0
   m_Name: Tutorail_ValveInteract_012
   m_TagString: Untagged
@@ -39323,7 +39323,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 498599960}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 942e52852a30b8d4981b66bc52f37d43, type: 3}
   m_Name: 
@@ -39359,20 +39359,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EventLogicController
   requireAllConditions: 1
   triggerOnlyOnce: 1
---- !u!114 &498599967
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 498599960}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 16c36d6ebf880b846880c74234269153, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::InteractionCondition
-  targetInteractable: {fileID: 1406705564}
-  completionMode: 1
 --- !u!114 &498599968
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -39410,6 +39396,18 @@ MonoBehaviour:
   allowedInteractables:
   - {fileID: 2118506176}
   - {fileID: 1615095833}
+--- !u!114 &498599970
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 498599960}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e781907afe0376d428648e9e7ae9863a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SignalCondition
 --- !u!1 &499870386
 GameObject:
   m_ObjectHideFlags: 0
@@ -46610,11 +46608,8 @@ GameObject:
   - component: {fileID: 605129795}
   - component: {fileID: 605129796}
   - component: {fileID: 605129798}
-  - component: {fileID: 605129800}
   - component: {fileID: 605129802}
-  - component: {fileID: 605129804}
-  - component: {fileID: 605129805}
-  - component: {fileID: 605129806}
+  - component: {fileID: 605129803}
   m_Layer: 0
   m_Name: Tutorail_NoteInteract_002
   m_TagString: Untagged
@@ -46664,20 +46659,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PrerequisiteCondition
   requiredEvent: {fileID: 1091296238}
---- !u!114 &605129800
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 605129794}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 16c36d6ebf880b846880c74234269153, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::InteractionCondition
-  targetInteractable: {fileID: 93539962}
-  completionMode: 1
 --- !u!114 &605129802
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -46698,8 +46679,9 @@ MonoBehaviour:
   modifyInteractionRules: 1
   enableTutorialMode: 1
   allowedInteractables:
-  - {fileID: 1413967748}
---- !u!114 &605129804
+  - {fileID: 2849696929093020335}
+  - {fileID: 1151116803}
+--- !u!114 &605129803
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -46708,46 +46690,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 605129794}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 53e9cb190b48b41409312e6efa84d77e, type: 3}
+  m_Script: {fileID: 11500000, guid: e781907afe0376d428648e9e7ae9863a, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::NoteAction
-  delay: 0
-  targetPassword: {fileID: 11400000, guid: 51515ebaa232ea446892709aafa79e1c, type: 2}
---- !u!114 &605129805
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 605129794}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 52fb0a86f307b8548a28e5bf4dc5f3dc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::UIAction
-  delay: 1
-  targetUI: {fileID: 958099256}
-  effectType: 1
-  popupDuration: 2.5
-  pulseScale: 1.2
-  pulseSpeed: 0.5
-  pulseCount: 20
---- !u!114 &605129806
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 605129794}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 942e52852a30b8d4981b66bc52f37d43, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::DialogAction
-  delay: 0
-  subtitleID: tut_011
-  dialogClip: {fileID: 0}
-  audioSource: {fileID: 0}
+  m_EditorClassIdentifier: Assembly-CSharp::SignalCondition
 --- !u!1 &608461607
 GameObject:
   m_ObjectHideFlags: 0
@@ -56577,13 +56522,13 @@ GameObject:
   - component: {fileID: 734015692}
   - component: {fileID: 734015694}
   - component: {fileID: 734015696}
-  - component: {fileID: 734015693}
   - component: {fileID: 734015697}
   - component: {fileID: 734015698}
   - component: {fileID: 734015699}
   - component: {fileID: 734015700}
   - component: {fileID: 734015695}
   - component: {fileID: 734015701}
+  - component: {fileID: 734015702}
   m_Layer: 0
   m_Name: Tutorail_LockDoor_004
   m_TagString: Untagged
@@ -56606,20 +56551,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1006456096}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &734015693
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 734015691}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 16c36d6ebf880b846880c74234269153, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::InteractionCondition
-  targetInteractable: {fileID: 1413967748}
-  completionMode: 0
 --- !u!114 &734015694
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -56691,7 +56622,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 734015691}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 942e52852a30b8d4981b66bc52f37d43, type: 3}
   m_Name: 
@@ -56767,6 +56698,18 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+--- !u!114 &734015702
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 734015691}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e781907afe0376d428648e9e7ae9863a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SignalCondition
 --- !u!1 &735327049
 GameObject:
   m_ObjectHideFlags: 0
@@ -73084,8 +73027,8 @@ GameObject:
   - component: {fileID: 954983640}
   - component: {fileID: 954983639}
   - component: {fileID: 954983638}
-  - component: {fileID: 954983636}
   - component: {fileID: 954983634}
+  - component: {fileID: 954983641}
   m_Layer: 0
   m_Name: Tutorial_CloseDoor_014
   m_TagString: Untagged
@@ -73115,7 +73058,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 954983631}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 942e52852a30b8d4981b66bc52f37d43, type: 3}
   m_Name: 
@@ -73124,29 +73067,6 @@ MonoBehaviour:
   subtitleID: tut_012
   dialogClip: {fileID: 0}
   audioSource: {fileID: 0}
---- !u!114 &954983636
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 954983631}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8cc2639615e094a4a93051b15a624d72, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::LookAction
-  delay: 0.3
-  focusMode: 0
-  lookTarget: {fileID: 1413967749}
-  lookOffset: 0
-  customYAngle: 0
-  headTurnDuration: 1.5
-  targetVirtualCamera: {fileID: 0}
-  blendOutDuration: 1
-  freezePlayer: 1
-  waitUntilInput: 0
-  autoReleaseTime: 1.5
 --- !u!65 &954983638
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -73195,6 +73115,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EventLogicController
   requireAllConditions: 1
   triggerOnlyOnce: 1
+--- !u!114 &954983641
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 954983631}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb33f8c8e606a9468246904fc40e08c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PrerequisiteCondition
+  requiredEvent: {fileID: 734015694}
 --- !u!1 &955825963
 GameObject:
   m_ObjectHideFlags: 0
@@ -75937,13 +75870,14 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1006456096}
+  - component: {fileID: 1006456097}
   m_Layer: 0
   m_Name: TutorialSequence
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &1006456096
 Transform:
   m_ObjectHideFlags: 0
@@ -75971,8 +75905,38 @@ Transform:
   - {fileID: 498599961}
   - {fileID: 1193203527}
   - {fileID: 954983632}
+  - {fileID: 2900000001}
   m_Father: {fileID: 2014130988}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1006456097
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1006456095}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6ed76fdafd88cc345823f963afd71f6b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ChalkboardTutorial
+  research: {fileID: 769475112}
+  lessonBook: {fileID: 7306699996885676005}
+  firstStep: {fileID: 1091296238}
+  collectedStep: {fileID: 605129796}
+  boardStep: {fileID: 2080874728}
+  terminalReadyStep: {fileID: 1052328703}
+  finalStep: {fileID: 1193203533}
+  cardsCollected: {fileID: 605129803}
+  boardPracticed: {fileID: 2080874735}
+  terminalAccepted: {fileID: 2108317039}
+  officeDoor: {fileID: 8936489636375029980}
+  doorStep: {fileID: 734015694}
+  valveRoomStep: {fileID: 1358310748}
+  valveStep: {fileID: 498599966}
+  doorLocked: {fileID: 734015702}
+  valvePracticed: {fileID: 498599970}
+  breakerRestored: {fileID: 1193203535}
 --- !u!1 &1006697366
 GameObject:
   m_ObjectHideFlags: 0
@@ -79489,13 +79453,13 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1052328698}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 942e52852a30b8d4981b66bc52f37d43, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DialogAction
   delay: 0
-  subtitleID: tut_007
+  subtitleID: tut_board_terminal
   dialogClip: {fileID: 0}
   audioSource: {fileID: 0}
 --- !u!114 &1052328701
@@ -79583,6 +79547,8 @@ MonoBehaviour:
   enableTutorialMode: 1
   allowedInteractables:
   - {fileID: 1596361856750344579}
+  - {fileID: 2849696929093020335}
+  - {fileID: 1151116803}
 --- !u!114 &1052328707
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -79771,7 +79737,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1052832213}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 942e52852a30b8d4981b66bc52f37d43, type: 3}
   m_Name: 
@@ -82983,7 +82949,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &1091296234
 Transform:
   m_ObjectHideFlags: 0
@@ -83061,8 +83027,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::HighlightAction
   delay: 0
   mode: 2
-  targetNote: {fileID: 93539967}
-  targetBook: {fileID: 0}
+  targetNote: {fileID: 0}
+  targetBook: {fileID: 7306699996885676005}
   pulseSpeed: 1
   duration: 5
 --- !u!114 &1091296241
@@ -83079,7 +83045,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::LookAction
   delay: 3
   focusMode: 0
-  lookTarget: {fileID: 93539963}
+  lookTarget: {fileID: 5164744943892906071}
   lookOffset: 0
   customYAngle: 0
   headTurnDuration: 1.5
@@ -83108,7 +83074,7 @@ MonoBehaviour:
   modifyInteractionRules: 1
   enableTutorialMode: 1
   allowedInteractables:
-  - {fileID: 93539962}
+  - {fileID: 2849696929093020335}
 --- !u!114 &1091296243
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -83116,13 +83082,13 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1091296233}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 942e52852a30b8d4981b66bc52f37d43, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DialogAction
   delay: 3
-  subtitleID: tut_001
+  subtitleID: tut_board_intro
   dialogClip: {fileID: 0}
   audioSource: {fileID: 0}
 --- !u!114 &1091296244
@@ -89772,10 +89738,10 @@ GameObject:
   - component: {fileID: 1193203527}
   - component: {fileID: 1193203533}
   - component: {fileID: 1193203532}
-  - component: {fileID: 1193203531}
   - component: {fileID: 1193203530}
   - component: {fileID: 1193203528}
   - component: {fileID: 1193203534}
+  - component: {fileID: 1193203535}
   m_Layer: 0
   m_Name: Tutorail_BreakerBoxInteract_013
   m_TagString: Untagged
@@ -89834,20 +89800,6 @@ MonoBehaviour:
   subtitleID: tut_010
   dialogClip: {fileID: 0}
   audioSource: {fileID: 0}
---- !u!114 &1193203531
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1193203526}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 16c36d6ebf880b846880c74234269153, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::InteractionCondition
-  targetInteractable: {fileID: 1615095833}
-  completionMode: 0
 --- !u!114 &1193203532
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -89891,6 +89843,18 @@ MonoBehaviour:
   pressureSystem: 0
   breakerSystem: 0
   globalEnemyAttacks: 0
+--- !u!114 &1193203535
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1193203526}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e781907afe0376d428648e9e7ae9863a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SignalCondition
 --- !u!1 &1194008049
 GameObject:
   m_ObjectHideFlags: 0
@@ -116175,6 +116139,7 @@ MonoBehaviour:
     brightness: 0
     mouseSensitivity: 1
     languageIndex: 0
+    languageCode: 
     subtitlesEnabled: 1
 --- !u!1 &1532242768
 GameObject:
@@ -137848,7 +137813,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1827608712}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 942e52852a30b8d4981b66bc52f37d43, type: 3}
   m_Name: 
@@ -152262,7 +152227,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &2014130988
 Transform:
   m_ObjectHideFlags: 0
@@ -158059,10 +158024,11 @@ GameObject:
   m_Component:
   - component: {fileID: 2080874722}
   - component: {fileID: 2080874728}
-  - component: {fileID: 2080874733}
   - component: {fileID: 2080874723}
   - component: {fileID: 2080874729}
   - component: {fileID: 2080874734}
+  - component: {fileID: 2080874735}
+  - component: {fileID: 2080874736}
   m_Layer: 0
   m_Name: Tutorail_NotebookInput_003
   m_TagString: Untagged
@@ -158135,22 +158101,6 @@ MonoBehaviour:
   freezePlayer: 0
   waitUntilInput: 0
   autoReleaseTime: 2
---- !u!114 &2080874733
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2080874721}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a36937df904df174c9f646893ef333a5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::InputCondition
-  mode: 0
-  targetKey: 9
-  requiredPresses: 2
-  combinationKeys: 00000000
 --- !u!114 &2080874734
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -158158,7 +158108,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2080874721}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 942e52852a30b8d4981b66bc52f37d43, type: 3}
   m_Name: 
@@ -158167,6 +158117,39 @@ MonoBehaviour:
   subtitleID: tut_002
   dialogClip: {fileID: 0}
   audioSource: {fileID: 0}
+--- !u!114 &2080874735
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2080874721}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e781907afe0376d428648e9e7ae9863a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SignalCondition
+--- !u!114 &2080874736
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2080874721}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eb1423e9569c23148afc04e883b71e34, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerControlAction
+  delay: 0
+  modifyMovement: 0
+  freezePlayer: 0
+  modifyLook: 0
+  lockCameraInput: 0
+  modifyInteractionRules: 1
+  enableTutorialMode: 1
+  allowedInteractables:
+  - {fileID: 1413967748}
 --- !u!1 &2080975109
 GameObject:
   m_ObjectHideFlags: 0
@@ -160607,7 +160590,6 @@ GameObject:
   - component: {fileID: 2108317023}
   - component: {fileID: 2108317029}
   - component: {fileID: 2108317028}
-  - component: {fileID: 2108317030}
   - component: {fileID: 2108317031}
   - component: {fileID: 2108317032}
   - component: {fileID: 2108317034}
@@ -160615,6 +160597,7 @@ GameObject:
   - component: {fileID: 2108317036}
   - component: {fileID: 2108317037}
   - component: {fileID: 2108317038}
+  - component: {fileID: 2108317039}
   m_Layer: 0
   m_Name: Tutorail_Password_010
   m_TagString: Untagged
@@ -160664,20 +160647,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EventLogicController
   requireAllConditions: 1
   triggerOnlyOnce: 1
---- !u!114 &2108317030
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2108317022}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6db4ba93ab330e24498c08a171b8e8c7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PasswordCondition
-  mode: 0
-  incorrectLimit: 5
 --- !u!114 &2108317031
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -160732,7 +160701,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2108317022}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 942e52852a30b8d4981b66bc52f37d43, type: 3}
   m_Name: 
@@ -160844,6 +160813,18 @@ MonoBehaviour:
   pressureSystem: 1
   breakerSystem: 1
   globalEnemyAttacks: 1
+--- !u!114 &2108317039
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2108317022}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e781907afe0376d428648e9e7ae9863a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SignalCondition
 --- !u!1 &2109073171
 GameObject:
   m_ObjectHideFlags: 0
@@ -234591,3 +234572,2829 @@ SceneRoots:
   - {fileID: 1701522620}
   - {fileID: 1724085860}
   - {fileID: 769475113}
+--- !u!1 &2900000002
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2900000003}
+  - component: {fileID: 2900000004}
+  - component: {fileID: 2900000005}
+  - component: {fileID: 2900000006}
+  - component: {fileID: 2900000008}
+  - component: {fileID: 2900000007}
+  m_Layer: 0
+  m_Name: book
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2900000003
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2900000002}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2900000001}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2900000004
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2900000002}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2350ebc7d48054446bec7126651cd467, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EventLogicController
+  requireAllConditions: 1
+  triggerOnlyOnce: 1
+--- !u!114 &2900000005
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2900000002}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb33f8c8e606a9468246904fc40e08c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PrerequisiteCondition
+  requiredEvent: {fileID: 1091296238}
+  requireTriggered: 1
+--- !u!114 &2900000006
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2900000002}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb33f8c8e606a9468246904fc40e08c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PrerequisiteCondition
+  requiredEvent: {fileID: 605129796}
+  requireTriggered: 0
+--- !u!114 &2900000008
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2900000002}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 90da6f6e897e41afb104745c53b9730d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ChalkboardTutorialCondition
+  lesson: {fileID: 1006456097}
+  context: 0
+--- !u!114 &2900000007
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2900000002}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 942e52852a30b8d4981b66bc52f37d43, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DialogAction
+  delay: 0
+  subtitleID: thought_book_0
+  dialogClip: {fileID: 0}
+  audioSource: {fileID: 0}
+  followConditions: 1
+  contextOwner: {fileID: 248469711}
+  reminderSubtitleIDs:
+  - thought_book_1
+  - thought_book_2
+  reminderDelay: 10
+  requiredWithoutVoice: 1
+--- !u!1 &2900000009
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2900000010}
+  - component: {fileID: 2900000011}
+  - component: {fileID: 2900000012}
+  - component: {fileID: 2900000013}
+  - component: {fileID: 2900000015}
+  - component: {fileID: 2900000014}
+  m_Layer: 0
+  m_Name: collect
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2900000010
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2900000009}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2900000001}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2900000011
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2900000009}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2350ebc7d48054446bec7126651cd467, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EventLogicController
+  requireAllConditions: 1
+  triggerOnlyOnce: 1
+--- !u!114 &2900000012
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2900000009}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb33f8c8e606a9468246904fc40e08c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PrerequisiteCondition
+  requiredEvent: {fileID: 1091296238}
+  requireTriggered: 1
+--- !u!114 &2900000013
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2900000009}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb33f8c8e606a9468246904fc40e08c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PrerequisiteCondition
+  requiredEvent: {fileID: 605129796}
+  requireTriggered: 0
+--- !u!114 &2900000015
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2900000009}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 90da6f6e897e41afb104745c53b9730d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ChalkboardTutorialCondition
+  lesson: {fileID: 1006456097}
+  context: 1
+--- !u!114 &2900000014
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2900000009}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 942e52852a30b8d4981b66bc52f37d43, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DialogAction
+  delay: 0
+  subtitleID: thought_collect_0
+  dialogClip: {fileID: 0}
+  audioSource: {fileID: 0}
+  followConditions: 1
+  contextOwner: {fileID: 248469711}
+  reminderSubtitleIDs:
+  - thought_collect_1
+  - thought_collect_2
+  reminderDelay: 30
+  requiredWithoutVoice: 1
+--- !u!1 &2900000016
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2900000017}
+  - component: {fileID: 2900000018}
+  - component: {fileID: 2900000019}
+  - component: {fileID: 2900000020}
+  - component: {fileID: 2900000022}
+  - component: {fileID: 2900000021}
+  m_Layer: 0
+  m_Name: leave_book
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2900000017
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2900000016}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2900000001}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2900000018
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2900000016}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2350ebc7d48054446bec7126651cd467, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EventLogicController
+  requireAllConditions: 1
+  triggerOnlyOnce: 1
+--- !u!114 &2900000019
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2900000016}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb33f8c8e606a9468246904fc40e08c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PrerequisiteCondition
+  requiredEvent: {fileID: 605129796}
+  requireTriggered: 1
+--- !u!114 &2900000020
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2900000016}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb33f8c8e606a9468246904fc40e08c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PrerequisiteCondition
+  requiredEvent: {fileID: 2080874728}
+  requireTriggered: 0
+--- !u!114 &2900000022
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2900000016}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 90da6f6e897e41afb104745c53b9730d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ChalkboardTutorialCondition
+  lesson: {fileID: 1006456097}
+  context: 2
+--- !u!114 &2900000021
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2900000016}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 942e52852a30b8d4981b66bc52f37d43, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DialogAction
+  delay: 0
+  subtitleID: thought_leave_book_0
+  dialogClip: {fileID: 0}
+  audioSource: {fileID: 0}
+  followConditions: 1
+  contextOwner: {fileID: 248469711}
+  reminderSubtitleIDs:
+  - thought_leave_book_1
+  - thought_leave_book_2
+  reminderDelay: 10
+  requiredWithoutVoice: 1
+--- !u!1 &2900000023
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2900000024}
+  - component: {fileID: 2900000025}
+  - component: {fileID: 2900000026}
+  - component: {fileID: 2900000027}
+  - component: {fileID: 2900000029}
+  - component: {fileID: 2900000028}
+  m_Layer: 0
+  m_Name: board
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2900000024
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2900000023}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2900000001}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2900000025
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2900000023}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2350ebc7d48054446bec7126651cd467, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EventLogicController
+  requireAllConditions: 1
+  triggerOnlyOnce: 1
+--- !u!114 &2900000026
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2900000023}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb33f8c8e606a9468246904fc40e08c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PrerequisiteCondition
+  requiredEvent: {fileID: 605129796}
+  requireTriggered: 1
+--- !u!114 &2900000027
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2900000023}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb33f8c8e606a9468246904fc40e08c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PrerequisiteCondition
+  requiredEvent: {fileID: 2080874728}
+  requireTriggered: 0
+--- !u!114 &2900000029
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2900000023}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 90da6f6e897e41afb104745c53b9730d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ChalkboardTutorialCondition
+  lesson: {fileID: 1006456097}
+  context: 3
+--- !u!114 &2900000028
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2900000023}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 942e52852a30b8d4981b66bc52f37d43, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DialogAction
+  delay: 0
+  subtitleID: thought_board_0
+  dialogClip: {fileID: 0}
+  audioSource: {fileID: 0}
+  followConditions: 1
+  contextOwner: {fileID: 248469711}
+  reminderSubtitleIDs:
+  - thought_board_1
+  - thought_board_2
+  reminderDelay: 10
+  requiredWithoutVoice: 1
+--- !u!1 &2900000030
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2900000031}
+  - component: {fileID: 2900000032}
+  - component: {fileID: 2900000033}
+  - component: {fileID: 2900000034}
+  - component: {fileID: 2900000036}
+  - component: {fileID: 2900000035}
+  m_Layer: 0
+  m_Name: pin
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2900000031
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2900000030}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2900000001}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2900000032
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2900000030}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2350ebc7d48054446bec7126651cd467, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EventLogicController
+  requireAllConditions: 1
+  triggerOnlyOnce: 1
+--- !u!114 &2900000033
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2900000030}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb33f8c8e606a9468246904fc40e08c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PrerequisiteCondition
+  requiredEvent: {fileID: 605129796}
+  requireTriggered: 1
+--- !u!114 &2900000034
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2900000030}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb33f8c8e606a9468246904fc40e08c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PrerequisiteCondition
+  requiredEvent: {fileID: 2080874728}
+  requireTriggered: 0
+--- !u!114 &2900000036
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2900000030}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 90da6f6e897e41afb104745c53b9730d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ChalkboardTutorialCondition
+  lesson: {fileID: 1006456097}
+  context: 4
+--- !u!114 &2900000035
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2900000030}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 942e52852a30b8d4981b66bc52f37d43, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DialogAction
+  delay: 0
+  subtitleID: thought_pin_0
+  dialogClip: {fileID: 0}
+  audioSource: {fileID: 0}
+  followConditions: 1
+  contextOwner: {fileID: 248469711}
+  reminderSubtitleIDs:
+  - thought_pin_1
+  - thought_pin_2
+  reminderDelay: 30
+  requiredWithoutVoice: 1
+--- !u!1 &2900000037
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2900000038}
+  - component: {fileID: 2900000039}
+  - component: {fileID: 2900000040}
+  - component: {fileID: 2900000041}
+  - component: {fileID: 2900000043}
+  - component: {fileID: 2900000042}
+  m_Layer: 0
+  m_Name: clear_board
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2900000038
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2900000037}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2900000001}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2900000039
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2900000037}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2350ebc7d48054446bec7126651cd467, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EventLogicController
+  requireAllConditions: 1
+  triggerOnlyOnce: 1
+--- !u!114 &2900000040
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2900000037}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb33f8c8e606a9468246904fc40e08c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PrerequisiteCondition
+  requiredEvent: {fileID: 605129796}
+  requireTriggered: 1
+--- !u!114 &2900000041
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2900000037}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb33f8c8e606a9468246904fc40e08c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PrerequisiteCondition
+  requiredEvent: {fileID: 2080874728}
+  requireTriggered: 0
+--- !u!114 &2900000043
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2900000037}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 90da6f6e897e41afb104745c53b9730d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ChalkboardTutorialCondition
+  lesson: {fileID: 1006456097}
+  context: 5
+--- !u!114 &2900000042
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2900000037}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 942e52852a30b8d4981b66bc52f37d43, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DialogAction
+  delay: 0
+  subtitleID: thought_clear_board_0
+  dialogClip: {fileID: 0}
+  audioSource: {fileID: 0}
+  followConditions: 1
+  contextOwner: {fileID: 248469711}
+  reminderSubtitleIDs:
+  - thought_clear_board_1
+  - thought_clear_board_2
+  reminderDelay: 10
+  requiredWithoutVoice: 1
+--- !u!1 &2900000044
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2900000045}
+  - component: {fileID: 2900000046}
+  - component: {fileID: 2900000047}
+  - component: {fileID: 2900000048}
+  - component: {fileID: 2900000050}
+  - component: {fileID: 2900000049}
+  m_Layer: 0
+  m_Name: build
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2900000045
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2900000044}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2900000001}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2900000046
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2900000044}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2350ebc7d48054446bec7126651cd467, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EventLogicController
+  requireAllConditions: 1
+  triggerOnlyOnce: 1
+--- !u!114 &2900000047
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2900000044}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb33f8c8e606a9468246904fc40e08c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PrerequisiteCondition
+  requiredEvent: {fileID: 605129796}
+  requireTriggered: 1
+--- !u!114 &2900000048
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2900000044}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb33f8c8e606a9468246904fc40e08c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PrerequisiteCondition
+  requiredEvent: {fileID: 2080874728}
+  requireTriggered: 0
+--- !u!114 &2900000050
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2900000044}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 90da6f6e897e41afb104745c53b9730d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ChalkboardTutorialCondition
+  lesson: {fileID: 1006456097}
+  context: 6
+--- !u!114 &2900000049
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2900000044}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 942e52852a30b8d4981b66bc52f37d43, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DialogAction
+  delay: 0
+  subtitleID: thought_build_0
+  dialogClip: {fileID: 0}
+  audioSource: {fileID: 0}
+  followConditions: 1
+  contextOwner: {fileID: 248469711}
+  reminderSubtitleIDs:
+  - thought_build_1
+  - thought_build_2
+  reminderDelay: 30
+  requiredWithoutVoice: 1
+--- !u!1 &2900000051
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2900000052}
+  - component: {fileID: 2900000053}
+  - component: {fileID: 2900000054}
+  - component: {fileID: 2900000055}
+  - component: {fileID: 2900000057}
+  - component: {fileID: 2900000056}
+  m_Layer: 0
+  m_Name: store
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2900000052
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2900000051}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2900000001}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2900000053
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2900000051}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2350ebc7d48054446bec7126651cd467, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EventLogicController
+  requireAllConditions: 1
+  triggerOnlyOnce: 1
+--- !u!114 &2900000054
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2900000051}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb33f8c8e606a9468246904fc40e08c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PrerequisiteCondition
+  requiredEvent: {fileID: 605129796}
+  requireTriggered: 1
+--- !u!114 &2900000055
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2900000051}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb33f8c8e606a9468246904fc40e08c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PrerequisiteCondition
+  requiredEvent: {fileID: 2080874728}
+  requireTriggered: 0
+--- !u!114 &2900000057
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2900000051}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 90da6f6e897e41afb104745c53b9730d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ChalkboardTutorialCondition
+  lesson: {fileID: 1006456097}
+  context: 7
+--- !u!114 &2900000056
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2900000051}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 942e52852a30b8d4981b66bc52f37d43, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DialogAction
+  delay: 0
+  subtitleID: thought_store_0
+  dialogClip: {fileID: 0}
+  audioSource: {fileID: 0}
+  followConditions: 1
+  contextOwner: {fileID: 248469711}
+  reminderSubtitleIDs:
+  - thought_store_1
+  - thought_store_2
+  reminderDelay: 10
+  requiredWithoutVoice: 1
+--- !u!1 &2900000058
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2900000059}
+  - component: {fileID: 2900000060}
+  - component: {fileID: 2900000061}
+  - component: {fileID: 2900000062}
+  - component: {fileID: 2900000064}
+  - component: {fileID: 2900000063}
+  m_Layer: 0
+  m_Name: leave_board
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2900000059
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2900000058}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2900000001}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2900000060
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2900000058}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2350ebc7d48054446bec7126651cd467, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EventLogicController
+  requireAllConditions: 1
+  triggerOnlyOnce: 1
+--- !u!114 &2900000061
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2900000058}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb33f8c8e606a9468246904fc40e08c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PrerequisiteCondition
+  requiredEvent: {fileID: 605129796}
+  requireTriggered: 1
+--- !u!114 &2900000062
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2900000058}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb33f8c8e606a9468246904fc40e08c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PrerequisiteCondition
+  requiredEvent: {fileID: 2080874728}
+  requireTriggered: 0
+--- !u!114 &2900000064
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2900000058}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 90da6f6e897e41afb104745c53b9730d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ChalkboardTutorialCondition
+  lesson: {fileID: 1006456097}
+  context: 8
+--- !u!114 &2900000063
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2900000058}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 942e52852a30b8d4981b66bc52f37d43, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DialogAction
+  delay: 0
+  subtitleID: thought_leave_board_0
+  dialogClip: {fileID: 0}
+  audioSource: {fileID: 0}
+  followConditions: 1
+  contextOwner: {fileID: 248469711}
+  reminderSubtitleIDs:
+  - thought_leave_board_1
+  - thought_leave_board_2
+  reminderDelay: 10
+  requiredWithoutVoice: 1
+--- !u!1 &2900000065
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2900000066}
+  - component: {fileID: 2900000067}
+  - component: {fileID: 2900000068}
+  - component: {fileID: 2900000069}
+  - component: {fileID: 2900000070}
+  m_Layer: 0
+  m_Name: lock
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2900000066
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2900000065}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2900000001}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2900000067
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2900000065}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2350ebc7d48054446bec7126651cd467, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EventLogicController
+  requireAllConditions: 1
+  triggerOnlyOnce: 1
+--- !u!114 &2900000068
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2900000065}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb33f8c8e606a9468246904fc40e08c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PrerequisiteCondition
+  requiredEvent: {fileID: 2080874728}
+  requireTriggered: 1
+--- !u!114 &2900000069
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2900000065}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb33f8c8e606a9468246904fc40e08c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PrerequisiteCondition
+  requiredEvent: {fileID: 734015694}
+  requireTriggered: 0
+--- !u!114 &2900000070
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2900000065}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 942e52852a30b8d4981b66bc52f37d43, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DialogAction
+  delay: 0
+  subtitleID: thought_lock_0
+  dialogClip: {fileID: 0}
+  audioSource: {fileID: 0}
+  followConditions: 1
+  contextOwner: {fileID: 248469711}
+  reminderSubtitleIDs:
+  - thought_lock_1
+  - thought_lock_2
+  reminderDelay: 10
+  requiredWithoutVoice: 1
+--- !u!1 &2900000071
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2900000072}
+  - component: {fileID: 2900000073}
+  - component: {fileID: 2900000074}
+  - component: {fileID: 2900000075}
+  - component: {fileID: 2900000076}
+  m_Layer: 0
+  m_Name: hide
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2900000072
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2900000071}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2900000001}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2900000073
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2900000071}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2350ebc7d48054446bec7126651cd467, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EventLogicController
+  requireAllConditions: 1
+  triggerOnlyOnce: 1
+--- !u!114 &2900000074
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2900000071}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb33f8c8e606a9468246904fc40e08c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PrerequisiteCondition
+  requiredEvent: {fileID: 734015694}
+  requireTriggered: 1
+--- !u!114 &2900000075
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2900000071}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb33f8c8e606a9468246904fc40e08c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PrerequisiteCondition
+  requiredEvent: {fileID: 487760405}
+  requireTriggered: 0
+--- !u!114 &2900000076
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2900000071}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 942e52852a30b8d4981b66bc52f37d43, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DialogAction
+  delay: 0
+  subtitleID: thought_hide_0
+  dialogClip: {fileID: 0}
+  audioSource: {fileID: 0}
+  followConditions: 1
+  contextOwner: {fileID: 248469711}
+  reminderSubtitleIDs:
+  - thought_hide_1
+  - thought_hide_2
+  reminderDelay: 10
+  requiredWithoutVoice: 1
+--- !u!1 &2900000077
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2900000078}
+  - component: {fileID: 2900000079}
+  - component: {fileID: 2900000080}
+  - component: {fileID: 2900000081}
+  - component: {fileID: 2900000082}
+  m_Layer: 0
+  m_Name: wait_hidden
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2900000078
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2900000077}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2900000001}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2900000079
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2900000077}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2350ebc7d48054446bec7126651cd467, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EventLogicController
+  requireAllConditions: 1
+  triggerOnlyOnce: 1
+--- !u!114 &2900000080
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2900000077}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb33f8c8e606a9468246904fc40e08c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PrerequisiteCondition
+  requiredEvent: {fileID: 487760405}
+  requireTriggered: 1
+--- !u!114 &2900000081
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2900000077}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb33f8c8e606a9468246904fc40e08c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PrerequisiteCondition
+  requiredEvent: {fileID: 1827608719}
+  requireTriggered: 0
+--- !u!114 &2900000082
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2900000077}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 942e52852a30b8d4981b66bc52f37d43, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DialogAction
+  delay: 0
+  subtitleID: thought_wait_hidden_0
+  dialogClip: {fileID: 0}
+  audioSource: {fileID: 0}
+  followConditions: 1
+  contextOwner: {fileID: 248469711}
+  reminderSubtitleIDs:
+  - thought_wait_hidden_1
+  - thought_wait_hidden_2
+  reminderDelay: 30
+  requiredWithoutVoice: 1
+--- !u!1 &2900000083
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2900000084}
+  - component: {fileID: 2900000085}
+  - component: {fileID: 2900000086}
+  - component: {fileID: 2900000087}
+  - component: {fileID: 2900000088}
+  m_Layer: 0
+  m_Name: leave_hiding
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2900000084
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2900000083}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2900000001}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2900000085
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2900000083}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2350ebc7d48054446bec7126651cd467, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EventLogicController
+  requireAllConditions: 1
+  triggerOnlyOnce: 1
+--- !u!114 &2900000086
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2900000083}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb33f8c8e606a9468246904fc40e08c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PrerequisiteCondition
+  requiredEvent: {fileID: 1827608719}
+  requireTriggered: 1
+--- !u!114 &2900000087
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2900000083}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb33f8c8e606a9468246904fc40e08c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PrerequisiteCondition
+  requiredEvent: {fileID: 900385568}
+  requireTriggered: 0
+--- !u!114 &2900000088
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2900000083}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 942e52852a30b8d4981b66bc52f37d43, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DialogAction
+  delay: 0
+  subtitleID: thought_leave_hiding_0
+  dialogClip: {fileID: 0}
+  audioSource: {fileID: 0}
+  followConditions: 1
+  contextOwner: {fileID: 248469711}
+  reminderSubtitleIDs:
+  - thought_leave_hiding_1
+  - thought_leave_hiding_2
+  reminderDelay: 10
+  requiredWithoutVoice: 1
+--- !u!1 &2900000089
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2900000090}
+  - component: {fileID: 2900000091}
+  - component: {fileID: 2900000092}
+  - component: {fileID: 2900000093}
+  - component: {fileID: 2900000094}
+  m_Layer: 0
+  m_Name: notice_lees
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2900000090
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2900000089}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2900000001}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2900000091
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2900000089}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2350ebc7d48054446bec7126651cd467, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EventLogicController
+  requireAllConditions: 1
+  triggerOnlyOnce: 1
+--- !u!114 &2900000092
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2900000089}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb33f8c8e606a9468246904fc40e08c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PrerequisiteCondition
+  requiredEvent: {fileID: 900385568}
+  requireTriggered: 1
+--- !u!114 &2900000093
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2900000089}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb33f8c8e606a9468246904fc40e08c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PrerequisiteCondition
+  requiredEvent: {fileID: 1052832219}
+  requireTriggered: 0
+--- !u!114 &2900000094
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2900000089}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 942e52852a30b8d4981b66bc52f37d43, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DialogAction
+  delay: 0
+  subtitleID: thought_notice_lees_0
+  dialogClip: {fileID: 0}
+  audioSource: {fileID: 0}
+  followConditions: 1
+  contextOwner: {fileID: 248469711}
+  reminderSubtitleIDs:
+  - thought_notice_lees_1
+  - thought_notice_lees_2
+  reminderDelay: 10
+  requiredWithoutVoice: 1
+--- !u!1 &2900000095
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2900000096}
+  - component: {fileID: 2900000097}
+  - component: {fileID: 2900000098}
+  - component: {fileID: 2900000099}
+  - component: {fileID: 2900000100}
+  m_Layer: 0
+  m_Name: avoid_lees
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2900000096
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2900000095}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2900000001}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2900000097
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2900000095}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2350ebc7d48054446bec7126651cd467, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EventLogicController
+  requireAllConditions: 1
+  triggerOnlyOnce: 1
+--- !u!114 &2900000098
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2900000095}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb33f8c8e606a9468246904fc40e08c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PrerequisiteCondition
+  requiredEvent: {fileID: 1052832219}
+  requireTriggered: 1
+--- !u!114 &2900000099
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2900000095}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb33f8c8e606a9468246904fc40e08c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PrerequisiteCondition
+  requiredEvent: {fileID: 1052328703}
+  requireTriggered: 0
+--- !u!114 &2900000100
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2900000095}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 942e52852a30b8d4981b66bc52f37d43, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DialogAction
+  delay: 0
+  subtitleID: thought_avoid_lees_0
+  dialogClip: {fileID: 0}
+  audioSource: {fileID: 0}
+  followConditions: 1
+  contextOwner: {fileID: 248469711}
+  reminderSubtitleIDs:
+  - thought_avoid_lees_1
+  - thought_avoid_lees_2
+  reminderDelay: 10
+  requiredWithoutVoice: 1
+--- !u!1 &2900000101
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2900000102}
+  - component: {fileID: 2900000103}
+  - component: {fileID: 2900000104}
+  - component: {fileID: 2900000105}
+  - component: {fileID: 2900000107}
+  - component: {fileID: 2900000106}
+  m_Layer: 0
+  m_Name: turing
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2900000102
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2900000101}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2900000001}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2900000103
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2900000101}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2350ebc7d48054446bec7126651cd467, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EventLogicController
+  requireAllConditions: 1
+  triggerOnlyOnce: 1
+--- !u!114 &2900000104
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2900000101}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb33f8c8e606a9468246904fc40e08c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PrerequisiteCondition
+  requiredEvent: {fileID: 1052328703}
+  requireTriggered: 1
+--- !u!114 &2900000105
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2900000101}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb33f8c8e606a9468246904fc40e08c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PrerequisiteCondition
+  requiredEvent: {fileID: 2108317029}
+  requireTriggered: 0
+--- !u!114 &2900000107
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2900000101}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 90da6f6e897e41afb104745c53b9730d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ChalkboardTutorialCondition
+  lesson: {fileID: 1006456097}
+  context: 9
+--- !u!114 &2900000106
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2900000101}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 942e52852a30b8d4981b66bc52f37d43, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DialogAction
+  delay: 0
+  subtitleID: thought_turing_0
+  dialogClip: {fileID: 0}
+  audioSource: {fileID: 0}
+  followConditions: 1
+  contextOwner: {fileID: 248469711}
+  reminderSubtitleIDs:
+  - thought_turing_1
+  - thought_turing_2
+  reminderDelay: 10
+  requiredWithoutVoice: 1
+--- !u!1 &2900000108
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2900000109}
+  - component: {fileID: 2900000110}
+  - component: {fileID: 2900000111}
+  - component: {fileID: 2900000112}
+  - component: {fileID: 2900000114}
+  - component: {fileID: 2900000113}
+  m_Layer: 0
+  m_Name: insert
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2900000109
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2900000108}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2900000001}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2900000110
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2900000108}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2350ebc7d48054446bec7126651cd467, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EventLogicController
+  requireAllConditions: 1
+  triggerOnlyOnce: 1
+--- !u!114 &2900000111
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2900000108}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb33f8c8e606a9468246904fc40e08c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PrerequisiteCondition
+  requiredEvent: {fileID: 1052328703}
+  requireTriggered: 1
+--- !u!114 &2900000112
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2900000108}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb33f8c8e606a9468246904fc40e08c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PrerequisiteCondition
+  requiredEvent: {fileID: 2108317029}
+  requireTriggered: 0
+--- !u!114 &2900000114
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2900000108}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 90da6f6e897e41afb104745c53b9730d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ChalkboardTutorialCondition
+  lesson: {fileID: 1006456097}
+  context: 10
+--- !u!114 &2900000113
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2900000108}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 942e52852a30b8d4981b66bc52f37d43, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DialogAction
+  delay: 0
+  subtitleID: thought_insert_0
+  dialogClip: {fileID: 0}
+  audioSource: {fileID: 0}
+  followConditions: 1
+  contextOwner: {fileID: 248469711}
+  reminderSubtitleIDs:
+  - thought_insert_1
+  - thought_insert_2
+  reminderDelay: 30
+  requiredWithoutVoice: 1
+--- !u!1 &2900000115
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2900000116}
+  - component: {fileID: 2900000117}
+  - component: {fileID: 2900000118}
+  - component: {fileID: 2900000119}
+  - component: {fileID: 2900000121}
+  - component: {fileID: 2900000120}
+  m_Layer: 0
+  m_Name: reader
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2900000116
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2900000115}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2900000001}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2900000117
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2900000115}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2350ebc7d48054446bec7126651cd467, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EventLogicController
+  requireAllConditions: 1
+  triggerOnlyOnce: 1
+--- !u!114 &2900000118
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2900000115}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb33f8c8e606a9468246904fc40e08c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PrerequisiteCondition
+  requiredEvent: {fileID: 1052328703}
+  requireTriggered: 1
+--- !u!114 &2900000119
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2900000115}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb33f8c8e606a9468246904fc40e08c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PrerequisiteCondition
+  requiredEvent: {fileID: 2108317029}
+  requireTriggered: 0
+--- !u!114 &2900000121
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2900000115}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 90da6f6e897e41afb104745c53b9730d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ChalkboardTutorialCondition
+  lesson: {fileID: 1006456097}
+  context: 11
+--- !u!114 &2900000120
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2900000115}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 942e52852a30b8d4981b66bc52f37d43, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DialogAction
+  delay: 0
+  subtitleID: thought_reader_0
+  dialogClip: {fileID: 0}
+  audioSource: {fileID: 0}
+  followConditions: 1
+  contextOwner: {fileID: 248469711}
+  reminderSubtitleIDs:
+  - thought_reader_1
+  - thought_reader_2
+  reminderDelay: 30
+  requiredWithoutVoice: 1
+--- !u!1 &2900000122
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2900000123}
+  - component: {fileID: 2900000124}
+  - component: {fileID: 2900000125}
+  - component: {fileID: 2900000126}
+  - component: {fileID: 2900000128}
+  - component: {fileID: 2900000127}
+  m_Layer: 0
+  m_Name: confirm
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2900000123
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2900000122}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2900000001}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2900000124
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2900000122}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2350ebc7d48054446bec7126651cd467, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EventLogicController
+  requireAllConditions: 1
+  triggerOnlyOnce: 1
+--- !u!114 &2900000125
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2900000122}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb33f8c8e606a9468246904fc40e08c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PrerequisiteCondition
+  requiredEvent: {fileID: 1052328703}
+  requireTriggered: 1
+--- !u!114 &2900000126
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2900000122}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb33f8c8e606a9468246904fc40e08c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PrerequisiteCondition
+  requiredEvent: {fileID: 2108317029}
+  requireTriggered: 0
+--- !u!114 &2900000128
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2900000122}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 90da6f6e897e41afb104745c53b9730d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ChalkboardTutorialCondition
+  lesson: {fileID: 1006456097}
+  context: 12
+--- !u!114 &2900000127
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2900000122}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 942e52852a30b8d4981b66bc52f37d43, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DialogAction
+  delay: 0
+  subtitleID: thought_confirm_0
+  dialogClip: {fileID: 0}
+  audioSource: {fileID: 0}
+  followConditions: 1
+  contextOwner: {fileID: 248469711}
+  reminderSubtitleIDs:
+  - thought_confirm_1
+  - thought_confirm_2
+  reminderDelay: 10
+  requiredWithoutVoice: 1
+--- !u!1 &2900000129
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2900000130}
+  - component: {fileID: 2900000131}
+  - component: {fileID: 2900000132}
+  - component: {fileID: 2900000133}
+  - component: {fileID: 2900000135}
+  - component: {fileID: 2900000134}
+  m_Layer: 0
+  m_Name: retry_measurement
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2900000130
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2900000129}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2900000001}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2900000131
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2900000129}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2350ebc7d48054446bec7126651cd467, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EventLogicController
+  requireAllConditions: 1
+  triggerOnlyOnce: 1
+--- !u!114 &2900000132
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2900000129}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb33f8c8e606a9468246904fc40e08c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PrerequisiteCondition
+  requiredEvent: {fileID: 1052328703}
+  requireTriggered: 1
+--- !u!114 &2900000133
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2900000129}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb33f8c8e606a9468246904fc40e08c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PrerequisiteCondition
+  requiredEvent: {fileID: 2108317029}
+  requireTriggered: 0
+--- !u!114 &2900000135
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2900000129}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 90da6f6e897e41afb104745c53b9730d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ChalkboardTutorialCondition
+  lesson: {fileID: 1006456097}
+  context: 13
+--- !u!114 &2900000134
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2900000129}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 942e52852a30b8d4981b66bc52f37d43, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DialogAction
+  delay: 0
+  subtitleID: thought_retry_measurement_0
+  dialogClip: {fileID: 0}
+  audioSource: {fileID: 0}
+  followConditions: 1
+  contextOwner: {fileID: 248469711}
+  reminderSubtitleIDs:
+  - thought_retry_measurement_1
+  - thought_retry_measurement_2
+  reminderDelay: 10
+  requiredWithoutVoice: 1
+--- !u!1 &2900000136
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2900000137}
+  - component: {fileID: 2900000138}
+  - component: {fileID: 2900000139}
+  - component: {fileID: 2900000140}
+  - component: {fileID: 2900000141}
+  m_Layer: 0
+  m_Name: valve_room
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2900000137
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2900000136}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2900000001}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2900000138
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2900000136}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2350ebc7d48054446bec7126651cd467, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EventLogicController
+  requireAllConditions: 1
+  triggerOnlyOnce: 1
+--- !u!114 &2900000139
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2900000136}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb33f8c8e606a9468246904fc40e08c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PrerequisiteCondition
+  requiredEvent: {fileID: 2108317029}
+  requireTriggered: 1
+--- !u!114 &2900000140
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2900000136}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb33f8c8e606a9468246904fc40e08c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PrerequisiteCondition
+  requiredEvent: {fileID: 1358310748}
+  requireTriggered: 0
+--- !u!114 &2900000141
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2900000136}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 942e52852a30b8d4981b66bc52f37d43, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DialogAction
+  delay: 0
+  subtitleID: thought_valve_room_0
+  dialogClip: {fileID: 0}
+  audioSource: {fileID: 0}
+  followConditions: 1
+  contextOwner: {fileID: 248469711}
+  reminderSubtitleIDs:
+  - thought_valve_room_1
+  - thought_valve_room_2
+  reminderDelay: 10
+  requiredWithoutVoice: 1
+--- !u!1 &2900000142
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2900000143}
+  - component: {fileID: 2900000144}
+  - component: {fileID: 2900000145}
+  - component: {fileID: 2900000146}
+  - component: {fileID: 2900000148}
+  - component: {fileID: 2900000147}
+  m_Layer: 0
+  m_Name: valve
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2900000143
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2900000142}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2900000001}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2900000144
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2900000142}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2350ebc7d48054446bec7126651cd467, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EventLogicController
+  requireAllConditions: 1
+  triggerOnlyOnce: 1
+--- !u!114 &2900000145
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2900000142}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb33f8c8e606a9468246904fc40e08c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PrerequisiteCondition
+  requiredEvent: {fileID: 1358310748}
+  requireTriggered: 1
+--- !u!114 &2900000146
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2900000142}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb33f8c8e606a9468246904fc40e08c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PrerequisiteCondition
+  requiredEvent: {fileID: 498599966}
+  requireTriggered: 0
+--- !u!114 &2900000148
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2900000142}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 90da6f6e897e41afb104745c53b9730d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ChalkboardTutorialCondition
+  lesson: {fileID: 1006456097}
+  context: 14
+--- !u!114 &2900000147
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2900000142}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 942e52852a30b8d4981b66bc52f37d43, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DialogAction
+  delay: 0
+  subtitleID: thought_valve_0
+  dialogClip: {fileID: 0}
+  audioSource: {fileID: 0}
+  followConditions: 1
+  contextOwner: {fileID: 248469711}
+  reminderSubtitleIDs:
+  - thought_valve_1
+  - thought_valve_2
+  reminderDelay: 10
+  requiredWithoutVoice: 1
+--- !u!1 &2900000149
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2900000150}
+  - component: {fileID: 2900000151}
+  - component: {fileID: 2900000152}
+  - component: {fileID: 2900000153}
+  - component: {fileID: 2900000155}
+  - component: {fileID: 2900000154}
+  m_Layer: 0
+  m_Name: leave_valve
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2900000150
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2900000149}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2900000001}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2900000151
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2900000149}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2350ebc7d48054446bec7126651cd467, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EventLogicController
+  requireAllConditions: 1
+  triggerOnlyOnce: 1
+--- !u!114 &2900000152
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2900000149}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb33f8c8e606a9468246904fc40e08c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PrerequisiteCondition
+  requiredEvent: {fileID: 1358310748}
+  requireTriggered: 1
+--- !u!114 &2900000153
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2900000149}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb33f8c8e606a9468246904fc40e08c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PrerequisiteCondition
+  requiredEvent: {fileID: 498599966}
+  requireTriggered: 0
+--- !u!114 &2900000155
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2900000149}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 90da6f6e897e41afb104745c53b9730d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ChalkboardTutorialCondition
+  lesson: {fileID: 1006456097}
+  context: 15
+--- !u!114 &2900000154
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2900000149}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 942e52852a30b8d4981b66bc52f37d43, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DialogAction
+  delay: 0
+  subtitleID: thought_leave_valve_0
+  dialogClip: {fileID: 0}
+  audioSource: {fileID: 0}
+  followConditions: 1
+  contextOwner: {fileID: 248469711}
+  reminderSubtitleIDs:
+  - thought_leave_valve_1
+  - thought_leave_valve_2
+  reminderDelay: 10
+  requiredWithoutVoice: 1
+--- !u!1 &2900000156
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2900000157}
+  - component: {fileID: 2900000158}
+  - component: {fileID: 2900000159}
+  - component: {fileID: 2900000160}
+  - component: {fileID: 2900000162}
+  - component: {fileID: 2900000161}
+  m_Layer: 0
+  m_Name: wait_power
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2900000157
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2900000156}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2900000001}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2900000158
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2900000156}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2350ebc7d48054446bec7126651cd467, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EventLogicController
+  requireAllConditions: 1
+  triggerOnlyOnce: 1
+--- !u!114 &2900000159
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2900000156}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb33f8c8e606a9468246904fc40e08c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PrerequisiteCondition
+  requiredEvent: {fileID: 498599966}
+  requireTriggered: 1
+--- !u!114 &2900000160
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2900000156}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb33f8c8e606a9468246904fc40e08c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PrerequisiteCondition
+  requiredEvent: {fileID: 1193203533}
+  requireTriggered: 0
+--- !u!114 &2900000162
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2900000156}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 90da6f6e897e41afb104745c53b9730d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ChalkboardTutorialCondition
+  lesson: {fileID: 1006456097}
+  context: 16
+--- !u!114 &2900000161
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2900000156}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 942e52852a30b8d4981b66bc52f37d43, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DialogAction
+  delay: 0
+  subtitleID: thought_wait_power_0
+  dialogClip: {fileID: 0}
+  audioSource: {fileID: 0}
+  followConditions: 1
+  contextOwner: {fileID: 248469711}
+  reminderSubtitleIDs:
+  - thought_wait_power_1
+  - thought_wait_power_2
+  reminderDelay: 10
+  requiredWithoutVoice: 1
+--- !u!1 &2900000163
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2900000164}
+  - component: {fileID: 2900000165}
+  - component: {fileID: 2900000166}
+  - component: {fileID: 2900000167}
+  - component: {fileID: 2900000169}
+  - component: {fileID: 2900000168}
+  m_Layer: 0
+  m_Name: breaker
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2900000164
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2900000163}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2900000001}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2900000165
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2900000163}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2350ebc7d48054446bec7126651cd467, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EventLogicController
+  requireAllConditions: 1
+  triggerOnlyOnce: 1
+--- !u!114 &2900000166
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2900000163}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb33f8c8e606a9468246904fc40e08c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PrerequisiteCondition
+  requiredEvent: {fileID: 498599966}
+  requireTriggered: 1
+--- !u!114 &2900000167
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2900000163}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb33f8c8e606a9468246904fc40e08c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PrerequisiteCondition
+  requiredEvent: {fileID: 1193203533}
+  requireTriggered: 0
+--- !u!114 &2900000169
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2900000163}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 90da6f6e897e41afb104745c53b9730d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ChalkboardTutorialCondition
+  lesson: {fileID: 1006456097}
+  context: 17
+--- !u!114 &2900000168
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2900000163}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 942e52852a30b8d4981b66bc52f37d43, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DialogAction
+  delay: 0
+  subtitleID: thought_breaker_0
+  dialogClip: {fileID: 0}
+  audioSource: {fileID: 0}
+  followConditions: 1
+  contextOwner: {fileID: 248469711}
+  reminderSubtitleIDs:
+  - thought_breaker_1
+  - thought_breaker_2
+  reminderDelay: 10
+  requiredWithoutVoice: 1
+--- !u!1 &2900000000
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2900000001}
+  m_Layer: 0
+  m_Name: Konuşma Eventleri
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2900000001
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2900000000}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 2900000003}
+  - {fileID: 2900000010}
+  - {fileID: 2900000017}
+  - {fileID: 2900000024}
+  - {fileID: 2900000031}
+  - {fileID: 2900000038}
+  - {fileID: 2900000045}
+  - {fileID: 2900000052}
+  - {fileID: 2900000059}
+  - {fileID: 2900000066}
+  - {fileID: 2900000072}
+  - {fileID: 2900000078}
+  - {fileID: 2900000084}
+  - {fileID: 2900000090}
+  - {fileID: 2900000096}
+  - {fileID: 2900000102}
+  - {fileID: 2900000109}
+  - {fileID: 2900000116}
+  - {fileID: 2900000123}
+  - {fileID: 2900000130}
+  - {fileID: 2900000137}
+  - {fileID: 2900000143}
+  - {fileID: 2900000150}
+  - {fileID: 2900000157}
+  - {fileID: 2900000164}
+  m_Father: {fileID: 1006456096}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

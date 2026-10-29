@@ -57,6 +57,18 @@ public partial class NotebookWorkspaceController : MonoBehaviour
             FormulaCatalog.Instance.RegisterCatalog(notebook.notebookData.synthesisCatalog);
     }
 
+    private void OnEnable() => GameLocalization.LanguageChanged += RefreshLocalizedLayout;
+    private void OnDisable() => GameLocalization.LanguageChanged -= RefreshLocalizedLayout;
+
+    private void RefreshLocalizedLayout()
+    {
+        if (root == null) return;
+        RefreshPage();
+        RefreshBook(activeBook);
+        RefreshPinnedQuest();
+        if (guidePanel != null && guidePanel.gameObject.activeSelf) RefreshGuidePage();
+    }
+
     private void OnDestroy()
     {
         Close();
@@ -82,7 +94,7 @@ public partial class NotebookWorkspaceController : MonoBehaviour
             notebookWindow.anchoredPosition = notebookOpenPosition;
         }
         activeBook = book;
-        if (archiveFooter != null && IsArchiveNotebook) archiveFooter.text = "NOTU SÜRÜKLE  /  ASLI DEFTERDE KALIR";
+        if (archiveFooter != null && IsArchiveNotebook) GameLocalization.Set(archiveFooter, "NOTU SÜRÜKLE  /  ASLI DEFTERDE KALIR");
         bookWindow.gameObject.SetActive(book != null && !book.usePhysicalPageBlocks
             && book.synthesisPages.Count > 0);
         if (ChalkboardManager.Instance != null)
@@ -119,11 +131,11 @@ public partial class NotebookWorkspaceController : MonoBehaviour
     private void ShowFeedback(string message, bool success)
     {
         if (statusLabel == null) return;
-        statusLabel.text = message;
+        GameLocalization.Set(statusLabel, message);
         statusLabel.color = success ? new Color(0.15f, 0.35f, 0.15f) : new Color(0.55f, 0.12f, 0.1f);
         if (boardFeedback != null)
         {
-            boardFeedback.text = message;
+            GameLocalization.Set(boardFeedback, message);
             boardFeedback.color = statusLabel.color;
         }
     }
@@ -133,10 +145,14 @@ public partial class NotebookWorkspaceController : MonoBehaviour
         RefreshPinnedQuest();
         if (!ResearchPuzzleTrial.IsResearch(ChalkboardManager.Instance)) return;
         quest = ChalkboardManager.Instance.PinnedQuest;
-        string message = quest == null ? "Defterden bir hedef seç; mevcut bilgilerinle bir hipotez kur."
-            : "Hedef: " + quest.title + (quest.completed ? " / Tamamlandı." : " / Hipotezini kur ve test et.");
-        if (statusLabel != null) { statusLabel.text = message; statusLabel.color = ink; }
-        if (boardFeedback != null) { boardFeedback.text = message; boardFeedback.color = ink; }
+        foreach (var label in new[] { statusLabel, boardFeedback })
+        {
+            if (label == null) continue;
+            if (quest == null) GameLocalization.Set(label, "Defterden bir hedef seç; mevcut bilgilerinle bir hipotez kur.");
+            else GameLocalization.SetFormat(label, quest.completed ? "Hedef: {0} / Tamamlandı."
+                : "Hedef: {0} / Hipotezini kur ve test et.", quest.title);
+            label.color = ink;
+        }
     }
 
     private void Update()
@@ -285,7 +301,7 @@ public partial class NotebookWorkspaceController : MonoBehaviour
             PlaceOnPage(block);
             pageBlocks.Add(block);
         }
-        pageLabel.text = $"SAYFA {notebook.currentWorkspacePage + 1}";
+        GameLocalization.SetFormat(pageLabel, "SAYFA {0}", notebook.currentWorkspacePage + 1);
         RefreshCollectedTargets();
         RefreshBookmarks();
         RefreshInformation();
@@ -381,7 +397,7 @@ public partial class NotebookWorkspaceController : MonoBehaviour
             Top(rect, new Vector2(slot % 2 == 0 ? -(UsesNotebookSkin ? 116 : 125) : (UsesNotebookSkin ? 116 : 125), -8 - slot / 2 * (UsesNotebookSkin ? 204 : 190)));
             ApplyArchiveNotePose(rect, notes[index]); pageBlocks.Add(block);
         }
-        if (page.gameObject.activeSelf) pageLabel.text = UsesNotebookSkin ? $"{partsArchivePage + 1} / {pageCount}" : $"PARÇALAR  {partsArchivePage + 1} / {pageCount}";
+        if (page.gameObject.activeSelf) GameLocalization.SetFormat(pageLabel, UsesNotebookSkin ? "{0} / {1}" : "PARÇALAR  {0} / {1}", partsArchivePage + 1, pageCount);
         if (page.gameObject.activeSelf) UpdateArchivePager(partsArchivePage, pageCount);
         if (notes.Count == 0)
         {
@@ -685,7 +701,9 @@ public partial class NotebookWorkspaceController : MonoBehaviour
     private void ChangeChapter(int delta)
     {
         clueChapter = (clueChapter + delta + 5) % 5;
+        RefreshPage();
         RefreshBook(activeBook);
+        RefreshPinnedQuest();
     }
 
     public void RefreshBook(InteractableBook book)
@@ -695,7 +713,7 @@ public partial class NotebookWorkspaceController : MonoBehaviour
         for (int i = bookContent.childCount - 1; i >= 0; i--) Destroy(bookContent.GetChild(i).gameObject);
         var header = bookWindow.GetComponentInChildren<DraggableWorkspaceItem>();
         if (header != null) header.worldTarget = book.transform;
-        chapterLabel.text = "ARAŞTIRMA NOTLARI";
+        GameLocalization.Set(chapterLabel, "ARAŞTIRMA NOTLARI");
         float y = 12;
         string explanation = "Araştırma arşivi. Hedefi, parça atlasını ve deney gözlemlerini karşılaştır.\n";
         if (book.synthesisPages != null)
@@ -736,7 +754,7 @@ public partial class NotebookWorkspaceController : MonoBehaviour
         label.alignment = TextAlignmentOptions.TopLeft;
         label.rectTransform.anchorMin = label.rectTransform.anchorMax = new Vector2(0.5f, 1);
         label.rectTransform.pivot = new Vector2(0.5f, 1);
-        float height = Mathf.Max(28, label.GetPreferredValues(text, 425, 0).y + 8);
+        float height = Mathf.Max(28, label.GetPreferredValues(label.text, 425, 0).y + 8);
         label.rectTransform.sizeDelta = new Vector2(425, height);
         label.rectTransform.anchoredPosition = new Vector2(0, -y);
         y += height + 12;
@@ -785,7 +803,6 @@ public partial class NotebookWorkspaceController : MonoBehaviour
         var obj = new GameObject("Metin", typeof(RectTransform), typeof(TextMeshProUGUI));
         obj.transform.SetParent(parent, false);
         var label = obj.GetComponent<TextMeshProUGUI>();
-        label.text = text;
         if (UsesNotebookSkin && notebookBodyFont != null) label.font = notebookBodyFont;
         label.fontSize = fontSize;
         label.color = ink;
@@ -793,6 +810,7 @@ public partial class NotebookWorkspaceController : MonoBehaviour
         label.raycastTarget = false;
         label.rectTransform.sizeDelta = size;
         label.rectTransform.anchoredPosition = position;
+        if (!string.IsNullOrEmpty(text)) GameLocalization.Set(label, text);
         return label;
     }
 

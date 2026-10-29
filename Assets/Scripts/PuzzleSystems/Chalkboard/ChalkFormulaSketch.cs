@@ -62,7 +62,6 @@ public sealed class ChalkFormulaSketch : MonoBehaviour
         // board.forward oyuncuya bakar; TMP'nin ön yüzünü de oyuncuya çevir.
         labelObject.transform.localRotation = Quaternion.Euler(0, 180, -2);
         var label = labelObject.AddComponent<TextMeshPro>();
-        label.text = data != null ? data.itemName : "";
         label.alignment = TextAlignmentOptions.Center;
         label.fontSize = 5;
         label.enableAutoSizing = true;
@@ -72,6 +71,7 @@ public sealed class ChalkFormulaSketch : MonoBehaviour
         label.rectTransform.sizeDelta = new Vector2(3.2f, 0.5f);
         label.color = new Color(0.88f, 0.9f, 0.84f);
         label.raycastTarget = false;
+        GameLocalization.Set(label, data != null ? data.itemName : "");
         formula.formulaLabel = label;
 
         foreach (var node in formula.GetOwnNodes())
@@ -148,9 +148,10 @@ public sealed class ChalkFormulaSketch : MonoBehaviour
         var text = new GameObject("Parça Adı", typeof(TextMeshPro)).GetComponent<TextMeshPro>();
         text.transform.SetParent(drawing, false); text.transform.localPosition = new Vector3(0, -1.15f, 0);
         text.transform.localRotation = Quaternion.Euler(0, 180, 0);
-        text.text = data.itemName; text.fontSize = 4; text.enableAutoSizing = true; text.fontSizeMin = 2.5f; text.fontSizeMax = 4;
+        text.fontSize = 4; text.enableAutoSizing = true; text.fontSizeMin = 2.5f; text.fontSizeMax = 4;
         text.alignment = TextAlignmentOptions.Center; text.textWrappingMode = TextWrappingModes.NoWrap;
         text.rectTransform.sizeDelta = new Vector2(3.3f, .5f); text.color = new Color(.88f, .9f, .84f); text.raycastTarget = false;
+        GameLocalization.Set(text, data.itemName);
         formula.formulaLabel = text;
     }
 

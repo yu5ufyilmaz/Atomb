@@ -26,12 +26,39 @@ public class SettingsData
     // Oynanış ve Kontrol
     public float mouseSensitivity = 1f;
     public int languageIndex = 0;
+    public string languageCode = "";
     public bool subtitlesEnabled = true;
 }
 
 public class SettingsManager : MonoBehaviour
 {
     public static SettingsManager Instance;
+
+    public static SettingsManager EnsureInstance()
+    {
+        if (Instance != null) return Instance;
+        var existing = Object.FindFirstObjectByType<SettingsManager>();
+        if (existing != null) return existing;
+        var go = new GameObject("SettingsManager");
+        return go.AddComponent<SettingsManager>();
+    }
+
+    public static string CodeFromLegacyIndex(int index)
+    {
+        switch (index)
+        {
+            case 0: return "tr";
+            case 2: return "de";
+            default: return "en";
+        }
+    }
+
+    public static int LegacyIndexFromCode(string code)
+    {
+        if (string.Equals(code, "tr", System.StringComparison.OrdinalIgnoreCase)) return 0;
+        if (string.Equals(code, "de", System.StringComparison.OrdinalIgnoreCase)) return 2;
+        return 1;
+    }
 
     [Header("Referanslar")]
     public AudioMixer mainAudioMixer;
@@ -54,6 +81,10 @@ public class SettingsManager : MonoBehaviour
         }
         else
         {
+            if (Instance.mainAudioMixer == null && mainAudioMixer != null)
+                Instance.mainAudioMixer = mainAudioMixer;
+            if (Instance.globalVolume == null && globalVolume != null)
+                Instance.globalVolume = globalVolume;
             Destroy(gameObject);
             return;
         }
@@ -136,9 +167,24 @@ public class SettingsManager : MonoBehaviour
             }
 
             currentSettings.resolutionIndex = targetResIndex;
+            currentSettings.languageCode = CodeFromLegacyIndex(currentSettings.languageIndex);
 
             SaveSettings();
         }
+
+        NormalizeLanguageSetting();
+        GameLocalization.SetLanguage(currentSettings.languageCode);
+    }
+
+    private void NormalizeLanguageSetting()
+    {
+        if (currentSettings == null)
+            currentSettings = new SettingsData();
+        if (string.IsNullOrWhiteSpace(currentSettings.languageCode))
+            currentSettings.languageCode = CodeFromLegacyIndex(currentSettings.languageIndex);
+        else
+            currentSettings.languageCode = currentSettings.languageCode.Trim().ToLowerInvariant();
+        currentSettings.languageIndex = LegacyIndexFromCode(currentSettings.languageCode);
     }
 
     // --- AYARLARI SİSTEME UYGULAMA METOTLARI ---
@@ -161,7 +207,8 @@ public class SettingsManager : MonoBehaviour
             SetResolution(currentSettings.resolutionIndex);
         }
 
-        SetLanguage(currentSettings.languageIndex);
+        NormalizeLanguageSetting();
+        SetLanguage(currentSettings.languageCode);
         SetBrightness(currentSettings.brightness);
     }
 
@@ -224,8 +271,28 @@ public class SettingsManager : MonoBehaviour
 
     public void SetLanguage(int languageIndex)
     {
+        if (currentSettings == null)
+            currentSettings = new SettingsData();
+        var languages = GameLocalization.Languages;
+        if (languages != null && languageIndex >= 0 && languageIndex < languages.Count)
+        {
+            SetLanguage(languages[languageIndex].code);
+            return;
+        }
         currentSettings.languageIndex = languageIndex;
-        // GameLanguage enum sırasına göre dili ayarlar (0=TR, 1=EN, 2=DE)
+        currentSettings.languageCode = CodeFromLegacyIndex(languageIndex);
+        GameLocalization.SetLanguage(currentSettings.languageCode);
+    }
+
+    public void SetLanguage(string languageCode)
+    {
+        if (currentSettings == null)
+            currentSettings = new SettingsData();
+        currentSettings.languageCode = string.IsNullOrWhiteSpace(languageCode)
+            ? "en"
+            : languageCode.Trim().ToLowerInvariant();
+        currentSettings.languageIndex = LegacyIndexFromCode(currentSettings.languageCode);
+        GameLocalization.SetLanguage(currentSettings.languageCode);
     }
 
     public void SetSubtitlesEnabled(bool isEnabled)

@@ -44,8 +44,23 @@ public class NotebookDraggableBlock : MonoBehaviour, IBeginDragHandler, IDragHan
         {
             var part = Data?.blockType == NotebookBlockType.PartClue ? PuzzleParts.Find(Data.itemID) : null;
             string role = part == null ? null : part.inputs == 0 ? "BAŞLATICI ›" : part.outputs == 0 ? "› SONLANDIRICI" : "› İŞLEM ›";
-            return part == null ? Data?.title : Data.title + "\n<size=65%>" + role + "</size>";
+            return part == null ? GameLocalization.Translate(Data?.title)
+                : GameLocalization.Format("{0}\n<size=65%>{1}</size>", Data.title, role);
         }
+    }
+
+    public void SetDisplayTitle(TMP_Text target)
+    {
+        var part = Data?.blockType == NotebookBlockType.PartClue ? PuzzleParts.Find(Data.itemID) : null;
+        if (part == null) GameLocalization.Set(target, Data?.title);
+        else GameLocalization.SetFormat(target, "{0}\n<size=65%>{1}</size>", Data.title,
+            part.inputs == 0 ? "BAŞLATICI ›" : part.outputs == 0 ? "› SONLANDIRICI" : "› İŞLEM ›");
+    }
+
+    public void UsePrintedTitle()
+    {
+        if (Data.blockType == NotebookBlockType.PartClue) SetDisplayTitle(titleText);
+        else GameLocalization.Set(titleText, Data.title);
     }
 
     private RectTransform floatingRect;
@@ -76,6 +91,7 @@ public class NotebookDraggableBlock : MonoBehaviour, IBeginDragHandler, IDragHan
         canvasGroup = GetComponent<CanvasGroup>();
         RenderBlock();
         NotebookWorkspaceController.Instance?.StyleNotebookNote(this);
+        foreach (var localized in GetComponentsInChildren<LocalizedText>(true)) localized.RefreshBaseline();
     }
 
     private void RenderBlock()
@@ -154,22 +170,22 @@ public class NotebookDraggableBlock : MonoBehaviour, IBeginDragHandler, IDragHan
         titleText.fontSizeMin = 11f;
         titleText.fontSizeMax = 17f;
         bool measurement = SignalExperiment.IsMeasurementNote(Data);
-        titleText.text = (quest ? "◆ HEDEF  " : measurement ? "ÖLÇÜM KARTI  "
-            : Data.blockType == NotebookBlockType.RuleClue ? researchNote ? "KAYIT  " : "KURAL  " : "PARÇA  ") + Data.title;
-        if (measurement) titleText.text = "ÖLÇÜM KARTI  " + (Data.title ?? "").Replace("ÖLÇÜM / ", "");
+        GameLocalization.SetFormat(titleText, quest ? "◆ HEDEF  {0}" : measurement ? "ÖLÇÜM KARTI  {0}"
+            : Data.blockType == NotebookBlockType.RuleClue ? researchNote ? "KAYIT  {0}" : "KURAL  {0}" : "PARÇA  {0}",
+            measurement ? (Data.title ?? "").Replace("ÖLÇÜM / ", "") : Data.title);
         if (Data.blockType == NotebookBlockType.PartClue && PuzzleParts.Find(Data.itemID) != null)
         {
-            titleText.text = DisplayTitle;
+            SetDisplayTitle(titleText);
             titleText.rectTransform.offsetMin = new Vector2(10, -54);
         }
         if (descriptionText == null)
             descriptionText = CreateText("Açıklama", new Vector2(10f, -39f), new Vector2(-10f, 8f), 13f);
-        descriptionText.text = measurement && researchNote
-            ? "Turing'in sol klavyesindeki yuvaya sürükle." : Data.description;
+        GameLocalization.Set(descriptionText, measurement && researchNote
+            ? "Turing'in sol klavyesindeki yuvaya sürükle." : Data.description);
         // Bağ/köprü kuralının son cümlesi bulmacanın zorunlu bilgisidir; üç nokta ile kesilmez.
         if (autoBuilt && Data.blockType == NotebookBlockType.RuleClue)
         {
-            float bodyHeight = descriptionText.GetPreferredValues(Data.description ?? "", rect.rect.width - 20f, 0f).y;
+            float bodyHeight = descriptionText.GetPreferredValues(descriptionText.text, rect.rect.width - 20f, 0f).y;
             rect.sizeDelta = new Vector2(rect.sizeDelta.x, Mathf.Max(115f, bodyHeight + 52f));
             descriptionText.overflowMode = TextOverflowModes.Overflow;
         }
@@ -183,8 +199,8 @@ public class NotebookDraggableBlock : MonoBehaviour, IBeginDragHandler, IDragHan
             label.rectTransform.pivot = new Vector2(.5f, 0); label.rectTransform.offsetMin = new Vector2(10, 4);
             label.rectTransform.offsetMax = new Vector2(-10, 20);
             label.enableAutoSizing = true; label.fontSizeMin = 8; label.fontSizeMax = 10;
-            label.text = measurement && researchNote ? "TURING'E TAKILAN KART" : researchNote ? "GENEL ARAŞTIRMA KAYDI"
-                : linked ? PuzzleInformation.Title(Data.questID, ChalkboardManager.Instance) : "BAĞLANTISI BELİRSİZ";
+            GameLocalization.Set(label, measurement && researchNote ? "TURING'E TAKILAN KART" : researchNote ? "GENEL ARAŞTIRMA KAYDI"
+                : linked ? PuzzleInformation.Title(Data.questID, ChalkboardManager.Instance) : "BAĞLANTISI BELİRSİZ");
             label.color = new Color(.3f, .34f, .3f);
             descriptionText.rectTransform.offsetMin = new Vector2(descriptionText.rectTransform.offsetMin.x, 26);
             if (autoBuilt) rect.sizeDelta += new Vector2(0, 18);
@@ -405,7 +421,30 @@ public class NotebookDraggableBlock : MonoBehaviour, IBeginDragHandler, IDragHan
 
     internal void CancelSourceDrag() { if (IsSource) CancelDrag(); }
 
-    private void OnDisable() { CancelDrag(); SetClueHighlight(false); }
+    private void OnEnable()
+    {
+        GameLocalization.LanguageChanged -= RefreshClueTexture;
+        GameLocalization.LanguageChanged += RefreshClueTexture;
+        RefreshClueTexture();
+    }
+
+    private void OnDisable()
+    {
+        GameLocalization.LanguageChanged -= RefreshClueTexture;
+        CancelDrag();
+        SetClueHighlight(false);
+    }
+
+    private void RefreshClueTexture()
+    {
+        if (Data == null || Data.clueRegionIndex < 0 || string.IsNullOrEmpty(Data.clueDataID)) return;
+        Transform imageTransform = transform.Find(ClueImageName);
+        RawImage image = imageTransform != null ? imageTransform.GetComponent<RawImage>() : null;
+        if (image == null) return;
+        BookClueData clue = BookClueData.Find(Data.clueDataID);
+        Texture2D tex = clue != null ? clue.GetPageTexture() : null;
+        if (tex != null) image.texture = tex;
+    }
 
     public void OnPointerEnter(PointerEventData eventData) { SetClueHighlight(true); }
     public void OnPointerExit(PointerEventData eventData) { SetClueHighlight(false); }
@@ -416,7 +455,8 @@ public class NotebookDraggableBlock : MonoBehaviour, IBeginDragHandler, IDragHan
     {
         if (Data.clueRegionIndex < 0 || string.IsNullOrEmpty(Data.clueDataID)) return false;
         BookClueData clue = BookClueData.Find(Data.clueDataID);
-        if (clue == null || clue.pageTexture == null || !clue.TryGetRegion(Data.clueRegionIndex, out BookClueRegion region))
+        Texture2D clueTex = clue != null ? clue.GetPageTexture() : null;
+        if (clue == null || clueTex == null || !clue.TryGetRegion(Data.clueRegionIndex, out BookClueRegion region))
             return false;
         if (!IsSource)
         {
@@ -452,7 +492,7 @@ public class NotebookDraggableBlock : MonoBehaviour, IBeginDragHandler, IDragHan
             image.rectTransform.anchorMax = Vector2.one;
             image.raycastTarget = false;
         }
-        image.texture = clue.pageTexture;
+        image.texture = clueTex;
         image.uvRect = clue.GetAtlasRect(region);
         image.color = Color.white;
 

@@ -46,6 +46,9 @@ public class DraggableFormula : MonoBehaviour
         SyncMovementTarget();
     }
 
+    private void OnEnable() { GameLocalization.LanguageChanged += UpdateLabel; }
+    private void OnDisable() { GameLocalization.LanguageChanged -= UpdateLabel; }
+
     private void Start()
     {
         mainCam = Camera.main;
@@ -72,25 +75,30 @@ public class DraggableFormula : MonoBehaviour
     {
         if (formulaData == null) return;
         string label = string.IsNullOrEmpty(formulaData.itemName) ? formulaData.itemID : formulaData.itemName;
-        if (formulaData.doubleBondNodes != null && formulaData.doubleBondNodes.Count > 0) label += "\nÇİFT BAĞ (=)";
+        bool doubleBond = formulaData.doubleBondNodes != null && formulaData.doubleBondNodes.Count > 0;
+        void SetLabel(TMP_Text target)
+        {
+            if (doubleBond) GameLocalization.SetFormat(target, "{0}\nÇİFT BAĞ (=)", label);
+            else GameLocalization.Set(target, label);
+        }
         if (formulaLabel != null)
         {
-            formulaLabel.text = label;
-            if (formulaData.doubleBondNodes != null && formulaData.doubleBondNodes.Count > 0)
+            if (doubleBond)
                 formulaLabel.rectTransform.sizeDelta = new Vector2(formulaLabel.rectTransform.sizeDelta.x, 1f);
+            SetLabel(formulaLabel);
             return;
         }
         bool found = false;
         foreach (TMP_Text text in GetComponentsInChildren<TMP_Text>(true))
         {
             if (text.GetComponentInParent<DraggableFormula>() != this || text.GetComponentInParent<FormulaNode>() != null) continue;
-            text.text = label;
+            SetLabel(text);
             found = true;
         }
         foreach (TextMesh text in GetComponentsInChildren<TextMesh>(true))
         {
             if (text.GetComponentInParent<DraggableFormula>() != this || text.GetComponentInParent<FormulaNode>() != null) continue;
-            text.text = label;
+            text.text = doubleBond ? GameLocalization.Format("{0}\nÇİFT BAĞ (=)", label) : GameLocalization.Translate(label);
             found = true;
         }
         if (found) return;
@@ -98,12 +106,12 @@ public class DraggableFormula : MonoBehaviour
         labelObject.transform.SetParent(transform, false);
         labelObject.transform.localPosition = new Vector3(0f, 0f, -0.56f);
         formulaLabel = labelObject.AddComponent<TextMeshPro>();
-        formulaLabel.text = label;
         formulaLabel.alignment = TextAlignmentOptions.Center;
         formulaLabel.fontSize = 3f;
         formulaLabel.textWrappingMode = TextWrappingModes.Normal;
         formulaLabel.rectTransform.sizeDelta = new Vector2(1.8f, 1f);
         formulaLabel.raycastTarget = false;
+        SetLabel(formulaLabel);
     }
 
     public void SyncMovementTarget()

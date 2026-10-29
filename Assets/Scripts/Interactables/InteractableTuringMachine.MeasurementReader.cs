@@ -8,7 +8,8 @@ public partial class InteractableTuringMachine
     private TuringPaperFeed physicalFeed;
     private TuringCrtInk screenInk;
     private Transform measurementReader, readerPaper;
-    private string readerText, readerFeedback;
+    private string readerText, readerFeedback, readerStatus, localizedReaderFeedback;
+    private object[] readerStatusArguments;
     private float readerSeconds = -1, readerFeedProgress, feedbackStarted;
     private Coroutine measurementRoutine;
     private bool readerNotebookOpen;
@@ -16,6 +17,8 @@ public partial class InteractableTuringMachine
     private AudioSource readerMotor, readerTicks;
     private AudioClip readerMotorClip;
     public bool IsReadingMeasurement { get; private set; }
+    public bool HasReadMeasurement => readerPaper != null && !IsReadingMeasurement;
+    public bool MeasurementRejected => readerFeedback != null;
     private bool IsMeasurementTerminal => SignalExperiment.Active != null
         && SignalExperiment.Active.terminal == this;
     public bool RequiresMeasurementCursor => IsMeasurementTerminal && inMachineMode && !isExiting;
@@ -104,17 +107,28 @@ public partial class InteractableTuringMachine
         return (whole / 60).ToString("D2") + ":" + (whole % 60).ToString("D2");
     }
 
-    private void SetReaderDisplay(string status, float seconds = -1)
+    private void SetReaderDisplay(string canonicalStatus, float seconds = -1, params object[] arguments)
     {
         readerSeconds = seconds;
-        readerText = "> " + (seconds >= 0 ? FormatReaderTime(seconds) + " " : "") + status;
-        screenInk?.SetReadout(readerText);
+        readerStatus = canonicalStatus;
+        readerStatusArguments = arguments;
+        RefreshReaderLanguage();
+    }
+
+    private void RefreshReaderLanguage()
+    {
+        if (screenInk == null || readerStatus == null) return;
+        localizedReaderFeedback = readerFeedback == null ? null
+            : GameLocalization.Format("{0}    {1}    ", "KAYIT UYUSMUYOR", readerFeedback).Replace('\n', ' ');
+        string status = GameLocalization.Format(readerStatus, readerStatusArguments);
+        readerText = "> " + (readerSeconds >= 0 ? FormatReaderTime(readerSeconds) + " " : "") + status;
+        screenInk.SetReadout(readerText);
     }
 
     private void ShowMeasurementResult(bool accepted, string message)
     {
         if (screenInk == null) return;
-        readerFeedback = accepted ? null : "KAYIT UYUSMUYOR    " + message.Replace('\n', ' ') + "    ";
+        readerFeedback = accepted ? null : message;
         feedbackStarted = Time.time;
         SetReaderDisplay(accepted ? "KAYIT ONAYLANDI" : "KAYIT UYUSMUYOR");
     }
@@ -122,9 +136,10 @@ public partial class InteractableTuringMachine
     private void LateUpdate()
     {
         if (readerFeedback == null || IsReadingMeasurement || ReaderPaused || Time.time - feedbackStarted < 2) return;
-        int start = Mathf.FloorToInt((Time.time - feedbackStarted - 2) * 4) % readerFeedback.Length;
-        string loop = readerFeedback + readerFeedback;
-        SetReaderDisplay(loop.Substring(start, Mathf.Min(18, readerFeedback.Length)));
+        string feedback = localizedReaderFeedback;
+        int start = Mathf.FloorToInt((Time.time - feedbackStarted - 2) * 4) % feedback.Length;
+        string loop = feedback + feedback;
+        screenInk.SetReadout("> " + loop.Substring(start, Mathf.Min(18, feedback.Length)));
     }
 
     private struct ReaderDrive
@@ -226,7 +241,8 @@ public partial class InteractableTuringMachine
                     drives[i] = drive;
                 }
             }
-            SetReaderDisplay(latched == 0 ? "OKUNUYOR" : "KILIT " + latched + "/" + total, duration - elapsed);
+            if (latched == 0) SetReaderDisplay("OKUNUYOR", duration - elapsed);
+            else SetReaderDisplay("KILIT {0}/{1}", duration - elapsed, latched, total);
             yield return null;
         }
         readerMotor.Stop();
@@ -305,7 +321,13 @@ public partial class InteractableTuringMachine
         readerNotebookOpen = false;
     }
 
-    private void OnDisable() => CloseMeasurementReader(true);
+    private void OnEnable() => GameLocalization.LanguageChanged += RefreshReaderLanguage;
+
+    private void OnDisable()
+    {
+        GameLocalization.LanguageChanged -= RefreshReaderLanguage;
+        CloseMeasurementReader(true);
+    }
 
     public void ResetMeasurementSession()
     {
@@ -313,7 +335,8 @@ public partial class InteractableTuringMachine
         physicalFeed?.Dispose(); physicalFeed = null;
         screenInk?.Dispose(); screenInk = null;
         measurementReader = readerPaper = null;
-        readerSeconds = -1; readerText = readerFeedback = null;
+        readerSeconds = -1; readerText = readerFeedback = readerStatus = localizedReaderFeedback = null;
+        readerStatusArguments = null;
     }
 
     private void OnDestroy()

@@ -22,6 +22,7 @@ public sealed class ResearchPuzzleTrial : MonoBehaviour
     private List<PuzzleDefinition> puzzles = new List<PuzzleDefinition>();
     public IReadOnlyList<PuzzleDefinition> Puzzles => puzzles;
     public readonly HashSet<string> Completed = new HashSet<string>();
+    public event Action SessionStarted;
     private int distributionSeed;
 
     public static bool IsResearch(ChalkboardManager board) => Active != null && Active.Board == board && Active.Content != null;
@@ -81,7 +82,7 @@ public sealed class ResearchPuzzleTrial : MonoBehaviour
             distributionSeed = unchecked(seed * 31 + 17);
             var combined = PuzzleBookDistribution.Build(set, BookProfiles(), distributionSeed);
             Install(set, set[0].id, Guid.NewGuid().ToString("N"), combined);
-            Completed.Clear(); NotebookUI.Instance?.ResetWorkspace(); return;
+            Completed.Clear(); NotebookUI.Instance?.ResetWorkspace(); SessionStarted?.Invoke(); return;
         }
         var puzzle = previewPuzzle != null ? previewPuzzle.definition.Clone()
             : puzzlePool != null ? puzzlePool.Choose(seed) : PuzzleDefinition.Legacy();
@@ -93,6 +94,29 @@ public sealed class ResearchPuzzleTrial : MonoBehaviour
         Install(puzzle, Guid.NewGuid().ToString("N"), pages);
         Completed.Clear();
         NotebookUI.Instance?.ResetWorkspace();
+        SessionStarted?.Invoke();
+    }
+
+    public void AddTutorial(PuzzleDefinition puzzle, InteractableBook book, List<BookWorkspacePage> pages)
+    {
+        if (puzzles.Exists(p => p.id == puzzle.id)) return;
+        string issue = PuzzleSimulation.Validate(puzzle);
+        if (issue != null || Array.IndexOf(books, book) < 0) throw new InvalidOperationException(issue ?? "Eğitim kitabı araştırma oturumunda yok.");
+        puzzles.Add(puzzle.Clone());
+        foreach (var part in PuzzleParts.ForKind(puzzle.kind))
+            if (puzzle.rules.Allows(part.id) && !Content.Parts.Exists(p => p.itemID == part.id))
+                Content.AddPart(partTemplate, part.id, part.title, part.inputs + part.outputs, part.description);
+        var quest = Content.AddQuest(puzzle.id, puzzle.title, 0, puzzle.description);
+        quest.puzzleKind = puzzle.kind; quest.targetPulses = new List<SignalTrial.Pulse>(puzzle.target);
+        quest.clueParts = Content.Parts.FindAll(p => puzzle.rules.Allows(p.itemID));
+        Board.practicePuzzles.Add(quest);
+        SelectPuzzle(puzzle.id);
+        Board.formulaCatalog = new List<FormulaItemSO>(Content.Parts);
+        FormulaCatalog.Instance.RegisterCatalog(Content.Parts);
+        foreach (var page in book.synthesisPages) page.pageIndex += 2;
+        book.synthesisPages.InsertRange(0, pages);
+        book.totalPages += 2; book.startPageIndex = 0;
+        book.GetComponent<BookPageBlockSurface>().InvalidatePages();
     }
 
     private void Install(PuzzleDefinition puzzle, string sessionID, List<BookWorkspacePage>[] pages)
@@ -134,7 +158,7 @@ public sealed class ResearchPuzzleTrial : MonoBehaviour
                 var identity = book.GetComponent<PuzzleBookIdentity>();
                 if (identity != null) { identity.title = Content.Books[i][0].title; identity.location = Content.Books[i][0].sourceLocation; }
                 foreach (var label in book.GetComponentsInChildren<TextMeshPro>(true))
-                    if (label.transform.parent.name.StartsWith("Araştırma Kitap Adı")) label.text = Content.Books[i][0].title;
+                    if (label.transform.parent.name.StartsWith("Araştırma Kitap Adı")) GameLocalization.Set(label, Content.Books[i][0].title);
             }
         }
         previous?.Dispose();
@@ -185,6 +209,15 @@ public sealed class ResearchPuzzleTrial : MonoBehaviour
         Install(set, saved.definition.id, saved.sessionID, pages);
         Completed.Clear(); if (saved.completed != null) foreach (string id in saved.completed) Completed.Add(id);
         GetComponent<SignalExperiment>().RestoreReadings(saved.measurements);
+    }
+
+    public void SelectPuzzle(string id)
+    {
+        if (string.IsNullOrEmpty(id)) return;
+        var puzzle = puzzles.Find(p => p.id == id);
+        if (puzzle != null) CurrentPuzzle = puzzle;
+        var quest = Content?.Quests.Find(q => q.questID == id);
+        if (quest != null && Board != null) Board.practiceQuest = quest;
     }
 
     public void MarkCompleted(string id) => Completed.Add(id);

@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
@@ -11,6 +12,41 @@ public class GlobalSubtitleManager : MonoBehaviour
     public GameLanguage currentLanguage = GameLanguage.Turkish;
 
     private Coroutine currentSubtitleRoutine;
+    private SubtitleEntry activeEntry;
+    private int activeSegmentIndex = -1;
+    private readonly List<AudioSource> speechSources = new List<AudioSource>();
+    public string CurrentID { get; private set; }
+    public bool IsPlaying => currentSubtitleRoutine != null;
+    public bool IsVoicePlaying
+    {
+        get
+        {
+            speechSources.RemoveAll(source => source == null);
+            return speechSources.Exists(source => source.isPlaying);
+        }
+    }
+    public bool IsOtherVoicePlaying(AudioSource owner)
+    {
+        speechSources.RemoveAll(source => source == null);
+        return speechSources.Exists(source => source != owner && source.isPlaying);
+    }
+    public bool IsSpeechPlaying => IsPlaying || IsVoicePlaying;
+
+    private void OnEnable() { GameLocalization.LanguageChanged += RefreshActiveSegment; }
+    private void OnDisable() { GameLocalization.LanguageChanged -= RefreshActiveSegment; }
+
+    private void RefreshActiveSegment()
+    {
+        string code = GameLocalization.CurrentCode;
+        currentLanguage = code == "tr" ? GameLanguage.Turkish : code == "de" ? GameLanguage.German : GameLanguage.English;
+        if (subtitleText == null || activeEntry == null || activeSegmentIndex < 0 || activeSegmentIndex >= activeEntry.segments.Count) return;
+        var segment = activeEntry.segments[activeSegmentIndex];
+        string fallback = segment.GetText(currentLanguage);
+        if (string.IsNullOrWhiteSpace(fallback)) fallback = !string.IsNullOrWhiteSpace(segment.textEN) ? segment.textEN : segment.textTR;
+        fallback = fallback != null ? fallback.Trim() : "";
+        subtitleText.text = code == "de" && !string.IsNullOrWhiteSpace(segment.textDE) ? segment.textDE.Trim()
+            : GameLocalization.Get("subtitle." + activeEntry.id + "." + activeSegmentIndex, fallback);
+    }
 
     private void Awake()
     {
@@ -20,19 +56,23 @@ public class GlobalSubtitleManager : MonoBehaviour
             DontDestroyOnLoad(gameObject);
         }
         else
+        {
             Destroy(gameObject);
+            return;
+        }
 
         HideSubtitle();
     }
 
-    public void Show(string id)
+    public void Show(string id, bool required = false, AudioSource voiceSource = null)
     {
-        if (database == null)
+        if (voiceSource != null && !speechSources.Contains(voiceSource)) speechSources.Add(voiceSource);
+        if (database == null || string.IsNullOrEmpty(id))
             return;
 
         // --- YENİ EKLENEN KISIM: Altyazı kapalıysa işlemi direkt iptal et ---
         if (
-            SettingsManager.Instance != null
+            !required && SettingsManager.Instance != null
             && !SettingsManager.Instance.currentSettings.subtitlesEnabled
         )
         {
@@ -41,11 +81,10 @@ public class GlobalSubtitleManager : MonoBehaviour
         // -------------------------------------------------------------------
 
         SubtitleEntry entry = database.GetEntry(id);
-        if (entry != null)
+        if (entry != null && entry.segments.Count > 0)
         {
-            if (currentSubtitleRoutine != null)
-                StopCoroutine(currentSubtitleRoutine);
-
+            HideSubtitle();
+            CurrentID = id;
             currentSubtitleRoutine = StartCoroutine(PlaySequenceRoutine(entry));
         }
     }
@@ -56,14 +95,21 @@ public class GlobalSubtitleManager : MonoBehaviour
         if (subtitlePanel != null)
             subtitlePanel.SetActive(true);
 
-        foreach (var seg in entry.segments)
+        activeEntry = entry;
+        for (int i = 0; i < entry.segments.Count; i++)
         {
+            var seg = entry.segments[i];
             // 1. Yazıyı Göster
-            if (subtitleText != null)
-                subtitleText.text = seg.GetText(currentLanguage);
+            activeSegmentIndex = i;
+            RefreshActiveSegment();
 
             // 2. Süresi kadar bekle (Otomatik zamanlama)
-            yield return new WaitForSeconds(seg.duration);
+            float remaining = seg.duration;
+            while (remaining > 0)
+            {
+                if (GameManager.Instance == null || !GameManager.Instance.isGamePaused) remaining -= Time.deltaTime;
+                yield return null;
+            }
         }
 
         // 3. Hepsi bitince kapat
@@ -82,6 +128,11 @@ public class GlobalSubtitleManager : MonoBehaviour
 
     public void HideSubtitle()
     {
+        if (currentSubtitleRoutine != null) StopCoroutine(currentSubtitleRoutine);
+        currentSubtitleRoutine = null;
+        activeEntry = null;
+        activeSegmentIndex = -1;
+        CurrentID = null;
         if (subtitleText != null)
             subtitleText.text = "";
         if (subtitlePanel != null)

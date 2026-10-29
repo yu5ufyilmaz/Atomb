@@ -18,6 +18,7 @@ public class BookClueDataEditor : Editor
         BookClueData data = (BookClueData)target;
         serializedObject.Update();
         EditorGUILayout.PropertyField(serializedObject.FindProperty("pageTexture"));
+        EditorGUILayout.PropertyField(serializedObject.FindProperty("localizedPageTextures"), true);
         EditorGUILayout.PropertyField(serializedObject.FindProperty("totalPages"));
         EditorGUILayout.Space(5);
         EditorGUILayout.PropertyField(serializedObject.FindProperty("regions"), true);

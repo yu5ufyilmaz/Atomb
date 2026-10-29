@@ -14,7 +14,23 @@ public class PasswordData : ScriptableObject
 {
     [Header("Görsel Kimlik")]
     public Texture2D pageTexture;
+    public List<LocalizedPageTexture> localizedPageTextures = new List<LocalizedPageTexture>();
     public int totalPages = 8;
+
+    public Texture2D GetPageTexture(string languageCode = null)
+    {
+        string code = string.IsNullOrWhiteSpace(languageCode) ? GameLocalization.CurrentCode : languageCode;
+        if (localizedPageTextures != null && !string.IsNullOrWhiteSpace(code))
+        {
+            for (int i = 0; i < localizedPageTextures.Count; i++)
+            {
+                var entry = localizedPageTextures[i];
+                if (entry.pageTexture != null && string.Equals(entry.languageCode, code, System.StringComparison.OrdinalIgnoreCase))
+                    return entry.pageTexture;
+            }
+        }
+        return pageTexture;
+    }
 
     [Header("Tutorial Ayarları")]
     [Tooltip("Eğer bu işaretlenirse, bu kitap sabit bir şifre taşır ve oyun sayacını etkilemez.")]

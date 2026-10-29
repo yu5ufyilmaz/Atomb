@@ -34,7 +34,7 @@ public partial class BookPageBlockSurface
     {
         if (surface == null) BuildSurface();
         if (surface == null) return;
-        int signature = 17;
+        int signature = unchecked(17 * 31 + GameLocalization.Revision);
         unchecked
         {
             foreach (var page in book.synthesisPages)

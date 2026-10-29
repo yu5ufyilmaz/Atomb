@@ -1,5 +1,20 @@
 # Tahta belgeleri ve taşınabilir defter
 
+## Laboratuvar eğitimi
+
+`scn_LaboratorySynthesis` sahnesinde tutorial varsayılan olarak açıktır; başlık ekranındaki ayardan kapatılabilir.
+
+- Masadaki kitabın ilk iki sayfası **İlk İz** alıştırmasıdır. Hedefi, **Bağlantı Sırası** ipucunu ve üç parçayı deftere sürükle. Yalnız kitabı kapatmak veya Tab'a basmak dersi tamamlamaz.
+- Tahtada **Hedefler** ve **Bilgiler** bölümlerindeki kartları panoya tak. Tahtanın üstündeki **BELGELERİ TOPLA** düğmesi kağıtlarla birlikte fiziksel gövdeyi de kaldırır; **BELGELERİ AÇ** geri getirir. Tutamak tahta sınırları içindedir.
+- **Parçalar** bölümünden **Atım Kaynağı → Numune N-12 → Ölçer** düzenini kur, okları giriş halkalarına bağla ve **DENEYİ ÖLÇ** düğmesine bas. Doğru ölçümü deftere alıp F ile çık.
+- Kapı ve düşman eğitiminden sonra ölçümü Turing okuyucusuna bırakıp Enter ile sına. Hazır tutorial şifresi verilmez. Vana aşaması basıncın 20 veya altına düşmesini, son aşama gerçekten atan şalterin kaldırılmasını bekler.
+- Ekranın sol üstündeki aktif görev işlem tamamlanana kadar kalır. Eğitimde otomatik basınç artışı ve rastgele şalter kesintisi bekler; vana sonrası yazılmış tek kesinti korunur. Eğitim bitince normal sistemler ve serbest etkileşim açılır.
+- Normal araştırma kitaplarının sayfaları korunur; alıştırma masadaki kitabın başına eklenir.
+
+Kontroller: **Senzora > Doğrulama > Tutorial ve Kapanan Pano** (Edit), **Tutorial Gerçek Oyun Akışı** (bu sahnede Play). İkinci kontrol fiziksel kitap, defter bırakma, tahta portları, Turing okuyucusu ve sahnenin eğitim olaylarını kullanır; vana basıncı testte `ReducePressure` çağrısıyla azaltılır.
+
+## Tahta çalışma alanı
+
 `scn_SynthesisBlockout` sahnesinde **Play** ile dene. **1** kitap, **2** tahta, **F** etkileşimden çıkış.
 
 - Kitabın üst bandını veya defterin **SAHA DEFTERİ / TUTUP TAŞI** başlığını sol tuşla tutup sürükle. Defter konumu kitap ile tahta arasında geçerken korunur; ekran dışına taşmaz.

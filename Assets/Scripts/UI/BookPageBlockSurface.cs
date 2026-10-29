@@ -62,6 +62,8 @@ public partial class BookPageBlockSurface : MonoBehaviour
         BookClueData.Register(book.clueData);
     }
 
+    private void OnEnable() { GameLocalization.LanguageChanged += InvalidatePages; }
+
     public void InvalidatePages() { left = right = -1; invalidPages = true; }
 
     private void CancelSourceDrags()
@@ -89,13 +91,13 @@ public partial class BookPageBlockSurface : MonoBehaviour
         surface.enabled = true;
         var input = surface.GetComponent<CanvasGroup>();
         input.blocksRaycasts = input.interactable = !book.isAnimating && !GameManager.Instance.isGamePaused;
-        if (GameManager.Instance.isGamePaused) return;
         if (refresh)
         {
             if (bakedPages != null) book.bookSkinnedMeshRenderer.BakeMesh(bakedPages, true);
             BuildPageMaps(book.bookSkinnedMeshRenderer, (RectTransform)surface.transform);
             RefreshPages();
         }
+        if (GameManager.Instance.isGamePaused) return;
         if (book.IsOpening || book.IsClosing)
         {
             book.bookSkinnedMeshRenderer.BakeMesh(bakedPages, true);
@@ -360,7 +362,7 @@ public partial class BookPageBlockSurface : MonoBehaviour
             pageParent = root.transform; pageRoots.Add(page.pageIndex, pageParent);
             bool rightPage = (page.pageIndex & 1) != 0;
             AddPrintedPageText(page.title, new Rect(.09f, .89f, .82f, .07f), page.pageIndex, 24, true);
-            AddPrintedPageText("s. " + (page.pageIndex + 1), new Rect(.7f, .035f, .2f, .05f), page.pageIndex, 14, false);
+            AddPrintedPageText("s. {0}", new Rect(.7f, .035f, .2f, .05f), page.pageIndex, 14, false, page.pageIndex + 1);
             if (page.blocks == null || page.blocks.Count == 0)
             {
                 AddPrintedPageText(page.explanation, new Rect(.09f, .23f, .82f, .60f), page.pageIndex, 20, false);
@@ -372,6 +374,7 @@ public partial class BookPageBlockSurface : MonoBehaviour
                 obj.transform.SetParent(pageParent, false);
                 var block = obj.GetComponent<NotebookDraggableBlock>();
                 block.Initialize(page.blocks[i], true);
+                if (book.printNotesOnPages) block.UsePrintedTitle();
                 var rect = (RectTransform)obj.transform;
                 bool traceVisual = SignalTrialGraphic.IsNote(page.blocks[i]);
                 Rect region = NoteRegion(page.blocks[i], i, page.blocks.Count);
@@ -411,11 +414,10 @@ public partial class BookPageBlockSurface : MonoBehaviour
                     outline.enabled = false;
                     var tape = obj.transform.Find("Bant");
                     if (tape != null) tape.gameObject.SetActive(false);
-                    foreach (var label in obj.GetComponentsInChildren<TMP_Text>())
-                        label.text = (label.text ?? "").Replace("◆ HEDEF  ", "").Replace("KAYIT  ", "").Replace("PARÇA  ", "");
                 }
                 rect.pivot = new Vector2(.5f, .5f);
                 PlaceClueRegion(rect, new BookClueRegion { regionUV = region }, rightPage);
+                foreach (var localized in obj.GetComponentsInChildren<LocalizedText>(true)) localized.RefreshBaseline();
                 foreach (var graphic in obj.GetComponentsInChildren<Graphic>())
                 {
                     var previous = graphic.GetComponent<BookPageRegionProjection>();
@@ -462,14 +464,13 @@ public partial class BookPageBlockSurface : MonoBehaviour
         return new Rect(.09f, .85f - height - index * (height + gap), .82f, height);
     }
 
-    private void AddPrintedPageText(string content, Rect region, int pageIndex, float size, bool heading)
+    private void AddPrintedPageText(string content, Rect region, int pageIndex, float size, bool heading, params object[] args)
     {
         if (string.IsNullOrWhiteSpace(content)) return;
         var obj = new GameObject(heading ? "Sayfa Başlığı" : "Kitap Dizini", typeof(RectTransform), typeof(CanvasGroup), typeof(TextMeshProUGUI));
         obj.transform.SetParent(pageParent != null ? pageParent : surface.transform, false);
         var text = obj.GetComponent<TextMeshProUGUI>();
         text.font = TMP_Settings.defaultFontAsset;
-        text.text = content;
         text.fontSize = text.fontSizeMax = size;
         text.fontSizeMin = heading ? 14 : 12;
         text.enableAutoSizing = true;
@@ -479,6 +480,8 @@ public partial class BookPageBlockSurface : MonoBehaviour
         text.raycastTarget = false;
         bool rightPage = (pageIndex & 1) != 0;
         PlaceClueRegion(text.rectTransform, new BookClueRegion { regionUV = region }, rightPage);
+        if (args.Length > 0) GameLocalization.SetFormat(text, content, args);
+        else GameLocalization.Set(text, content);
         var printed = obj.AddComponent<BookPagePrintedGraphic>();
         printed.Surface = this; printed.RegionRect = text.rectTransform; printed.RegionUV = region;
         printed.RightPage = rightPage; printed.PageIndex = pageIndex;
@@ -500,7 +503,7 @@ public partial class BookPageBlockSurface : MonoBehaviour
     private void AddClueRegions(int onlyPage)
     {
         BookClueData clue = book.clueData;
-        if (clue == null || clue.pageTexture == null || clue.regions == null) return;
+        if (clue == null || clue.GetPageTexture() == null || clue.regions == null) return;
         BookClueData.Register(clue);
         for (int i = 0; i < clue.regions.Count; i++)
         {
@@ -524,7 +527,7 @@ public partial class BookPageBlockSurface : MonoBehaviour
         }
     }
 
-    private void OnDisable() { if (turning) EndTurn(); if (surface != null) surface.gameObject.SetActive(false); }
+    private void OnDisable() { GameLocalization.LanguageChanged -= InvalidatePages; if (turning) EndTurn(); if (surface != null) surface.gameObject.SetActive(false); }
     private void OnDestroy()
     {
         ReleaseTurningMesh(true);

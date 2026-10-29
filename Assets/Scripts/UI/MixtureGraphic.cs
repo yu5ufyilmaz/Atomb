@@ -25,9 +25,12 @@ public sealed class MixtureGraphic : MaskableGraphic
         label.transform.SetParent(graphic.transform, false); label.raycastTarget = false;
         label.rectTransform.anchorMin = new Vector2(.36f, .06f); label.rectTransform.anchorMax = new Vector2(.98f, .95f);
         label.rectTransform.offsetMin = label.rectTransform.offsetMax = Vector2.zero;
-        label.text = mixture != null ? mixture.Describe() : ColorMixtureLibrary.Find(note.itemID)?.symbol ?? "KARIŞIM";
         label.color = new Color(.12f, .22f, .2f); label.enableAutoSizing = true; label.fontSizeMin = 9; label.fontSizeMax = 17;
         label.alignment = TextAlignmentOptions.MidlineLeft;
+        if (mixture != null)
+            GameLocalization.SetFormat(label, "Yoğunluk: {0:P0} · Miktar: {1:0.##} doz\nPigment K/Y/M: {2:P0} / {3:P0} / {4:P0}",
+                mixture.Concentration, mixture.Volume, mixture.Ratios.x, mixture.Ratios.y, mixture.Ratios.z);
+        else GameLocalization.Set(label, ColorMixtureLibrary.Find(note.itemID)?.symbol ?? "KARIŞIM");
         graphic.SetVerticesDirty();
     }
 

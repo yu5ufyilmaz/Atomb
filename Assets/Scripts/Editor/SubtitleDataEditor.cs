@@ -91,6 +91,7 @@ public class SubtitleDataEditor : Editor
 
                 EditorGUILayout.PropertyField(idProp, new GUIContent("ID (Kod)"));
                 EditorGUILayout.PropertyField(noteProp, new GUIContent("Not"));
+                EditorGUILayout.PropertyField(entry.FindPropertyRelative("voiceClip"), new GUIContent("İç Ses Kaydı (İsteğe Bağlı)"));
 
                 EditorGUILayout.Space(10);
                 EditorGUILayout.LabelField(

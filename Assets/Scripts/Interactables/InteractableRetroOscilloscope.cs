@@ -211,7 +211,7 @@ public class InteractableRetroOscilloscope : MonoBehaviour, IInteractable, IForc
         if (screenText)
         {
             screenText.color = Color.white;
-            screenText.text = "SYSTEM READY\n[LEFT CLICK] TO START";
+            GameLocalization.Set(screenText, "SYSTEM READY\n[LEFT CLICK] TO START");
         }
     }
 
@@ -265,7 +265,7 @@ public class InteractableRetroOscilloscope : MonoBehaviour, IInteractable, IForc
         {
             currentCooldown -= Time.deltaTime;
             if (screenText != null)
-                screenText.text = $"SYSTEM FAILURE\nREBOOTING: {currentCooldown:F1}s";
+                GameLocalization.SetFormat(screenText, "SYSTEM FAILURE\nREBOOTING: {0:F1}s", currentCooldown);
             if (currentCooldown <= 0)
             {
                 IsBroken = false;
@@ -276,7 +276,7 @@ public class InteractableRetroOscilloscope : MonoBehaviour, IInteractable, IForc
                 if (screenText)
                 {
                     screenText.color = Color.white;
-                    screenText.text = "SYSTEM READY\n[LEFT CLICK] TO RESTART";
+                    GameLocalization.Set(screenText, "SYSTEM READY\n[LEFT CLICK] TO RESTART");
                 }
             }
             return;
@@ -416,7 +416,7 @@ public class InteractableRetroOscilloscope : MonoBehaviour, IInteractable, IForc
 
         if (screenText)
         {
-            screenText.text = $"LIVES: {lives} | SCORE: {currentScore}/{scoreToWin}";
+            GameLocalization.SetFormat(screenText, "LIVES: {0} | SCORE: {1}/{2}", lives, currentScore, scoreToWin);
         }
     }
 
@@ -437,8 +437,7 @@ public class InteractableRetroOscilloscope : MonoBehaviour, IInteractable, IForc
             ResetBall(); // Topu merkeze al ve durdur
             if (screenText)
             {
-                screenText.text =
-                    $"LIVES: {lives} | SCORE: {currentScore}/{scoreToWin}\n[LEFT CLICK] TO SERVE";
+                GameLocalization.SetFormat(screenText, "LIVES: {0} | SCORE: {1}/{2}\n[LEFT CLICK] TO SERVE", lives, currentScore, scoreToWin);
             }
         }
     }
@@ -453,7 +452,7 @@ public class InteractableRetroOscilloscope : MonoBehaviour, IInteractable, IForc
         if (overheatSmoke)
             overheatSmoke.SetActive(true);
         if (screenText)
-            screenText.text = "CRITICAL ERROR!";
+            GameLocalization.Set(screenText, "CRITICAL ERROR!");
 
         // YENİ: Oyuncuyu dışarı fırlatan (ExitMachineView) kodunu sildik!
         // Artık kamerada kalıp sürenin dolmasını bekleyecek.
@@ -471,7 +470,7 @@ public class InteractableRetroOscilloscope : MonoBehaviour, IInteractable, IForc
         if (screenText)
         {
             screenText.color = Color.green;
-            screenText.text = $"STABLE\nKEY: {assignedPassword}";
+            GameLocalization.SetFormat(screenText, "STABLE\nKEY: {0}", assignedPassword);
         }
 
         if (PasswordManager.Instance != null)

@@ -26,9 +26,11 @@ public partial class NotebookWorkspaceController
         header.GetComponent<Image>().color = Color.clear;
         header.GetComponent<DraggableWorkspaceItem>().rightEdgeExtension = 44;
         var title = header.GetComponentInChildren<TMP_Text>();
-        title.text = "ARAŞTIRMA DEFTERİ"; title.font = notebookHeadingFont;
+        title.font = notebookHeadingFont;
         title.color = NotebookInk; title.characterSpacing = 1.5f;
         title.rectTransform.sizeDelta = new Vector2(340, 36); title.fontSize = 21;
+        title.GetComponent<LocalizedText>()?.RefreshBaseline();
+        GameLocalization.Set(title, "ARAŞTIRMA DEFTERİ");
 
         foreach (var button in window.GetComponentsInChildren<Button>(true))
         {
@@ -46,18 +48,22 @@ public partial class NotebookWorkspaceController
             label.font = notebookHeadingFont; label.color = NotebookInk;
             label.fontSize = 16; label.fontStyle = FontStyles.Normal;
             label.rectTransform.sizeDelta = ((RectTransform)button.transform).sizeDelta - new Vector2(4, 2);
+            label.GetComponent<LocalizedText>()?.RefreshBaseline();
         }
         var close = (RectTransform)window.Find("×");
         close.anchorMin = close.anchorMax = new Vector2(.5f, .5f);
         close.pivot = new Vector2(0, .5f);
         close.anchoredPosition = new Vector2(267, 306); close.sizeDelta = new Vector2(32, 40);
         var closeLabel = close.GetComponentInChildren<TMP_Text>();
-        closeLabel.text = "×"; closeLabel.fontSize = 22; closeLabel.rectTransform.sizeDelta = new Vector2(26, 32);
+        closeLabel.fontSize = 22; closeLabel.rectTransform.sizeDelta = new Vector2(26, 32);
         closeLabel.rectTransform.anchoredPosition = new Vector2(-3, 1);
+        closeLabel.GetComponent<LocalizedText>()?.RefreshBaseline();
+        GameLocalization.Set(closeLabel, "×");
         StyleNotebookDivider(close, false, true);
         pageLabel.font = notebookHeadingFont; pageLabel.color = NotebookInk;
         statusLabel.font = notebookBodyFont; statusLabel.color = NotebookInk;
         archiveFooter.font = notebookBodyFont; archiveFooter.color = NotebookInk;
+        foreach (var label in new[] { pageLabel, statusLabel, archiveFooter }) label.GetComponent<LocalizedText>()?.RefreshBaseline();
         foreach (var rule in new[] { new Vector2(16, 282), new Vector2(16, 238), new Vector2(16, -234), new Vector2(16, -290) })
         {
             var line = Panel("Defter Cetveli", window, new Vector2(450, 1), NotebookRule);
@@ -93,6 +99,7 @@ public partial class NotebookWorkspaceController
         statusLabel.rectTransform.sizeDelta = new Vector2(442, 44); statusLabel.fontSize = 15;
         archiveFooter.rectTransform.anchoredPosition = new Vector2(16, -310);
         archiveFooter.rectTransform.sizeDelta = new Vector2(448, 26); archiveFooter.fontSize = 13;
+        foreach (var label in new[] { pageLabel, statusLabel, archiveFooter }) label.GetComponent<LocalizedText>()?.RefreshBaseline();
     }
 
     private void StyleNotebookTab(Transform tab, bool selected)
@@ -108,6 +115,7 @@ public partial class NotebookWorkspaceController
         label.rectTransform.anchoredPosition = new Vector2(-3, 3);
         label.rectTransform.localRotation = Quaternion.Euler(0, 0, -90);
         label.fontStyle = selected ? FontStyles.Bold : FontStyles.Normal;
+        label.GetComponent<LocalizedText>()?.RefreshBaseline();
         var underline = tab.Find("Seçili Bölüm");
         if (underline == null)
         {
@@ -194,13 +202,14 @@ public partial class NotebookWorkspaceController
             label.fontSizeMin = handwritten ? heading ? 21 : 16 : heading ? bookSource ? 16 : 13 : notebookCard || bookSource ? 14 : 11;
             label.fontSizeMax = handwritten ? heading ? 27 : 24 : bookSource ? heading ? 22 : 18 : 16;
             label.fontSize = label.fontSizeMax; label.enableAutoSizing = true;
-            if (heading && handwritten) label.text = block.DisplayTitle;
             if (heading)
             {
                 bool part = block.Data.blockType == NotebookBlockType.PartClue && PuzzleParts.Find(block.Data.itemID) != null;
                 label.rectTransform.offsetMin = new Vector2(14, part ? -66 : -50);
                 label.rectTransform.offsetMax = new Vector2(-14, part ? -10 : -16);
             }
+            label.GetComponent<LocalizedText>()?.RefreshBaseline();
+            if (heading && handwritten) block.SetDisplayTitle(label);
         }
         var body = block.transform.Find("Açıklama")?.GetComponent<TMP_Text>();
         var trace = block.GetComponentInChildren<SignalTrialGraphic>();
@@ -226,5 +235,6 @@ public partial class NotebookWorkspaceController
             body.rectTransform.anchorMax = Vector2.one;
             body.rectTransform.offsetMin = new Vector2(14, 20); body.rectTransform.offsetMax = new Vector2(-14, -58);
         }
+        if (body != null) body.GetComponent<LocalizedText>()?.RefreshBaseline();
     }
 }

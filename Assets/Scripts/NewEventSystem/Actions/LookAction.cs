@@ -64,8 +64,31 @@ public class LookAction : ActionBase
     private StarterAssets.CharacterController playerMoveScript;
     private StarterAssetsInputs playerInputs;
     private Camera mainCam;
+    private PlayerInteraction interaction;
+    private bool scheduled, ownsFocus, capturedInput, previousLookInput, previouslyFrozen;
+    private int previousCameraPriority;
 
-    private void Start()
+    public override void Execute()
+    {
+        if (!isActiveAndEnabled || scheduled) return;
+        scheduled = true;
+        interaction = PlayerInteraction.Instance;
+        if (interaction != null && !interaction.TryBlockInteraction(this))
+        { StartCoroutine(WaitForFocus()); return; }
+        ownsFocus = true;
+        base.Execute();
+    }
+
+    private IEnumerator WaitForFocus()
+    {
+        while (interaction != null && !interaction.TryBlockInteraction(this)) yield return null;
+        ownsFocus = true;
+        base.Execute();
+    }
+
+    private void Awake() { ResolveReferences(); }
+
+    private void ResolveReferences()
     {
         mainCam = Camera.main;
         GameObject player = GameObject.FindGameObjectWithTag("Player");
@@ -78,8 +101,10 @@ public class LookAction : ActionBase
 
     protected override void PerformAction()
     {
-        if (playerMoveScript == null)
-            return;
+        ResolveReferences();
+        if (playerMoveScript == null || (focusMode == FocusMode.RotatePlayerHead && (lookTarget == null || mainCam == null))
+            || (focusMode == FocusMode.ActivateVirtualCamera && targetVirtualCamera == null))
+        { ReleaseFocus(); return; }
 
         StartCoroutine(FocusRoutine());
     }
@@ -114,95 +139,114 @@ public class LookAction : ActionBase
 
     private IEnumerator FocusRoutine()
     {
-        // 1. OYUNCU GİRDİSİNİ VE HAREKETİNİ KES
-        if (playerInputs != null)
+        capturedInput = true;
+        previousLookInput = playerInputs == null || playerInputs.cursorInputForLook;
+        previouslyFrozen = playerMoveScript.IsFrozen;
+        if (targetVirtualCamera != null) previousCameraPriority = targetVirtualCamera.Priority;
+        try
         {
-            playerInputs.cursorInputForLook = false;
-            playerInputs.look = Vector2.zero; // <-- BURASI KRİTİK: Freeze kapalı olsa bile ivmeyi sıfırlar!
-        }
-
-        if (freezePlayer)
-        {
-            playerMoveScript.SetFrozen(true, lockCameraInput: true, restrictRotation: false);
+            // 1. OYUNCU GİRDİSİNİ VE HAREKETİNİ KES
             if (playerInputs != null)
-                playerInputs.move = Vector2.zero;
-        }
-        // 2. KAMERA ODAKLANMASI
-        if (focusMode == FocusMode.RotatePlayerHead && lookTarget != null && mainCam != null)
-        {
-            Quaternion startRot = mainCam.transform.rotation;
-            float t = 0f;
-
-            while (t < 1f)
             {
-                t += Time.deltaTime / headTurnDuration;
-                float smoothT = Mathf.SmoothStep(0f, 1f, t);
-
-                Quaternion targetLookRot = GetTargetRotation();
-                Quaternion currentRot = Quaternion.Slerp(startRot, targetLookRot, smoothT);
-
-                ApplyRotationToPlayer(currentRot);
-                yield return null;
+                playerInputs.cursorInputForLook = false;
+                playerInputs.look = Vector2.zero; // <-- BURASI KRİTİK: Freeze kapalı olsa bile ivmeyi sıfırlar!
             }
-        }
-        else if (focusMode == FocusMode.ActivateVirtualCamera && targetVirtualCamera != null)
-        {
-            targetVirtualCamera.Priority = 100;
-        }
 
-        // 3. BEKLEME EVRESİ
-        if (focusMode == FocusMode.RotatePlayerHead && lookTarget != null)
-        {
-            if (waitUntilInput)
+            if (freezePlayer)
             {
-                while (!Input.GetKeyDown(KeyCode.F))
+                playerMoveScript.SetFrozen(true, lockCameraInput: true, restrictRotation: false);
+                if (playerInputs != null)
+                    playerInputs.move = Vector2.zero;
+            }
+            // 2. KAMERA ODAKLANMASI
+            if (focusMode == FocusMode.RotatePlayerHead && lookTarget != null && mainCam != null)
+            {
+                Quaternion startRot = mainCam.transform.rotation;
+                float t = 0f;
+
+                while (t < 1f)
                 {
-                    TrackTarget();
+                    if (lookTarget == null) break;
+                    t += Time.deltaTime / Mathf.Max(.01f, headTurnDuration);
+                    float smoothT = Mathf.SmoothStep(0f, 1f, t);
+
+                    Quaternion targetLookRot = GetTargetRotation();
+                    Quaternion currentRot = Quaternion.Slerp(startRot, targetLookRot, smoothT);
+
+                    ApplyRotationToPlayer(currentRot);
                     yield return null;
+                }
+            }
+            else if (focusMode == FocusMode.ActivateVirtualCamera && targetVirtualCamera != null)
+            {
+                targetVirtualCamera.Priority = 100;
+            }
+
+            // 3. BEKLEME EVRESİ
+            if (focusMode == FocusMode.RotatePlayerHead && lookTarget != null)
+            {
+                if (waitUntilInput)
+                {
+                    while (lookTarget != null && !Input.GetKeyDown(KeyCode.F))
+                    {
+                        TrackTarget();
+                        yield return null;
+                    }
+                }
+                else
+                {
+                    float holdTimer = 0f;
+                    while (lookTarget != null && holdTimer < autoReleaseTime)
+                    {
+                        holdTimer += Time.deltaTime;
+                        TrackTarget();
+                        yield return null;
+                    }
                 }
             }
             else
             {
-                float holdTimer = 0f;
-                while (holdTimer < autoReleaseTime)
+                if (waitUntilInput)
                 {
-                    holdTimer += Time.deltaTime;
-                    TrackTarget();
-                    yield return null;
+                    while (!Input.GetKeyDown(KeyCode.F))
+                        yield return null;
+                }
+                else
+                {
+                    yield return new WaitForSeconds(autoReleaseTime);
                 }
             }
-        }
-        else
-        {
-            if (waitUntilInput)
+
+            // 4. ÇIKIŞ VE SERBEST BIRAKMA
+            if (focusMode == FocusMode.ActivateVirtualCamera && targetVirtualCamera != null)
             {
-                while (!Input.GetKeyDown(KeyCode.F))
-                    yield return null;
+                targetVirtualCamera.Priority = previousCameraPriority;
+                yield return new WaitForSeconds(blendOutDuration);
             }
-            else
+
+        }
+        finally { ReleaseFocus(); }
+    }
+
+    private void OnDisable()
+    {
+        StopAllCoroutines();
+        ReleaseFocus();
+    }
+
+    private void ReleaseFocus()
+    {
+        if (ownsFocus && capturedInput)
+        {
+            if (targetVirtualCamera != null && focusMode == FocusMode.ActivateVirtualCamera) targetVirtualCamera.Priority = previousCameraPriority;
+            if (GameManager.Instance == null || GameManager.Instance.activeInteraction == null)
             {
-                yield return new WaitForSeconds(autoReleaseTime);
+                if (freezePlayer && playerMoveScript != null) playerMoveScript.SetFrozen(previouslyFrozen, !previousLookInput, false);
+                if (playerInputs != null) { playerInputs.look = Vector2.zero; playerInputs.cursorInputForLook = previousLookInput; }
             }
         }
-
-        // 4. ÇIKIŞ VE SERBEST BIRAKMA
-        // 4. ÇIKIŞ VE SERBEST BIRAKMA
-        if (focusMode == FocusMode.ActivateVirtualCamera && targetVirtualCamera != null)
-        {
-            targetVirtualCamera.Priority = 0;
-            yield return new WaitForSeconds(blendOutDuration);
-        }
-
-        if (freezePlayer)
-        {
-            playerMoveScript.SetFrozen(false, lockCameraInput: false, restrictRotation: false);
-        }
-
-        if (playerInputs != null)
-        {
-            playerInputs.look = Vector2.zero; // <-- Çıkarken de her ihtimale karşı temizle
-            playerInputs.cursorInputForLook = true;
-        }
+        if (ownsFocus) interaction?.ReleaseInteractionBlock(this);
+        scheduled = ownsFocus = capturedInput = false;
     }
 
     private void TrackTarget()
@@ -220,10 +264,5 @@ public class LookAction : ActionBase
 
         playerMoveScript.ForceCameraRotation(currentYaw, currentPitch);
 
-        if (freezePlayer)
-        {
-            // BU SATIRI DA YORUM SATIRI YAPIN
-            // playerMoveScript.transform.rotation = Quaternion.Euler(0f, currentYaw, 0f);
-        }
     }
 }

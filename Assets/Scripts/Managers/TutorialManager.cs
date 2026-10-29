@@ -2,6 +2,13 @@ using UnityEngine;
 
 public class TutorialManager : MonoBehaviour
 {
+    public static TutorialManager Instance { get; private set; }
+    public bool IsRunning => isActiveAndEnabled && isTutorialEnabled
+        && tutorialEventsParent != null && tutorialEventsParent.activeInHierarchy;
+
+    private void Awake() { Instance = this; }
+    private void OnDestroy() { if (Instance == this) Instance = null; }
+
     [Header("Tutorial Ayarları")]
     [Tooltip("İçinde tüm tutorial eventlerini barındıran Ana Obje (Parent GameObject)")]
     public GameObject tutorialEventsParent;
@@ -24,6 +31,12 @@ public class TutorialManager : MonoBehaviour
         SetupTutorialMode();
     }
 
+    public void CompleteTutorial()
+    {
+        isTutorialEnabled = false;
+        SetupTutorialMode();
+    }
+
     /// <summary>
     /// Değişen isTutorialEnabled durumuna göre gerekli objeleri açar/kapatır.
     /// </summary>
@@ -31,6 +44,7 @@ public class TutorialManager : MonoBehaviour
     {
         if (tutorialEventsParent != null)
         {
+            bool wasActive = tutorialEventsParent.activeSelf;
             tutorialEventsParent.SetActive(isTutorialEnabled);
 
             if (!isTutorialEnabled)
@@ -40,7 +54,15 @@ public class TutorialManager : MonoBehaviour
                 if (PlayerInteraction.Instance != null)
                 {
                     PlayerInteraction.Instance.isTutorialMode = false;
-                    PlayerInteraction.Instance.allowedTutorialObjects.Clear();
+                    PlayerInteraction.Instance.UpdateTutorialWhitelist(new System.Collections.Generic.List<GameObject>());
+                }
+                if (wasActive)
+                {
+                    if (BreakerBox.Instance != null) BreakerBox.Instance.isSystemActive = true;
+                    if (PressureSystemManager.Instance != null) PressureSystemManager.Instance.isSystemActive = true;
+                    if (GlobalEnemyManager.Instance != null) GlobalEnemyManager.Instance.stopAllEnemies = false;
+                    if (GameManager.Instance == null || GameManager.Instance.activeInteraction == null)
+                        FindFirstObjectByType<StarterAssets.CharacterController>()?.SetFrozen(false, false, false);
                 }
             }
             else

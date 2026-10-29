@@ -7,6 +7,8 @@ public class PrerequisiteCondition : MonoBehaviour, ICondition
 
     [Tooltip("Bu olayın çalışması için önce hangi olayın bitmesi gerekiyor?")]
     public EventLogicController requiredEvent;
+    [Tooltip("Kapatılırsa, belirtilen event henüz tetiklenmemiş olmalı.")]
+    public bool requireTriggered = true;
 
     private void Start()
     {
@@ -26,7 +28,7 @@ public class PrerequisiteCondition : MonoBehaviour, ICondition
     public bool IsMet()
     {
         // Eğer bir olay atanmadıysa hata vermesin diye true dön, atandıysa bitip bitmediğine bak
-        return requiredEvent == null || requiredEvent.HasTriggered;
+        return requiredEvent == null || requiredEvent.HasTriggered == requireTriggered;
     }
 
     private void OnDestroy()

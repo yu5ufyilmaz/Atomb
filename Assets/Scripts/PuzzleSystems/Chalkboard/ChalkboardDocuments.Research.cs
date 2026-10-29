@@ -60,12 +60,12 @@ public sealed partial class ChalkboardDocuments
         float width = Mathf.Min(740, surface.rect.width - 28), height = surface.rect.height - 110;
         shadeViewport = new GameObject("Stor Belge Panosu", typeof(RectTransform), typeof(RectMask2D), typeof(CanvasGroup)).GetComponent<RectTransform>();
         shadeViewport.SetParent(surface, false); shadeViewport.pivot = new Vector2(.5f, 1);
-        shadeViewport.anchoredPosition = new Vector2(surface.rect.xMin + width / 2 + 14, surface.rect.yMax - 8);
+        shadeViewport.anchoredPosition = new Vector2(surface.rect.xMin + width / 2 + 14, surface.rect.yMax - 48);
         shadeViewport.sizeDelta = new Vector2(width, height);
         shadeInput = shadeViewport.GetComponent<CanvasGroup>();
         documentBoard = Paper(shadeViewport, "Bağımsız Belge Yüzeyi", new Vector2(0, -height / 2), new Vector2(width, height), new Color(.47f, .32f, .21f));
         documentBoard.anchorMin = documentBoard.anchorMax = new Vector2(.5f, 1);
-        PhysicalBoardFixture.Attach(surface, "Belge Panosu", shadeViewport.anchoredPosition + Vector2.down * height / 2,
+        PhysicalBoardFixture.Attach(shadeViewport, "Belge Panosu", Vector2.down * height / 2,
             new Vector2(width, height), new Color(.22f, .18f, .13f));
         var border = documentBoard.gameObject.AddComponent<Outline>();
         border.effectColor = new Color(.18f, .16f, .12f); border.effectDistance = new Vector2(3, -3);
@@ -77,7 +77,7 @@ public sealed partial class ChalkboardDocuments
         }
         shadeBottomBar = Paper(shadeViewport, "Stor Alt Çıtası", Vector2.zero, new Vector2(width, 10), new Color(.22f, .23f, .2f));
         shadeBottomBar.anchorMin = shadeBottomBar.anchorMax = new Vector2(.5f, 1);
-        shadeToggle = Paper(surface, "Belge Panosu Tutamağı", new Vector2(surface.rect.xMin + 142, surface.rect.yMax + 20),
+        shadeToggle = Paper(surface, "Belge Panosu Tutamağı", new Vector2(surface.rect.xMin + 142, surface.rect.yMax - 22),
             new Vector2(256, 30), new Color(.22f, .24f, .2f));
         shadeToggle.gameObject.AddComponent<Button>().onClick.AddListener(() => SetDocumentPanelOpen(!shadeExpanded));
         PhysicalBoardFixture.Attach(shadeToggle, "Belge Tutamağı", Vector2.zero, shadeToggle.sizeDelta, new Color(.18f, .22f, .18f));
@@ -89,7 +89,7 @@ public sealed partial class ChalkboardDocuments
     {
         if (!freeLayout) return;
         shadeExpanded = open;
-        shadeToggleLabel.text = open ? "BELGELERİ TOPLA" : "BELGELERİ AÇ";
+        GameLocalization.Set(shadeToggleLabel, open ? "BELGELERİ TOPLA" : "BELGELERİ AÇ");
         if (open) shadeViewport.gameObject.SetActive(true);
         if (immediate) shadeReveal = open ? 1 : 0;
         ApplyShadeReveal();
@@ -144,10 +144,11 @@ public sealed partial class ChalkboardDocuments
         var quest = board.PinnedQuest;
         targetArea.sizeDelta = quest != null ? new Vector2(270, 246) : new Vector2(218, 66);
         targetArea.Find("Raptiye").GetComponent<RectTransform>().anchoredPosition = new Vector2(-targetArea.rect.width / 2 + 16, targetArea.rect.height / 2 - 9);
-        title.text = quest != null ? "HEDEF / " + quest.title : "HEDEFİ TAHTAYA BIRAK";
+        if (quest != null) GameLocalization.SetFormat(title, "HEDEF / {0}", quest.title);
+        else GameLocalization.Set(title, "HEDEFİ TAHTAYA BIRAK");
         title.rectTransform.anchoredPosition = new Vector2(2, quest != null ? 100 : 7);
         title.rectTransform.sizeDelta = new Vector2(quest != null ? 238 : 184, 34);
-        hint.text = quest != null ? board.practiceQuest?.clueSummary ?? "Kayıtları karşılaştır." : "Defter > Hedefler";
+        GameLocalization.Set(hint, quest != null ? board.practiceQuest?.clueSummary ?? "Kayıtları karşılaştır." : "Defter > Hedefler");
         goalDirectionsViewport.anchoredPosition = new Vector2(0, quest != null ? -60 : -18);
         goalDirectionsViewport.sizeDelta = quest != null ? new Vector2(246, 110) : new Vector2(196, 22);
         hint.rectTransform.anchoredPosition = Vector2.zero;
@@ -193,7 +194,8 @@ public sealed partial class ChalkboardDocuments
             noteThreads[id] = lines; index++;
         }
         ClampDocument(targetArea);
-        shadeToggleLabel.text = shadeExpanded ? "BELGELERİ TOPLA" : "BELGELERİ AÇ";
+        GameLocalization.Set(shadeToggleLabel, shadeExpanded ? "BELGELERİ TOPLA" : "BELGELERİ AÇ");
+        foreach (var localized in surface.GetComponentsInChildren<LocalizedText>(true)) localized.RefreshBaseline();
         UpdateResearchThreads();
     }
 

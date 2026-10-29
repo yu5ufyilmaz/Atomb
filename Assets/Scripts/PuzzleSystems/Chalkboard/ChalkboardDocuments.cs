@@ -13,6 +13,9 @@ public sealed partial class ChalkboardDocuments : MonoBehaviour
     private TextMeshProUGUI title, hint, informationHeading;
     private QuestDiagramGraphic diagram;
     private const float PixelsPerUnit = 300f;
+
+    private void OnEnable() { GameLocalization.LanguageChanged += Refresh; }
+    private void OnDisable() { GameLocalization.LanguageChanged -= Refresh; }
     public float WorkingMaxX => freeLayout ? board.maxBounds.x : surface != null
         ? surface.localPosition.x - surface.rect.width * surface.localScale.x * .5f - .18f : board.maxBounds.x;
 
@@ -78,9 +81,9 @@ public sealed partial class ChalkboardDocuments : MonoBehaviour
         if (surface == null) return;
         if (freeLayout) { RefreshResearch(); return; }
         var quest = board.PinnedQuest;
-        title.text = quest != null ? quest.title : "HEDEF NOTUNU BURAYA BIRAK";
-        hint.text = quest != null ? board.practiceQuest != null ? board.practiceQuest.clueSummary : "Bilinmeyenleri bilgi notlarından çöz."
-            : "Defter > Hedefler\nTopladığın şemayı buraya sürükle.";
+        GameLocalization.Set(title, quest != null ? quest.title : "HEDEF NOTUNU BURAYA BIRAK");
+        GameLocalization.Set(hint, quest != null ? board.practiceQuest != null ? board.practiceQuest.clueSummary : "Bilinmeyenleri bilgi notlarından çöz."
+            : "Defter > Hedefler\nTopladığın şemayı buraya sürükle.");
         diagram.gameObject.SetActive(quest != null);
         if (quest != null) diagram.SetQuest(quest);
         for (int i = informationContent.childCount - 1; i >= 0; i--)
@@ -103,7 +106,9 @@ public sealed partial class ChalkboardDocuments : MonoBehaviour
             hint.rectTransform.anchoredPosition = new Vector2(0, -84);
             hint.fontSize = 11;
         }
-        informationHeading.text = research ? "SABİTLEDİĞİN KAYITLAR" : quest != null ? "BİLGİ " + known + "/" + expected + "  |  PANODA " + found + "/" + expected : "HEDEF SEÇ / BİLGİLER";
+        if (!research && quest != null)
+            GameLocalization.SetFormat(informationHeading, "BİLGİ {0}/{1}  |  PANODA {2}/{3}", known, expected, found, expected);
+        else GameLocalization.Set(informationHeading, research ? "SABİTLEDİĞİN KAYITLAR" : "HEDEF SEÇ / BİLGİLER");
         if (quest == null && board.pinnedInformation.Count == 0)
         {
             var empty = Text(informationContent, "Defter > Bilgiler\nİpuçlarını buraya sürükle.\n\nTekerlek: notları kaydır", new Vector2(0, -100), new Vector2(250, 150), 15);
@@ -128,6 +133,7 @@ public sealed partial class ChalkboardDocuments : MonoBehaviour
             thread.SetAsFirstSibling();
         }
         informationContent.sizeDelta = new Vector2(0, Mathf.Max(304, y));
+        foreach (var localized in surface.GetComponentsInChildren<LocalizedText>(true)) localized.RefreshBaseline();
     }
 
     private float DrawInformation(NotebookBlockData note, int slot, float y, bool inNotebook = false)
@@ -140,14 +146,16 @@ public sealed partial class ChalkboardDocuments : MonoBehaviour
                 new Vector2(238, 120), missing ? new Color(.8f, .72f, .55f, .55f) : new Color(.78f, .86f, .88f));
             card.anchorMin = card.anchorMax = new Vector2(.5f, 1); card.pivot = new Vector2(.5f, 1);
             card.anchoredPosition = new Vector2(10, -y);
-            var heading = Text(card, slot >= 0 ? "İPUCU " + (slot + 1) + (missing ? inNotebook ? " / DEFTERDE" : " / EKSİK" : " / BULUNDU") : note.title,
-                new Vector2(-8, -18), new Vector2(204, 30), 14);
+            var heading = Text(card, "", new Vector2(-8, -18), new Vector2(204, 30), 14);
+            if (slot >= 0) GameLocalization.SetFormat(heading, "İPUCU {0} / {1}", slot + 1,
+                missing ? inNotebook ? "DEFTERDE" : "EKSİK" : "BULUNDU");
+            else GameLocalization.Set(heading, note.title);
             heading.rectTransform.anchorMin = heading.rectTransform.anchorMax = new Vector2(.5f, 1);
             string description = missing ? inNotebook ? "Bu bilgi defterinde hazır.\nKartı buraya sürükle."
                 : "Henüz bulunmadı.\nKitaplarda bu hedefin ipucunu ara." : note.description;
             var body = Text(card, description, new Vector2(0, -43), new Vector2(216, 90), 13);
             body.alignment = TextAlignmentOptions.TopLeft; body.enableAutoSizing = false;
-            float height = Mathf.Max(112, body.GetPreferredValues(description ?? "", 216, 0).y + 56);
+            float height = Mathf.Max(112, body.GetPreferredValues(body.text, 216, 0).y + 56);
             card.sizeDelta = new Vector2(238, height);
             body.rectTransform.anchorMin = body.rectTransform.anchorMax = new Vector2(.5f, 1);
             body.rectTransform.pivot = new Vector2(.5f, 1);
@@ -206,9 +214,10 @@ public sealed partial class ChalkboardDocuments : MonoBehaviour
     {
         var obj = new GameObject("Metin", typeof(RectTransform), typeof(TextMeshProUGUI));
         obj.transform.SetParent(parent, false); var text = obj.GetComponent<TextMeshProUGUI>();
-        text.text = value; text.fontSize = text.fontSizeMax = fontSize; text.fontSizeMin = 11; text.enableAutoSizing = true;
+        text.fontSize = text.fontSizeMax = fontSize; text.fontSizeMin = 11; text.enableAutoSizing = true;
         text.color = new Color(.12f, .15f, .13f); text.alignment = TextAlignmentOptions.Center; text.raycastTarget = false;
         text.rectTransform.sizeDelta = size; text.rectTransform.anchoredPosition = position;
+        GameLocalization.Set(text, value);
         return text;
     }
 }

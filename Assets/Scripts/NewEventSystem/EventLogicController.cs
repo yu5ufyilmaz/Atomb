@@ -19,15 +19,27 @@ public class EventLogicController : MonoBehaviour
     {
         conditions = GetComponents<ICondition>();
         actions = GetComponents<IAction>();
+        Subscribe();
+        EvaluateConditions();
+    }
 
+    private void OnEnable() { if (conditions != null) { Subscribe(); EvaluateConditions(); } }
+
+    private void Subscribe()
+    {
         foreach (var cond in conditions)
         {
+            cond.OnConditionChanged -= EvaluateConditions;
             cond.OnConditionChanged += EvaluateConditions;
         }
     }
 
     private void EvaluateConditions()
     {
+        if (!isActiveAndEnabled) return;
+        var tutorial = TutorialManager.Instance;
+        if (tutorial != null && tutorial.IsRunning && transform.IsChildOf(tutorial.tutorialEventsParent.transform)
+            && GameManager.Instance != null && !GameManager.Instance.isGameStarted) return;
         if (HasTriggered && triggerOnlyOnce)
             return;
 
@@ -38,6 +50,9 @@ public class EventLogicController : MonoBehaviour
             OnEventTriggered?.Invoke(); // Görev bittiğinde tüm dinleyicilere bağırır
         }
     }
+
+    public void RefreshConditions() { if (conditions != null) EvaluateConditions(); }
+    public bool ConditionsAreMet => isActiveAndEnabled && conditions != null && CheckConditions();
 
     private bool CheckConditions()
     {
@@ -59,12 +74,14 @@ public class EventLogicController : MonoBehaviour
     {
         foreach (var action in actions)
         {
+            if (action is Behaviour behaviour && !behaviour.isActiveAndEnabled) continue;
             action.Execute();
         }
     }
 
-    private void OnDestroy()
+    private void OnDisable()
     {
+        if (conditions == null) return;
         foreach (var cond in conditions)
         {
             if (cond != null)

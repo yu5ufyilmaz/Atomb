@@ -90,18 +90,17 @@ public class DeathUIManager : MonoBehaviour
         Time.timeScale = 0f; // Zamanı durdur
     }
 
-   private IEnumerator TypeTextRoutine(string textToType)
-{
-    deathReasonText.text = ""; // Önce metni tamamen temizle
-    
-    foreach (char letter in textToType) // Kelimedeki her bir harfi tek tek al
+    private IEnumerator TypeTextRoutine(string canonicalReason)
     {
-        deathReasonText.text += letter; // Ekrana bir harf daha ekle
-        
-        // Zaman dursun ya da durmasın, gerçek zamanlı olarak bekle:
-        yield return new WaitForSecondsRealtime(typeSpeed); 
+        GameLocalization.Set(deathReasonText, canonicalReason);
+        deathReasonText.maxVisibleCharacters = 0;
+        while (deathReasonText.maxVisibleCharacters < deathReasonText.text.Length)
+        {
+            deathReasonText.maxVisibleCharacters++;
+            yield return new WaitForSecondsRealtime(typeSpeed);
+        }
+        deathReasonText.maxVisibleCharacters = int.MaxValue;
     }
-}
 
     private IEnumerator FadeInImageColorRoutine()
     {

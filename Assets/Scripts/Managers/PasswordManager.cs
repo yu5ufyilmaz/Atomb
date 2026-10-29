@@ -268,7 +268,7 @@ public class PasswordManager : MonoBehaviour, ISaveable
             isTutorialPasswordUsed = true;
             if (MegaphoneSystem.Instance != null)
                 MegaphoneSystem.Instance.OnTutorialSolved();
-            if (PlayerInteraction.Instance != null)
+            if (PlayerInteraction.Instance != null && (TutorialManager.Instance == null || !TutorialManager.Instance.IsRunning))
             {
                 PlayerInteraction.Instance.DisableTutorialMode();
                 Debug.Log("  Tutorial Modu Kapatıldı, tüm etkileşimler açık.");

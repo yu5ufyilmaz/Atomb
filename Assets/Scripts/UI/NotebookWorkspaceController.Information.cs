@@ -78,7 +78,8 @@ public partial class NotebookWorkspaceController
             int pages = Mathf.Max(1, (notes.Count + 1) / 2);
             int index = Mathf.Clamp(showingSolutions ? solutionsArchivePage : informationArchivePage, 0, pages - 1);
             if (showingSolutions) solutionsArchivePage = index; else informationArchivePage = index;
-            pageLabel.text = UsesNotebookSkin ? $"{index + 1} / {pages}" : $"{(showingSolutions ? "ÖLÇÜMLER" : "KAYITLAR")}  {index + 1} / {pages}";
+            GameLocalization.SetFormat(pageLabel, UsesNotebookSkin ? "{0} / {1}"
+                : showingSolutions ? "ÖLÇÜMLER  {0} / {1}" : "KAYITLAR  {0} / {1}", index + 1, pages);
             UpdateArchivePager(index, pages);
             if (notes.Count == 0)
             {
@@ -117,10 +118,10 @@ public partial class NotebookWorkspaceController
             int expected = PuzzleInformation.ExpectedCount(id, board), found = PuzzleInformation.FoundCount(notes, id, board);
             var heading = Panel("Bulmaca Bilgi Grubu", informationContent, new Vector2(474, 62), new Color(.9f, .81f, .57f));
             Top(heading, new Vector2(0, -y));
-            var text = Label(heading, PuzzleInformation.Title(id, board) + "\nBİLGİLER " + found + " / " + expected,
-                Vector2.zero, new Vector2(452, 58), 15);
+            var text = Label(heading, "", Vector2.zero, new Vector2(452, 58), 15);
             text.enableAutoSizing = true; text.fontSizeMin = 11; text.fontSizeMax = 15;
             text.rectTransform.anchorMin = text.rectTransform.anchorMax = new Vector2(.5f, .5f);
+            GameLocalization.SetFormat(text, "{0}\nBİLGİLER {1} / {2}", PuzzleInformation.Title(id, board), found, expected);
             float start = y + 62; y += 80;
             for (int slot = 0; slot < expected; slot++)
             {
@@ -132,7 +133,8 @@ public partial class NotebookWorkspaceController
                 {
                     var empty = Panel("Eksik Bilgi " + (slot + 1), informationContent, new Vector2(320, 82), new Color(.85f, .8f, .66f, .65f));
                     Top(empty, new Vector2(15, -y));
-                    Label(empty, "İPUCU " + (slot + 1) + " / HENÜZ BULUNMADI\nBu hedef için bir bilgi eksik.", Vector2.zero, new Vector2(306, 74), 14);
+                    var missing = Label(empty, "", Vector2.zero, new Vector2(306, 74), 14);
+                    GameLocalization.SetFormat(missing, "İPUCU {0} / HENÜZ BULUNMADI\nBu hedef için bir bilgi eksik.", slot + 1);
                     y += 100;
                 }
             }

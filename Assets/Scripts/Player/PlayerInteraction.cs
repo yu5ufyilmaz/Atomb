@@ -64,6 +64,23 @@ public class PlayerInteraction : MonoBehaviour
     public static event System.Action<GameObject> OnPlayerInteractionExited;
 
     private HashSet<GameObject> allowedTutorialSet = new HashSet<GameObject>();
+    private Object interactionBlockOwner;
+    public bool IsInteractionBlocked => interactionBlockOwner != null;
+    public bool CanInteractWithWorld => !IsInteractionBlocked && (GameManager.Instance == null
+        || (GameManager.Instance.isGameStarted && !GameManager.Instance.isGamePaused && GameManager.Instance.activeInteraction == null));
+
+    public bool TryBlockInteraction(Object owner)
+    {
+        if (owner == null || IsInteractionBlocked || (GameManager.Instance != null && GameManager.Instance.activeInteraction != null)) return false;
+        interactionBlockOwner = owner;
+        ClearCurrentInteractable();
+        return true;
+    }
+
+    public void ReleaseInteractionBlock(Object owner)
+    {
+        if (interactionBlockOwner == owner) interactionBlockOwner = null;
+    }
 
     // Oyuncu notu/kitabı kapattığında fırlatılacak statik event
 
@@ -99,7 +116,7 @@ public class PlayerInteraction : MonoBehaviour
             GameManager.Instance != null && GameManager.Instance.activeInteraction != null;
 
         // Etkileşim sırasında dünyadaki diğer nesneleri seçme.
-        if (isInteracting)
+        if (isInteracting || !CanInteractWithWorld)
         {
             // Eğer ekranda takılı kalmış bir vurgu (highlight) veya imleç varsa temizle
             if (currentInteractable != null)
@@ -278,7 +295,7 @@ public void UpdateTutorialWhitelist(List<GameObject> newObjects)
         {
             interactionUI.SetActive(isActive);
             if (isActive && interactionText != null && currentInteractable != null)
-                interactionText.text = currentInteractable.GetInteractionPrompt();
+                GameLocalization.Set(interactionText, currentInteractable.GetInteractionPrompt());
         }
     }
 

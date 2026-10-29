@@ -131,7 +131,9 @@ public class PressureSystemManager : MonoBehaviour, ISaveable
             return;
 
         // Basınç Mantığı
-        currentPressure += pressureIncreaseRate * Time.deltaTime;
+        // Eğitimde otomatik artış bekler; vananın yaptığı değişiklik ve HUD çalışmaya devam eder.
+        if (TutorialManager.Instance == null || !TutorialManager.Instance.IsRunning)
+            currentPressure += pressureIncreaseRate * Time.deltaTime;
 
         if (currentPressure >= 100f)
         {

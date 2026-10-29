@@ -35,6 +35,9 @@ public class HidingCondition : MonoBehaviour, ICondition
         if (conditionMet || targetHidingSpot == null) 
             return;
 
+        foreach (var prereq in GetComponents<PrerequisiteCondition>())
+            if (!prereq.IsMet()) { lastOccupiedState = targetHidingSpot.IsOccupied; return; }
+
         bool currentState = targetHidingSpot.IsOccupied;
 
         // Dolabın dolu/boş durumunda bir değişiklik olduysa[cite: 2]

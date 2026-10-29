@@ -20,6 +20,7 @@ public sealed class SignalExperiment : MonoBehaviour
     private readonly Dictionary<string, Reading> readings = new Dictionary<string, Reading>();
     public string TerminalMessage { get; internal set; } = "Ölçümler'deki ölçüm kağıdını okuyucuya bırak veya kodu elle gir.";
     public Reading LastReading { get; private set; }
+    public event Action<string> MeasurementAccepted;
 
     [Serializable]
     public struct Reading
@@ -86,13 +87,29 @@ public sealed class SignalExperiment : MonoBehaviour
 
     public void Measure(SynthesisGraphData graph)
     {
-        var reading = PuzzleSimulation.Measure(graph, trial.CurrentPuzzle);
+        var activePuzzle = trial.CurrentPuzzle;
+        var reading = PuzzleSimulation.Measure(graph, activePuzzle);
+        if (!reading.MeetsTarget && trial != null && trial.Puzzles != null)
+        {
+            foreach (var candidatePuzzle in trial.Puzzles)
+            {
+                if (candidatePuzzle == null || candidatePuzzle == activePuzzle) continue;
+                var candidate = PuzzleSimulation.Measure(graph, candidatePuzzle);
+                if (candidate.MeetsTarget)
+                {
+                    activePuzzle = candidatePuzzle;
+                    trial.SelectPuzzle(candidatePuzzle.id);
+                    reading = candidate;
+                    break;
+                }
+            }
+        }
         if (readings.Count >= 999) reading.problem = "Bu oturumda 999 ölçüm alındı. Yeni ölçüm kodu için yeni oyun başlat.";
         if (reading.Measurable)
         {
             reading.measurementCode = "ECHOECHO_=_" + (readings.Count + 1).ToString("D3");
             reading.sessionID = trial.SessionID;
-            reading.puzzleFingerprint = trial.CurrentPuzzle.Fingerprint();
+            reading.puzzleFingerprint = activePuzzle.Fingerprint();
         }
         LastReading = reading;
         if (LastReading.Measurable) readings[LastReading.Code] = LastReading;
@@ -124,8 +141,13 @@ public sealed class SignalExperiment : MonoBehaviour
     public bool TryGetMeasurementCode(NotebookBlockData note, out string code)
     {
         code = null;
-        if (!IsMeasurementNote(note) || note.measurementSessionID != trial.SessionID
-            || note.puzzleFingerprint != trial.CurrentPuzzle.Fingerprint()) return false;
+        if (!IsMeasurementNote(note) || note.measurementSessionID != trial.SessionID) return false;
+        if (note.puzzleFingerprint != trial.CurrentPuzzle.Fingerprint())
+        {
+            var matched = trial.Puzzles?.FirstOrDefault(p => p != null && p.Fingerprint() == note.puzzleFingerprint);
+            if (matched != null) trial.SelectPuzzle(matched.id);
+            else return false;
+        }
         foreach (var entry in readings)
             if (note.measurementCode == entry.Key || (string.IsNullOrEmpty(note.measurementCode)
                 && note.title == "ÖLÇÜM / " + entry.Key.Replace("_", " ")))
@@ -137,8 +159,14 @@ public sealed class SignalExperiment : MonoBehaviour
     {
         if (!readings.TryGetValue(code, out var reading))
         { TerminalMessage = "Bu koda ait bir ölçüm yok. Tahtadaki çıktıyı kontrol et."; return false; }
-        if (reading.sessionID != trial.SessionID || reading.puzzleFingerprint != trial.CurrentPuzzle.Fingerprint())
+        if (reading.sessionID != trial.SessionID)
         { TerminalMessage = "Bu ölçüm başka bir puzzle veya oturuma ait."; return false; }
+        if (reading.puzzleFingerprint != trial.CurrentPuzzle.Fingerprint())
+        {
+            var matched = trial.Puzzles?.FirstOrDefault(p => p != null && p.Fingerprint() == reading.puzzleFingerprint);
+            if (matched != null) trial.SelectPuzzle(matched.id);
+            else { TerminalMessage = "Bu ölçüm başka bir puzzle veya oturuma ait."; return false; }
+        }
         if (!reading.MeetsTarget)
         {
             TerminalMessage = reading.targetFeedback ?? (reading.kind == PuzzleKind.ColorMixture ? "Karışım hedefe uymuyor. Rengi, yoğunluğu ve miktarı karşılaştır." : "Kayıt hedefle örtüşmüyor. Şekli, yüksekliği ve zaman aralığını karşılaştır.");
@@ -148,6 +176,7 @@ public sealed class SignalExperiment : MonoBehaviour
         if (trial.Board.PinnedQuest != null) trial.Board.PinnedQuest.completed = true;
         TerminalMessage = trial.Puzzles.Count > 1 ? $"DENEY ONAYLANDI / {trial.Completed.Count}/{trial.Puzzles.Count} hedef tamamlandı." : "DENEY ONAYLANDI / Kayıt hedefle örtüşüyor.";
         Debug.Log("SIGNAL TRIAL COMPLETE: " + code);
+        MeasurementAccepted?.Invoke(CurrentQuestID);
         return true;
     }
 
@@ -179,15 +208,16 @@ public sealed class SignalExperiment : MonoBehaviour
         var obj = new GameObject("Metin", typeof(RectTransform), typeof(TextMeshProUGUI));
         obj.transform.SetParent(parent, false);
         var label = obj.GetComponent<TextMeshProUGUI>();
-        label.text = value; label.fontSize = fontSize; label.enableAutoSizing = true; label.fontSizeMin = 8; label.fontSizeMax = fontSize;
+        label.fontSize = fontSize; label.enableAutoSizing = true; label.fontSizeMin = 8; label.fontSizeMax = fontSize;
         label.color = new Color(.12f, .15f, .13f); label.alignment = TextAlignmentOptions.Center; label.raycastTarget = false;
         label.rectTransform.sizeDelta = size; label.rectTransform.anchoredPosition = position;
+        GameLocalization.Set(label, value);
         return label;
     }
 
     private void ShowFeedback(string message, bool success)
     {
-        if (deviceFeedback != null) deviceFeedback.text = message;
+        GameLocalization.Set(deviceFeedback, message);
     }
 
     private void OnDestroy()

@@ -502,7 +502,7 @@ public class InteractableOscilloscope : MonoBehaviour, IInteractable, IForceExit
             isSolved = true;
             if (screenText != null)
             {
-                screenText.text = $"STABLE\nKEY: {assignedPassword}";
+                GameLocalization.SetFormat(screenText, "STABLE\nKEY: {0}", assignedPassword);
                 screenText.color = Color.green;
             }
             if (PasswordManager.Instance != null)
@@ -526,7 +526,7 @@ public class InteractableOscilloscope : MonoBehaviour, IInteractable, IForceExit
     {
         assignedPassword = pw;
         if (screenText != null)
-            screenText.text = "NO SIGNAL";
+            GameLocalization.Set(screenText, "NO SIGNAL");
     }
 
     private IEnumerator AutoExit(float delay)

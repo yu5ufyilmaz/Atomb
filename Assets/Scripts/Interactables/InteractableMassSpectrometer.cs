@@ -223,7 +223,7 @@ public class InteractableMassSpectrometer : MonoBehaviour, IInteractable, IForce
             if (screenText)
             {
                 screenText.color = Color.yellow;
-                screenText.text = "SYSTEM READY\nWAITING INPUT";
+                GameLocalization.Set(screenText, "SYSTEM READY\nWAITING INPUT");
             }
         }
         else
@@ -256,7 +256,7 @@ public class InteractableMassSpectrometer : MonoBehaviour, IInteractable, IForce
             if (screenText != null)
             {
                 screenText.color = Color.red;
-                screenText.text = "POWER REQUIRED\nCHECK MAIN LEVER";
+                GameLocalization.Set(screenText, "POWER REQUIRED\nCHECK MAIN LEVER");
             }
             return;
             // ----------------------------------------
@@ -336,7 +336,7 @@ public class InteractableMassSpectrometer : MonoBehaviour, IInteractable, IForce
         {
             currentCooldown -= Time.deltaTime;
             if (screenText != null)
-                screenText.text = $"OVERHEATED\nWAIT: {currentCooldown:F1}s";
+                GameLocalization.SetFormat(screenText, "OVERHEATED\nWAIT: {0:F1}s", currentCooldown);
             if (currentCooldown <= 0)
                 ResetMachineVisuals();
             return;
@@ -434,12 +434,12 @@ public class InteractableMassSpectrometer : MonoBehaviour, IInteractable, IForce
             if (isMagnetSafe)
             {
                 screenText.color = Color.green;
-                screenText.text = $"MAGNET STABLE\nRING: {displayRingAngle:F0}°";
+                GameLocalization.SetFormat(screenText, "MAGNET STABLE\nRING: {0:F0}°", displayRingAngle);
             }
             else
             {
                 screenText.color = Color.red;
-                screenText.text = $"MAGNET UNSTABLE ({currentMagAngle:F0}°)\nALIGN RED AXIS";
+                GameLocalization.SetFormat(screenText, "MAGNET UNSTABLE ({0:F0}°)\nALIGN RED AXIS", currentMagAngle);
             }
         }
 
@@ -514,7 +514,7 @@ public class InteractableMassSpectrometer : MonoBehaviour, IInteractable, IForce
         if (screenText)
         {
             screenText.color = Color.red;
-            screenText.text = "SYSTEM FAILURE\nCRITICAL ERROR";
+            GameLocalization.Set(screenText, "SYSTEM FAILURE\nCRITICAL ERROR");
         }
 
         IsPoweredOn = false;
@@ -531,7 +531,7 @@ public class InteractableMassSpectrometer : MonoBehaviour, IInteractable, IForce
         if (screenText)
         {
             screenText.color = Color.cyan;
-            screenText.text = $"CALIBRATION COMPLETE\nCODE: {assignedPassword}";
+            GameLocalization.SetFormat(screenText, "CALIBRATION COMPLETE\nCODE: {0}", assignedPassword);
         }
 
         if (PasswordManager.Instance != null)
@@ -555,7 +555,7 @@ public class InteractableMassSpectrometer : MonoBehaviour, IInteractable, IForce
     {
         if (screenText != null)
         {
-            screenText.text = "SYSTEM OFF";
+            GameLocalization.Set(screenText, "SYSTEM OFF");
             screenText.color = Color.white;
         }
         if (ionBeamObj != null)

@@ -165,9 +165,9 @@ public static class BookSurfaceExperienceChecks
             bool hasTitle = false, hasExplanation = false, hasPageNumber = false;
             foreach (var text in paper.GetComponentsInChildren<TMP_Text>())
             {
-                if (text.text == "DİZİN") hasTitle = text.GetComponentInParent<NotebookDraggableBlock>() == null;
-                if (text.text == "Bu kitapta deney kayıtları bulunur.") hasExplanation = text.GetComponentInParent<NotebookDraggableBlock>() == null;
-                if (text.text == "s. 2") hasPageNumber = text.GetComponentInParent<NotebookDraggableBlock>() == null;
+                if (text.text == "DİZİN" || text.text == GameLocalization.Translate("DİZİN")) hasTitle = text.GetComponentInParent<NotebookDraggableBlock>() == null;
+                if (text.text == "Bu kitapta deney kayıtları bulunur." || text.text == GameLocalization.Translate("Bu kitapta deney kayıtları bulunur.")) hasExplanation = text.GetComponentInParent<NotebookDraggableBlock>() == null;
+                if (text.text == "s. 2" || text.text == GameLocalization.Format("s. {0}", 2)) hasPageNumber = text.GetComponentInParent<NotebookDraggableBlock>() == null;
             }
             Require(hasTitle && hasExplanation, "An empty collectible page must still print its title and explanation.");
             Require(hasPageNumber, "Printed references need a visible non-collectible page number.");

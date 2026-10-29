@@ -106,7 +106,7 @@ public partial class NotebookWorkspaceController
                     if (UsesNotebookSkin) StyleNotebookTab(button, selected);
                 }
             }
-            pageLabel.text = view == NotebookView.Targets ? "HEDEF ARŞİVİ" : view == NotebookView.Information ? "BİLGİ ARŞİVİ" : "PARÇA ARŞİVİ";
+            GameLocalization.Set(pageLabel, view == NotebookView.Targets ? "HEDEF ARŞİVİ" : view == NotebookView.Information ? "BİLGİ ARŞİVİ" : "PARÇA ARŞİVİ");
             if (view == NotebookView.Notes) RefreshPartsArchive();
             if (view == NotebookView.Targets) RefreshCollectedTargets();
         }
@@ -115,14 +115,14 @@ public partial class NotebookWorkspaceController
         {
             guideEntries = NotebookSynthesisGuide.Build(ChalkboardManager.Instance, FormulaCatalog.Instance, notebook.notebookData);
             RefreshGuidePage();
-            statusLabel.text = "Hile sayfası • Oklar: tarif değiştir • Tekerlek: adımları kaydır";
+            GameLocalization.Set(statusLabel, "Hile sayfası • Oklar: tarif değiştir • Tekerlek: adımları kaydır");
         }
-        else statusLabel.text = showingSolutions ? "Ölçüm kartını Turing'in sol klavyesindeki yuvaya sürükle."
+        else GameLocalization.Set(statusLabel, showingSolutions ? "Ölçüm kartını Turing'in sol klavyesindeki yuvaya sürükle."
             : view == NotebookView.Information
             ? IsArchiveNotebook ? "Oklarla kayıtları gez. Tahtada istediğin yere raptiyele." : "Tüm sayfalardaki ipuçları. Tahtanın BİLGİLER alanına sürükle."
             : view == NotebookView.Targets
             ? IsArchiveNotebook ? "Hedefi tahtaya sürükle. Kayıt defterde korunur." : "Hedefi tahtaya sürükle. Tekerlek: hedefleri gez. Sağ tık: kaldır."
-            : IsArchiveNotebook ? "Üstteki oklar: sayfa değiştir. Parçayı tahtaya sürükle; aslı kalır." : "Notu tahtaya sürükle. Hedefleri üstteki ayrı alana bırak.";
+            : IsArchiveNotebook ? "Üstteki oklar: sayfa değiştir. Parçayı tahtaya sürükle; aslı kalır." : "Notu tahtaya sürükle. Hedefleri üstteki ayrı alana bırak.");
         statusLabel.color = ink;
         if (previousView != view && view != NotebookView.Guide)
         {
@@ -157,14 +157,14 @@ public partial class NotebookWorkspaceController
         if (targetContent == null) return;
         for (int i = targetContent.childCount - 1; i >= 0; i--) RemoveObject(targetContent.GetChild(i).gameObject);
         var targets = notebook.EnsureCollectedQuests();
-        targetCount.text = "TOPLANAN HEDEFLER (" + targets.Count + ")";
+        GameLocalization.SetFormat(targetCount, "TOPLANAN HEDEFLER ({0})", targets.Count);
         if (IsArchiveNotebook)
         {
             int pages = Mathf.Max(1, targets.Count);
             targetArchivePage = Mathf.Clamp(targetArchivePage, 0, pages - 1);
             if (targetPanel.gameObject.activeSelf)
             {
-                pageLabel.text = UsesNotebookSkin ? $"{targetArchivePage + 1} / {pages}" : $"HEDEFLER  {targetArchivePage + 1} / {pages}";
+                GameLocalization.SetFormat(pageLabel, UsesNotebookSkin ? "{0} / {1}" : "HEDEFLER  {0} / {1}", targetArchivePage + 1, pages);
                 UpdateArchivePager(targetArchivePage, pages);
             }
             targetContent.sizeDelta = new Vector2(0, targetPanel.rect.height); targetContent.anchoredPosition = Vector2.zero;
@@ -220,11 +220,12 @@ public partial class NotebookWorkspaceController
     {
         guideIndex = Mathf.Clamp(guideIndex, 0, Mathf.Max(0, guideEntries.Count - 1));
         var entry = guideEntries.Count > 0 ? guideEntries[guideIndex] : null;
-        guideTitle.text = entry != null ? (guideIndex + 1) + "/" + guideEntries.Count + "  " + entry.title : "Sentez rehberi";
+        if (entry != null) GameLocalization.SetFormat(guideTitle, "{0}/{1}  {2}", guideIndex + 1, guideEntries.Count, entry.title);
+        else GameLocalization.Set(guideTitle, "Sentez rehberi");
         bool diagram = entry != null && entry.solution != null;
         guideDiagram.gameObject.SetActive(diagram);
         if (diagram) guideDiagram.SetQuest(entry.solution, true);
-        guideBody.text = entry != null ? entry.text : "Bu oturumda tanımlı bir sentez tarifi bulunamadı.";
+        GameLocalization.Set(guideBody, entry != null ? entry.text : "Bu oturumda tanımlı bir sentez tarifi bulunamadı.");
         guideViewport.sizeDelta = new Vector2(484, diagram ? 172 : 310);
         guideViewport.anchoredPosition = new Vector2(0, diagram ? -100 : -30);
         guideContent.sizeDelta = new Vector2(462, Mathf.Max(guideViewport.rect.height, guideBody.GetPreferredValues(guideBody.text, 462, 0).y + 12));

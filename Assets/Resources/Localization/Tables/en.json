@@ -1,0 +1,3729 @@
+{
+  "entries": [
+    {
+      "key": "ui.menu.new_game",
+      "source": "NEW GAME",
+      "text": "NEW GAME"
+    },
+    {
+      "key": "ui.menu.load_game",
+      "source": "LOAD GAME",
+      "text": "LOAD GAME"
+    },
+    {
+      "key": "ui.menu.continue",
+      "source": "CONTINUE",
+      "text": "CONTINUE"
+    },
+    {
+      "key": "ui.menu.settings",
+      "source": "SETTINGS",
+      "text": "SETTINGS"
+    },
+    {
+      "key": "ui.menu.options",
+      "source": "OPTIONS",
+      "text": "OPTIONS"
+    },
+    {
+      "key": "ui.menu.credits",
+      "source": "CREDITS",
+      "text": "CREDITS"
+    },
+    {
+      "key": "ui.menu.quit",
+      "source": "QUIT",
+      "text": "QUIT"
+    },
+    {
+      "key": "ui.menu.resume_game",
+      "source": "RESUME GAME",
+      "text": "RESUME GAME"
+    },
+    {
+      "key": "ui.menu.main_menu",
+      "source": "MAIN MENU",
+      "text": "MAIN MENU"
+    },
+    {
+      "key": "ui.menu.return",
+      "source": "RETURN",
+      "text": "RETURN"
+    },
+    {
+      "key": "ui.menu.back",
+      "source": "Back",
+      "text": "Back"
+    },
+    {
+      "key": "ui.menu.confirm",
+      "source": "Confirm",
+      "text": "Confirm"
+    },
+    {
+      "key": "ui.menu.exit",
+      "source": "Exit",
+      "text": "Exit"
+    },
+    {
+      "key": "ui.menu.press_any_key",
+      "source": "Press Any Key",
+      "text": "Press Any Key"
+    },
+    {
+      "key": "ui.pause.title",
+      "source": "Game Paused",
+      "text": "Game Paused"
+    },
+    {
+      "key": "ui.settings.sound",
+      "source": "Sound",
+      "text": "Sound"
+    },
+    {
+      "key": "ui.settings.music",
+      "source": "Music",
+      "text": "Music"
+    },
+    {
+      "key": "ui.settings.sfx",
+      "source": "SFX",
+      "text": "SFX"
+    },
+    {
+      "key": "ui.settings.quality",
+      "source": "Quality",
+      "text": "Quality"
+    },
+    {
+      "key": "ui.settings.fullscreen",
+      "source": "Full Screen",
+      "text": "Full Screen"
+    },
+    {
+      "key": "ui.settings.resolution",
+      "source": "RESOLUTION",
+      "text": "RESOLUTION"
+    },
+    {
+      "key": "ui.settings.resolution_typo",
+      "source": "RESULOTION",
+      "text": "RESOLUTION"
+    },
+    {
+      "key": "ui.settings.sensitivity",
+      "source": "SENSITIVITY",
+      "text": "SENSITIVITY"
+    },
+    {
+      "key": "ui.settings.subtitle",
+      "source": "SUBTITLE",
+      "text": "SUBTITLES"
+    },
+    {
+      "key": "ui.settings.language",
+      "source": "LANGUAGE",
+      "text": "LANGUAGE"
+    },
+    {
+      "key": "ui.settings.brightness_1",
+      "source": "BrIgHtness",
+      "text": "Brightness"
+    },
+    {
+      "key": "ui.settings.brightness_2",
+      "source": "BrIghtness",
+      "text": "Brightness"
+    },
+    {
+      "key": "ui.settings.brightness_3",
+      "source": "Brigtness",
+      "text": "Brightness"
+    },
+    {
+      "key": "ui.settings.brightness",
+      "source": "Brightness",
+      "text": "Brightness"
+    },
+    {
+      "key": "ui.settings.high",
+      "source": "HIGH",
+      "text": "HIGH"
+    },
+    {
+      "key": "ui.hud.tutorial",
+      "source": "TUTORIAL",
+      "text": "TUTORIAL"
+    },
+    {
+      "key": "ui.hud.pressure_level",
+      "source": "PRESSURE LEVEL",
+      "text": "PRESSURE LEVEL"
+    },
+    {
+      "key": "ui.hud.pressure_level_quote",
+      "source": "'PRESSURE LEVEL",
+      "text": "PRESSURE LEVEL"
+    },
+    {
+      "key": "ui.hud.system_off",
+      "source": "SYSTEM OFF",
+      "text": "SYSTEM OFF"
+    },
+    {
+      "key": "ui.hud.symbol",
+      "source": "Symbol",
+      "text": "Symbol"
+    },
+    {
+      "key": "ui.hud.title",
+      "source": "TITLE",
+      "text": "TITLE"
+    },
+    {
+      "key": "ui.hud.title_quote",
+      "source": "'TITLE",
+      "text": "TITLE"
+    },
+    {
+      "key": "ui.hud.page_1_2",
+      "source": "Page 1/2",
+      "text": "Page 1/2"
+    },
+    {
+      "key": "ui.hud.page_format",
+      "source": "Page {0}/{1}",
+      "text": "Page {0}/{1}"
+    },
+    {
+      "key": "ui.controls.interaction",
+      "source": "Interaction",
+      "text": "Interaction"
+    },
+    {
+      "key": "ui.controls.peek",
+      "source": "Peek",
+      "text": "Peek"
+    },
+    {
+      "key": "ui.controls.tab",
+      "source": "Tab",
+      "text": "Notebook [Tab]"
+    },
+    {
+      "key": "ui.controls.changing",
+      "source": "Changing ",
+      "text": "Change "
+    },
+    {
+      "key": "ui.controls.changing_pages",
+      "source": "Changing Pages",
+      "text": "Flip Pages"
+    },
+    {
+      "key": "ui.controls.changing_wave",
+      "source": "Changing Wave",
+      "text": "Adjust Wave"
+    },
+    {
+      "key": "ui.controls.changing_wheel",
+      "source": "Changing Wheel",
+      "text": "Turn Wheel"
+    },
+    {
+      "key": "ui.controls.turning_magnets",
+      "source": "Turning Magnets",
+      "text": "Adjust Magnets"
+    },
+    {
+      "key": "ui.controls.turning_ring",
+      "source": "Turning Ring",
+      "text": "Rotate Ring"
+    },
+    {
+      "key": "ui.controls.rotating_valve",
+      "source": "Rotating Valve",
+      "text": "Rotate Valve"
+    },
+    {
+      "key": "ui.controls.move_paddle",
+      "source": "Move Paddle",
+      "text": "Move Paddle"
+    },
+    {
+      "key": "ui.death.didnt_hide",
+      "source": "You difnt hide",
+      "text": "You didn't hide in time."
+    },
+    {
+      "key": "ui.save.no_manager",
+      "source": "Kayıt yöneticisi bulunamadı.",
+      "text": "Save manager not found."
+    },
+    {
+      "key": "ui.save.session_only",
+      "source": "Bu deneme sahnesinde kalıcı kayıt yükleme kapalı.",
+      "text": "Persistent save loading is disabled in this trial scene."
+    },
+    {
+      "key": "ui.save.not_found",
+      "source": "Kayıt dosyası bulunamadı.",
+      "text": "Save file not found."
+    },
+    {
+      "key": "ui.save.unreadable",
+      "source": "Kayıt verisi okunamadı.",
+      "text": "Save data could not be read."
+    },
+    {
+      "key": "ui.save.missing_trial",
+      "source": "Kayıtlı puzzle için sahne bağlantısı eksik.",
+      "text": "Scene link for the saved puzzle is missing."
+    },
+    {
+      "key": "ui.save.unlinked_puzzle",
+      "source": "Puzzle bağlantısı kurulmadı; mevcut kayıt korunuyor.",
+      "text": "Puzzle link not established; preserving existing save."
+    },
+    {
+      "key": "subtitle.chemistry_lab_entrance.0",
+      "source": "",
+      "text": "Did you think you left me behind at the university, Arthur?"
+    },
+    {
+      "key": "subtitle.chemistry_lab_entrance.1",
+      "source": "",
+      "text": "I am inside the walls of this damp basement now."
+    },
+    {
+      "key": "subtitle.chemistry_lab_entrance.2",
+      "source": "",
+      "text": "Those heavy steps you hear... they aren't the building settling."
+    },
+    {
+      "key": "subtitle.chemistry_lab_entrance.3",
+      "source": "",
+      "text": "It's me."
+    },
+    {
+      "key": "subtitle.chemistry_lab_entrance.4",
+      "source": "",
+      "text": "Look around at the shelves. I scattered your precious data inside those dusty books."
+    },
+    {
+      "key": "subtitle.start_game.0",
+      "source": "",
+      "text": "Leaving that bright chair at the university was a mistake, Arthur."
+    },
+    {
+      "key": "subtitle.start_game.1",
+      "source": "",
+      "text": "You buried yourself in this damp basement to prove them wrong..."
+    },
+    {
+      "key": "subtitle.start_game.2",
+      "source": "",
+      "text": "If you want to survive the night, start with the basics."
+    },
+    {
+      "key": "subtitle.start_game.3",
+      "source": "",
+      "text": "Pick up the note on your desk."
+    },
+    {
+      "key": "subtitle.pressure_emergency.0",
+      "source": "",
+      "text": "Too much pressure in the pipes... just like the pressure inside your skull."
+    },
+    {
+      "key": "subtitle.pressure_emergency.1",
+      "source": "",
+      "text": "Find the valve and release the steam, Arthur!"
+    },
+    {
+      "key": "subtitle.pressure_emergency.2",
+      "source": "",
+      "text": "Before the whole room blows up in your face!"
+    },
+    {
+      "key": "subtitle.particle_room_entrance.0",
+      "source": "",
+      "text": "The Mass Spectrometer..."
+    },
+    {
+      "key": "subtitle.particle_room_entrance.1",
+      "source": "",
+      "text": "Remember when we used to calibrate the magnets together?"
+    },
+    {
+      "key": "subtitle.particle_room_entrance.2",
+      "source": "",
+      "text": "Now, those particles are as unstable as your mind."
+    },
+    {
+      "key": "subtitle.particle_room_entrance.3",
+      "source": "",
+      "text": "Guide the beam to the center, Arthur. Don't let your hands shake."
+    },
+    {
+      "key": "subtitle.first_notepad.0",
+      "source": "",
+      "text": "Good. You haven't forgotten how to read."
+    },
+    {
+      "key": "subtitle.first_notepad.1",
+      "source": "",
+      "text": "Now, walk over to the Turing Machine."
+    },
+    {
+      "key": "subtitle.first_notepad.2",
+      "source": "",
+      "text": "Enter the word, the symbol, and the numbers you just found."
+    },
+    {
+      "key": "subtitle.first_notepad.3",
+      "source": "",
+      "text": "Let's see if your fingers still remember the rhythm of our work."
+    },
+    {
+      "key": "subtitle.first_notepad.4",
+      "source": "",
+      "text": "Find the ones I marked before I find you."
+    },
+    {
+      "key": "subtitle.first_notepad.5",
+      "source": "",
+      "text": "And try not to make a sound."
+    },
+    {
+      "key": "subtitle.first_mistake.0",
+      "source": "",
+      "text": "Wrong, Arthur! Sloppy and careless, just like the day you caused the accident!"
+    },
+    {
+      "key": "subtitle.first_mistake.1",
+      "source": "",
+      "text": "Focus!"
+    },
+    {
+      "key": "subtitle.first_mistake.2",
+      "source": "",
+      "text": "Only five correct sequences will unlock that door."
+    },
+    {
+      "key": "subtitle.first_mistake.3",
+      "source": "",
+      "text": "Did the radiation rot your memory too?"
+    },
+    {
+      "key": "subtitle.first_mistake.4",
+      "source": "",
+      "text": "Look at your notebook and try again."
+    },
+    {
+      "key": "subtitle.tutorial_solved.0",
+      "source": "",
+      "text": "Impressive. The machine accepts your input."
+    },
+    {
+      "key": "subtitle.tutorial_solved.1",
+      "source": "",
+      "text": "Notice how the lock on the laboratory door reacted?"
+    },
+    {
+      "key": "subtitle.tutorial_solved.2",
+      "source": "",
+      "text": "It is open now. Step out of your safe little office... and come face the real work."
+    },
+    {
+      "key": "subtitle.final_code.0",
+      "source": "",
+      "text": "Five sequences... All validated."
+    },
+    {
+      "key": "subtitle.final_code.1",
+      "source": "",
+      "text": "You actually did it, Arthur. You pieced our shattered research back together."
+    },
+    {
+      "key": "subtitle.final_code.2",
+      "source": "",
+      "text": "The final lock is released."
+    },
+    {
+      "key": "subtitle.final_code.3",
+      "source": "",
+      "text": "Go on, open the exit door. Let's see what awaits you on the other side."
+    },
+    {
+      "key": "subtitle.pressure_room_entrance.0",
+      "source": "",
+      "text": "Listen to the pipes groaning under the strain."
+    },
+    {
+      "key": "subtitle.pressure_room_entrance.1",
+      "source": "",
+      "text": "This whole place is a ticking time bomb, Arthur."
+    },
+    {
+      "key": "subtitle.pressure_room_entrance.2",
+      "source": "",
+      "text": "Just like the reactor we built."
+    },
+    {
+      "key": "subtitle.pressure_room_entrance.3",
+      "source": "",
+      "text": "Keep your eyes on the pressure gauges."
+    },
+    {
+      "key": "subtitle.pressure_room_entrance.4",
+      "source": "",
+      "text": "If they hit the red zone, the steam will cook you alive before I even get the chance."
+    },
+    {
+      "key": "subtitle.tut_001.0",
+      "source": "",
+      "text": "First I must open the notebook on the desk and take the calibration note."
+    },
+    {
+      "key": "subtitle.tut_002.0",
+      "source": "",
+      "text": "I got the code. Now I need to enter it into the Turing machine."
+    },
+    {
+      "key": "subtitle.tut_003.0",
+      "source": "",
+      "text": "What was that sound?... Did the power just go out?"
+    },
+    {
+      "key": "subtitle.tut_004.0",
+      "source": "",
+      "text": "Everywhere is pitch black... I can't work like this. Look, my flashlight is on the desk, I should take it."
+    },
+    {
+      "key": "subtitle.tut_005.0",
+      "source": "",
+      "text": "Good, at least I can see ahead. Now I must go out to the corridor, find the breaker box, and restore the power."
+    },
+    {
+      "key": "subtitle.tut_006.0",
+      "source": "",
+      "text": "I think the main breaker is in the room at the end of the corridor. I should check it."
+    },
+    {
+      "key": "subtitle.tut_007.0",
+      "source": "",
+      "text": "Power is back, the systems are working. Now I need to find the hidden passwords in the other rooms."
+    },
+    {
+      "key": "subtitle.tut_008.0",
+      "source": "",
+      "text": "The pressure gauge has spiked! If I don't close the valves in the boiler room right now, this place will blow up!"
+    },
+    {
+      "key": "subtitle.tut_009.0",
+      "source": "",
+      "text": "Pressure is back to normal, danger has passed. Let's get back to work... I can search the books on the shelves to find the passwords."
+    },
+    {
+      "key": "subtitle.tut_010.0",
+      "source": "",
+      "text": "The frequency on this oscilloscope looks familiar... If I match the wave on the screen, I can obtain the password."
+    },
+    {
+      "key": "subtitle.tut_011.0",
+      "source": "",
+      "text": "There's a password here! I found one, I should note this down and try it on the Turing machine right away."
+    },
+    {
+      "key": "subtitle.tut_012.0",
+      "source": "",
+      "text": "That sound... He's coming here! I must hide inside the locker right now!"
+    },
+    {
+      "key": "subtitle.tut_board_intro.0",
+      "source": "Önce defterdeki kalibrasyon şemasına bakmalıyım. [Tab] ile açıp hedefi ve parçaları tahtaya sürükleyebilirim.",
+      "text": "First I should check the calibration diagram in my notebook. I can open it with [Tab] and drag the target and parts onto the board."
+    },
+    {
+      "key": "subtitle.tut_board_terminal.0",
+      "source": "Sentez tamamlandı. Tahtanın verdiği kodu Turing makinesine girersem kilit açılacak.",
+      "text": "Synthesis complete. If I enter the code from the board into the Turing machine, the lock will open."
+    },
+    {
+      "key": "subtitle.thought_notebook_ready.0",
+      "source": "Defteri [Tab] ile açıp notları tahtaya taşıyabilirim.",
+      "text": "I can open the notebook with [Tab] and move the notes to the board."
+    },
+    {
+      "key": "subtitle.thought_board_intro.0",
+      "source": "Önce bir hedef şemasını tahtaya bırakmalıyım.",
+      "text": "First I should place a target diagram onto the board."
+    },
+    {
+      "key": "subtitle.thought_board_missing_books.0",
+      "source": "Bu şemanın parçaları eksik... Raflardaki kitapları karıştırmalıyım.",
+      "text": "Parts of this diagram are missing... I should search the books on the shelves."
+    },
+    {
+      "key": "subtitle.thought_board_place_items.0",
+      "source": "Parçalar tamam. Defteri [Tab] ile açıp tahtaya yerleştirebilirim.",
+      "text": "The parts are complete. I can open the notebook with [Tab] and place them on the board."
+    },
+    {
+      "key": "subtitle.thought_board_bonds.0",
+      "source": "Şimdi uçları kurallara göre birbirine bağlamalıyım.",
+      "text": "Now I must connect the nodes according to the rules."
+    },
+    {
+      "key": "subtitle.thought_board_ready_terminal.0",
+      "source": "Sentez tamam. Bu kodu Turing makinesine girmeliyim.",
+      "text": "Synthesis complete. I must enter this code into the Turing machine."
+    },
+    {
+      "key": "subtitle.thought_board_incomplete.0",
+      "source": "Bağlantılar henüz hedef şemayı karşılamıyor.",
+      "text": "The connections don't match the target diagram yet."
+    },
+    {
+      "key": "subtitle.thought_terminal_wrong.0",
+      "source": "Bu kod uymadı... Tahtadaki sentezi ve defterdeki notları tekrar kontrol etmeliyim.",
+      "text": "This code didn't match... I should check the synthesis on the board and the notes in my notebook again."
+    },
+    {
+      "key": "subtitle.thought_breaker_need_power.0",
+      "source": "Karanlıkta hiçbir şey çalışmaz... Önce şarteli kaldırmalıyım.",
+      "text": "Nothing works in the dark... First I must flip the breaker."
+    },
+    {
+      "key": "subtitle.thought_valve_need_pressure.0",
+      "source": "Buhar basıncı çok yüksek... Vanayı çevirip düşürmeliyim.",
+      "text": "Steam pressure is too high... I must turn the valve to lower it."
+    },
+    {
+      "key": "subtitle.thought_machine_need_power.0",
+      "source": "Elektrik kesik. Önce sigorta kutusundan gücü açmalıyım.",
+      "text": "The power is out. First I must restore power from the breaker box."
+    },
+    {
+      "key": "subtitle.thought_machine_need_pressure.0",
+      "source": "Hat basıncı tehlikeli seviyede. Önce vanaları kapatmalıyım.",
+      "text": "Line pressure is at a dangerous level. First I must close the valves."
+    },
+    {
+      "key": "subtitle.thought_machine_need_both.0",
+      "source": "Ne elektrik var ne de basınç dengede... Önce tesisatı toplamalıyım.",
+      "text": "There's no power and pressure is unstable... First I must fix the utilities."
+    },
+    {
+      "key": "subtitle.thought_turing_not_yet.0",
+      "source": "Henüz elimde buraya girecek doğrulanmış bir kod yok.",
+      "text": "I don't have a verified code to enter here yet."
+    },
+    {
+      "key": "subtitle.thought_final_door_locked.0",
+      "source": "Ana kilit hâlâ kapalı. Turing makinesinde tüm kodları doğrulamalıyım.",
+      "text": "The main lock is still closed. I must validate all codes on the Turing machine."
+    },
+    {
+      "key": "dialog.breaker_off",
+      "source": "Elektrikler kesildi! Şarteli açmam lazım.",
+      "text": "The power went out! I need to flip the breaker."
+    },
+    {
+      "key": "tutorial.step.0.title",
+      "source": "Sentez Tahtası",
+      "text": "Synthesis Board"
+    },
+    {
+      "key": "tutorial.step.0.instruction",
+      "source": "Sentez tahtasına yaklaş ve [Sol Tık] ile incele. [Tab] ile defterindeki kalibrasyon hedefini ve iki parçayı tahtaya sürükle, H-O-H bağlarını çiz.",
+      "text": "Approach the synthesis board and inspect it with [Left Click]. Open your notebook with [Tab], drag the calibration target and two parts onto the board, and draw the H-O-H bonds."
+    },
+    {
+      "key": "tutorial.step.1.title",
+      "source": "Turing Makinesi",
+      "text": "Turing Machine"
+    },
+    {
+      "key": "tutorial.step.1.instruction",
+      "source": "Tahtada ürettiğin kalibrasyon kodunu Turing Makinesi'ne gir ve yeşil kolu çek.",
+      "text": "Enter the calibration code produced on the board into the Turing Machine and pull the green lever."
+    },
+    {
+      "key": "tutorial.step.2.title",
+      "source": "Karanlık Çöktü",
+      "text": "Darkness Fell"
+    },
+    {
+      "key": "tutorial.step.2.instruction",
+      "source": "Elektrikler kesildi. Masanın üzerindeki El Fenerini [Sol Tık] ile al.",
+      "text": "The power went out. Pick up the Flashlight on the desk with [Left Click]."
+    },
+    {
+      "key": "tutorial.step.3.title",
+      "source": "Gücü Geri Getir",
+      "text": "Restore Power"
+    },
+    {
+      "key": "tutorial.step.3.instruction",
+      "source": "Koridora çık, sigorta kutusunu bul ve şarteli kaldır.",
+      "text": "Step out into the corridor, find the breaker box, and flip the switch."
+    },
+    {
+      "key": "tutorial.step.4.title",
+      "source": "Kritik Basınç!",
+      "text": "Critical Pressure!"
+    },
+    {
+      "key": "tutorial.step.4.instruction",
+      "source": "Buhar basıncı tehlikeli seviyede! Kazan dairesine git ve vanayı çevirerek basıncı düşür.",
+      "text": "Steam pressure is at a dangerous level! Go to the boiler room and turn the valve to lower the pressure."
+    },
+    {
+      "key": "tutorial.step.5.title",
+      "source": "Laboratuvar Araştırması",
+      "text": "Laboratory Research"
+    },
+    {
+      "key": "tutorial.step.5.instruction",
+      "source": "Raflardaki kitapları inceleyip şema ve parça ipuçlarını defterine topla, tahtada sentezle ve kodları Turing'e gir.",
+      "text": "Inspect the books on the shelves to collect diagram and part clues in your notebook, synthesize them on the board, and enter the codes into the Turing machine."
+    },
+    {
+      "key": "tutorial.step.6.title",
+      "source": "Saklan!",
+      "text": "Hide!"
+    },
+    {
+      "key": "tutorial.step.6.instruction",
+      "source": "Biri yaklaşıyor! Hemen dolabın içine gir ve tehlike geçene kadar bekle.",
+      "text": "Someone is approaching! Get inside the locker immediately and wait until the danger passes."
+    },
+    {
+      "key": "prompt.synthesize",
+      "source": "[Sol Tık] Sentezle",
+      "text": "[Left Click] Synthesize"
+    },
+    {
+      "key": "prompt.test_board",
+      "source": "[Sol Tık] Test Tahtasına Geç",
+      "text": "[Left Click] Use Test Board"
+    },
+    {
+      "key": "prompt.book.open",
+      "source": "[Sol Tık] Kitabı Aç",
+      "text": "[Left Click] Open Book"
+    },
+    {
+      "key": "prompt.book.close",
+      "source": "[F] Kitabı Kapat",
+      "text": "[F] Close Book"
+    },
+    {
+      "key": "prompt.book.format",
+      "source": "{0} · {1}\n{2}",
+      "text": "{0} · {1}\n{2}"
+    },
+    {
+      "key": "prompt.note.read",
+      "source": "[Sol Tık] Notu Oku",
+      "text": "[Left Click] Read Note"
+    },
+    {
+      "key": "prompt.note.drop",
+      "source": "[F] Notu Bırak",
+      "text": "[F] Put Down Note"
+    },
+    {
+      "key": "prompt.door.locked",
+      "source": "Kilitli",
+      "text": "Locked"
+    },
+    {
+      "key": "prompt.door.close",
+      "source": "[Sol Tık] Kapıyı Kapat",
+      "text": "[Left Click] Close Door"
+    },
+    {
+      "key": "prompt.door.open",
+      "source": "[Sol Tık] Kapıyı Aç",
+      "text": "[Left Click] Open Door"
+    },
+    {
+      "key": "prompt.doorlock.locked",
+      "source": "Kilitli (Şifre Gerekli)",
+      "text": "Locked (Password Required)"
+    },
+    {
+      "key": "prompt.drawer.close",
+      "source": "[Sol Tık] Çekmeceyi Kapat",
+      "text": "[Left Click] Close Drawer"
+    },
+    {
+      "key": "prompt.drawer.open",
+      "source": "[Sol Tık] Çekmeceyi Aç",
+      "text": "[Left Click] Open Drawer"
+    },
+    {
+      "key": "prompt.hiding.exit",
+      "source": "[F] Saklandığın Yerden Çık",
+      "text": "[F] Exit Hiding Spot"
+    },
+    {
+      "key": "prompt.hiding.enter",
+      "source": "[Sol Tık] Dolaba Saklan",
+      "text": "[Left Click] Hide in Locker"
+    },
+    {
+      "key": "prompt.light.turn_off",
+      "source": "[Sol Tık] Işığı Kapat",
+      "text": "[Left Click] Turn Off Light"
+    },
+    {
+      "key": "prompt.light.turn_on",
+      "source": "[Sol Tık] Işığı Aç",
+      "text": "[Left Click] Turn On Light"
+    },
+    {
+      "key": "prompt.breaker.already_on",
+      "source": "Elektrik Zaten Açık",
+      "text": "Power Already On"
+    },
+    {
+      "key": "prompt.breaker.close_cover_turn_on",
+      "source": "[Sol Tık] Kapağı Kapat / Şarteli Aç",
+      "text": "[Left Click] Close Cover / Flip Breaker"
+    },
+    {
+      "key": "prompt.breaker.open_cover",
+      "source": "[Sol Tık] Sigorta Kutusunu Aç",
+      "text": "[Left Click] Open Breaker Box"
+    },
+    {
+      "key": "prompt.breaker.turn_on",
+      "source": "[Sol Tık] Şarteli Kaldır",
+      "text": "[Left Click] Flip Breaker Switch"
+    },
+    {
+      "key": "prompt.lever.already_active",
+      "source": "Şalter Zaten Aktif",
+      "text": "Switch Already Active"
+    },
+    {
+      "key": "prompt.lever.pull",
+      "source": "[Sol Tık] Güç Şalterini Çek",
+      "text": "[Left Click] Pull Power Lever"
+    },
+    {
+      "key": "prompt.valve.use",
+      "source": "[Sol Tık] Basınç Vanası",
+      "text": "[Left Click] Pressure Valve"
+    },
+    {
+      "key": "prompt.turing.use",
+      "source": "[Sol Tık] Turing Makinesi",
+      "text": "[Left Click] Turing Machine"
+    },
+    {
+      "key": "prompt.oscilloscope.no_power",
+      "source": "Güç Yok - Şarteli Aç",
+      "text": "No Power - Flip Breaker"
+    },
+    {
+      "key": "prompt.oscilloscope.high_pressure",
+      "source": "Basınç Yüksek - Vanayı Kapat",
+      "text": "High Pressure - Close Valve"
+    },
+    {
+      "key": "prompt.oscilloscope.use",
+      "source": "[Sol Tık] Osiloskopu Kullan",
+      "text": "[Left Click] Use Oscilloscope"
+    },
+    {
+      "key": "prompt.spectrometer.no_power",
+      "source": "Güç Yok! (Şarteli veya Şalteri Aç)",
+      "text": "No Power! (Flip Breaker or Power Lever)"
+    },
+    {
+      "key": "prompt.spectrometer.high_pressure",
+      "source": "Basınç Çok Yüksek! (Vanayı Kapat)",
+      "text": "Pressure Too High! (Close Valve)"
+    },
+    {
+      "key": "prompt.spectrometer.completed",
+      "source": "Analiz Tamamlandı",
+      "text": "Analysis Complete"
+    },
+    {
+      "key": "prompt.spectrometer.use",
+      "source": "[Sol Tık] Kütle Spektrometresi",
+      "text": "[Left Click] Mass Spectrometer"
+    },
+    {
+      "key": "prompt.endgame.locked",
+      "source": "Kilitli - Tüm Şifreleri Çözmelisin",
+      "text": "Locked - You Must Solve All Passwords"
+    },
+    {
+      "key": "prompt.endgame.press",
+      "source": "[Sol Tık] Çıkış Kilidini Aç",
+      "text": "[Left Click] Unlock Exit"
+    },
+    {
+      "key": "prompt.desktop.sit",
+      "source": "[Sol Tık] Masaya Otur",
+      "text": "[Left Click] Sit at Desk"
+    },
+    {
+      "key": "prompt.blockout.hint",
+      "source": "WASD yürü   Fare bak   Sol Tık etkileş   Tab defter   F çık",
+      "text": "WASD move   Mouse look   Left Click interact   Tab notebook   F exit"
+    },
+    {
+      "key": "prompt.blockout.results",
+      "source": "\nAraştırma sonuçları: {0} / {1}",
+      "text": "\nResearch results: {0} / {1}"
+    },
+    {
+      "key": "prompt.blockout.turing_cheat",
+      "source": "  |  6: Turing deneme kopyası",
+      "text": "  |  6: Turing trial copy"
+    },
+    {
+      "key": "prompt.blockout.saved_on_switch",
+      "source": "  |  Hedef değişince tahta çalışman saklanır.",
+      "text": "  |  Board work is saved when switching targets."
+    },
+    {
+      "key": "death.caught",
+      "source": "YAKALANDIN",
+      "text": "YOU WERE CAUGHT"
+    },
+    {
+      "key": "death.pressure",
+      "source": "YÜKSEK BASINÇ PATLAMASI!",
+      "text": "HIGH PRESSURE EXPLOSION!"
+    },
+    {
+      "key": "machine.spectrometer.ready",
+      "source": "SYSTEM READY\nWAITING INPUT",
+      "text": "SYSTEM READY\nWAITING INPUT"
+    },
+    {
+      "key": "machine.spectrometer.power_req",
+      "source": "POWER REQUIRED\nCHECK MAIN LEVER",
+      "text": "POWER REQUIRED\nCHECK MAIN LEVER"
+    },
+    {
+      "key": "machine.spectrometer.overheated",
+      "source": "OVERHEATED\nWAIT: {0:F1}s",
+      "text": "OVERHEATED\nWAIT: {0:F1}s"
+    },
+    {
+      "key": "machine.spectrometer.magnet_stable",
+      "source": "MAGNET STABLE\nRING: {0:F0}°",
+      "text": "MAGNET STABLE\nRING: {0:F0}°"
+    },
+    {
+      "key": "machine.spectrometer.magnet_unstable",
+      "source": "MAGNET UNSTABLE ({0:F0}°)\nALIGN RED AXIS",
+      "text": "MAGNET UNSTABLE ({0:F0}°)\nALIGN RED AXIS"
+    },
+    {
+      "key": "machine.spectrometer.failure",
+      "source": "SYSTEM FAILURE\nCRITICAL ERROR",
+      "text": "SYSTEM FAILURE\nCRITICAL ERROR"
+    },
+    {
+      "key": "machine.spectrometer.complete",
+      "source": "CALIBRATION COMPLETE\nCODE: {0}",
+      "text": "CALIBRATION COMPLETE\nCODE: {0}"
+    },
+    {
+      "key": "machine.oscilloscope.stable",
+      "source": "STABLE\nKEY: {0}",
+      "text": "STABLE\nKEY: {0}"
+    },
+    {
+      "key": "machine.oscilloscope.no_signal",
+      "source": "NO SIGNAL",
+      "text": "NO SIGNAL"
+    },
+    {
+      "key": "machine.retro.ready_start",
+      "source": "SYSTEM READY\n[LEFT CLICK] TO START",
+      "text": "SYSTEM READY\n[LEFT CLICK] TO START"
+    },
+    {
+      "key": "machine.retro.rebooting",
+      "source": "SYSTEM FAILURE\nREBOOTING: {0:F1}s",
+      "text": "SYSTEM FAILURE\nREBOOTING: {0:F1}s"
+    },
+    {
+      "key": "machine.retro.ready_restart",
+      "source": "SYSTEM READY\n[LEFT CLICK] TO RESTART",
+      "text": "SYSTEM READY\n[LEFT CLICK] TO RESTART"
+    },
+    {
+      "key": "machine.retro.lives_score",
+      "source": "LIVES: {0} | SCORE: {1}/{2}",
+      "text": "LIVES: {0} | SCORE: {1}/{2}"
+    },
+    {
+      "key": "machine.retro.lives_serve",
+      "source": "LIVES: {0} | SCORE: {1}/{2}\n[LEFT CLICK] TO SERVE",
+      "text": "LIVES: {0} | SCORE: {1}/{2}\n[LEFT CLICK] TO SERVE"
+    },
+    {
+      "key": "machine.retro.critical_error",
+      "source": "CRITICAL ERROR!",
+      "text": "CRITICAL ERROR!"
+    },
+    {
+      "key": "machine.turing.card_label",
+      "source": "ÖLÇÜM KARTI",
+      "text": "MEASUREMENT CARD"
+    },
+    {
+      "key": "machine.turing.wait_card",
+      "source": "OLCUM KARTI BEKLE",
+      "text": "AWAITING CARD"
+    },
+    {
+      "key": "machine.turing.need_card",
+      "source": "OLCUM KARTI GEREK",
+      "text": "CARD REQUIRED"
+    },
+    {
+      "key": "machine.turing.taking_card",
+      "source": "KART ALINIYOR",
+      "text": "READING CARD"
+    },
+    {
+      "key": "machine.turing.enter_test",
+      "source": "ENTER: SINA",
+      "text": "ENTER: VERIFY"
+    },
+    {
+      "key": "machine.turing.reading",
+      "source": "OKUNUYOR",
+      "text": "READING"
+    },
+    {
+      "key": "machine.turing.lock_progress",
+      "source": "KILIT {0}/{1}",
+      "text": "LOCK {0}/{1}"
+    },
+    {
+      "key": "machine.turing.record_approved",
+      "source": "KAYIT ONAYLANDI",
+      "text": "RECORD VERIFIED"
+    },
+    {
+      "key": "machine.turing.record_mismatch",
+      "source": "KAYIT UYUSMUYOR",
+      "text": "RECORD MISMATCH"
+    },
+    {
+      "key": "machine.turing.paper_format",
+      "source": "{0}    {1}    ",
+      "text": "{0}    {1}    "
+    },
+    {
+      "key": "machine.turing.feedback_reading",
+      "source": "Ölçüm okunuyor. Kod yerleşince Enter ile sına.",
+      "text": "Reading measurement. Press Enter to verify once the code is set."
+    },
+    {
+      "key": "machine.turing.feedback_read_done",
+      "source": "Ölçüm okundu. Enter ile sına.",
+      "text": "Measurement read. Press Enter to verify."
+    },
+    {
+      "key": "notebook.legacy.logs_empty",
+      "source": "LOGS EMPTY",
+      "text": "LOGS EMPTY"
+    },
+    {
+      "key": "notebook.legacy.no_op_data",
+      "source": "No operational data found.",
+      "text": "No operational data found."
+    },
+    {
+      "key": "notebook.legacy.tab_count",
+      "source": "{0} ({1}/{2})",
+      "text": "{0} ({1}/{2})"
+    },
+    {
+      "key": "notebook.legacy.discovered_clues",
+      "source": "DISCOVERED CLUES",
+      "text": "DISCOVERED CLUES"
+    },
+    {
+      "key": "notebook.legacy.switch_tabs",
+      "source": "[Q][E] Switch Tabs ",
+      "text": "[Q][E] Switch Tabs "
+    },
+    {
+      "key": "notebook.legacy.switch_scroll",
+      "source": "[Q][E] Switch Tabs  | [Scroll] Browse Logs",
+      "text": "[Q][E] Switch Tabs  | [Scroll] Browse Logs"
+    },
+    {
+      "key": "notebook.legacy.no_env_data",
+      "source": "No data retrieved from the environment...",
+      "text": "No data retrieved from the environment..."
+    },
+    {
+      "key": "notebook.page.number_format",
+      "source": "s. {0}",
+      "text": "p. {0}"
+    },
+    {
+      "key": "notebook.role.source",
+      "source": "BAŞLATICI ›",
+      "text": "INITIATOR ›"
+    },
+    {
+      "key": "notebook.role.sink",
+      "source": "› SONLANDIRICI",
+      "text": "› TERMINATOR"
+    },
+    {
+      "key": "notebook.role.processor",
+      "source": "› İŞLEM ›",
+      "text": "› PROCESS ›"
+    },
+    {
+      "key": "notebook.role.title_format",
+      "source": "{0}\n<size=65%>{1}</size>",
+      "text": "{0}\n<size=65%>{1}</size>"
+    },
+    {
+      "key": "notebook.block.quest_format",
+      "source": "◆ HEDEF  {0}",
+      "text": "◆ TARGET  {0}"
+    },
+    {
+      "key": "notebook.block.measurement_format",
+      "source": "ÖLÇÜM KARTI  {0}",
+      "text": "MEASUREMENT CARD  {0}"
+    },
+    {
+      "key": "notebook.block.record_format",
+      "source": "KAYIT  {0}",
+      "text": "RECORD  {0}"
+    },
+    {
+      "key": "notebook.block.rule_format",
+      "source": "KURAL  {0}",
+      "text": "RULE  {0}"
+    },
+    {
+      "key": "notebook.block.part_format",
+      "source": "PARÇA  {0}",
+      "text": "PART  {0}"
+    },
+    {
+      "key": "notebook.block.turing_hint",
+      "source": "Turing'in sol klavyesindeki yuvaya sürükle.",
+      "text": "Drag into the slot on the left keyboard of the Turing machine."
+    },
+    {
+      "key": "notebook.footer.turing_card",
+      "source": "TURING'E TAKILAN KART",
+      "text": "CARD FOR TURING SLOT"
+    },
+    {
+      "key": "notebook.footer.general_record",
+      "source": "GENEL ARAŞTIRMA KAYDI",
+      "text": "GENERAL RESEARCH RECORD"
+    },
+    {
+      "key": "notebook.footer.unlinked",
+      "source": "BAĞLANTISI BELİRSİZ",
+      "text": "UNLINKED NOTE"
+    },
+    {
+      "key": "notebook.ws.title",
+      "source": "ARAŞTIRMA DEFTERİ",
+      "text": "RESEARCH NOTEBOOK"
+    },
+    {
+      "key": "notebook.ws.drag_hint",
+      "source": "NOTU SÜRÜKLE  /  ASLI DEFTERDE KALIR",
+      "text": "DRAG NOTE  /  ORIGINAL STAYS IN NOTEBOOK"
+    },
+    {
+      "key": "notebook.ws.select_goal_hint",
+      "source": "Defterden bir hedef seç; mevcut bilgilerinle bir hipotez kur.",
+      "text": "Select a target from the notebook; form a hypothesis with your current findings."
+    },
+    {
+      "key": "notebook.ws.goal_completed",
+      "source": "Hedef: {0} / Tamamlandı.",
+      "text": "Target: {0} / Completed."
+    },
+    {
+      "key": "notebook.ws.goal_active",
+      "source": "Hedef: {0} / Hipotezini kur ve test et.",
+      "text": "Target: {0} / Form and test your hypothesis."
+    },
+    {
+      "key": "notebook.ws.field_notebook_drag",
+      "source": "SAHA DEFTERİ / TUTUP TAŞI",
+      "text": "FIELD NOTEBOOK / DRAG TO MOVE"
+    },
+    {
+      "key": "notebook.ws.page_num",
+      "source": "SAYFA {0}",
+      "text": "PAGE {0}"
+    },
+    {
+      "key": "notebook.ws.parts_page",
+      "source": "PARÇALAR  {0} / {1}",
+      "text": "PARTS  {0} / {1}"
+    },
+    {
+      "key": "notebook.ws.measurements_page",
+      "source": "ÖLÇÜMLER  {0} / {1}",
+      "text": "MEASUREMENTS  {0} / {1}"
+    },
+    {
+      "key": "notebook.ws.records_page",
+      "source": "KAYITLAR  {0} / {1}",
+      "text": "RECORDS  {0} / {1}"
+    },
+    {
+      "key": "notebook.ws.goals_page",
+      "source": "HEDEFLER  {0} / {1}",
+      "text": "TARGETS  {0} / {1}"
+    },
+    {
+      "key": "notebook.ws.research_notes",
+      "source": "ARAŞTIRMA NOTLARI",
+      "text": "RESEARCH NOTES"
+    },
+    {
+      "key": "notebook.ws.goal_clues_count",
+      "source": "{0}\nBİLGİLER {1} / {2}",
+      "text": "{0}\nCLUES {1} / {2}"
+    },
+    {
+      "key": "notebook.ws.clue_missing_slot",
+      "source": "İPUCU {0} / HENÜZ BULUNMADI\nBu hedef için bir bilgi eksik.",
+      "text": "CLUE {0} / NOT FOUND YET\nA clue is missing for this target."
+    },
+    {
+      "key": "notebook.ws.unlinked_clues",
+      "source": "BAĞLANTISI BELİRSİZ BİLGİLER",
+      "text": "UNLINKED CLUES"
+    },
+    {
+      "key": "notebook.ws.footer_controls",
+      "source": "TAB: KAPAT   /   Q E: BÖLÜM   /   TEKERLEK: SAYFA",
+      "text": "TAB: CLOSE   /   Q E: SECTION   /   WHEEL: PAGE"
+    },
+    {
+      "key": "notebook.ws.close_btn",
+      "source": "DEFTERİ KAPAT  ›",
+      "text": "CLOSE NOTEBOOK  ›"
+    },
+    {
+      "key": "notebook.ws.open_btn",
+      "source": "‹  DEFTERİ AÇ",
+      "text": "‹  OPEN NOTEBOOK"
+    },
+    {
+      "key": "notebook.ws.goal_archive",
+      "source": "HEDEF ARŞİVİ",
+      "text": "TARGET ARCHIVE"
+    },
+    {
+      "key": "notebook.ws.clue_archive",
+      "source": "BİLGİ ARŞİVİ",
+      "text": "CLUE ARCHIVE"
+    },
+    {
+      "key": "notebook.ws.part_archive",
+      "source": "PARÇA ARŞİVİ",
+      "text": "PART ARCHIVE"
+    },
+    {
+      "key": "notebook.ws.cheat_hint",
+      "source": "Hile sayfası • Oklar: tarif değiştir • Tekerlek: adımları kaydır",
+      "text": "Cheat page • Arrows: switch recipe • Wheel: scroll steps"
+    },
+    {
+      "key": "notebook.ws.measurement_hint",
+      "source": "Ölçüm kartını Turing'in sol klavyesindeki yuvaya sürükle.",
+      "text": "Drag the measurement card into the slot on the left keyboard of the Turing machine."
+    },
+    {
+      "key": "notebook.ws.records_hint",
+      "source": "Oklarla kayıtları gez. Tahtada istediğin yere raptiyele.",
+      "text": "Browse records with arrows. Pin them anywhere on the board."
+    },
+    {
+      "key": "notebook.ws.clues_hint",
+      "source": "Tüm sayfalardaki ipuçları. Tahtanın BİLGİLER alanına sürükle.",
+      "text": "Clues across all pages. Drag them to the CLUES area on the board."
+    },
+    {
+      "key": "notebook.ws.goal_board_hint",
+      "source": "Hedefi tahtaya sürükle. Kayıt defterde korunur.",
+      "text": "Drag the target onto the board. The entry stays in the notebook."
+    },
+    {
+      "key": "notebook.ws.goal_book_hint",
+      "source": "Hedefi tahtaya sürükle. Tekerlek: hedefleri gez. Sağ tık: kaldır.",
+      "text": "Drag target to board. Wheel: browse targets. Right click: remove."
+    },
+    {
+      "key": "notebook.ws.part_hint",
+      "source": "Üstteki oklar: sayfa değiştir. Parçayı tahtaya sürükle; aslı kalır.",
+      "text": "Top arrows: change page. Drag part to board; the original remains."
+    },
+    {
+      "key": "notebook.ws.note_hint",
+      "source": "Notu tahtaya sürükle. Hedefleri üstteki ayrı alana bırak.",
+      "text": "Drag note to board. Drop targets into the separate upper area."
+    },
+    {
+      "key": "notebook.ws.collected_goals_format",
+      "source": "TOPLANAN HEDEFLER ({0})",
+      "text": "COLLECTED TARGETS ({0})"
+    },
+    {
+      "key": "notebook.ws.collected_goals_zero",
+      "source": "TOPLANAN HEDEFLER (0)",
+      "text": "COLLECTED TARGETS (0)"
+    },
+    {
+      "key": "notebook.ws.drop_goal_here",
+      "source": "HEDEF NOTUNU BURAYA BIRAK\nTopladıklarını görmek için tıkla",
+      "text": "DROP TARGET NOTE HERE\nClick to view collected targets"
+    },
+    {
+      "key": "notebook.ws.tab.parts",
+      "source": "Parçalar",
+      "text": "Parts"
+    },
+    {
+      "key": "notebook.ws.tab.notes",
+      "source": "Notlar",
+      "text": "Notes"
+    },
+    {
+      "key": "notebook.ws.tab.goals",
+      "source": "Hedefler",
+      "text": "Targets"
+    },
+    {
+      "key": "notebook.ws.tab.clues",
+      "source": "Bilgiler",
+      "text": "Clues"
+    },
+    {
+      "key": "notebook.ws.tab.measurements",
+      "source": "Ölçümler",
+      "text": "Measurements"
+    },
+    {
+      "key": "notebook.ws.cheat_toggle",
+      "source": "Hile Aç/Kapat",
+      "text": "Toggle Cheat"
+    },
+    {
+      "key": "notebook.ws.guide_title",
+      "source": "Sentez rehberi",
+      "text": "Synthesis guide"
+    },
+    {
+      "key": "notebook.ws.no_recipe",
+      "source": "Bu oturumda tanımlı bir sentez tarifi bulunamadı.",
+      "text": "No synthesis recipe defined in this session."
+    },
+    {
+      "key": "notebook.ws.archive_vs_board",
+      "source": "DEFTER: ARŞİV  /  TAHTA: DENEY",
+      "text": "NOTEBOOK: ARCHIVE  /  BOARD: EXPERIMENT"
+    },
+    {
+      "key": "notebook.ws.draw_erase_hint",
+      "source": "SOL TIK: ÇİZ  / SAĞ TIK: SİL",
+      "text": "LEFT CLICK: DRAW  / RIGHT CLICK: ERASE"
+    },
+    {
+      "key": "notebook.ws.drag_note_arrows",
+      "source": "Notu tahtaya sürükle. Oklarla dilediğin sayfaya geç.",
+      "text": "Drag note to board. Use arrows to switch to any page."
+    },
+    {
+      "key": "notebook.ws.book_special_blocks",
+      "source": "ARAŞTIRMA KİTABI / ÖZEL BLOKLAR",
+      "text": "RESEARCH BOOK / SPECIAL BLOCKS"
+    },
+    {
+      "key": "notebook.ws.drag_framed_blocks",
+      "source": "Çerçeveli blokları deftere sürükle.",
+      "text": "Drag framed blocks into the notebook."
+    },
+    {
+      "key": "notebook.ws.board_controls",
+      "source": "Sol tık: çiz / uçları bağla\nSağ tık: sil • Yazılar sabittir",
+      "text": "Left click: draw / connect nodes\nRight click: erase • Labels are fixed"
+    },
+    {
+      "key": "notebook.ws.synthesize_btn",
+      "source": "SENTEZLE / TEST ET",
+      "text": "SYNTHESIZE / TEST"
+    },
+    {
+      "key": "notebook.ws.free_draw_hint",
+      "source": "Boş tahtada çiz; uçtan uca bağla. İkinci bağ çizimi çift bağ yapar.",
+      "text": "Draw on the empty board; connect node to node. Drawing a second bond creates a double bond."
+    },
+    {
+      "key": "notebook.ws.empty_parts",
+      "source": "Kitaplardan aldığın parça çizimleri burada birikir.\nAynı çizimi tahtada tekrar kullanabilirsin.\nDefterdeki aslı burada kalır.",
+      "text": "Part diagrams collected from books accumulate here.\nYou can reuse the same diagram on the board.\nThe original remains in the notebook."
+    },
+    {
+      "key": "notebook.ws.empty_measurements",
+      "source": "Tahtada DENEYİ ÖLÇ ile ölçüm kartı üret.\nKartı deftere al; Turing'deki yuvaya tak.",
+      "text": "Produce a measurement card on the board with MEASURE EXPERIMENT.\nTake the card into the notebook and insert it into the Turing slot."
+    },
+    {
+      "key": "notebook.ws.empty_records",
+      "source": "Kitaplardan aldığın bilgiler burada birikir.\nHedef bulmadan da not toplayabilirsin.\nAynı kayıt farklı sorularda işe yarayabilir.",
+      "text": "Clues collected from books accumulate here.\nYou can collect notes even before finding a target.\nThe same record may be useful across different questions."
+    },
+    {
+      "key": "notebook.ws.empty_clues",
+      "source": "BİLGİ NOTLARI\n\nKitaptaki kural / ipucu notlarını deftere bırak.\nBütün sayfalardaki ipuçları burada görünür.",
+      "text": "CLUE NOTES\n\nDrop rule / clue notes from books into the notebook.\nClues from all pages appear here."
+    },
+    {
+      "key": "notebook.ws.empty_goals_page",
+      "source": "Kitaptaki hedef notunu deftere bırak.\nTopladığın hedefler bu sayfalarda saklanır.",
+      "text": "Drop target notes from books into the notebook.\nCollected targets are stored on these pages."
+    },
+    {
+      "key": "notebook.ws.empty_goals_drawer",
+      "source": "Henüz hedef toplanmadı.\nKitaptaki HEDEF notunu üstteki\nTOPLANAN HEDEFLER alanına bırak.",
+      "text": "No targets collected yet.\nDrop a TARGET note from a book into the\nCOLLECTED TARGETS area above."
+    },
+    {
+      "key": "notebook.ws.fb_already_in_nb",
+      "source": "Bu not zaten defterde.",
+      "text": "This note is already in the notebook."
+    },
+    {
+      "key": "notebook.ws.fb_drop_goal_top",
+      "source": "Hedef notunu üstteki TOPLANAN HEDEFLER alanına bırak.",
+      "text": "Drop the target note into the COLLECTED TARGETS area at the top."
+    },
+    {
+      "key": "notebook.ws.fb_measurement_saved",
+      "source": "Ölçüm kartı deftere alındı. Turing'deki sol yuvaya sürükle.",
+      "text": "Measurement card saved to notebook. Drag it into the left slot on the Turing machine."
+    },
+    {
+      "key": "notebook.ws.fb_part_saved",
+      "source": "Parça defterin Parçalar bölümüne kaydedildi.",
+      "text": "Part saved to the Parts section of the notebook."
+    },
+    {
+      "key": "notebook.ws.fb_clue_saved",
+      "source": "Bilgi deftere kaydedildi.",
+      "text": "Clue saved to the notebook."
+    },
+    {
+      "key": "notebook.ws.fb_only_goals_top",
+      "source": "Bu alan yalnız HEDEF notları içindir. Diğer notları sayfaya bırak.",
+      "text": "This area is only for TARGET notes. Drop other notes onto the page."
+    },
+    {
+      "key": "notebook.ws.fb_goal_already",
+      "source": "Bu hedef zaten toplanan hedeflerde.",
+      "text": "This target is already in collected targets."
+    },
+    {
+      "key": "notebook.ws.fb_goal_added",
+      "source": "Hedef TOPLANAN HEDEFLER listesine eklendi.",
+      "text": "Target added to the COLLECTED TARGETS list."
+    },
+    {
+      "key": "notebook.ws.fb_goal_removed",
+      "source": "Hedef listeden kaldırıldı.",
+      "text": "Target removed from the list."
+    },
+    {
+      "key": "board.doc.task",
+      "source": "GÖREV",
+      "text": "TASK"
+    },
+    {
+      "key": "board.doc.drop_goal_here",
+      "source": "HEDEF NOTUNU BURAYA BIRAK",
+      "text": "DROP TARGET NOTE HERE"
+    },
+    {
+      "key": "board.doc.solve_unknowns",
+      "source": "Bilinmeyenleri bilgi notlarından çöz.",
+      "text": "Resolve the unknowns from the clue notes."
+    },
+    {
+      "key": "board.doc.drag_goal_hint",
+      "source": "Defter > Hedefler\nTopladığın şemayı buraya sürükle.",
+      "text": "Notebook > Targets\nDrag your collected diagram here."
+    },
+    {
+      "key": "board.doc.clue_board_counter",
+      "source": "BİLGİ {0}/{1}  |  PANODA {2}/{3}",
+      "text": "CLUES {0}/{1}  |  ON BOARD {2}/{3}"
+    },
+    {
+      "key": "board.doc.pinned_records",
+      "source": "SABİTLEDİĞİN KAYITLAR",
+      "text": "PINNED RECORDS"
+    },
+    {
+      "key": "board.doc.select_goal_clues",
+      "source": "HEDEF SEÇ / BİLGİLER",
+      "text": "SELECT TARGET / CLUES"
+    },
+    {
+      "key": "board.doc.drag_clues_hint",
+      "source": "Defter > Bilgiler\nİpuçlarını buraya sürükle.\n\nTekerlek: notları kaydır",
+      "text": "Notebook > Clues\nDrag clues here.\n\nWheel: scroll notes"
+    },
+    {
+      "key": "board.doc.clue_index",
+      "source": "İPUCU {0} / {1}",
+      "text": "CLUE {0} / {1}"
+    },
+    {
+      "key": "board.doc.in_notebook",
+      "source": "DEFTERDE",
+      "text": "IN NOTEBOOK"
+    },
+    {
+      "key": "board.doc.missing",
+      "source": "EKSİK",
+      "text": "MISSING"
+    },
+    {
+      "key": "board.doc.found",
+      "source": "BULUNDU",
+      "text": "FOUND"
+    },
+    {
+      "key": "board.doc.ready_in_nb",
+      "source": "Bu bilgi defterinde hazır.\nKartı buraya sürükle.",
+      "text": "This clue is ready in your notebook.\nDrag the card here."
+    },
+    {
+      "key": "board.doc.not_found_yet",
+      "source": "Henüz bulunmadı.\nKitaplarda bu hedefin ipucunu ara.",
+      "text": "Not found yet.\nSearch the books for this target's clue."
+    },
+    {
+      "key": "board.doc.open_docs",
+      "source": "BELGELERİ AÇ",
+      "text": "OPEN DOCUMENTS"
+    },
+    {
+      "key": "board.doc.collapse_docs",
+      "source": "BELGELERİ TOPLA",
+      "text": "COLLAPSE DOCUMENTS"
+    },
+    {
+      "key": "board.doc.goal_header",
+      "source": "HEDEF / {0}",
+      "text": "TARGET / {0}"
+    },
+    {
+      "key": "board.doc.drop_goal_board",
+      "source": "HEDEFİ TAHTAYA BIRAK",
+      "text": "DROP TARGET ON BOARD"
+    },
+    {
+      "key": "board.doc.compare_records",
+      "source": "Kayıtları karşılaştır.",
+      "text": "Compare the records."
+    },
+    {
+      "key": "board.doc.nb_goals_path",
+      "source": "Defter > Hedefler",
+      "text": "Notebook > Targets"
+    },
+    {
+      "key": "board.formula.double_bond",
+      "source": "{0}\nÇİFT BAĞ (=)",
+      "text": "{0}\nDOUBLE BOND (=)"
+    },
+    {
+      "key": "board.mgr.fb_drop_goal_slot",
+      "source": "Hedef şemasını sağ üstteki HEDEF yuvasına bırak.",
+      "text": "Drop the target diagram into the TARGET slot at the top right."
+    },
+    {
+      "key": "board.mgr.fb_drop_clue_area",
+      "source": "Bilgi notunu sağdaki BİLGİLER alanına bırak.",
+      "text": "Drop the clue note into the CLUES area on the right."
+    },
+    {
+      "key": "board.mgr.fb_drop_part_board",
+      "source": "Bu parçayı sağdaki belge yuvalarına değil, kara tahtaya bırak.",
+      "text": "Drop this part onto the chalkboard, not into the document slots on the right."
+    },
+    {
+      "key": "board.mgr.fb_only_goal_slot",
+      "source": "HEDEF yuvasına yalnız hedef şeması bırakılabilir.",
+      "text": "Only a target diagram can be dropped into the TARGET slot."
+    },
+    {
+      "key": "board.mgr.fb_goal_placed",
+      "source": "Hedef şeması yerleştirildi. Önce sağdaki BİLGİLER alanını tamamla.",
+      "text": "Target diagram placed. Complete the CLUES area on the right first."
+    },
+    {
+      "key": "board.mgr.fb_only_clue_area",
+      "source": "BİLGİLER alanına yalnız kural ve ipucu notları bırakılabilir.",
+      "text": "Only rule and clue notes can be dropped into the CLUES area."
+    },
+    {
+      "key": "board.mgr.fb_clue_pinned",
+      "source": "Kayıt panoya sabitlendi.",
+      "text": "Record pinned to the board."
+    },
+    {
+      "key": "board.mgr.fb_select_goal_first",
+      "source": "Önce ilgili HEDEF şemasını sağ üst yuvaya yerleştir.",
+      "text": "First place the relevant TARGET diagram into the top-right slot."
+    },
+    {
+      "key": "board.mgr.fb_clue_wrong_goal",
+      "source": "Bu bilgi {0} hedefine ait. Önce o hedefi seç.",
+      "text": "This clue belongs to target {0}. Select that target first."
+    },
+    {
+      "key": "board.mgr.fb_clue_already_placed",
+      "source": "Bu bilgi zaten tahtadaki BİLGİLER alanında.",
+      "text": "This clue is already in the CLUES area on the board."
+    },
+    {
+      "key": "board.mgr.fb_clue_added",
+      "source": "Bilgi tahtaya eklendi.",
+      "text": "Clue added to the board."
+    },
+    {
+      "key": "board.mgr.fb_board_full",
+      "source": "Tahta dolu. Sağ tık ile bir parçayı kaldırabilirsin.",
+      "text": "The board is full. Right-click a part to remove it."
+    },
+    {
+      "key": "board.mgr.fb_part_placed",
+      "source": "Parça tahtaya yerleştirildi. Uçlardan çizerek bağ kur.",
+      "text": "Part placed on the board. Draw between nodes to connect them."
+    },
+    {
+      "key": "board.mgr.fb_bond_removed",
+      "source": "Bağ silindi.",
+      "text": "Bond removed."
+    },
+    {
+      "key": "board.mgr.fb_part_removed",
+      "source": "Parça tahtadan kaldırıldı.",
+      "text": "Part removed from the board."
+    },
+    {
+      "key": "board.mgr.fb_double_bond_not_supported",
+      "source": "Bu parçalar çift bağ desteklemiyor.",
+      "text": "These parts do not support a double bond."
+    },
+    {
+      "key": "board.mgr.fb_already_double_bond",
+      "source": "Bu iki parça arasında zaten çift bağ var.",
+      "text": "There is already a double bond between these two parts."
+    },
+    {
+      "key": "board.mgr.fb_already_bonded",
+      "source": "Bu iki parça arasında zaten bağ var.",
+      "text": "There is already a bond between these two parts."
+    },
+    {
+      "key": "board.mgr.fb_no_free_slot",
+      "source": "Seçilen parçalarda yeni bağ için boş uç yok.",
+      "text": "No free node available for a new bond on the selected parts."
+    },
+    {
+      "key": "board.mgr.fb_double_bond_created",
+      "source": "Çift bağ kuruldu (=).",
+      "text": "Double bond created (=)."
+    },
+    {
+      "key": "board.mgr.fb_bond_created",
+      "source": "Bağ kuruldu.",
+      "text": "Bond created."
+    },
+    {
+      "key": "exp.btn.measure",
+      "source": "DENEYİ ÖLÇ",
+      "text": "MEASURE EXPERIMENT"
+    },
+    {
+      "key": "exp.card.measurement_title",
+      "source": "ÖLÇÜM / {0}",
+      "text": "MEASUREMENT / {0}"
+    },
+    {
+      "key": "exp.card.measurement_sub",
+      "source": "Deney sonucu • Değer {0}",
+      "text": "Experiment result • Value {0}"
+    },
+    {
+      "key": "exp.card.measurement_desc",
+      "source": "Bu ölçüm kartını defterin Ölçümler bölümüne veya doğrudan Turing'in sol klavyesindeki yuvaya sürükle.",
+      "text": "Drag this measurement card to the Measurements section of the notebook or directly into the slot on the left keyboard of the Turing machine."
+    },
+    {
+      "key": "exp.status.verified_progress",
+      "source": "DENEY ONAYLANDI / {0}/{1} hedef tamamlandı.",
+      "text": "EXPERIMENT VERIFIED / {0}/{1} targets completed."
+    },
+    {
+      "key": "exp.status.no_part",
+      "source": "Tahtada parça yok. Defterden parça sürükleyip bağ kur.",
+      "text": "No parts on the board. Drag parts from the notebook and connect them."
+    },
+    {
+      "key": "exp.status.card_ready",
+      "source": "Ölçüm kartı hazır. Kartı deftere veya Turing'deki sol yuvaya sürükle.",
+      "text": "Measurement card ready. Drag the card to the notebook or the left slot on the Turing machine."
+    },
+    {
+      "key": "exp.sim.place_parts",
+      "source": "Defterden parçaları tahtaya bırak ve uçlarını birbirine bağla.",
+      "text": "Drop parts from the notebook onto the board and connect their nodes."
+    },
+    {
+      "key": "exp.sim.need_one_source",
+      "source": "Deneyde tam bir kaynak bulunmalı.",
+      "text": "The experiment must have exactly one source."
+    },
+    {
+      "key": "exp.sim.need_one_meter",
+      "source": "Deneyde tam bir ölçer bulunmalı.",
+      "text": "The experiment must have exactly one meter."
+    },
+    {
+      "key": "exp.sim.unconnected_part",
+      "source": "{0} bağlantısız kaldı.",
+      "text": "{0} is left unconnected."
+    },
+    {
+      "key": "exp.sim.part_count_range",
+      "source": "Parça sayısı {0}–{1} aralığında olmalı.",
+      "text": "Part count must be between {0} and {1}."
+    },
+    {
+      "key": "exp.sim.sample_count_range",
+      "source": "Numune sayısı {0}–{1} aralığında olmalı.",
+      "text": "Sample count must be between {0} and {1}."
+    },
+    {
+      "key": "exp.sim.part_limit_range",
+      "source": "{0} adedi {1}–{2} aralığında olmalı.",
+      "text": "{0} count must be between {1} and {2}."
+    },
+    {
+      "key": "exp.sim.open_input",
+      "source": "{0} üzerinde açık giriş var.",
+      "text": "{0} has an open input."
+    },
+    {
+      "key": "exp.sim.open_output",
+      "source": "{0} üzerinde açık çıkış var.",
+      "text": "{0} has an open output."
+    },
+    {
+      "key": "exp.sim.cycle_detected",
+      "source": "Akışta döngü var; sinyal ileri doğru akmalı.",
+      "text": "There is a loop in the flow; the signal must flow forward."
+    },
+    {
+      "key": "exp.sim.meter_no_signal",
+      "source": "Ölçere ulaşan bir akış yok.",
+      "text": "No flow reaches the meter."
+    },
+    {
+      "key": "exp.sim.depth_exceeded",
+      "source": "Hat derinliği izin verilen sınırı aşıyor.",
+      "text": "Line depth exceeds the allowed limit."
+    },
+    {
+      "key": "exp.sim.trace_Ready",
+      "source": "Ölçüm izi üretildi.",
+      "text": "Measurement trace generated."
+    },
+    {
+      "key": "exp.sim.Select_goal_match",
+      "source": "Bir hedef seçildiğinde ölçüm izi hedefle karşılaştırılır.",
+      "text": "When a target is selected, the measurement trace is compared against the target."
+    },
+    {
+      "key": "exp.sim.trace_matched",
+      "source": "Ölçüm izi hedef kayıtla örtüştü.",
+      "text": "Measurement trace matched the target record."
+    },
+    {
+      "key": "exp.sim.trace_mismatch",
+      "source": "Ölçüm izi hedef kayıttan farklı. Bağları ve kullanılan parçaları gözden geçir.",
+      "text": "Measurement trace differs from the target record. Review your bonds and parts."
+    },
+    {
+      "key": "exp.col.place_parts",
+      "source": "Defterden sıvı, pigment ve işlem parçalarını tahtaya bırak.",
+      "text": "Drop fluid, pigment, and processing parts from the notebook onto the board."
+    },
+    {
+      "key": "exp.col.need_fluid_source",
+      "source": "Deneyde en az bir Taşıyıcı Sıvı kaynağı bulunmalı.",
+      "text": "The experiment must include at least one Carrier Fluid source."
+    },
+    {
+      "key": "exp.col.need_pigment",
+      "source": "Karışıma renk vermek için en az bir pigment kaynağı bağla.",
+      "text": "Connect at least one pigment source to color the mixture."
+    },
+    {
+      "key": "exp.col.need_one_analyzer",
+      "source": "Deneyde tam bir Karışım Ölçer bulunmalı.",
+      "text": "The experiment must have exactly one Mixture Analyzer."
+    },
+    {
+      "key": "exp.col.pigment_count_range",
+      "source": "Pigment kaynağı sayısı {0}–{1} aralığında olmalı.",
+      "text": "Pigment source count must be between {0} and {1}."
+    },
+    {
+      "key": "exp.col.cycle_detected",
+      "source": "Karışım hattında döngü var; akış ileri doğru gitmeli.",
+      "text": "There is a loop in the mixture line; flow must move forward."
+    },
+    {
+      "key": "exp.col.analyzer_no_flow",
+      "source": "Karışım Ölçere ulaşan bir sıvı yok.",
+      "text": "No fluid reaches the Mixture Analyzer."
+    },
+    {
+      "key": "exp.col.mixture_measured",
+      "source": "Karışım ölçüldü.",
+      "text": "Mixture measured."
+    },
+    {
+      "key": "exp.col.select_goal_compare",
+      "source": "Bir hedef seçildiğinde karışım hedefle karşılaştırılır.",
+      "text": "When a target is selected, the mixture is compared against the target."
+    },
+    {
+      "key": "exp.col.mixture_matched",
+      "source": "Karışım rengi, yoğunluğu ve miktarı hedefle örtüştü.",
+      "text": "Mixture color, density, and quantity matched the target."
+    },
+    {
+      "key": "exp.col.mismatch_color",
+      "source": "Renk oranı hedeften farklı.",
+      "text": "Color ratio differs from the target."
+    },
+    {
+      "key": "exp.col.mismatch_density",
+      "source": "Yoğunluk hedeften farklı.",
+      "text": "Density differs from the target."
+    },
+    {
+      "key": "exp.col.mismatch_volume",
+      "source": "Toplam miktar hedeften farklı.",
+      "text": "Total quantity differs from the target."
+    },
+    {
+      "key": "exp.mixture.readout_format",
+      "source": "Yoğunluk: {0:P0} · Miktar: {1:0.##} doz\nPigment K/Y/M: {2:P0} / {3:P0} / {4:P0}",
+      "text": "Density: {0:P0} · Quantity: {1:0.##} doses\nPigment R/G/B: {2:P0} / {3:P0} / {4:P0}"
+    },
+    {
+      "key": "exp.mixture.label",
+      "source": "KARIŞIM",
+      "text": "MIXTURE"
+    },
+    {
+      "key": "shelf.1.upper",
+      "source": "RAF 1",
+      "text": "SHELF 1"
+    },
+    {
+      "key": "shelf.2.upper",
+      "source": "RAF 2",
+      "text": "SHELF 2"
+    },
+    {
+      "key": "shelf.3.upper",
+      "source": "RAF 3",
+      "text": "SHELF 3"
+    },
+    {
+      "key": "shelf.4.upper",
+      "source": "RAF 4",
+      "text": "SHELF 4"
+    },
+    {
+      "key": "shelf.5.upper",
+      "source": "RAF 5",
+      "text": "SHELF 5"
+    },
+    {
+      "key": "shelf.6.upper",
+      "source": "RAF 6",
+      "text": "SHELF 6"
+    },
+    {
+      "key": "shelf.1",
+      "source": "Raf 1",
+      "text": "Shelf 1"
+    },
+    {
+      "key": "shelf.2",
+      "source": "Raf 2",
+      "text": "Shelf 2"
+    },
+    {
+      "key": "shelf.3",
+      "source": "Raf 3",
+      "text": "Shelf 3"
+    },
+    {
+      "key": "shelf.4",
+      "source": "Raf 4",
+      "text": "Shelf 4"
+    },
+    {
+      "key": "shelf.5",
+      "source": "Raf 5",
+      "text": "Shelf 5"
+    },
+    {
+      "key": "shelf.6",
+      "source": "Raf 6",
+      "text": "Shelf 6"
+    },
+    {
+      "key": "shelf.research_desk",
+      "source": "Araştırma masası",
+      "text": "Research Desk"
+    },
+    {
+      "key": "shelf.research_desk_upper",
+      "source": "ARAŞTIRMA MASASI",
+      "text": "RESEARCH DESK"
+    },
+    {
+      "key": "book.test.dizin",
+      "source": "DİZİN",
+      "text": "INDEX"
+    },
+    {
+      "key": "book.test.explanation",
+      "source": "Bu kitapta deney kayıtları bulunur.",
+      "text": "This book contains experiment records."
+    },
+    {
+      "key": "book.title.deneycinin_el_kitabi",
+      "source": "Deneycinin El Kitabı",
+      "text": "Experimenter's Handbook"
+    },
+    {
+      "key": "book.title.laboratuvarda_ilk_adim",
+      "source": "Laboratuvarda İlk Adım",
+      "text": "First Steps in the Lab"
+    },
+    {
+      "key": "book.title.kaynaklar_ve_olcerler",
+      "source": "Kaynaklar ve Ölçerler",
+      "text": "Sources and Meters"
+    },
+    {
+      "key": "book.title.akisin_temelleri",
+      "source": "Akışın Temelleri",
+      "text": "Fundamentals of Flow"
+    },
+    {
+      "key": "book.title.deney_guvenligi",
+      "source": "Deney Güvenliği",
+      "text": "Experiment Safety"
+    },
+    {
+      "key": "book.title.olcumun_izinde",
+      "source": "Ölçümün İzinde",
+      "text": "Tracing the Measurement"
+    },
+    {
+      "key": "book.title.aygitlarin_dili",
+      "source": "Aygıtların Dili",
+      "text": "Language of Instruments"
+    },
+    {
+      "key": "book.title.gozlem_ve_kayit",
+      "source": "Gözlem ve Kayıt",
+      "text": "Observation and Logging"
+    },
+    {
+      "key": "book.title.deney_masasi",
+      "source": "Deney Masası",
+      "text": "The Experiment Bench"
+    },
+    {
+      "key": "book.title.arastirmacinin_defteri",
+      "source": "Araştırmacının Defteri",
+      "text": "Researcher's Journal"
+    },
+    {
+      "key": "book.title.numunelerin_hafizasi",
+      "source": "Numunelerin Hafızası",
+      "text": "Memory of Samples"
+    },
+    {
+      "key": "book.title.ince_izler_atlasi",
+      "source": "İnce İzler Atlası",
+      "text": "Atlas of Fine Traces"
+    },
+    {
+      "key": "book.title.tepkinin_bicimi",
+      "source": "Tepkinin Biçimi",
+      "text": "Shape of the Response"
+    },
+    {
+      "key": "book.title.geciken_yanitlar",
+      "source": "Geciken Yanıtlar",
+      "text": "Delayed Responses"
+    },
+    {
+      "key": "book.title.yankili_numuneler",
+      "source": "Yankılı Numuneler",
+      "text": "Echoing Samples"
+    },
+    {
+      "key": "book.title.kristallerin_yaniti",
+      "source": "Kristallerin Yanıtı",
+      "text": "Response of Crystals"
+    },
+    {
+      "key": "book.title.kisa_ve_uzun_tepkiler",
+      "source": "Kısa ve Uzun Tepkiler",
+      "text": "Short and Long Responses"
+    },
+    {
+      "key": "book.title.numune_portreleri",
+      "source": "Numune Portreleri",
+      "text": "Sample Portraits"
+    },
+    {
+      "key": "book.title.izlerin_kokeni",
+      "source": "İzlerin Kökeni",
+      "text": "Origin of Traces"
+    },
+    {
+      "key": "book.title.sinyal_koleksiyonu",
+      "source": "Sinyal Koleksiyonu",
+      "text": "Signal Collection"
+    },
+    {
+      "key": "book.title.iletimin_yollari",
+      "source": "İletimin Yolları",
+      "text": "Paths of Transmission"
+    },
+    {
+      "key": "book.title.zaman_ve_gecikme",
+      "source": "Zaman ve Gecikme",
+      "text": "Time and Delay"
+    },
+    {
+      "key": "book.title.sonuk_tepkiler",
+      "source": "Sönük Tepkiler",
+      "text": "Faded Responses"
+    },
+    {
+      "key": "book.title.ayrilan_hatlar",
+      "source": "Ayrılan Hatlar",
+      "text": "Diverging Lines"
+    },
+    {
+      "key": "book.title.birlesen_izler",
+      "source": "Birleşen İzler",
+      "text": "Converging Traces"
+    },
+    {
+      "key": "book.title.uyarinin_yolculugu",
+      "source": "Uyarının Yolculuğu",
+      "text": "Journey of the Stimulus"
+    },
+    {
+      "key": "book.title.devre_gunlukleri",
+      "source": "Devre Günlükleri",
+      "text": "Circuit Logs"
+    },
+    {
+      "key": "book.title.tepkinin_donusumu",
+      "source": "Tepkinin Dönüşümü",
+      "text": "Transformation of Response"
+    },
+    {
+      "key": "book.title.hatlar_arasinda",
+      "source": "Hatlar Arasında",
+      "text": "Between the Lines"
+    },
+    {
+      "key": "book.title.uzak_istasyon_kayitlari",
+      "source": "Uzak İstasyon Kayıtları",
+      "text": "Remote Station Logs"
+    },
+    {
+      "key": "book.title.pigment_atlasi",
+      "source": "Pigment Atlası",
+      "text": "Pigment Atlas"
+    },
+    {
+      "key": "book.title.rengin_bilesenleri",
+      "source": "Rengin Bileşenleri",
+      "text": "Components of Color"
+    },
+    {
+      "key": "book.title.kirmizidan_maviye",
+      "source": "Kırmızıdan Maviye",
+      "text": "From Red to Blue"
+    },
+    {
+      "key": "book.title.yesilin_kokeni",
+      "source": "Yeşilin Kökeni",
+      "text": "Origin of Green"
+    },
+    {
+      "key": "book.title.boyalarin_hafizasi",
+      "source": "Boyaların Hafızası",
+      "text": "Memory of Dyes"
+    },
+    {
+      "key": "book.title.renkli_maddeler",
+      "source": "Renkli Maddeler",
+      "text": "Colored Substances"
+    },
+    {
+      "key": "book.title.kaplama_numuneleri",
+      "source": "Kaplama Numuneleri",
+      "text": "Coating Samples"
+    },
+    {
+      "key": "book.title.pigment_gunlukleri",
+      "source": "Pigment Günlükleri",
+      "text": "Pigment Diaries"
+    },
+    {
+      "key": "book.title.rengin_izinde",
+      "source": "Rengin İzinde",
+      "text": "On the Trail of Color"
+    },
+    {
+      "key": "book.title.malzeme_koleksiyonu",
+      "source": "Malzeme Koleksiyonu",
+      "text": "Material Collection"
+    },
+    {
+      "key": "book.title.maddenin_kararsiz_halleri",
+      "source": "Maddenin Kararsız Halleri",
+      "text": "Unstable States of Matter"
+    },
+    {
+      "key": "book.title.karisimin_dengesi",
+      "source": "Karışımın Dengesi",
+      "text": "Balance of the Mixture"
+    },
+    {
+      "key": "book.title.cozucu_gunlukleri",
+      "source": "Çözücü Günlükleri",
+      "text": "Solvent Logs"
+    },
+    {
+      "key": "book.title.yogunlugun_izinde",
+      "source": "Yoğunluğun İzinde",
+      "text": "Tracing Density"
+    },
+    {
+      "key": "book.title.tasiyicinin_rolu",
+      "source": "Taşıyıcının Rolü",
+      "text": "Role of the Carrier"
+    },
+    {
+      "key": "book.title.seyreltme_sanati",
+      "source": "Seyreltme Sanatı",
+      "text": "The Art of Dilution"
+    },
+    {
+      "key": "book.title.birlesen_karisimlar",
+      "source": "Birleşen Karışımlar",
+      "text": "Merging Mixtures"
+    },
+    {
+      "key": "book.title.akiskanlarin_davranisi",
+      "source": "Akışkanların Davranışı",
+      "text": "Behavior of Fluids"
+    },
+    {
+      "key": "book.title.kapta_kalanlar",
+      "source": "Kapta Kalanlar",
+      "text": "Residues in the Vessel"
+    },
+    {
+      "key": "book.title.donusum_notlari",
+      "source": "Dönüşüm Notları",
+      "text": "Transformation Notes"
+    },
+    {
+      "key": "book.title.numune_atlasi",
+      "source": "Numune Atlası",
+      "text": "Sample Atlas"
+    },
+    {
+      "key": "book.title.islem_rehberi",
+      "source": "İşlem Rehberi",
+      "text": "Processing Guide"
+    },
+    {
+      "key": "book.title.arastirma_gunlugu",
+      "source": "Araştırma Günlüğü",
+      "text": "Research Journal"
+    },
+    {
+      "key": "part.common.double_bond_suffix",
+      "source": " [ÇİFT BAĞ]",
+      "text": " [DOUBLE BOND]"
+    },
+    {
+      "key": "part.rule.double_bond.title",
+      "source": "OPERASYON / ÇİFT BAĞ",
+      "text": "OPERATION / DOUBLE BOND"
+    },
+    {
+      "key": "part.rule.double_bond.desc",
+      "source": "Yuvalar doğrudan kullanılabilir. (=) çift bağ yuvasıdır. Aynı iki uç arasında ikinci kez çiz: 1/2 > 2/2. Mevcut bağı silme.",
+      "text": "Slots can be used directly. (=) is a double-bond slot. Draw a second time between the same two nodes: 1/2 > 2/2. Do not erase the existing bond."
+    },
+    {
+      "key": "sig.pulse_source.title",
+      "source": "Atım Kaynağı",
+      "text": "Pulse Source"
+    },
+    {
+      "key": "sig.pulse_source.sym",
+      "source": "ATIM",
+      "text": "PULSE"
+    },
+    {
+      "key": "sig.pulse_source.sub",
+      "source": "Başlangıç darbesi",
+      "text": "Initial pulse"
+    },
+    {
+      "key": "sig.pulse_source.desc",
+      "source": "Deneye tek bir temiz başlangıç darbesi verir. Yalnızca çıkış ucu vardır.",
+      "text": "Supplies a single clean initial pulse to the experiment. Has an output node only."
+    },
+    {
+      "key": "sig.sample_12.title",
+      "source": "Numune 12",
+      "text": "Sample 12"
+    },
+    {
+      "key": "sig.sample_12.sub",
+      "source": "Erken tek iz",
+      "text": "Early single trace"
+    },
+    {
+      "key": "sig.sample_12.desc",
+      "source": "Gelen darbeyi erken konumda orta şiddetli tek bir tepkiye çevirir.",
+      "text": "Converts the incoming pulse into an early, medium-intensity single response."
+    },
+    {
+      "key": "sig.meter.title",
+      "source": "Kayıt Ölçer",
+      "text": "Recording Meter"
+    },
+    {
+      "key": "sig.meter.sym",
+      "source": "ÖLÇ",
+      "text": "MTR"
+    },
+    {
+      "key": "sig.meter.sub",
+      "source": "Son iz ekranı",
+      "text": "Final trace screen"
+    },
+    {
+      "key": "sig.meter.desc",
+      "source": "Kendisine ulaşan tüm kolları toplar ve deneyin son izini ekranda gösterir.",
+      "text": "Collects all branches reaching it and displays the final trace of the experiment on screen."
+    },
+    {
+      "key": "sig.splitter.title",
+      "source": "Dağıtıcı",
+      "text": "Splitter"
+    },
+    {
+      "key": "sig.splitter.sym",
+      "source": "DAĞ",
+      "text": "SPL"
+    },
+    {
+      "key": "sig.splitter.sub",
+      "source": "1 giriş, 2 çıkış",
+      "text": "1 input, 2 outputs"
+    },
+    {
+      "key": "sig.splitter.desc",
+      "source": "Gelen akışı iki ayrı kola ayırır. İki çıkış ucu da kullanılmalıdır.",
+      "text": "Splits the incoming flow into two separate branches. Both output nodes must be used."
+    },
+    {
+      "key": "sig.shifter.title",
+      "source": "Geciktirici",
+      "text": "Delay Unit"
+    },
+    {
+      "key": "sig.shifter.sym",
+      "source": "GEC",
+      "text": "DLY"
+    },
+    {
+      "key": "sig.shifter.sub",
+      "source": "İzi sağa kaydırır",
+      "text": "Shifts trace right"
+    },
+    {
+      "key": "sig.shifter.desc",
+      "source": "Gelen izi zaman ekseninde ileri taşır; tepe yüksekliğini korur.",
+      "text": "Moves the incoming trace forward along the time axis while preserving peak height."
+    },
+    {
+      "key": "sig.attenuator.title",
+      "source": "Sönümleyici",
+      "text": "Attenuator"
+    },
+    {
+      "key": "sig.attenuator.sym",
+      "source": "SÖN",
+      "text": "ATT"
+    },
+    {
+      "key": "sig.attenuator.sub",
+      "source": "Şiddeti düşürür",
+      "text": "Reduces intensity"
+    },
+    {
+      "key": "sig.attenuator.desc",
+      "source": "Gelen izin yüksekliğini azaltır; konumunu değiştirmez.",
+      "text": "Reduces the height of the incoming trace without changing its position."
+    },
+    {
+      "key": "sig.sample_34.title",
+      "source": "Numune 34",
+      "text": "Sample 34"
+    },
+    {
+      "key": "sig.sample_34.sub",
+      "source": "Geç baskın iz",
+      "text": "Late dominant trace"
+    },
+    {
+      "key": "sig.sample_34.desc",
+      "source": "Erken zayıf bir kıpırtı ve geç konumda güçlü bir tepe üretir.",
+      "text": "Produces an early faint ripple and a strong peak at a late position."
+    },
+    {
+      "key": "sig.sample_08.title",
+      "source": "Numune 08",
+      "text": "Sample 08"
+    },
+    {
+      "key": "sig.sample_08.sub",
+      "source": "Merkez kubbe",
+      "text": "Center dome"
+    },
+    {
+      "key": "sig.sample_08.desc",
+      "source": "Ölçüm ekranının ortasında geniş ve dengeli bir kubbe izi bırakır.",
+      "text": "Leaves a wide, balanced dome trace in the middle of the measurement screen."
+    },
+    {
+      "key": "sig.sample_21.title",
+      "source": "Numune 21",
+      "text": "Sample 21"
+    },
+    {
+      "key": "sig.sample_21.sub",
+      "source": "İkiz tepki",
+      "text": "Twin response"
+    },
+    {
+      "key": "sig.sample_21.desc",
+      "source": "Tek darbeden birbirine bakan iki ayrı küçük tepe üretir.",
+      "text": "Produces two separate small peaks facing each other from a single pulse."
+    },
+    {
+      "key": "sig.sample_46.title",
+      "source": "Numune 46",
+      "text": "Sample 46"
+    },
+    {
+      "key": "sig.sample_46.sub",
+      "source": "Sert iğne iz",
+      "text": "Sharp needle trace"
+    },
+    {
+      "key": "sig.sample_46.desc",
+      "source": "Dar ve yüksek bir iğne tepki üretir; sönümleyici ile dengelenebilir.",
+      "text": "Produces a narrow, high needle response; can be balanced with an attenuator."
+    },
+    {
+      "key": "col.fluid_base.title",
+      "source": "Taşıyıcı Sıvı",
+      "text": "Carrier Fluid"
+    },
+    {
+      "key": "col.fluid_base.sym",
+      "source": "SIVI",
+      "text": "FLUID"
+    },
+    {
+      "key": "col.fluid_base.sub",
+      "source": "1 doz renksiz baz",
+      "text": "1 dose colorless base"
+    },
+    {
+      "key": "col.fluid_base.desc",
+      "source": "Deneye 1 doz renksiz sıvı verir. Pigmentlerle karışınca yoğunluğu dengeler.",
+      "text": "Supplies 1 dose of colorless fluid to the experiment. Balances density when mixed with pigments."
+    },
+    {
+      "key": "col.pigment_red.title",
+      "source": "Kırmızı Pigment",
+      "text": "Red Pigment"
+    },
+    {
+      "key": "col.pigment_red.sym",
+      "source": "KIRMIZI",
+      "text": "RED"
+    },
+    {
+      "key": "col.pigment_red.sub",
+      "source": "1 doz yoğun kırmızı",
+      "text": "1 dose dense red"
+    },
+    {
+      "key": "col.pigment_red.desc",
+      "source": "Akışa 1 doz tam yoğun kırmızı pigment verir.",
+      "text": "Supplies 1 dose of full-density red pigment to the flow."
+    },
+    {
+      "key": "col.pigment_green.title",
+      "source": "Yeşil Pigment",
+      "text": "Green Pigment"
+    },
+    {
+      "key": "col.pigment_green.sym",
+      "source": "YEŞİL",
+      "text": "GREEN"
+    },
+    {
+      "key": "col.pigment_green.sub",
+      "source": "1 doz yoğun yeşil",
+      "text": "1 dose dense green"
+    },
+    {
+      "key": "col.pigment_green.desc",
+      "source": "Akışa 1 doz tam yoğun yeşil pigment verir.",
+      "text": "Supplies 1 dose of full-density green pigment to the flow."
+    },
+    {
+      "key": "col.pigment_blue.title",
+      "source": "Mavi Pigment",
+      "text": "Blue Pigment"
+    },
+    {
+      "key": "col.pigment_blue.sym",
+      "source": "MAVİ",
+      "text": "BLUE"
+    },
+    {
+      "key": "col.pigment_blue.sub",
+      "source": "1 doz yoğun mavi",
+      "text": "1 dose dense blue"
+    },
+    {
+      "key": "col.pigment_blue.desc",
+      "source": "Akışa 1 doz tam yoğun mavi pigment verir.",
+      "text": "Supplies 1 dose of full-density blue pigment to the flow."
+    },
+    {
+      "key": "col.diluter.title",
+      "source": "Seyreltici",
+      "text": "Diluter"
+    },
+    {
+      "key": "col.diluter.sym",
+      "source": "SEYRELT",
+      "text": "DILUTE"
+    },
+    {
+      "key": "col.diluter.sub",
+      "source": "Yoğunluğu yarıya indirir",
+      "text": "Halves density"
+    },
+    {
+      "key": "col.diluter.desc",
+      "source": "Rengin oranını korur; karışımın yoğunluğunu yarıya düşürür.",
+      "text": "Preserves the color ratio while cutting the mixture's density in half."
+    },
+    {
+      "key": "col.concentrator.title",
+      "source": "Yoğunlaştırıcı",
+      "text": "Concentrator"
+    },
+    {
+      "key": "col.concentrator.sym",
+      "source": "YOĞUN",
+      "text": "CONC"
+    },
+    {
+      "key": "col.concentrator.sub",
+      "source": "Yoğunluğu artırır",
+      "text": "Increases density"
+    },
+    {
+      "key": "col.concentrator.desc",
+      "source": "Rengin oranını korur; seyrelmiş karışımın yoğunluğunu yükseltir.",
+      "text": "Preserves the color ratio while raising the density of a diluted mixture."
+    },
+    {
+      "key": "col.splitter.title",
+      "source": "Bölücü Kap",
+      "text": "Splitter Vessel"
+    },
+    {
+      "key": "col.splitter.sym",
+      "source": "İKİYE BÖL",
+      "text": "SPLIT"
+    },
+    {
+      "key": "col.splitter.sub",
+      "source": "Miktarı iki kola böler",
+      "text": "Splits quantity into two"
+    },
+    {
+      "key": "col.splitter.desc",
+      "source": "Gelen sıvıyı aynı renk ve yoğunlukla iki eşit yarım doza ayırır.",
+      "text": "Divides the incoming fluid into two equal half-doses with the same color and density."
+    },
+    {
+      "key": "col.mixer.title",
+      "source": "Karıştırıcı Kap",
+      "text": "Mixer Vessel"
+    },
+    {
+      "key": "col.mixer.sym",
+      "source": "KARIŞTIR",
+      "text": "MIX"
+    },
+    {
+      "key": "col.mixer.sub",
+      "source": "2 giriş, 1 çıkış",
+      "text": "2 inputs, 1 output"
+    },
+    {
+      "key": "col.mixer.desc",
+      "source": "İki koldan gelen sıvıları miktar ve yoğunluklarına göre tek kapta birleştirir.",
+      "text": "Combines fluids arriving from two branches into a single vessel according to their quantity and density."
+    },
+    {
+      "key": "col.analyzer.title",
+      "source": "Karışım Ölçer",
+      "text": "Mixture Analyzer"
+    },
+    {
+      "key": "col.analyzer.sym",
+      "source": "ANALİZ",
+      "text": "ANALYZE"
+    },
+    {
+      "key": "col.analyzer.sub",
+      "source": "Son karışım kabı",
+      "text": "Final mixture vessel"
+    },
+    {
+      "key": "col.analyzer.desc",
+      "source": "Kendisine ulaşan tüm sıvıları toplar; renk, yoğunluk ve miktarı ölçer.",
+      "text": "Collects all fluids reaching it and measures color, density, and quantity."
+    },
+    {
+      "key": "dist.conditions_title",
+      "source": "DENEYİN KOŞULLARI",
+      "text": "EXPERIMENT CONDITIONS"
+    },
+    {
+      "key": "dist.rules.signal_format",
+      "source": "Toplam parça: {0}–{1}. Numune: {2}–{3}. En fazla hat derinliği: {4}. Hedef: {5} görünür iz. Tek kaynak, tek ölçer; tüm uçlar işler durumda olmalı.",
+      "text": "Total parts: {0}–{1}. Samples: {2}–{3}. Max line depth: {4}. Target: {5} visible traces. Single source, single meter; all nodes must be active."
+    },
+    {
+      "key": "dist.rules.color_format",
+      "source": "Toplam parça: {0}–{1}. Numune: {2}–{3}. En fazla hat derinliği: {4}. Hedef: renk, yoğunluk ve miktar. Tek kaynak, tek ölçer; tüm uçlar işler durumda olmalı.",
+      "text": "Total parts: {0}–{1}. Samples: {2}–{3}. Max line depth: {4}. Target: color, density, and quantity. Single source, single meter; all nodes must be active."
+    },
+    {
+      "key": "dist.role.prefix_source",
+      "source": "Akışı buradan başlat. {0}",
+      "text": "Start the flow from here. {0}"
+    },
+    {
+      "key": "dist.role.prefix_sink",
+      "source": "Son akışı burada ölç. {0}",
+      "text": "Measure the final flow here. {0}"
+    },
+    {
+      "key": "dist.role.prefix_proc",
+      "source": "Gelen akışa uygulanır. {0}",
+      "text": "Applies to the incoming flow. {0}"
+    },
+    {
+      "key": "dist.role.suffix_one",
+      "source": "{0} Bu deneyde 1 adet.",
+      "text": "{0} 1 unit in this experiment."
+    },
+    {
+      "key": "dist.role.suffix_range",
+      "source": "{0} Bu deneyde {1}–{2} adet.",
+      "text": "{0} {1}–{2} units in this experiment."
+    },
+    {
+      "key": "dist.equip.title",
+      "source": "Kullanılabilir ekipman",
+      "text": "Available equipment"
+    },
+    {
+      "key": "dist.equip.list_format",
+      "source": "{0}. Aralıklar kullanılabilecek adetleri gösterir.",
+      "text": "{0}. Ranges show the usable quantities."
+    },
+    {
+      "key": "dist.biblio.header",
+      "source": "ARAŞTIRMA KAYNAKLARI",
+      "text": "RESEARCH SOURCES"
+    },
+    {
+      "key": "dist.toc.header",
+      "source": "İÇİNDEKİLER",
+      "text": "TABLE OF CONTENTS"
+    },
+    {
+      "key": "dist.toc.follow_biblio",
+      "source": "Bu ciltteki konular için hedef kaydının kaynakçasını takip et.",
+      "text": "Follow the target record's bibliography for topics in this volume."
+    },
+    {
+      "key": "dist.page.archive_record",
+      "source": "ARŞİV KAYDI",
+      "text": "ARCHIVE RECORD"
+    },
+    {
+      "key": "dist.page.archive_desc",
+      "source": "Bu yaprakta aranan deneye ait doğrudan veri yer almıyor.",
+      "text": "This sheet contains no direct data for the sought experiment."
+    },
+    {
+      "key": "dist.page.notes_ exist",
+      "source": "Bu sayfada araştırma notları var.",
+      "text": "There are research notes on this page."
+    },
+    {
+      "key": "dist.page.no_notes",
+      "source": "Bu sayfada bu deneye ait doğrudan bir kayıt yok.",
+      "text": "There is no direct record for this experiment on this page."
+    },
+    {
+      "key": "dist.filler.0.title",
+      "source": "Kalibrasyon Özeti",
+      "text": "Calibration Summary"
+    },
+    {
+      "key": "dist.filler.0.body",
+      "source": "Boş hat ölçümleri her vardiya başında sıfırlanır; sapma yalnızca numune bağlıyken dikkate alınır.",
+      "text": "Idle line readings are reset at the start of each shift; drift is considered only while a sample is connected."
+    },
+    {
+      "key": "dist.filler.1.title",
+      "source": "Cam Boru Temizliği",
+      "text": "Glass Tube Cleaning"
+    },
+    {
+      "key": "dist.filler.1.body",
+      "source": "Önceki deneyden kalan tortu, ikinci tepeyi olduğundan yüksek gösterebilir; bağlantıdan önce hattı arındır.",
+      "text": "Residue from a previous experiment may make the second peak appear higher than it is; purge the line before connecting."
+    },
+    {
+      "key": "dist.filler.2.title",
+      "source": "Arşiv Etiketi",
+      "text": "Archive Label"
+    },
+    {
+      "key": "dist.filler.2.body",
+      "source": "Raf numarası silinmiş defterler geçici olarak masa kaydına alındı; yalnızca mühürlü şemaları esas al.",
+      "text": "Notebooks with erased shelf numbers were temporarily logged at the desk; rely only on sealed diagrams."
+    },
+    {
+      "key": "dist.filler.3.title",
+      "source": "Bakım Notu",
+      "text": "Maintenance Note"
+    },
+    {
+      "key": "dist.filler.3.body",
+      "source": "Bakır uçlarda gevşeme görülürse ölçüm tekrar edilmeli; tek seferlik sıçramalar kayıt sayılmaz.",
+      "text": "If loosening is observed in copper terminals, repeat the measurement; one-off spikes do not count as records."
+    },
+    {
+      "key": "dist.filler.4.title",
+      "source": "Vardiya Devri",
+      "text": "Shift Handover"
+    },
+    {
+      "key": "dist.filler.4.body",
+      "source": "Gece vardiyası yalnızca tamamlanan sentezlerin kodlarını terminale işler; yarım şemalar dolapta saklanır.",
+      "text": "The night shift enters only completed synthesis codes into the terminal; partial diagrams are kept in the cabinet."
+    },
+    {
+      "key": "dist.filler.5.title",
+      "source": "Sıcaklık İzlemi",
+      "text": "Temperature Monitoring"
+    },
+    {
+      "key": "dist.filler.5.body",
+      "source": "Kazan dairesindeki basınç yükseldiğinde osiloskop taban çizgisi titrer; önce vanayı dengele.",
+      "text": "When boiler room pressure rises, the oscilloscope baseline trembles; balance the valve first."
+    },
+    {
+      "key": "puzzle.gecikmeli.title",
+      "source": "Gecikmeli Tek İz",
+      "text": "Delayed Single Trace"
+    },
+    {
+      "key": "puzzle.gecikmeli.sub",
+      "source": "Hedef kayıt • 1. deney",
+      "text": "Target record • Experiment 1"
+    },
+    {
+      "key": "puzzle.gecikmeli.desc",
+      "source": "Numune 12'nin erken tepkisini sağa kaydırarak hedef izle çakıştır.",
+      "text": "Shift Sample 12's early response to the right to align it with the target trace."
+    },
+    {
+      "key": "puzzle.gecikmeli.n1.title",
+      "source": "Kurulum sırası",
+      "text": "Setup order"
+    },
+    {
+      "key": "puzzle.gecikmeli.n1.body",
+      "source": "Atım Kaynağı tek başına iz üretmez; önce Numune 12'yi beslemeli.",
+      "text": "The Pulse Source produces no trace on its own; it must feed Sample 12 first."
+    },
+    {
+      "key": "puzzle.gecikmeli.n2.title",
+      "source": "Zaman farkı",
+      "text": "Time offset"
+    },
+    {
+      "key": "puzzle.gecikmeli.n2.body",
+      "source": "Numune 12'nin doğal tepkisi hedef izden daha erken görünür; ölçerden önce bir Geciktirici gerekir.",
+      "text": "Sample 12's natural response appears earlier than the target trace; a Delay Unit is required before the meter."
+    },
+    {
+      "key": "puzzle.cift_kayit.title",
+      "source": "Çift Kayıt",
+      "text": "Dual Recording"
+    },
+    {
+      "key": "puzzle.cift_kayit.sub",
+      "source": "Hedef kayıt • 2. deney",
+      "text": "Target record • Experiment 2"
+    },
+    {
+      "key": "puzzle.cift_kayit.desc",
+      "source": "Aynı numuneden hem erken ham tepkiyi hem de gecikmiş ve sönümlenmiş ikinci tepkiyi tek ölçerde topla.",
+      "text": "Collect both the early raw response and the delayed, attenuated second response from the same sample in a single meter."
+    },
+    {
+      "key": "puzzle.cift_kayit.n1.title",
+      "source": "İki kol",
+      "text": "Two branches"
+    },
+    {
+      "key": "puzzle.cift_kayit.n1.body",
+      "source": "Hedef izde iki ayrı tepe var; akış Dağıtıcı ile iki kola ayrılmalı ve iki kol da Kayıt Ölçer'e dönmeli.",
+      "text": "The target trace has two distinct peaks; the flow must split into two branches via a Splitter and both branches must return to the Recording Meter."
+    },
+    {
+      "key": "puzzle.cift_kayit.n2.title",
+      "source": "İkinci kolun şekli",
+      "text": "Shape of the second branch"
+    },
+    {
+      "key": "puzzle.cift_kayit.n2.body",
+      "source": "Sağdaki tepe daha geç ve daha alçaktır. Kolların birinde hem Geciktirici hem Sönümleyici bulunmalıdır.",
+      "text": "The right peak is later and lower. One of the branches must contain both a Delay Unit and an Attenuator."
+    },
+    {
+      "key": "puzzle.cift_kayit.n3.title",
+      "source": "Numune sayısı",
+      "text": "Sample count"
+    },
+    {
+      "key": "puzzle.cift_kayit.n3.body",
+      "source": "Bu deneyde yalnızca bir numune kullanılır; Numune 34 hedef izle uyuşmaz.",
+      "text": "Only one sample is used in this experiment; Sample 34 does not match the target trace."
+    },
+    {
+      "key": "puzzle. capraz_yanki.title",
+      "source": "Çapraz Yankı",
+      "text": "Cross Echo"
+    },
+    {
+      "key": "puzzle.capraz_yanki.sub",
+      "source": "Hedef kayıt • 3. deney",
+      "text": "Target record • Experiment 3"
+    },
+    {
+      "key": "puzzle.capraz_yanki.desc",
+      "source": "İki farklı numuneyi ayrı kollarda işle: erken tepkiyi geciktir, geç baskın tepkiyi sönümle ve aynı ölçerde birleştir.",
+      "text": "Process two different samples on separate branches: delay the early response, attenuate the late dominant response, and combine them in the same meter."
+    },
+    {
+      "key": "puzzle.capraz_yanki.n1.title",
+      "source": "Ayrı numuneler",
+      "text": "Separate samples"
+    },
+    {
+      "key": "puzzle.capraz_yanki.n1.body",
+      "source": "Dağıtıcıdan çıkan iki kol farklı numuneleri beslemelidir: biri Numune 12, diğeri Numune 34.",
+      "text": "The two branches leaving the Splitter must feed different samples: one Sample 12, the other Sample 34."
+    },
+    {
+      "key": "puzzle.capraz_yanki.n2.title",
+      "source": "Orta tepe",
+      "text": "Middle peak"
+    },
+    {
+      "key": "puzzle.capraz_yanki.n2.body",
+      "source": "Numune 12 geciktirildiğinde hedef izdeki orta tepeyi oluşturur.",
+      "text": "When Sample 12 is delayed, it forms the middle peak in the target trace."
+    },
+    {
+      "key": "puzzle.capraz_yanki.n3.title",
+      "source": "Geç tepe",
+      "text": "Late peak"
+    },
+    {
+      "key": "puzzle.capraz_yanki.n3.body",
+      "source": "Numune 34'ün geç tepesi fazla yüksektir; ölçere girmeden önce Sönümleyici'den geçmelidir.",
+      "text": "Sample 34's late peak is too high; it must pass through an Attenuator before entering the meter."
+    },
+    {
+      "key": "puzzle.yumusak_merkez.title",
+      "source": "Yumuşak Merkez",
+      "text": "Soft Center"
+    },
+    {
+      "key": "puzzle.yumusak_merkez.sub",
+      "source": "Hedef kayıt • Ek deney A",
+      "text": "Target record • Extra Experiment A"
+    },
+    {
+      "key": "puzzle.yumusak_merkez.desc",
+      "source": "Merkez kubbe üreten numuneyi sönümleyerek hedef izdeki yumuşak eğriyi elde et.",
+      "text": "Attenuate the sample that produces a center dome to obtain the soft curve in the target trace."
+    },
+    {
+      "key": "puzzle.yumusak_merkez.n1.title",
+      "source": "Doğru numune",
+      "text": "Correct sample"
+    },
+    {
+      "key": "puzzle.yumusak_merkez.n1.body",
+      "source": "Hedef iz tek ve geniş bir merkez kubbedir; bunu Numune 08 üretir.",
+      "text": "The target trace is a single wide center dome; Sample 08 produces this."
+    },
+    {
+      "key": "puzzle.yumusak_merkez.n2.title",
+      "source": "Şiddet ayarı",
+      "text": "Intensity adjustment"
+    },
+    {
+      "key": "puzzle.yumusak_merkez.n2.body",
+      "source": "Kubbe konumu doğrudur; geciktirme gerekmez. Yalnızca Sönümleyici ile yüksekliği düşür.",
+      "text": "The dome position is already right; no delay is needed. Only lower its height with an Attenuator."
+    },
+    {
+      "key": "puzzle.ikiz_kayma.title",
+      "source": "İkiz Kayma",
+      "text": "Twin Shift"
+    },
+    {
+      "key": "puzzle.ikiz_kayma.sub",
+      "source": "Hedef kayıt • Ek deney B",
+      "text": "Target record • Extra Experiment B"
+    },
+    {
+      "key": "puzzle.ikiz_kayma.desc",
+      "source": "İkiz tepki veren numuneyi geciktirerek iki tepeyi hedef konumuna taşı.",
+      "text": "Delay the twin-response sample to move both peaks to the target position."
+    },
+    {
+      "key": "puzzle.ikiz_kayma.n1.title",
+      "source": "İkiz iz",
+      "text": "Twin trace"
+    },
+    {
+      "key": "puzzle.ikiz_kayma.n1.body",
+      "source": "Dağıtıcı kullanmadan iki küçük tepe veren parça Numune 21'dir.",
+      "text": "The part that produces two small peaks without using a Splitter is Sample 21."
+    },
+    {
+      "key": "puzzle.ikiz_kayma.n2.title",
+      "source": "Sağa taşıma",
+      "text": "Shifting right"
+    },
+    {
+      "key": "puzzle.ikiz_kayma.n2.body",
+      "source": "Tepelerin boyu korunmalı; Numune 21'den sonra Geciktirici bağla.",
+      "text": "Peak heights must be preserved; connect a Delay Unit after Sample 21."
+    },
+    {
+      "key": "puzzle. cift_igne.title",
+      "source": "Çift İğne",
+      "text": "Double Needle"
+    },
+    {
+      "key": "puzzle.cift_igne.sub",
+      "source": "Hedef kayıt • Ek deney C",
+      "text": "Target record • Extra Experiment C"
+    },
+    {
+      "key": "puzzle.cift_igne.desc",
+      "source": "Sert iğne tepkisini iki kola ayır; iki kolu da sönümle, yalnız birini geciktir.",
+      "text": "Split the sharp needle response into two branches; attenuate both branches and delay only one."
+    },
+    {
+      "key": "puzzle.cift_igne.n1.title",
+      "source": "İğne numunesi",
+      "text": "Needle sample"
+    },
+    {
+      "key": "puzzle.cift_igne.n1.body",
+      "source": "Dar ve keskin tepe Numune 46'dan gelir; ham hali hedef izden daha yüksektir.",
+      "text": "The narrow, sharp peak comes from Sample 46; its raw form is taller than the target trace."
+    },
+    {
+      "key": "puzzle.cift_igne.n2.title",
+      "source": "İki sönüm",
+      "text": "Dual attenuation"
+    },
+    {
+      "key": "puzzle.cift_igne.n2.body",
+      "source": "Her iki tepe de alçaltılmıştır; Dağıtıcı'dan sonraki iki kolda da Sönümleyici gerekir.",
+      "text": "Both peaks are lowered; an Attenuator is required on both branches after the Splitter."
+    },
+    {
+      "key": "puzzle.kubbe_ve_igne.title",
+      "source": "Kubbe ve İğne",
+      "text": "Dome and Needle"
+    },
+    {
+      "key": "puzzle.kubbe_ve_igne.sub",
+      "source": "Hedef kayıt • Ek deney D",
+      "text": "Target record • Extra Experiment D"
+    },
+    {
+      "key": "puzzle.kubbe_ve_igne.desc",
+      "source": "Bir kolda merkez kubbeyi koru, diğer kolda iğne tepkiyi geciktirip sönümleyerek birleştir.",
+      "text": "Preserve the center dome on one branch, and delay and attenuate the needle response on the other before combining."
+    },
+    {
+      "key": "puzzle.kubbe_ve_igne.n1.title",
+      "source": "İki karakter",
+      "text": "Two characters"
+    },
+    {
+      "key": "puzzle.kubbe_ve_igne.n1.body",
+      "source": "Geniş orta tepe Numune 08'den, sağdaki keskin tepe Numune 46'dan gelir.",
+      "text": "The wide middle peak comes from Sample 08, and the sharp right peak comes from Sample 46."
+    },
+    {
+      "key": "puzzle.kubbe_ve_igne.n2.title",
+      "source": "Sağdaki iğne",
+      "text": "Right needle"
+    },
+    {
+      "key": "puzzle.kubbe_ve_igne.n2.body",
+      "source": "Numune 46 kolu hem Geciktirici hem Sönümleyici ister; Numune 08 kolu doğrudan ölçere gidebilir.",
+      "text": "The Sample 46 branch requires both a Delay Unit and an Attenuator; the Sample 08 branch can go straight to the meter."
+    },
+    {
+      "key": "puzzle.kehribar_baz.title",
+      "source": "Kehribar Baz",
+      "text": "Amber Base"
+    },
+    {
+      "key": "puzzle.kehribar_baz.sub",
+      "source": "Karışım hedefi • 1. deney",
+      "text": "Mixture target • Experiment 1"
+    },
+    {
+      "key": "puzzle.kehribar_baz.desc",
+      "source": "Kırmızı ve yeşil pigmenti birleştir, sonra taşıyıcı sıvı ile seyrelterek dengeli kehribar karışımı üret.",
+      "text": "Combine red and green pigments, then dilute with carrier fluid to produce a balanced amber mixture."
+    },
+    {
+      "key": "puzzle.kehribar_baz.n1.title",
+      "source": "Renk oranı",
+      "text": "Color ratio"
+    },
+    {
+      "key": "puzzle.kehribar_baz.n1.body",
+      "source": "Kehribar ton için Kırmızı Pigment ve Yeşil Pigment eşit miktarda birleşmelidir.",
+      "text": "For an amber tone, Red Pigment and Green Pigment must combine in equal amounts."
+    },
+    {
+      "key": "puzzle.kehribar_baz.n2.title",
+      "source": "Taşıyıcı sıvı",
+      "text": "Carrier fluid"
+    },
+    {
+      "key": "puzzle.kehribar_baz.n2.body",
+      "source": "Saf pigment karışımı fazla yoğundur. İkinci bir Karıştırıcı Kap ile 1 doz Taşıyıcı Sıvı ekle.",
+      "text": "Pure pigment mixture is too dense. Add 1 dose of Carrier Fluid using a second Mixer Vessel."
+    },
+    {
+      "key": "puzzle.kehribar_baz.n3.title",
+      "source": "Son ölçüm",
+      "text": "Final measurement"
+    },
+    {
+      "key": "puzzle.kehribar_baz.n3.body",
+      "source": "Son karışım 3 doz olmalı ve Karışım Ölçer'e tek hattan girmelidir.",
+      "text": "The final mixture must be 3 doses and enter the Mixture Analyzer through a single line."
+    },
+    {
+      "key": "puzzle.acik_camgobegi.title",
+      "source": "Açık Camgöbeği",
+      "text": "Light Cyan"
+    },
+    {
+      "key": "puzzle.acik_camgobegi.sub",
+      "source": "Karışım hedefi • 2. deney",
+      "text": "Mixture target • Experiment 2"
+    },
+    {
+      "key": "puzzle.acik_camgobegi.desc",
+      "source": "Yeşil ve mavi pigmentleri taşıyıcı sıvı ile kur, ardından seyrelticiden geçirerek açık camgöbeği elde et.",
+      "text": "Prepare green and blue pigments with carrier fluid, then pass through a diluter to obtain light cyan."
+    },
+    {
+      "key": "puzzle.acik_camgobegi.n1.title",
+      "source": "Camgöbeği özü",
+      "text": "Cyan core"
+    },
+    {
+      "key": "puzzle.acik_camgobegi.n1.body",
+      "source": "Renk yalnız Yeşil Pigment ve Mavi Pigment'ten oluşur; kırmızı kullanılmaz.",
+      "text": "The color consists only of Green Pigment and Blue Pigment; red is not used."
+    },
+    {
+      "key": "puzzle.acik_camgobegi.n2.title",
+      "source": "Düşük yoğunluk",
+      "text": "Low density"
+    },
+    {
+      "key": "puzzle.acik_camgobegi.n2.body",
+      "source": "Taşıyıcı Sıvı eklendikten sonra bile karışım koyu kalır; Karışım Ölçer'den önce Seyreltici bağla.",
+      "text": "Even after adding Carrier Fluid, the mixture remains dark; connect a Diluter before the Mixture Analyzer."
+    },
+    {
+      "key": "puzzle.derin_mor_doz.title",
+      "source": "Derin Mor Doz",
+      "text": "Deep Purple Dose"
+    },
+    {
+      "key": "puzzle.derin_mor_doz.sub",
+      "source": "Karışım hedefi • 3. deney",
+      "text": "Mixture target • Experiment 3"
+    },
+    {
+      "key": "puzzle.derin_mor_doz.desc",
+      "source": "Kırmızı ağırlıklı mor bir karışım kur: mavi pigmenti ikiye böl, kırmızı ve taşıyıcı sıvı ile birleştirip yoğunlaştır.",
+      "text": "Create a red-dominant purple mixture: split the blue pigment in two, combine with red and carrier fluid, and concentrate."
+    },
+    {
+      "key": "puzzle.derin_mor_doz.n1.title",
+      "source": "Baskın kırmızı",
+      "text": "Dominant red"
+    },
+    {
+      "key": "puzzle.derin_mor_doz.n1.body",
+      "source": "Hedef renkte kırmızı oranı mavinin iki katıdır. Mavi Pigment'i Bölücü Kap ile iki yarım doza ayır.",
+      "text": "In the target color, the red ratio is twice that of blue. Split the Blue Pigment into two half-doses with a Splitter Vessel."
+    },
+    {
+      "key": "puzzle.derin_mor_doz.n2.title",
+      "source": "İki kol da kullanılmalı",
+      "text": "Both branches must be used"
+    },
+    {
+      "key": "puzzle.derin_mor_doz.n2.body",
+      "source": "Bölücü Kap'tan çıkan yarım doz mavi kollarından biri kırmızıyla, diğeri taşıyıcı sıvıyla birleşebilir; ikinci mavi kolu seyreltip son karışıma kat.",
+      "text": "One of the half-dose blue branches from the Splitter Vessel can combine with red and the other with carrier fluid; dilute the second blue branch and add it to the final mixture."
+    },
+    {
+      "key": "puzzle.derin_mor_doz.n3.title",
+      "source": "Son yoğunlaştırma",
+      "text": "Final concentration"
+    },
+    {
+      "key": "puzzle.derin_mor_doz.n3.body",
+      "source": "Birleşen sıvıyı Karışım Ölçer'e vermeden önce Yoğunlaştırıcı'dan geçir.",
+      "text": "Pass the combined fluid through a Concentrator before feeding it into the Mixture Analyzer."
+    },
+    {
+      "key": "guide.recipe_header",
+      "source": "TARİF {0}/{1}  •  {2}",
+      "text": "RECIPE {0}/{1}  •  {2}"
+    },
+    {
+      "key": "guide.measurement_code",
+      "source": "Ölçüm kodu: {0} = {1}",
+      "text": "Measurement code: {0} = {1}"
+    },
+    {
+      "key": "guide.step.1",
+      "source": "1. Hedef şemasını sağ üstteki HEDEF yuvasına bırak.",
+      "text": "1. Drop the target diagram into the TARGET slot at the top right."
+    },
+    {
+      "key": "guide.step.2",
+      "source": "2. İpuçlarını sağdaki BİLGİLER alanına sürükle; bilinmeyen parçalar açılır.",
+      "text": "2. Drag clues into the CLUES area on the right to reveal unknown parts."
+    },
+    {
+      "key": "guide.step.3",
+      "source": "3. Tahtaya şu parçaları yerleştir: {0}.",
+      "text": "3. Place these parts on the board: {0}."
+    },
+    {
+      "key": "guide.step.4_intro",
+      "source": "4. Uçtan uca şu bağları çiz:",
+      "text": "4. Draw these node-to-node bonds:"
+    },
+    {
+      "key": "guide.step.5",
+      "source": "5. DENEYİ ÖLÇ düğmesine bas; çıkan ölçüm kartını deftere veya Turing'in sol yuvaya sürükle.",
+      "text": "5. Press MEASURE EXPERIMENT; drag the resulting measurement card into the notebook or the left slot on the Turing machine."
+    },
+    {
+      "key": "guide.step.3_board",
+      "source": "3. Tahtaya şu parçaları yerleştir: {0}.",
+      "text": "3. Place these parts on the board: {0}."
+    },
+    {
+      "key": "guide.step.4_double",
+      "source": "4. Bağları çiz; {0} bağlantısında aynı iki uç arasında ikinci kez çizerek çift bağ (=) yap.",
+      "text": "4. Draw the bonds; on the {0} connection, draw a second time between the same two nodes to create a double bond (=)."
+    },
+    {
+      "key": "guide.step.4_single",
+      "source": "4. Parçaların uçları arasında tek bağları çiz.",
+      "text": "4. Draw single bonds between the part nodes."
+    },
+    {
+      "key": "guide.step.5_synth",
+      "source": "5. SENTEZLE / TEST ET düğmesine bas ve doğrulanan kodu Turing'e gir.",
+      "text": "5. Press SYNTHESIZE / TEST and enter the verified code into the Turing machine."
+    },
+    {
+      "key": "guide.bond.12_delay",
+      "source": "Atım Kaynağı → Numune 12 → Geciktirici → Kayıt Ölçer",
+      "text": "Pulse Source → Sample 12 → Delay Unit → Recording Meter"
+    },
+    {
+      "key": "guide.bond.split_12",
+      "source": "Atım Kaynağı → Numune 12 → Dağıtıcı",
+      "text": "Pulse Source → Sample 12 → Splitter"
+    },
+    {
+      "key": "guide.bond.branch1_direct",
+      "source": "1. kol: Dağıtıcı → Kayıt Ölçer",
+      "text": "Branch 1: Splitter → Recording Meter"
+    },
+    {
+      "key": "guide.bond.branch2_delay_att",
+      "source": "2. kol: Dağıtıcı → Geciktirici → Sönümleyici → Kayıt Ölçer",
+      "text": "Branch 2: Splitter → Delay Unit → Attenuator → Recording Meter"
+    },
+    {
+      "key": "guide.bond.pulse_split",
+      "source": "Atım Kaynağı → Dağıtıcı",
+      "text": "Pulse Source → Splitter"
+    },
+    {
+      "key": "guide.bond.branch1_12_delay",
+      "source": "1. kol: Dağıtıcı → Numune 12 → Geciktirici → Kayıt Ölçer",
+      "text": "Branch 1: Splitter → Sample 12 → Delay Unit → Recording Meter"
+    },
+    {
+      "key": "guide.bond.branch2_34_att",
+      "source": "2. kol: Dağıtıcı → Numune 34 → Sönümleyici → Kayıt Ölçer",
+      "text": "Branch 2: Splitter → Sample 34 → Attenuator → Recording Meter"
+    },
+    {
+      "key": "guide.bond.08_att",
+      "source": "Atım Kaynağı → Numune 08 → Sönümleyici → Kayıt Ölçer",
+      "text": "Pulse Source → Sample 08 → Attenuator → Recording Meter"
+    },
+    {
+      "key": "guide.bond.21_delay",
+      "source": "Atım Kaynağı → Numune 21 → Geciktirici → Kayıt Ölçer",
+      "text": "Pulse Source → Sample 21 → Delay Unit → Recording Meter"
+    },
+    {
+      "key": "guide.bond.46_split",
+      "source": "Atım Kaynağı → Numune 46 → Dağıtıcı",
+      "text": "Pulse Source → Sample 46 → Splitter"
+    },
+    {
+      "key": "guide.bond.branch1_att",
+      "source": "1. kol: Dağıtıcı → Sönümleyici 1 → Kayıt Ölçer",
+      "text": "Branch 1: Splitter → Attenuator 1 → Recording Meter"
+    },
+    {
+      "key": "guide.bond.branch2_delay_att2",
+      "source": "2. kol: Dağıtıcı → Geciktirici → Sönümleyici 2 → Kayıt Ölçer",
+      "text": "Branch 2: Splitter → Delay Unit → Attenuator 2 → Recording Meter"
+    },
+    {
+      "key": "guide.bond.branch1_08",
+      "source": "1. kol: Dağıtıcı → Numune 08 → Kayıt Ölçer",
+      "text": "Branch 1: Splitter → Sample 08 → Recording Meter"
+    },
+    {
+      "key": "guide.bond.branch2_46_delay_att",
+      "source": "2. kol: Dağıtıcı → Numune 46 → Geciktirici → Sönümleyici → Kayıt Ölçer",
+      "text": "Branch 2: Splitter → Sample 46 → Delay Unit → Attenuator → Recording Meter"
+    },
+    {
+      "key": "guide.bond.amber_1",
+      "source": "Kırmızı Pigment + Yeşil Pigment → Karıştırıcı Kap 1",
+      "text": "Red Pigment + Green Pigment → Mixer Vessel 1"
+    },
+    {
+      "key": "guide.bond.amber_2",
+      "source": "Karıştırıcı Kap 1 + Taşıyıcı Sıvı → Karıştırıcı Kap 2 → Karışım Ölçer",
+      "text": "Mixer Vessel 1 + Carrier Fluid → Mixer Vessel 2 → Mixture Analyzer"
+    },
+    {
+      "key": "guide.bond.cyan_1",
+      "source": "Yeşil Pigment + Mavi Pigment → Karıştırıcı Kap 1",
+      "text": "Green Pigment + Blue Pigment → Mixer Vessel 1"
+    },
+    {
+      "key": "guide.bond.cyan_2",
+      "source": "Karıştırıcı Kap 1 + Taşıyıcı Sıvı → Karıştırıcı Kap 2 → Seyreltici → Karışım Ölçer",
+      "text": "Mixer Vessel 1 + Carrier Fluid → Mixer Vessel 2 → Diluter → Mixture Analyzer"
+    },
+    {
+      "key": "guide.bond.purple_1",
+      "source": "Mavi Pigment → Bölücü Kap",
+      "text": "Blue Pigment → Splitter Vessel"
+    },
+    {
+      "key": "guide.bond.purple_2",
+      "source": "1. kol: Bölücü Kap + Kırmızı Pigment → Karıştırıcı Kap 1",
+      "text": "Branch 1: Splitter Vessel + Red Pigment → Mixer Vessel 1"
+    },
+    {
+      "key": "guide.bond.purple_3",
+      "source": "2. kol: Bölücü Kap → Seyreltici; ardından Taşıyıcı Sıvı ile Karıştırıcı Kap 2'de birleştir",
+      "text": "Branch 2: Splitter Vessel → Diluter; then combine with Carrier Fluid in Mixer Vessel 2"
+    },
+    {
+      "key": "guide.bond.purple_4",
+      "source": "Karıştırıcı Kap 1 + Karıştırıcı Kap 2 → Karıştırıcı Kap 3 → Yoğunlaştırıcı → Karışım Ölçer",
+      "text": "Mixer Vessel 1 + Mixer Vessel 2 → Mixer Vessel 3 → Concentrator → Mixture Analyzer"
+    },
+    {
+      "key": "guide.bond.default",
+      "source": "Kaynak → Numune / işlem parçaları → Kayıt Ölçer",
+      "text": "Source → Sample / processing parts → Recording Meter"
+    },
+    {
+      "key": "part.current.pulse-source.description",
+      "source": "Başlangıç: 0,18 anında tek uyarım yollar. Yükseklik 1; giriş yok, bir çıkış.",
+      "text": "Initial pulse: sends a single excitation at time 0.18. Height 1; no input, one output."
+    },
+    {
+      "key": "part.current.pulse-n12.title",
+      "source": "Numune N-12",
+      "text": "Sample N-12"
+    },
+    {
+      "key": "part.current.pulse-n12.description",
+      "source": "Kısa tepki: gelen izin genişliğini 0,025 yapar. Zaman ve yükseklik korunur.",
+      "text": "Short response: sets the incoming trace width to 0.025. Time and height are preserved."
+    },
+    {
+      "key": "part.current.pulse-meter.title",
+      "source": "Çift Kanallı Ölçer",
+      "text": "Dual-Channel Meter"
+    },
+    {
+      "key": "part.current.pulse-meter.description",
+      "source": "Sonuç: bir veya iki girişten gelen izleri aynı kayda çizer. Çıkış yok.",
+      "text": "Result: records traces from one or two inputs on the same chart. No output."
+    },
+    {
+      "key": "part.current.pulse-splitter.description",
+      "source": "Gelen her izi iki çıkışına da iletir. Her çıkışa ayrı bir hat bağlanır.",
+      "text": "Sends each incoming trace to both outputs. Connect a separate line to each output."
+    },
+    {
+      "key": "part.current.pulse-delay.description",
+      "source": "Her izi 0,32 zaman birimi geciktirir. Yükseklik ve genişlik korunur.",
+      "text": "Delays every trace by 0.32 time units. Height and width are preserved."
+    },
+    {
+      "key": "part.current.pulse-attenuator.description",
+      "source": "Her izin yüksekliğini yarıya indirir. Zaman ve genişlik korunur.",
+      "text": "Halves the height of every trace. Time and width are preserved."
+    },
+    {
+      "key": "part.current.pulse-n34.title",
+      "source": "Numune N-34",
+      "text": "Sample N-34"
+    },
+    {
+      "key": "part.current.pulse-n34.description",
+      "source": "Geniş tepki: gelen izin genişliğini 0,075 yapar. Zaman ve yükseklik korunur.",
+      "text": "Wide response: sets the incoming trace width to 0.075. Time and height are preserved."
+    },
+    {
+      "key": "part.current.pulse-n08.title",
+      "source": "Numune N-08",
+      "text": "Sample N-08"
+    },
+    {
+      "key": "part.current.pulse-n08.description",
+      "source": "Zayıf tepki: genişliği 0,025 yapar ve yüksekliği yarıya indirir. Zaman korunur.",
+      "text": "Weak response: sets the width to 0.025 and halves the height. Time is preserved."
+    },
+    {
+      "key": "part.current.pulse-n21.title",
+      "source": "Numune N-21",
+      "text": "Sample N-21"
+    },
+    {
+      "key": "part.current.pulse-n21.description",
+      "source": "Geç tepki: genişliği 0,025 yapar ve 0,16 zaman birimi geciktirir. Yükseklik korunur.",
+      "text": "Late response: sets the width to 0.025 and delays the trace by 0.16 time units. Height is preserved."
+    },
+    {
+      "key": "part.current.pulse-n46.title",
+      "source": "Numune N-46",
+      "text": "Sample N-46"
+    },
+    {
+      "key": "part.current.pulse-n46.description",
+      "source": "Çift tepki: her giriş izini iki kez yollar; ikinci iz 0,32 sonra gelir. Genişlik ve yükseklik korunur. Tek çıkış hattı yeterlidir.",
+      "text": "Double response: sends each incoming trace twice; the second arrives 0.32 later. Width and height are preserved. One output line is enough."
+    },
+    {
+      "key": "part.current.mix-source.title",
+      "source": "Taşıyıcı Kaynağı",
+      "text": "Carrier Source"
+    },
+    {
+      "key": "part.current.mix-source.description",
+      "source": "1 doz renksiz taşıyıcı sıvı verir. Pigment içermez.",
+      "text": "Supplies 1 dose of colorless carrier fluid. Contains no pigment."
+    },
+    {
+      "key": "part.current.mix-red.description",
+      "source": "Geçen karışıma 1 doz kırmızı pigment ekler. Miktar da 1 doz artar.",
+      "text": "Adds 1 dose of red pigment to the passing mixture. Total volume also increases by 1 dose."
+    },
+    {
+      "key": "part.current.mix-green.description",
+      "source": "Geçen karışıma 1 doz yeşil pigment ekler. Miktar da 1 doz artar.",
+      "text": "Adds 1 dose of green pigment to the passing mixture. Total volume also increases by 1 dose."
+    },
+    {
+      "key": "part.current.mix-blue.description",
+      "source": "Geçen karışıma 1 doz mavi pigment ekler. Miktar da 1 doz artar.",
+      "text": "Adds 1 dose of blue pigment to the passing mixture. Total volume also increases by 1 dose."
+    },
+    {
+      "key": "part.current.mix-solvent.title",
+      "source": "Çözücü",
+      "text": "Solvent"
+    },
+    {
+      "key": "part.current.mix-solvent.description",
+      "source": "1 doz renksiz taşıyıcı ekler. Pigment oranları korunur; yoğunluk azalır, toplam miktar artar.",
+      "text": "Adds 1 dose of colorless carrier. Pigment ratios are preserved; concentration decreases and total volume increases."
+    },
+    {
+      "key": "part.current.mix-concentrator.description",
+      "source": "Renksiz taşıyıcının yarısını uzaklaştırır. Pigment miktarı korunur; yoğunluk artar, toplam miktar azalır.",
+      "text": "Removes half of the colorless carrier. Pigment amounts are preserved; concentration increases and total volume decreases."
+    },
+    {
+      "key": "part.current.mix-splitter.title",
+      "source": "Sıvı Dağıtıcı",
+      "text": "Fluid Splitter"
+    },
+    {
+      "key": "part.current.mix-splitter.description",
+      "source": "Karışımı iki eşit kola böler. Her kolda bütün bileşenlerin yarısı bulunur; toplam miktar korunur.",
+      "text": "Splits the mixture into two equal branches. Each branch contains half of every component; total volume is preserved."
+    },
+    {
+      "key": "part.current.mix-mixer.title",
+      "source": "Karıştırma Kabı",
+      "text": "Mixing Vessel"
+    },
+    {
+      "key": "part.current.mix-mixer.description",
+      "source": "İki girişten gelen sıvıları toplar. Renk pigment miktarlarına göre oluşur; iki giriş de bağlanmalı.",
+      "text": "Combines fluids from two inputs. Color depends on pigment amounts; both inputs must be connected."
+    },
+    {
+      "key": "part.current.mix-meter.title",
+      "source": "Karışım Analizörü",
+      "text": "Mixture Analyzer"
+    },
+    {
+      "key": "part.current.mix-meter.description",
+      "source": "Son karışımın rengini, pigment yoğunluğunu ve toplam miktarını ölçer. Çıkışı yoktur.",
+      "text": "Measures the final mixture color, pigment concentration, and total volume. Has no output."
+    },
+    {
+      "key": "goal.current.CiftKayit.description",
+      "source": "Bu deneyde tek numune kullan. Kısa tepkisini iki farklı anda kaydet; izler hedefle örtüşmeli.",
+      "text": "Use a single sample in this experiment. Record its short response at two different times; the traces must match the target."
+    },
+    {
+      "key": "goal.current.GecikmeliKisaKayit.title",
+      "source": "Gecikmeli Kısa Kayıt",
+      "text": "Delayed Short Recording"
+    },
+    {
+      "key": "goal.current.GecikmeliKisaKayit.description",
+      "source": "Gözlemlerden yararlanarak hedefteki kaydı üret. Deneyin koşulları ve parça adetleri kitaplarda açıklanır.",
+      "text": "Use your observations to reproduce the target recording. The experiment conditions and part quantities are explained in the books."
+    },
+    {
+      "key": "goal.current.MorKarisim.title",
+      "source": "Mor Karışım",
+      "text": "Purple Mixture"
+    },
+    {
+      "key": "goal.current.MorKarisim.description",
+      "source": "Hedefteki karışımı üret. Renk oranları, pigment yoğunluğu ve toplam miktar birlikte tutmalı; deney koşulları kitaplarda.",
+      "text": "Produce the target mixture. Color ratios, pigment concentration, and total volume must all match; the experiment conditions are in the books."
+    },
+    {
+      "key": "goal.current.SeyreltilmisMor.title",
+      "source": "Seyreltilmiş Mor",
+      "text": "Diluted Purple"
+    },
+    {
+      "key": "goal.current.TekHattaCiftTepki.title",
+      "source": "Tek Hatta Çift Tepki",
+      "text": "Double Response on One Line"
+    },
+    {
+      "key": "goal.current.YogunYesil.title",
+      "source": "Yoğun Yeşil",
+      "text": "Concentrated Green"
+    },
+    {
+      "key": "goal.current.ZayifGenisKayit.title",
+      "source": "Zayıf Geniş Kayıt",
+      "text": "Weak Wide Recording"
+    },
+    {
+      "key": "archive.current.archive-a17.title",
+      "source": "Kayıt A-17",
+      "text": "Record A-17"
+    },
+    {
+      "key": "archive.current.archive-a17.description",
+      "source": "Koruyucu kaplamanın arşiv numunesi bulundu. Analizörde bu referansın rengini, yoğunluğunu ve miktarını yeniden elde et.",
+      "text": "An archived sample of the protective coating has been found. Reproduce this reference color, concentration, and volume in the analyzer."
+    },
+    {
+      "key": "archive.current.archive-a17.note.0.title",
+      "source": "İşlem günlüğü",
+      "text": "Processing Journal"
+    },
+    {
+      "key": "archive.current.archive-a17.note.0.explanation",
+      "source": "Yoğunlaştırma yalnız renksiz taşıyıcıyı azaltır. Çözücü yeniden taşıyıcı ekler. Aynı iki işlemi farklı sırada deneyince farklı numuneler elde edildi.",
+      "text": "Concentration removes only the colorless carrier. Solvent adds carrier again. Applying the same two operations in a different order produced different samples."
+    },
+    {
+      "key": "archive.current.archive-a17.note.1.title",
+      "source": "Referansın kullanımı",
+      "text": "Using the Reference"
+    },
+    {
+      "key": "archive.current.archive-a17.note.1.explanation",
+      "source": "Benzer renk tek başına yeterli değildir. Referans numunenin yoğunluğunu ve kapta kalan miktarı da karşılaştır; küçük denemelerle ilerle.",
+      "text": "A similar color alone is not enough. Also compare the reference sample concentration and the volume left in the vessel; proceed with small experiments."
+    },
+    {
+      "key": "archive.current.archive-b29.title",
+      "source": "Kayıt B-29",
+      "text": "Record B-29"
+    },
+    {
+      "key": "archive.current.archive-b29.description",
+      "source": "Uyarı devresinin eski kaydını yeniden üret. Kaydın iki tepkisinin biçimini, gücünü ve aralarındaki aralığı gözlemle.",
+      "text": "Reproduce the old recording of the excitation circuit. Observe the shape and strength of its two responses and the interval between them."
+    },
+    {
+      "key": "archive.current.pulse-n12.observation",
+      "source": "Tek başına denendiğinde ince ve kısa bir iz bırakır. Uyarının geliş anını ve gücünü korur.",
+      "text": "When tested alone, it leaves a thin, short trace. The excitation arrival time and strength are preserved."
+    },
+    {
+      "key": "archive.current.pulse-delay.observation",
+      "source": "İçinden geçen tepki daha sonra görünür. Genişlik ve güç değişmez; tekrar kullanılırsa bekleme uzar.",
+      "text": "The response passing through it appears later. Width and strength are unchanged; repeated use increases the wait."
+    },
+    {
+      "key": "archive.current.pulse-attenuator.observation",
+      "source": "İçinden geçen tepkiyi sönükleştirir. İz aynı yerde ve aynı genişlikte kalır; tekrarlamak onu daha da zayıflatır.",
+      "text": "Weakens the response passing through it. The trace stays in the same position and keeps its width; repeated use makes it even weaker."
+    },
+    {
+      "key": "archive.current.pulse-n34.observation",
+      "source": "Tepkiyi geniş bir iz haline getirir. Uyarının geliş anını ve gücünü korur.",
+      "text": "Turns the response into a wide trace. The excitation arrival time and strength are preserved."
+    },
+    {
+      "key": "archive.current.pulse-n08.observation",
+      "source": "Gelen tepkiyi kısa ve sönük bir iz haline getirir. Tek başına N-12'den daha zayıf görünür.",
+      "text": "Turns the incoming response into a short, faint trace. On its own it appears weaker than N-12."
+    },
+    {
+      "key": "archive.current.pulse-n21.observation",
+      "source": "Kısa bir tepki bırakır; yanıtı normal numuneden sonra gelir. Bu bekleme, geciktiricinin beklemesinden daha kısadır.",
+      "text": "Leaves a short response that arrives after the normal sample. This wait is shorter than the delay unit wait."
+    },
+    {
+      "key": "archive.current.pulse-n46.observation",
+      "source": "Her uyarıya aralıklı iki yanıt verir. Yanıtların biçimini ve gücünü korur; tek giriş ve tek çıkışı vardır.",
+      "text": "Produces two spaced responses for each excitation. Their shape and strength are preserved; it has one input and one output."
+    },
+    {
+      "key": "archive.current.archive-b29.note.0.title",
+      "source": "İletim gözlemi",
+      "text": "Transmission Observation"
+    },
+    {
+      "key": "archive.current.archive-b29.note.0.explanation",
+      "source": "Bir işlem, kendi içinden geçen tepkileri değiştirir. Başka bir hatta ilerleyen tepki, bu işlemden etkilenmez.",
+      "text": "An operation changes the responses passing through it. A response traveling along another line is not affected by that operation."
+    },
+    {
+      "key": "archive.current.archive-b29.note.1.title",
+      "source": "Kayıt karşılaştırması",
+      "text": "Recording Comparison"
+    },
+    {
+      "key": "archive.current.archive-b29.note.1.explanation",
+      "source": "Önce her numunenin tek başına bıraktığı izi tanı. Sonra eski kayıttaki tepkilerle karşılaştır; hedefin çizdiği bağlantıyı değil, davranışını yeniden oluştur.",
+      "text": "First learn the trace each sample leaves on its own. Then compare it with the responses in the old recording; reproduce the target behavior rather than its wiring diagram."
+    },
+    {
+      "key": "archive.current.archive-c43.title",
+      "source": "Kayıt C-43",
+      "text": "Record C-43"
+    },
+    {
+      "key": "archive.current.archive-c43.description",
+      "source": "Uzak istasyondan kalan bu kaydı geri getir. Referansın başlangıcını, tepki sayısını ve izlerin biçimini birlikte incele.",
+      "text": "Recover this recording from the remote station. Examine the reference start time, number of responses, and trace shapes together."
+    },
+    {
+      "key": "archive.current.archive-c43.note.0.title",
+      "source": "Numune günlüğü",
+      "text": "Sample Journal"
+    },
+    {
+      "key": "archive.current.archive-c43.note.0.explanation",
+      "source": "Numuneler aynı özelliği değiştiriyorsa, daha sonra karşılaşılan numunenin izi son kayıtta belirginleşir. Her işlemin zaman, biçim ve güç üzerindeki etkisini ayrı ayrı gözle.",
+      "text": "When samples change the same property, the sample encountered later determines the final trace. Observe how each operation affects time, shape, and strength separately."
+    },
+    {
+      "key": "archive.current.archive-c43.note.1.title",
+      "source": "Deney masası notu",
+      "text": "Lab Bench Note"
+    },
+    {
+      "key": "archive.current.archive-c43.note.1.explanation",
+      "source": "Birden fazla tepki üreten numune de normal bir hat üzerinde çalışabilir. Tepki sayısıyla hat sayısını aynı şey sanma.",
+      "text": "A sample producing multiple responses can also work on a normal line. Do not confuse the number of responses with the number of lines."
+    },
+    {
+      "key": "dist.current.target.title",
+      "source": "İSTENEN SONUÇ",
+      "text": "REQUIRED RESULT"
+    },
+    {
+      "key": "dist.current.target.mixture",
+      "source": "Rengi, pigment yoğunluğunu ve toplam miktarı hedefle karşılaştır.",
+      "text": "Compare the color, pigment concentration, and total volume with the target."
+    },
+    {
+      "key": "dist.current.target.signal",
+      "source": "Zamanı, genişliği ve yüksekliği hedefle karşılaştır.",
+      "text": "Compare the time, width, and height with the target."
+    },
+    {
+      "key": "dist.current.ports.title",
+      "source": "HATLARIN YÖNÜ",
+      "text": "LINE DIRECTION"
+    },
+    {
+      "key": "dist.current.ports.description",
+      "source": "Halka giriş, ok çıkıştır. Bir uçtan tek hat çıkar. Tek kaynak ve tek ölçer kullan. Bütün parçalar kaynaktan beslenip ölçere ulaşmalı.",
+      "text": "A ring marks an input; an arrow marks an output. Each port takes one line. Use one source and one meter. Every part must receive flow from the source and reach the meter."
+    },
+    {
+      "key": "dist.current.mixture.title",
+      "source": "RENK VE YOĞUNLUK",
+      "text": "COLOR AND CONCENTRATION"
+    },
+    {
+      "key": "dist.current.coincident.title",
+      "source": "EŞZAMANLI VARIŞ",
+      "text": "SIMULTANEOUS ARRIVAL"
+    },
+    {
+      "key": "dist.current.mixture.description",
+      "source": "Renk pigment oranlarından oluşur. Yoğunluk, pigment / toplam miktardır. Aynı görünen rengin miktarı veya yoğunluğu farklı olabilir.",
+      "text": "Color comes from pigment ratios. Concentration is pigment divided by total volume. Mixtures that look the same can have different volumes or concentrations."
+    },
+    {
+      "key": "dist.current.coincident.description",
+      "source": "Aynı anda, aynı genişlikte gelen izlerin yükseklikleri toplanır. Kayıtta tek görünür iz oluşur.",
+      "text": "Traces arriving at the same time with the same width add their heights together. They form one visible trace in the recording."
+    },
+    {
+      "key": "dist.current.order.title",
+      "source": "İŞLEMLERİN SIRASI",
+      "text": "ORDER OF OPERATIONS"
+    },
+    {
+      "key": "dist.current.order.mixture",
+      "source": "Dağıtıcı miktarları yarıya böler; karıştırıcı iki kolu toplar. Pigment ekleme, seyreltme ve yoğunlaştırmanın sırası sonucu değiştirebilir.",
+      "text": "The splitter halves the quantities; the mixer combines two branches. Changing the order of pigment addition, dilution, and concentration can change the result."
+    },
+    {
+      "key": "dist.current.order.signal",
+      "source": "Her numunenin ve işlem parçasının etkisi, içinden geçen her ize uygulanır. Sıra ve dallanma sonucu değiştirebilir.",
+      "text": "Each sample and processing part affects every trace passing through it. Order and branching can change the result."
+    },
+    {
+      "key": "dist.current.transfer.title",
+      "source": "KAYDI TAŞIMAK",
+      "text": "TRANSFERRING THE RECORDING"
+    },
+    {
+      "key": "dist.current.transfer.description",
+      "source": "Tahtada DENEYİ ÖLÇ. Ölçüm kağıdını deftere al; Turing'in sol klavyesindeki okuyucuya bırak. Kod hazır olunca Enter ile sına.",
+      "text": "MEASURE THE EXPERIMENT on the board. Collect the measurement paper in your notebook, then drop it in the reader on the left side of the Turing keyboard. When the code is ready, press Enter to test it."
+    },
+    {
+      "key": "dist.current.ban.title",
+      "source": "KULLANIM YASAĞI",
+      "text": "RESTRICTED EQUIPMENT"
+    },
+    {
+      "key": "dist.current.ban.format",
+      "source": "Bu deneyde {0} kullanma.",
+      "text": "Do not use {0} in this experiment."
+    },
+    {
+      "key": "tutorial.first_trace.title",
+      "source": "İlk İz / Tahta Alıştırması",
+      "text": "First Trace / Board Practice"
+    },
+    {
+      "key": "tutorial.first_trace.description",
+      "source": "Atım Kaynağı → Numune N-12 → Ölçer. Üç parçayı bu sırayla bağla ve tek kısa iz üret.",
+      "text": "Pulse Source → Sample N-12 → Meter. Connect the three parts in this order and produce a single short trace."
+    },
+    {
+      "key": "tutorial.first_trace.page.title",
+      "source": "TAHTA ALIŞTIRMASI",
+      "text": "BOARD PRACTICE"
+    },
+    {
+      "key": "tutorial.first_trace.page.explanation",
+      "source": "Önce HEDEF ve BAĞLANTI SIRASI notlarını deftere sürükle. Yan sayfadaki üç parçayı da al. Tab defteri açar/kapatır.",
+      "text": "First drag the TARGET and CONNECTION ORDER notes into your notebook. Collect all three parts on the next page too. Tab opens and closes the notebook."
+    },
+    {
+      "key": "tutorial.first_trace.ports.title",
+      "source": "BAĞLANTI SIRASI",
+      "text": "CONNECTION ORDER"
+    },
+    {
+      "key": "tutorial.first_trace.ports.description",
+      "source": "Atım Kaynağı → Numune N-12 → Ölçer. Ok çıkış, halka giriştir. Ölçerin bir girişini kullanman yeterli. Tahtada hedefi ve bu ipucunu panoya tak; BELGELERİ TOPLA ile çalışma alanını aç.",
+      "text": "Pulse Source → Sample N-12 → Meter. An arrow marks an output; a ring marks an input. Using one meter input is enough. Pin the target and this clue on the board; choose COLLECT DOCUMENTS to open the workspace."
+    },
+    {
+      "key": "tutorial.first_trace.parts.title",
+      "source": "ÜÇ PARÇAYI DA TOPLA",
+      "text": "COLLECT ALL THREE PARTS"
+    },
+    {
+      "key": "tutorial.first_trace.parts.explanation",
+      "source": "Her parçayı deftere sürükle. F ile kitabı bırak; kara tahtaya geç. Defterdeki asıllar korunur.",
+      "text": "Drag each part into your notebook. Press F to put down the book and go to the blackboard. The originals remain in your notebook."
+    },
+    {
+      "key": "tutorial.first_trace.measurement_hint",
+      "source": "Ölçümler'e al; Turing okuyucusuna bırak. Turing: 6.",
+      "text": "Collect it in Measurements, then drop it in the Turing reader. Turing: 6."
+    }
+  ]
+}

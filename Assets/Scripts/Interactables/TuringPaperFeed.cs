@@ -77,12 +77,13 @@ public sealed class TuringPaperFeed : IDisposable
         label.transform.localPosition = new Vector3(0, -.005f, .00625f);
         label.transform.localRotation = Quaternion.Euler(0, 180, 0);
         label.rectTransform.sizeDelta = new Vector2(.15f, .01f);
-        label.text = "ÖLÇÜM KARTI"; label.fontSize = .08f;
+        label.fontSize = .08f;
         label.alignment = TextAlignmentOptions.Center; label.color = new Color(.035f, .04f, .035f);
         label.enableAutoSizing = true; label.fontSizeMin = .04f; label.fontSizeMax = .08f;
         var ink = label.fontMaterial;
         ink.SetFloat("_ZTestMode", (float)CompareFunction.LessEqual);
         result.owned.Add(ink);
+        GameLocalization.Set(label, "ÖLÇÜM KARTI");
 
         var card = new GameObject("Ölçüm Kağıdı", typeof(MeshFilter), typeof(MeshRenderer));
         result.Paper = card.transform;

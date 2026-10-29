@@ -77,10 +77,12 @@ public class NotebookUI : MonoBehaviour, ISaveable
     private void OnEnable()
     {
         if (SaveManager.Instance != null) SaveManager.Instance.RegisterSaveable(this);
+        GameLocalization.LanguageChanged += UpdateUI;
     }
 
     private void OnDisable()
     {
+        GameLocalization.LanguageChanged -= UpdateUI;
         if (SaveManager.Instance != null) SaveManager.Instance.UnregisterSaveable(this);
         if (workspace != null) workspace.Close();
     }
@@ -317,31 +319,30 @@ public class NotebookUI : MonoBehaviour, ISaveable
         if (notebookData == null || notebookData.tutorialPages.Count == 0)
         {
             if (categoryTitleText != null)
-                categoryTitleText.text = "LOGS EMPTY";
+                GameLocalization.Set(categoryTitleText, "LOGS EMPTY");
             if (contentText != null)
-                contentText.text = "No operational data found.";
+                GameLocalization.Set(contentText, "No operational data found.");
             return;
         }
 
         TutorialDataSO entry = notebookData.tutorialPages[currentTutorialPage];
         if (categoryTitleText != null)
-            categoryTitleText.text =
-                $"{entry.title.ToUpper()} ({currentTutorialPage + 1}/{notebookData.tutorialPages.Count})";
+            GameLocalization.SetFormat(categoryTitleText, "{0} ({1}/{2})", entry.title, currentTutorialPage + 1, notebookData.tutorialPages.Count);
         if (contentText != null)
-            contentText.text = entry.content;
+            GameLocalization.Set(contentText, entry.content);
     }
 
     public void UpdateUI()
     {
         NotebookCategory currentCat = (NotebookCategory)currentCategoryIndex;
         if (controlsHintText != null)
-            controlsHintText.text = GetHintText(currentCat);
+            GameLocalization.Set(controlsHintText, GetHintText(currentCat));
 
         switch (currentCat)
         {
             case NotebookCategory.Passwords:
                 if (categoryTitleText != null)
-                    categoryTitleText.text = "DISCOVERED CLUES";
+                    GameLocalization.Set(categoryTitleText, "DISCOVERED CLUES");
                 ShowPasswords();
                 break;
             case NotebookCategory.Logs:
@@ -393,13 +394,14 @@ public class NotebookUI : MonoBehaviour, ISaveable
             && notebookData != null
             && notebookData.tutorialPages.Count > 1
         )
-            return baseHint + " | [Scroll] Browse Logs";
+            return "[Q][E] Switch Tabs  | [Scroll] Browse Logs";
         return baseHint;
     }
 
     private void ShowPasswords()
     {
         string list = "";
+        var values = new List<object>();
         if (PasswordManager.Instance != null)
         {
             var clues = PasswordManager.Instance.GetDiscoveredClues();
@@ -407,10 +409,14 @@ public class NotebookUI : MonoBehaviour, ISaveable
                 list = "No data retrieved from the environment...";
             else
                 foreach (var clue in clues)
-                    list += $"> {clue}\n";
+                {
+                    list += "> {" + values.Count + "}\n";
+                    values.Add(clue);
+                }
         }
         if (contentText != null)
-            contentText.text = list;
+            if (list == "No data retrieved from the environment..." || string.IsNullOrEmpty(list)) GameLocalization.Set(contentText, list);
+            else GameLocalization.SetFormat(contentText, list, values.ToArray());
     }
 
     public void ShowPasswordNotification(string password)
