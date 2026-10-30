@@ -3606,11 +3606,6 @@
             "text": "Hareket bulanıklığı"
         },
         {
-            "key": "settings.dof",
-            "source": "Depth of field",
-            "text": "Alan derinliği"
-        },
-        {
             "key": "settings.grain",
             "source": "Film grain",
             "text": "Film greni"
@@ -3889,6 +3884,11 @@
             "key": "ui.tutorial_choice.back",
             "source": "BACK TO MENU",
             "text": "MENÜYE DÖN"
+        },
+        {
+            "key": "settings.dof",
+            "source": "Depth of field\t",
+            "text": "Alan derinliği"
         },
         {
             "key": "subtitle.chemistry_lab_entrance.0",

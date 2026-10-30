@@ -3606,11 +3606,6 @@
             "text": "Motion blur"
         },
         {
-            "key": "settings.dof",
-            "source": "Depth of field",
-            "text": "Depth of field"
-        },
-        {
             "key": "settings.grain",
             "source": "Film grain",
             "text": "Film grain"
@@ -3889,6 +3884,11 @@
             "key": "ui.tutorial_choice.back",
             "source": "BACK TO MENU",
             "text": "BACK TO MENU"
+        },
+        {
+            "key": "settings.dof",
+            "source": "Depth of field\t",
+            "text": "Depth of field"
         },
         {
             "key": "subtitle.chemistry_lab_entrance.0",
