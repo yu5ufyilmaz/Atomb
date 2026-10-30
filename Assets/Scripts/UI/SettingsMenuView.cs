@@ -163,7 +163,7 @@ public sealed class SettingsMenuView : MonoBehaviour
         var quality=Dropdown("quality",QualitySettings.names.Select(n=>Text(n=="High Fidelity"?"high":n=="Balanced"?"balanced":n=="Performant"?"performance":n)).ToArray(),Data.qualityIndex,i=>manager?.SetQuality(i));
         Toggle("vsync",()=>Data.vSync,v=>{Change(d=>d.vSync=v);ShowSection("video");});
         int[] limits={30,60,90,120,144,165,240,-1};var fps=Dropdown("fps",limits.Select(i=>i<0?Text("unlimited"):i.ToString()).ToArray(),Array.IndexOf(limits,Data.frameRateLimit),i=>Change(d=>d.frameRateLimit=limits[i]),Data.vSync?"vsync.note":null);fps.interactable=!Data.vSync;
-        Slider("brightness",()=>Data.brightness,v=>manager?.SetBrightness(v),-2,2,v=>v.ToString("0.0"));Toggle("blur",()=>Data.motionBlur,v=>Change(d=>d.motionBlur=v));Toggle("grain",()=>Data.filmGrain,v=>Change(d=>d.filmGrain=v));Slider("bob",()=>Data.headBob,v=>Change(d=>d.headBob=v),0,1,Percent);
+        Slider("brightness",()=>Data.brightness,v=>manager?.SetBrightness(v),-2,2,v=>v.ToString("0.0"));Toggle("blur",()=>Data.motionBlur,v=>Change(d=>d.motionBlur=v));Toggle("dof",()=>Data.depthOfField,v=>Change(d=>d.depthOfField=v));Toggle("grain",()=>Data.filmGrain,v=>Change(d=>d.filmGrain=v));Slider("bob",()=>Data.headBob,v=>Change(d=>d.headBob=v),0,1,Percent);
     }
     void ControlRows()
     {

@@ -28,7 +28,7 @@ public class SettingsData
     public bool vSync = true;
     public int frameRateLimit = 144;
     public float brightness;
-    public bool motionBlur = true, filmGrain = true;
+    public bool motionBlur = true, filmGrain = true, depthOfField = true;
     public float headBob = 1;
     public float mouseSensitivity = 1, gamepadSensitivity = 1, gamepadDeadzone = .125f;
     public bool invertMouseY, invertGamepadY;

@@ -3606,6 +3606,11 @@
             "text": "Motion blur"
         },
         {
+            "key": "settings.dof",
+            "source": "Depth of field",
+            "text": "Depth of field"
+        },
+        {
             "key": "settings.grain",
             "source": "Film grain",
             "text": "Film grain"

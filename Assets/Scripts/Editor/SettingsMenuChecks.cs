@@ -30,6 +30,7 @@ public static class SettingsMenuChecks
         Require(Mathf.Approximately(data.musicVolume, .35f) && Mathf.Approximately(data.mouseSensitivity, 2), "Old user preferences lost.");
         Require((float)typeof(SettingsData).GetField("gamepadSensitivity").GetValue(data) == 1f, "Missing gamepad preference must default to 1.");
         Require((bool)typeof(SettingsData).GetField("motionBlur").GetValue(data), "Old saves must retain authored motion blur default.");
+        Require((bool)typeof(SettingsData).GetField("depthOfField").GetValue(data), "Old saves must retain authored depth of field default.");
         data.masterVolume = -2; data.brightness = float.NaN; data.mouseSensitivity = float.PositiveInfinity;
         typeof(SettingsData).GetMethod("Normalize").Invoke(data, new object[] { 3 });
         Require(data.masterVolume == 0 && data.brightness == 0 && data.mouseSensitivity == 1, "Invalid values not normalized.");

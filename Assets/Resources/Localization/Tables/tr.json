@@ -3606,6 +3606,11 @@
             "text": "Hareket bulanıklığı"
         },
         {
+            "key": "settings.dof",
+            "source": "Depth of field",
+            "text": "Alan derinliği"
+        },
+        {
             "key": "settings.grain",
             "source": "Film grain",
             "text": "Film greni"

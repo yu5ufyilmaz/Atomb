@@ -26,6 +26,7 @@ public class SettingsManager : MonoBehaviour
     ColorAdjustments color;
     MotionBlur blur;
     FilmGrain grain;
+    DepthOfField depthOfField;
     bool savePending;
     float saveDeadline;
     public bool IsTestingDisplay => pendingDisplay != null;
@@ -111,9 +112,10 @@ public class SettingsManager : MonoBehaviour
             var go = new GameObject("User display preferences"); go.transform.SetParent(transform, false);
             preferenceVolume = go.AddComponent<Volume>(); preferenceVolume.isGlobal = true; preferenceVolume.priority = 100000;
             preferenceVolume.sharedProfile = ScriptableObject.CreateInstance<VolumeProfile>();
-            color = preferenceVolume.sharedProfile.Add<ColorAdjustments>(); blur = preferenceVolume.sharedProfile.Add<MotionBlur>(); grain = preferenceVolume.sharedProfile.Add<FilmGrain>();
+            color = preferenceVolume.sharedProfile.Add<ColorAdjustments>(); blur = preferenceVolume.sharedProfile.Add<MotionBlur>(); grain = preferenceVolume.sharedProfile.Add<FilmGrain>(); depthOfField = preferenceVolume.sharedProfile.Add<DepthOfField>();
         }
         color.postExposure.Override(currentSettings.brightness); blur.active = !currentSettings.motionBlur; blur.intensity.Override(0); grain.active = !currentSettings.filmGrain; grain.intensity.Override(0);
+        depthOfField.active = !currentSettings.depthOfField; depthOfField.focusMode.Override(DepthOfFieldMode.Off);
     }
     static float Decibels(float value) => value <= 0 ? -80 : Mathf.Log10(value) * 20;
     public void ApplyAudioSettings()
@@ -180,7 +182,7 @@ public class SettingsManager : MonoBehaviour
         switch (section)
         {
             case "audio": d.masterVolume = d.musicVolume = d.sfxVolume = d.voiceVolume = 1; break;
-            case "video": d.qualityIndex = Math.Min(1, QualitySettings.names.Length - 1); d.vSync = true; d.frameRateLimit = 144; d.brightness = 0; d.motionBlur = d.filmGrain = true; d.headBob = 1; QualitySettings.SetQualityLevel(d.qualityIndex); break;
+            case "video": d.qualityIndex = Math.Min(1, QualitySettings.names.Length - 1); d.vSync = true; d.frameRateLimit = 144; d.brightness = 0; d.motionBlur = d.filmGrain = d.depthOfField = true; d.headBob = 1; QualitySettings.SetQualityLevel(d.qualityIndex); break;
             case "controls": d.mouseSensitivity = d.gamepadSensitivity = 1; d.invertMouseY = d.invertGamepadY = false; d.gamepadDeadzone = .125f; GameInput.ResetBindings(); break;
             case "language": d.subtitlesEnabled = true; d.subtitleSize = 1; d.subtitleBackground = .5f; SetLanguage("en"); break;
         }

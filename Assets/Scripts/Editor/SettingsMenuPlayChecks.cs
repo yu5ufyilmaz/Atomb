@@ -127,13 +127,14 @@ public static class SettingsMenuPlayChecks
             var pause=UnityEngine.Object.FindFirstObjectByType<PauseManager>();Require(pause!=null,"Real pause menu missing.");
             if(GameManager.Instance!=null)GameManager.Instance.isGameStarted=true;pause.PauseGame();pause.OpenSettings();yield return null;
             view=SettingsMenuView.Open;Require(view!=null&&Time.timeScale==0&&AudioListener.pause,"Pause settings resumed the world.");
-            manager.currentSettings.voiceVolume=.25f;manager.currentSettings.brightness=-1;manager.currentSettings.motionBlur=false;manager.currentSettings.filmGrain=false;manager.currentSettings.vSync=false;manager.currentSettings.frameRateLimit=60;manager.ChangedAndSave();
+            manager.currentSettings.voiceVolume=.25f;manager.currentSettings.brightness=-1;manager.currentSettings.motionBlur=false;manager.currentSettings.filmGrain=false;manager.currentSettings.depthOfField=false;manager.currentSettings.vSync=false;manager.currentSettings.frameRateLimit=60;manager.ChangedAndSave();
             Require(manager.mainAudioMixer.GetFloat("Voice",out float voice)&&Math.Abs(voice+12.0412f)<.1f,"Real Voice mixer does not respond.");
             manager.SetMasterVolume(.5f);manager.SetMusicVolume(.25f);manager.SetSFXVolume(.125f);
             Require(manager.mainAudioMixer.GetFloat("Master",out float master)&&Math.Abs(master+6.0206f)<.1f&&manager.mainAudioMixer.GetFloat("Music",out float music)&&Math.Abs(music+12.0412f)<.1f&&manager.mainAudioMixer.GetFloat("SFX",out float sfx)&&Math.Abs(sfx+18.0618f)<.1f,"Independent Master/Music/SFX mixer channels do not respond.");
             manager.SetMasterVolume(0);Require(AudioListener.volume==0,"Zero master volume does not mute audio.");manager.SetMasterVolume(original.masterVolume);
             var volume=manager.GetComponentInChildren<Volume>();Require(volume!=null&&volume.sharedProfile.TryGet<ColorAdjustments>(out var color)&&color.postExposure.value==-1,"Runtime exposure not applied.");
             Require(volume.sharedProfile.TryGet<MotionBlur>(out var blur)&&blur.active&&blur.intensity.value==0,"Motion blur preference not applied.");
+            Require(volume.sharedProfile.TryGet<DepthOfField>(out var dof)&&dof.active&&dof.focusMode.value==DepthOfFieldMode.Off,"Depth of field preference not applied.");
             manager.SetQuality(0);Require(QualitySettings.vSyncCount==0&&Application.targetFrameRate==60,"Quality change lost FPS/vSync preferences.");
             var inputs=UnityEngine.Object.FindFirstObjectByType<StarterAssets.StarterAssetsInputs>();var update=typeof(PauseManager).GetMethod("Update",BindingFlags.Instance|BindingFlags.NonPublic);
             inputs.pause=true;update.Invoke(pause,null);view.RequestClose(pause.CloseSettings);Require(Time.timeScale==0,"Pause update before closing settings resumed world.");
