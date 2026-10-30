@@ -284,7 +284,7 @@ public class InteractablePressureValve : MonoBehaviour, IInteractable, IForceExi
         if (!inValveMode || isExiting)
             return;
 
-        if (Input.GetKeyDown(KeyCode.F) || Input.GetMouseButtonDown(1))
+        if (GameInput.Pressed("Cancel") || GameInput.Pressed("SecondaryInteract"))
         {
             StartCoroutine(ExitValveMode());
             return;

@@ -36,11 +36,15 @@ public class GameManager : MonoBehaviour
         if (Instance == null)
             Instance = this;
         else
+        {
             Destroy(gameObject);
+            return;
+        }
 
-        DontDestroyOnLoad(gameObject);
         RefreshReferences();
     }
+
+    private void OnDestroy() { if (Instance == this) Instance = null; }
 
     private void Start()
     {

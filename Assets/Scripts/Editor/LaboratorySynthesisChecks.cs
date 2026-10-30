@@ -21,7 +21,8 @@ public static class LaboratorySynthesisChecks
         Application.runInBackground = true;
         if (!GameManager.Instance.isGameStarted)
         {
-            UnityEngine.Object.FindFirstObjectByType<MainMenuManager>().PlayGame();
+            var menu = UnityEngine.Object.FindFirstObjectByType<MainMenuManager>();
+            menu.PlayGame(); menu.ChooseTutorial(true);
             while (!GameManager.Instance.isGameStarted) yield return null;
             yield return new WaitForSeconds(2);
         }
@@ -116,7 +117,8 @@ public static class LaboratorySynthesisChecks
         Application.runInBackground = true;
         if (!GameManager.Instance.isGameStarted)
         {
-            UnityEngine.Object.FindFirstObjectByType<MainMenuManager>().PlayGame();
+            var menu = UnityEngine.Object.FindFirstObjectByType<MainMenuManager>();
+            menu.PlayGame(); menu.ChooseTutorial(true);
             while (!GameManager.Instance.isGameStarted) yield return null;
             yield return new WaitForSeconds(2);
         }
@@ -161,7 +163,7 @@ public static class LaboratorySynthesisChecks
         Check(menu != null, "Original laboratory menu missing.");
         var start = UnityEngine.Object.FindFirstObjectByType<InGameMenuController>();
         float introDuration = start != null && start.introTimeline != null ? (float)start.introTimeline.duration : 0;
-        menu.PlayGame();
+        menu.PlayGame(); menu.ChooseTutorial(true);
         float end = Time.time + introDuration + 15;
         float realEnd = Time.realtimeSinceStartup + 180;
         Debug.Log("LAB MENU WAIT: authored intro duration=" + introDuration);
@@ -206,7 +208,8 @@ public static class LaboratorySynthesisChecks
         if (started) game.StartGameMode();
         else
         {
-            UnityEngine.Object.FindFirstObjectByType<MainMenuManager>().PlayGame();
+            var menu = UnityEngine.Object.FindFirstObjectByType<MainMenuManager>();
+            menu.PlayGame(); menu.ChooseTutorial(true);
             float startDeadline = Time.realtimeSinceStartup + 90;
             while (!game.isGameStarted && Time.realtimeSinceStartup < startDeadline) yield return null;
             Check(game.isGameStarted, "Laboratory New Game did not start.");
@@ -344,7 +347,43 @@ public static class LaboratorySynthesisChecks
     }
 
     [MenuItem("Senzora/Lab Migration/Validate Scene Copy")]
-    public static void ValidateScene() => ValidateScene(true);
+    public static void ValidateScene()
+    {
+        var scene = SceneManager.GetActiveScene();
+        Check(scene.path == LaboratorySynthesisSetup.ScenePath, "Open the laboratory synthesis scene.");
+        var trial = LaboratorySynthesisSetup.Find<ResearchPuzzleTrial>(scene);
+        Check(trial != null && trial.allowGameplayScene && trial.partTemplate != null
+            && trial.books.Length > 0 && trial.books.Distinct().Count() == trial.books.Length,
+            "Research session or book bindings are invalid.");
+        var identities = new HashSet<string>();
+        foreach (var book in trial.books)
+        {
+            Check(book != null && book.gameObject.scene == scene && book.gameObject.activeInHierarchy
+                && book.usePhysicalPageBlocks && book.GetComponent<BookPageBlockSurface>() != null,
+                "Research book configuration invalid.");
+            var identity = book.GetComponent<PuzzleBookIdentity>();
+            Check(identity != null && identity.accessible && !string.IsNullOrEmpty(identity.bookID)
+                && identities.Add(identity.bookID), "Missing or duplicate research book identity.");
+        }
+        Check(trial.simultaneousPuzzles != null, "Research goal pool is missing.");
+        var goals = trial.simultaneousPuzzles.Playable(out string error);
+        Check(error == null && goals.Count > 0, error ?? "Research goal pool is empty.");
+        var board = LaboratorySynthesisSetup.Find<ChalkboardManager>(scene);
+        Check(board != null && board.boardTransform != null && board.boardTransform.gameObject.scene == scene
+            && board.synthesisZone != null, "Board scene bindings are missing.");
+        Check(LaboratorySynthesisSetup.Find<InteractableTuringMachine>(scene) != null
+            && LaboratorySynthesisSetup.Find<StarterAssets.CharacterController>(scene) != null,
+            "Player or Turing terminal is missing.");
+        var notebook = LaboratorySynthesisSetup.Find<NotebookUI>(scene);
+        Check(notebook != null && notebook.useScreenSpaceNotebook && notebook.GetComponent<NotebookWorkspaceController>() != null,
+            "Screen notebook is missing.");
+        Check(LaboratorySynthesisSetup.Find<SaveManager>(scene).sessionOnly, "Research scene can modify the normal save.");
+        Check(LaboratorySynthesisSetup.All<FormulaCatalog>(scene).Count() == 1, "Expected one formula catalog.");
+        Debug.Log($"LAB CURRENT SCENE PASS: {trial.books.Length} unique research books, {goals.Count} goals, player/board/Turing bindings and protected save.");
+    }
+
+    [MenuItem("Senzora/Lab Migration/Legacy Four-Book Copy/Validate Original Poses")]
+    public static void ValidateOriginalCopy() => ValidateScene(true);
 
     public static void ValidateScene(bool compareOriginalPoses)
     {

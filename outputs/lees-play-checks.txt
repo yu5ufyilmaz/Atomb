@@ -1,0 +1,6 @@
+RUNNING 2026-10-30T04:21:17.8229946Z
+PRACTICE movement and retry passed
+BEGIN movement=True, pause=False, timeScale=1, result=False, gamePause=True
+TIMELINE playing; duration=6.483333333332
+PASS 12 real Play assertions
+2026-10-30T04:21:30.7300209Z

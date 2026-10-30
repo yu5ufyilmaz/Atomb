@@ -176,13 +176,24 @@ public class ControlsUIManager : MonoBehaviour
     /// </summary>
     private void ToggleHUD(bool state)
     {
-        // Listeye eklediğin objeleri (Progress Bar vb.) aç/kapat
+        // Listeye eklediğin objeleri (Progress Bar vb.) CanvasGroup ile aç/kapat
         if (hudElementsToHide != null)
         {
             foreach (var obj in hudElementsToHide)
             {
-                if (obj != null)
-                    obj.SetActive(state);
+                if (obj == null)
+                    continue;
+
+                if (!obj.activeSelf)
+                    obj.SetActive(true);
+
+                CanvasGroup group = obj.GetComponent<CanvasGroup>();
+                if (group == null)
+                    group = obj.AddComponent<CanvasGroup>();
+
+                group.alpha = state ? 1f : 0f;
+                group.interactable = state;
+                group.blocksRaycasts = state;
             }
         }
 
@@ -208,6 +219,8 @@ public class ControlsUIManager : MonoBehaviour
             pressureValvePanel.SetActive(false);
         if (bookPanel != null)
             bookPanel.SetActive(false);
+        if (hidingSpotPanel != null)
+            hidingSpotPanel.SetActive(false);
     }
 
     private IEnumerator FadeRoutine(float targetAlpha)

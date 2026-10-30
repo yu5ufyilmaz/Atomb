@@ -128,6 +128,7 @@ public partial class InteractableBook : MonoBehaviour, IInteractable, IForceExit
     }
 
     private List<RendererHighlightData> allRenderersData = new List<RendererHighlightData>();
+    private readonly HashSet<Material> ownedMaterials = new HashSet<Material>();
     private Material[] highlightMaterials;
     private bool isFocused = false;
 
@@ -193,14 +194,14 @@ public partial class InteractableBook : MonoBehaviour, IInteractable, IForceExit
         // Sayfa materyali kopyalama
         if (bookPagesMaterial != null)
         {
-            bookPagesMaterial = new Material(bookPagesMaterial);
+            bookPagesMaterial = OwnMaterial(bookPagesMaterial);
             if (bookSkinnedMeshRenderer != null)
             {
-                Material[] materials = bookSkinnedMeshRenderer.materials;
+                Material[] materials = bookSkinnedMeshRenderer.sharedMaterials;
                 if (bookMaterialIndex < materials.Length)
                 {
                     materials[bookMaterialIndex] = bookPagesMaterial;
-                    bookSkinnedMeshRenderer.materials = materials;
+                    bookSkinnedMeshRenderer.sharedMaterials = materials;
                 }
             }
         }
@@ -210,17 +211,17 @@ public partial class InteractableBook : MonoBehaviour, IInteractable, IForceExit
             Material[] materials = bookSkinnedMeshRenderer.sharedMaterials;
             if (bookMaterialIndex < materials.Length && materials[bookMaterialIndex] != null)
             {
-                bookPagesMaterial = new Material(materials[bookMaterialIndex]);
+                bookPagesMaterial = OwnMaterial(materials[bookMaterialIndex]);
                 materials[bookMaterialIndex] = bookPagesMaterial;
-                bookSkinnedMeshRenderer.materials = materials;
+                bookSkinnedMeshRenderer.sharedMaterials = materials;
             }
         }
 
         if (pageTurnMaterial != null)
         {
-            pageTurnMaterial = new Material(pageTurnMaterial);
+            pageTurnMaterial = OwnMaterial(pageTurnMaterial);
             if (pageFlipRenderer != null)
-                pageFlipRenderer.material = pageTurnMaterial;
+                pageFlipRenderer.sharedMaterial = pageTurnMaterial;
         }
     }
 
@@ -234,6 +235,34 @@ public partial class InteractableBook : MonoBehaviour, IInteractable, IForceExit
     private void OnDisable()
     {
         GameLocalization.LanguageChanged -= RefreshLocalizedPageTexture;
+    }
+
+    private Material OwnMaterial(Material source)
+    {
+        var material = new Material(source);
+        ownedMaterials.Add(material);
+        return material;
+    }
+
+    public void DisableEmission()
+    {
+        emissionIntensity = 0;
+        foreach (var renderer in GetComponentsInChildren<Renderer>(true))
+            foreach (var material in renderer.materials)
+            {
+                ownedMaterials.Add(material);
+                if (material.HasProperty("_EmissiveColor")) material.SetColor("_EmissiveColor", Color.black);
+                if (material.HasProperty("_EmissionColor")) material.SetColor("_EmissionColor", Color.black);
+                if (material.HasProperty("_EmissiveIntensity")) material.SetFloat("_EmissiveIntensity", 0);
+                material.DisableKeyword("_EMISSION");
+            }
+    }
+
+    private void OnDestroy()
+    {
+        foreach (var material in ownedMaterials)
+            if (material != null) { if (Application.isPlaying) Destroy(material); else DestroyImmediate(material); }
+        if (bakedMesh != null) { if (Application.isPlaying) Destroy(bakedMesh); else DestroyImmediate(bakedMesh); }
     }
 
     public void RefreshLocalizedPageTexture()
@@ -273,6 +302,13 @@ public partial class InteractableBook : MonoBehaviour, IInteractable, IForceExit
         }
         // --------------------
 
+        // Highlight copies are prepared only when a book actually needs emission focus.
+        FinishBookSetup();
+    }
+
+    private void PrepareHighlightMaterials()
+    {
+        if (allRenderersData.Count > 0) return;
         // --- 2. HIGHLIGHT (EMISSION) HAZIRLIĞI (GÜNCELLENDİ) ---
         // Kitabın altındaki TÜM Renderer'ları bul (Kapak, Sayfalar, vs.)
         Renderer[] renderers = GetComponentsInChildren<Renderer>(true);
@@ -285,13 +321,13 @@ public partial class InteractableBook : MonoBehaviour, IInteractable, IForceExit
 
             RendererHighlightData data = new RendererHighlightData();
             data.renderer = r;
-            data.originalMaterials = r.materials; // Orijinal materyalleri sakla
+            data.originalMaterials = r.sharedMaterials;
 
             // Highlight materyallerini oluştur
             data.highlightMaterials = new Material[data.originalMaterials.Length];
             for (int i = 0; i < data.originalMaterials.Length; i++)
             {
-                Material mat = new Material(data.originalMaterials[i]);
+                Material mat = OwnMaterial(data.originalMaterials[i]);
                 mat.EnableKeyword("_EMISSION");
 
                 // HDRP Emission Rengi Ayarı
@@ -307,7 +343,10 @@ public partial class InteractableBook : MonoBehaviour, IInteractable, IForceExit
 
             allRenderersData.Add(data);
         }
+    }
 
+    private void FinishBookSetup()
+    {
         // --- DİĞER BAŞLANGIÇ KODLARI ---
         interactionCollider = GetComponent<BoxCollider>();
         if (interactionCollider == null)
@@ -449,10 +488,10 @@ public partial class InteractableBook : MonoBehaviour, IInteractable, IForceExit
             {
                 HandlePageInput(); // A ve D ile sayfa çevirme her zaman serbest
 
-                if (isPasswordBook && !hasPasswordBeenFound && Input.GetMouseButtonDown(0))
+                if (isPasswordBook && !hasPasswordBeenFound && GameInput.Pressed("Interact"))
                     CheckForPasswordClick();
 
-                if (Input.GetKeyDown(KeyCode.F))
+                if (GameInput.Pressed("Cancel"))
                 {
                     StartCoroutine(CloseBook());
                 }
@@ -475,12 +514,13 @@ public partial class InteractableBook : MonoBehaviour, IInteractable, IForceExit
             outlineController.ToggleOutline(true);
         }
         // 2. ÖNCELİK: Gelişmiş Emission Sistemi (Tüm parçalar parlar)
-        else
+        else if (emissionIntensity > 0)
         {
+            PrepareHighlightMaterials();
             foreach (var data in allRenderersData)
             {
                 if (data.renderer != null)
-                    data.renderer.materials = data.highlightMaterials;
+                    data.renderer.sharedMaterials = data.highlightMaterials;
             }
         }
     }
@@ -502,7 +542,7 @@ public partial class InteractableBook : MonoBehaviour, IInteractable, IForceExit
             foreach (var data in allRenderersData)
             {
                 if (data.renderer != null)
-                    data.renderer.materials = data.originalMaterials;
+                    data.renderer.sharedMaterials = data.originalMaterials;
             }
         }
     }
@@ -760,9 +800,9 @@ public partial class InteractableBook : MonoBehaviour, IInteractable, IForceExit
 
     private void HandlePageInput()
     {
-        if (Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.RightArrow))
+        if (GameInput.Pressed("NextPage"))
             NextPage();
-        else if (Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.LeftArrow))
+        else if (GameInput.Pressed("PreviousPage"))
             PreviousPage();
     }
 

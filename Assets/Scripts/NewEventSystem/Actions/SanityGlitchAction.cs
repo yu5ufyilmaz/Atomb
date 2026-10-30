@@ -57,7 +57,7 @@ public class SanityGlitchAction : ActionBase
         // 1. Sesi tam kameranın içinde (oyuncunun kafasında) çal
         if (shockSound != null)
         {
-            AudioSource.PlayClipAtPoint(shockSound, Camera.main.transform.position, soundVolume);
+            SettingsManager.PlayEffectAtPoint(shockSound, Camera.main.transform.position, soundVolume);
         }
 
         // 2. Görsel Şok Rutinini Başlat

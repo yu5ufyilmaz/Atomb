@@ -1,0 +1,15 @@
+{
+    "success": false,
+    "objects": 3193,
+    "books": 0,
+    "catalogs": 6,
+    "oldSettingsChildren": 169,
+    "missingScripts": 2,
+    "issues": [
+        "Expected one FormulaCatalog; found 6.",
+        "Obsolete settings descendants: 169.",
+        "Missing scripts (1): ENVIRONMENT/Office_Room/InteractablesProbs/BOOKS/BookModel (2)",
+        "Missing scripts (1): ENVIRONMENT/SciencInstute/SI_Lambs/lambdeneme (35)/Spot Light (4)"
+    ],
+    "changes": []
+}

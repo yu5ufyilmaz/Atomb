@@ -1,0 +1,16 @@
+{
+  "status": "success",
+  "result": {
+    "success": true,
+    "message": "Retrieved 1 log entries.",
+    "data": [
+      {
+        "type": "Exception",
+        "message": "InvalidOperationException: Machine or player child pose changed: Senekas_Player/Lees_Dummy/mixamorig:Hips",
+        "file": "Assets/Scripts/Editor/LaboratorySynthesisChecks.cs",
+        "line": 370,
+        "stackTrace": "LaboratorySynthesisChecks.ValidateScene (System.Boolean compareOriginalPoses) (at Assets/Scripts/Editor/LaboratorySynthesisChecks.cs:370)\nLaboratorySynthesisChecks.ValidateScene () (at Assets/Scripts/Editor/LaboratorySynthesisChecks.cs:350)\nUnityEditor.EditorApplication:ExecuteMenuItem(String)\nMCPForUnity.Editor.Tools.ExecuteMenuItem:HandleCommand(JObject) (at ./Library/PackageCache/com.coplaydev.unity-mcp@3f515245252a/Editor/Tools/ExecuteMenuItem.cs:38)\nMCPForUnity.Editor.Tools.CommandRegistry:ExecuteCommand(String, JObject, TaskCompletionSource`1) (at ./Library/PackageCache/com.coplaydev.unity-mcp@3f515245252a/Editor/Tools/CommandRegistry.cs:248)\nMCPForUnity.Editor.Services.Transport.TransportCommandDispatcher:ProcessCommand(String, PendingCommand) (at ./Library/PackageCache/com.coplaydev.unity-mcp@3f515245252a/Editor/Services/Transport/TransportCommandDispatcher.cs:228)\nMCPForUnity.Editor.Services.Transport.TransportCommandDispatcher:ProcessQueue() (at ./Library/PackageCache/com.coplaydev.unity-mcp@3f515245252a/Editor/Services/Transport/TransportCommandDispatcher.cs:152)\nUnityEditor.EditorApplication:Internal_CallUpdateFunctions()"
+      }
+    ]
+  }
+}

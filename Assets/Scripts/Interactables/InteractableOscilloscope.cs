@@ -347,7 +347,7 @@ public class InteractableOscilloscope : MonoBehaviour, IInteractable, IForceExit
             return;
 
         // ÇIKIŞ
-        if (Input.GetKeyDown(KeyCode.F))
+        if (GameInput.Pressed("Cancel"))
         {
             StartCoroutine(ExitMachineView());
             return;
@@ -362,23 +362,23 @@ public class InteractableOscilloscope : MonoBehaviour, IInteractable, IForceExit
 
         // KONTROLLER
         bool changed = false;
-        if (Input.GetKeyDown(KeyCode.W))
+        if (GameInput.Pressed("DeviceUp"))
         {
             currentVoltsSetting = Mathf.Min(currentVoltsSetting + 1, maxVoltsSetting);
             changed = true;
         }
-        else if (Input.GetKeyDown(KeyCode.S))
+        else if (GameInput.Pressed("DeviceDown"))
         {
             currentVoltsSetting = Mathf.Max(currentVoltsSetting - 1, 0);
             changed = true;
         }
 
-        if (Input.GetKeyDown(KeyCode.D))
+        if (GameInput.Pressed("DeviceRight"))
         {
             currentTimeSetting = Mathf.Min(currentTimeSetting + 1, maxTimeSetting);
             changed = true;
         }
-        else if (Input.GetKeyDown(KeyCode.A))
+        else if (GameInput.Pressed("DeviceLeft"))
         {
             currentTimeSetting = Mathf.Max(currentTimeSetting - 1, 0);
             changed = true;

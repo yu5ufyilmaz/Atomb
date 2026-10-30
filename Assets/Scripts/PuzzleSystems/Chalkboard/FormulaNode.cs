@@ -103,14 +103,14 @@ public class FormulaNode : MonoBehaviour
         if (mainCam == null) mainCam = Camera.main;
         if (mainCam == null) return;
         bool overUI = IsPointerOverUI();
-        if ((Input.GetMouseButtonDown(0) || Input.GetMouseButtonDown(1)) && !overUI)
+        if ((GameInput.Pressed("Interact") || GameInput.Pressed("SecondaryInteract")) && !overUI)
         {
             if (FindNodeAtPointer() != this) return;
-            if (Input.GetMouseButtonDown(1)) { Erase(); return; }
+            if (GameInput.Pressed("SecondaryInteract")) { Erase(); return; }
             if (activeDraggingNode == null)
             { isDraggingLine = true; activeDraggingNode = this; }
         }
-        if (isDraggingLine && Input.GetMouseButtonUp(0))
+        if (isDraggingLine && GameInput.Released("Interact"))
         {
             CancelDrawing();
             if (!overUI) ConnectTo(FindNodeAtPointer());

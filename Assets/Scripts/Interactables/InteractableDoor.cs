@@ -101,10 +101,10 @@ public class InteractableDoor : MonoBehaviour, IInteractable
     public string GetInteractionPrompt()
     {
         if (isLocked)
-            return "[E] Kilitli";
+            return "[Sol Tık] Kilitli";
         if (isAnimating)
             return "";
-        return isOpen ? "[E] Kapıyı Kapat" : "[E] Kapıyı Aç";
+        return isOpen ? "[Sol Tık] Kapıyı Kapat" : "[Sol Tık] Kapıyı Aç";
     }
 
     private IEnumerator ToggleDoorWithController()

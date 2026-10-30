@@ -27,20 +27,24 @@ public class TutorialManager : MonoBehaviour
     /// </summary>
     public void ToggleTutorial()
     {
-        isTutorialEnabled = !isTutorialEnabled;
-        SetupTutorialMode();
+        SetTutorialEnabled(!isTutorialEnabled);
     }
 
     public void CompleteTutorial()
     {
-        isTutorialEnabled = false;
-        SetupTutorialMode();
+        SetTutorialEnabled(false);
+    }
+
+    public void SetTutorialEnabled(bool enabled)
+    {
+        isTutorialEnabled = enabled;
+        SetupTutorialMode(initializeNormalGameplay: true);
     }
 
     /// <summary>
     /// Değişen isTutorialEnabled durumuna göre gerekli objeleri açar/kapatır.
     /// </summary>
-    private void SetupTutorialMode()
+    private void SetupTutorialMode(bool initializeNormalGameplay = false)
     {
         if (tutorialEventsParent != null)
         {
@@ -56,12 +60,12 @@ public class TutorialManager : MonoBehaviour
                     PlayerInteraction.Instance.isTutorialMode = false;
                     PlayerInteraction.Instance.UpdateTutorialWhitelist(new System.Collections.Generic.List<GameObject>());
                 }
-                if (wasActive)
+                if (wasActive || initializeNormalGameplay)
                 {
                     if (BreakerBox.Instance != null) BreakerBox.Instance.isSystemActive = true;
                     if (PressureSystemManager.Instance != null) PressureSystemManager.Instance.isSystemActive = true;
                     if (GlobalEnemyManager.Instance != null) GlobalEnemyManager.Instance.stopAllEnemies = false;
-                    if (GameManager.Instance == null || GameManager.Instance.activeInteraction == null)
+                    if (GameManager.Instance == null || (GameManager.Instance.isGameStarted && GameManager.Instance.activeInteraction == null))
                         FindFirstObjectByType<StarterAssets.CharacterController>()?.SetFrozen(false, false, false);
                 }
             }

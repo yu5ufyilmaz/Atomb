@@ -17,6 +17,7 @@ public sealed class ChalkboardTutorial : MonoBehaviour
     private bool sawBreakerTrip;
     private bool valveUsed;
     private string lessonFingerprint;
+    private string preparedSessionID;
     private SignalExperiment experiment;
 
     public static PuzzleDefinition CreatePuzzle()
@@ -92,6 +93,8 @@ public sealed class ChalkboardTutorial : MonoBehaviour
 
     private void PrepareLesson()
     {
+        if (research?.Content == null || preparedSessionID == research.SessionID) return;
+        preparedSessionID = research.SessionID;
         panelWasClosed = false;
         sawBreakerTrip = valveUsed = false;
         var puzzle = CreatePuzzle();

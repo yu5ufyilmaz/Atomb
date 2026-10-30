@@ -21,6 +21,23 @@ public class InputCondition : MonoBehaviour, ICondition
     [Tooltip("Dinlenecek ana tuş (Örn: Tab, Mouse1, LeftShift)")]
     public KeyCode targetKey = KeyCode.Tab;
 
+    [Tooltip("Varsa fiziksel tuş yerine bu ortak eylemi dinler (örn. ToggleNotebook, ChargeFlashlight). Kombinasyon modu fiziksel tuş listesini korur.")]
+    public string actionCode;
+
+    private bool Pressed()
+    {
+        if (!string.IsNullOrWhiteSpace(actionCode)) return GameInput.Pressed(actionCode);
+        // Keep existing serialized tutorial conditions following their rebindable actions.
+        switch (targetKey)
+        {
+            case KeyCode.Tab: return GameInput.Pressed("ToggleNotebook");
+            case KeyCode.F: return GameInput.Pressed("Cancel");
+            case KeyCode.Mouse0: return GameInput.Pressed("Interact");
+            case KeyCode.Mouse1: return GameInput.Pressed("ChargeFlashlight");
+            default: return Input.GetKeyDown(targetKey);
+        }
+    }
+
     [ShowIf("mode", InputMode.MultiplePresses)]
     [Tooltip("Bu tuşa toplamda/üst üste kaç kere basılması gerekiyor?")]
     public int requiredPresses = 5;
@@ -45,14 +62,14 @@ public class InputCondition : MonoBehaviour, ICondition
         switch (mode)
         {
             case InputMode.SinglePress:
-                if (Input.GetKeyDown(targetKey))
+                if (Pressed())
                 {
                     TriggerCondition();
                 }
                 break;
 
             case InputMode.MultiplePresses:
-                if (Input.GetKeyDown(targetKey))
+                if (Pressed())
                 {
                     currentPresses++;
                     if (currentPresses >= requiredPresses)

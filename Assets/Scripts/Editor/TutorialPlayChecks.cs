@@ -108,9 +108,11 @@ public static class TutorialPlayChecks
         Debug.Log("TUTORIAL PLAY STAGE PASS: real board, close button, ports, measurement and archived output");
 
         var doorLock = lesson.officeDoor.GetComponentInChildren<InteractableDoorLock>();
+        yield return WaitFor(() => PlayerInteraction.Instance.CanInteractWithWorld, "Kapıya odaklanmanın bitmesi");
         RequireAllowed(doorLock.gameObject); doorLock.Interact();
         yield return WaitFor(() => lesson.doorStep.HasTriggered, "Gerçek kapı kilidi");
         var spot = manager.tutorialEventsParent.GetComponentsInChildren<HidingSpotControlAction>().First().hidingSpot;
+        yield return WaitFor(() => PlayerInteraction.Instance.CanInteractWithWorld, "Saklanmadan önce kamera odağı");
         RequireAllowed(spot.gameObject);
         spot.Interact(); BroadcastInteraction(spot.gameObject);
         yield return WaitFor(() => spot.IsOccupied, "Gerçek dolaba giriş");
@@ -129,10 +131,28 @@ public static class TutorialPlayChecks
             Object.FindFirstObjectByType<StarterAssets.CharacterController>().ForceCameraRotation(look.y, look.x > 180 ? look.x - 360 : look.x);
             yield return null;
         }
-        Require(enemy.HasBeenSpotted, "Gerçek kamera/raycast Lees'i görmedi.");
+        if (!enemy.HasBeenSpotted)
+        {
+            var camera = enemy.playerCamera;
+            Vector3 eyes = enemy.eyesPosition != null ? enemy.eyesPosition.position : enemy.transform.position + Vector3.up * 1.5f;
+            Vector3 origin = camera.transform.position + camera.transform.forward * .3f;
+            Vector3 direction = eyes - origin;
+            var visibilityHits = Physics.RaycastAll(origin, direction, direction.magnitude, Field<int>(enemy, "visionLayerMask"), QueryTriggerInteraction.Collide);
+            string trace = string.Join("\n", visibilityHits.OrderBy(h => h.distance).Select(h => h.collider.name + " / " + h.collider.transform.root.name
+                + " / " + LayerMask.LayerToName(h.collider.gameObject.layer) + " / trigger=" + h.collider.isTrigger + " / distance=" + h.distance));
+            var inputs = Object.FindFirstObjectByType<StarterAssets.StarterAssetsInputs>();
+            System.IO.File.WriteAllText("Temp/tutorial-lees-state.txt", "state=" + enemy.currentState + ", enabled=" + enemy.enabled
+                + ", stopAllEnemies=" + GlobalEnemyManager.Instance.stopAllEnemies + ", controllable=" + Object.FindFirstObjectByType<UnityEngine.CharacterController>().enabled
+                + ", camera=" + camera.name + ", main=" + Camera.main.name + ", camera position=" + camera.transform.position + ", eyes=" + eyes
+                + ", viewport=" + camera.WorldToViewportPoint(eyes) + ", look=" + inputs.look + ", focus blocked=" + PlayerInteraction.Instance.IsInteractionBlocked + "\n" + trace);
+            ScreenCapture.CaptureScreenshot("Temp/tutorial-lees-failure.png");
+            yield return new WaitForEndOfFrame();
+        }
+        Require(enemy.HasBeenSpotted, "Gerçek kamera/raycast Lees'i görmedi; Temp/tutorial-lees-state.txt ayrıntılarını kontrol et.");
         yield return WaitFor(() => lesson.terminalReadyStep.HasTriggered, "Lees eğitimi", 55);
         Debug.Log("TUTORIAL PLAY STAGE PASS: lock, hiding and scripted enemies");
 
+        yield return WaitFor(() => PlayerInteraction.Instance.CanInteractWithWorld, "Turing kamera odağının bitmesi");
         RequireAllowed(experiment.terminal.gameObject); experiment.terminal.Interact();
         yield return WaitFor(() => game.activeInteraction == experiment.terminal && experiment.terminal.RequiresMeasurementCursor, "Turing'e giriş");
         Call(experiment.terminal, "CheckPassword");
@@ -156,6 +176,7 @@ public static class TutorialPlayChecks
         yield return WaitFor(() => lesson.valveRoomStep.HasTriggered, "Vana odası tetikleyicisi");
         yield return new WaitForSeconds(2);
         var valve = Object.FindFirstObjectByType<InteractablePressureValve>();
+        yield return WaitFor(() => PlayerInteraction.Instance.CanInteractWithWorld, "Vana kamera odağının bitmesi");
         RequireAllowed(valve.gameObject);
         valve.Interact(); yield return WaitFor(() => game.activeInteraction == valve, "Vanaya giriş");
         yield return new WaitForSeconds(2);

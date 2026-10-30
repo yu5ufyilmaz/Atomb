@@ -62,7 +62,7 @@ public sealed class LocalizationCatalog
         var values = new object[arguments.Length];
         for (int i = 0; i < values.Length; i++)
             values[i] = arguments[i] is string ? Translate((string)arguments[i]) : arguments[i];
-        try { return string.Format(culture, translated, values); }
+        try { return string.Format(culture, EscapeInputTokens(translated), values); }
         catch (FormatException) { return canonicalFormat ?? string.Empty; }
     }
 
@@ -82,7 +82,7 @@ public sealed class LocalizationCatalog
             if (!match.Success) continue;
             var arguments = new object[pattern.argumentCount];
             for (int i = 0; i < arguments.Length; i++) arguments[i] = Translate(match.Groups["p" + i].Value, depth + 1);
-            try { return string.Format(culture, pattern.translation, arguments); }
+            try { return string.Format(culture, EscapeInputTokens(pattern.translation), arguments); }
             catch (FormatException) { return source; }
         }
 
@@ -124,5 +124,10 @@ public sealed class LocalizationCatalog
         }
         expression.Append(Regex.Escape(source.Substring(position))).Append("\\z");
         patterns.Add(new Pattern { regex = new Regex(expression.ToString(), RegexOptions.CultureInvariant, TimeSpan.FromMilliseconds(50)), translation = translation, argumentCount = count, specificity = literals.Length });
+    }
+
+    private static string EscapeInputTokens(string text)
+    {
+        return Regex.Replace(text, @"\{input:[A-Za-z][A-Za-z0-9_]*\}", match => "{" + match.Value + "}");
     }
 }

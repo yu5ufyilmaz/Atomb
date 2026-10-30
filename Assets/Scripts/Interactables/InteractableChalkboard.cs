@@ -165,6 +165,8 @@ public class InteractableChalkboard : MonoBehaviour, IInteractable, IForceExitab
                 ControlsUIManager.MachineType.Chalkboard,
                 "Sentez Tahtası\n[F] Çık"
             );
+        else if (playerInteractionScript != null)
+            playerInteractionScript.ToggleCrosshair(false);
 
         if (DoFManager.Instance != null)
             DoFManager.Instance.SetFocus(focusDistance);
@@ -179,11 +181,8 @@ public class InteractableChalkboard : MonoBehaviour, IInteractable, IForceExitab
         if (!inMachineMode || isExiting)
             return;
 
-        if (playerInteractionScript != null)
-            playerInteractionScript.ToggleCrosshair(false); // Sürükleme yapacağımız için crosshair gizli kalsın
-
         // SADECE F TUŞU İLE ÇIKIŞ (ESC'yi GameManager'a bıraktık)
-        if (Input.GetKeyDown(KeyCode.F))
+        if (GameInput.Pressed("Cancel"))
         {
             ForceExit();
         }
@@ -219,11 +218,12 @@ public class InteractableChalkboard : MonoBehaviour, IInteractable, IForceExitab
             playerMovementScript.SetFrozen(false, lockCameraInput: false, restrictRotation: false);
         if (playerLookScript)
             playerLookScript.enabled = true;
-        if (playerInteractionScript)
-            playerInteractionScript.ToggleCrosshair(true);
 
         if (ControlsUIManager.Instance)
             ControlsUIManager.Instance.HideControls();
+        else if (playerInteractionScript)
+            playerInteractionScript.ToggleCrosshair(true);
+
         if (DoFManager.Instance != null)
             DoFManager.Instance.ResetFocus();
 

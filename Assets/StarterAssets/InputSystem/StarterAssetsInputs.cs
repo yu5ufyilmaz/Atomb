@@ -7,6 +7,15 @@ namespace StarterAssets
 {
     public class StarterAssetsInputs : MonoBehaviour
     {
+#if ENABLE_INPUT_SYSTEM
+        private PlayerInput playerInput;
+#endif
+        private void OnEnable()
+        {
+#if ENABLE_INPUT_SYSTEM
+            playerInput=GetComponent<PlayerInput>();GameInput.Attach(playerInput);
+#endif
+        }
         [Header("Character Input Values")]
         public Vector2 move;
         public Vector2 look;
@@ -30,14 +39,14 @@ namespace StarterAssets
 #if ENABLE_INPUT_SYSTEM
         public void OnMove(InputValue value)
         {
-            MoveInput(value.Get<Vector2>());
+            MoveInput(GameInput.GameplayBlocked?Vector2.zero:GameInput.ReadVectorInput(playerInput?.actions.FindAction("Move"),value.Get<Vector2>(),false));
         }
 
         public void OnLook(InputValue value)
         {
             if (cursorInputForLook)
             {
-                LookInput(value.Get<Vector2>());
+                LookInput(GameInput.GameplayBlocked?Vector2.zero:GameInput.ReadVectorInput(playerInput?.actions.FindAction("Look"),value.Get<Vector2>(),true));
             }
         }
 

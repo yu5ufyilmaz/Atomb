@@ -1,0 +1,65 @@
+{
+  "status": "success",
+  "result": {
+    "success": true,
+    "message": "Retrieved 8 log entries.",
+    "data": [
+      {
+        "type": "Log",
+        "message": "<b><color=#2EA3FF>MCP-FOR-UNITY</color></b>: StdioBridgeHost started on port 6421. (OS=WindowsEditor, server=8.5.0)",
+        "file": "./Library/PackageCache/com.coplaydev.unity-mcp@3f515245252a/Editor/Helpers/McpLog.cs",
+        "line": 40,
+        "stackTrace": "UnityEngine.Debug:Log (object)\nMCPForUnity.Editor.Helpers.McpLog:Info (string,bool) (at ./Library/PackageCache/com.coplaydev.unity-mcp@3f515245252a/Editor/Helpers/McpLog.cs:40)\nMCPForUnity.Editor.Services.Transport.Transports.StdioBridgeHost:Start () (at ./Library/PackageCache/com.coplaydev.unity-mcp@3f515245252a/Editor/Services/Transport/Transports/StdioBridgeHost.cs:370)\nMCPForUnity.Editor.Services.Transport.Transports.StdioBridgeHost:StartAutoConnect () (at ./Library/PackageCache/com.coplaydev.unity-mcp@3f515245252a/Editor/Services/Transport/Transports/StdioBridgeHost.cs:90)\nMCPForUnity.Editor.Services.Transport.Transports.StdioTransportClient:StartAsync () (at ./Library/PackageCache/com.coplaydev.unity-mcp@3f515245252a/Editor/Services/Transport/Transports/StdioTransportClient.cs:22)\nMCPForUnity.Editor.Services.Transport.TransportManager/<StartAsync>d__14:MoveNext () (at ./Library/PackageCache/com.coplaydev.unity-mcp@3f515245252a/Editor/Services/Transport/TransportManager.cs:62)\nSystem.Runtime.CompilerServices.AsyncTaskMethodBuilder`1<bool>:Start<MCPForUnity.Editor.Services.Transport.TransportManager/<StartAsync>d__14> (MCPForUnity.Editor.Services.Transport.TransportManager/<StartAsync>d__14&)\nMCPForUnity.Editor.Services.Transport.TransportManager:StartAsync (MCPForUnity.Editor.Services.Transport.TransportMode)\nMCPForUnity.Editor.Services.StdioBridgeReloadHandler:TryStartBridgeImmediate () (at ./Library/PackageCache/com.coplaydev.unity-mcp@3f515245252a/Editor/Services/StdioBridgeReloadHandler.cs:87)\nMCPForUnity.Editor.Services.StdioBridgeReloadHandler:OnAfterAssemblyReload () (at ./Library/PackageCache/com.coplaydev.unity-mcp@3f515245252a/Editor/Services/StdioBridgeReloadHandler.cs:82)\nUnityEditor.AssemblyReloadEvents:OnAfterAssemblyReload ()"
+      },
+      {
+        "type": "Log",
+        "message": "<b><color=#2EA3FF>MCP-FOR-UNITY</color></b>: Auto-discovered 13 tools and 11 resources (24 total handlers)",
+        "file": "./Library/PackageCache/com.coplaydev.unity-mcp@3f515245252a/Editor/Helpers/McpLog.cs",
+        "line": 40,
+        "stackTrace": "UnityEngine.Debug:Log (object)\nMCPForUnity.Editor.Helpers.McpLog:Info (string,bool) (at ./Library/PackageCache/com.coplaydev.unity-mcp@3f515245252a/Editor/Helpers/McpLog.cs:40)\nMCPForUnity.Editor.Tools.CommandRegistry:AutoDiscoverCommands () (at ./Library/PackageCache/com.coplaydev.unity-mcp@3f515245252a/Editor/Tools/CommandRegistry.cs:101)\nMCPForUnity.Editor.Tools.CommandRegistry:Initialize () (at ./Library/PackageCache/com.coplaydev.unity-mcp@3f515245252a/Editor/Tools/CommandRegistry.cs:50)\nMCPForUnity.Editor.Services.Transport.Transports.StdioBridgeHost:Start () (at ./Library/PackageCache/com.coplaydev.unity-mcp@3f515245252a/Editor/Services/Transport/Transports/StdioBridgeHost.cs:373)\nMCPForUnity.Editor.Services.Transport.Transports.StdioBridgeHost:StartAutoConnect () (at ./Library/PackageCache/com.coplaydev.unity-mcp@3f515245252a/Editor/Services/Transport/Transports/StdioBridgeHost.cs:90)\nMCPForUnity.Editor.Services.Transport.Transports.StdioTransportClient:StartAsync () (at ./Library/PackageCache/com.coplaydev.unity-mcp@3f515245252a/Editor/Services/Transport/Transports/StdioTransportClient.cs:22)\nMCPForUnity.Editor.Services.Transport.TransportManager/<StartAsync>d__14:MoveNext () (at ./Library/PackageCache/com.coplaydev.unity-mcp@3f515245252a/Editor/Services/Transport/TransportManager.cs:62)\nSystem.Runtime.CompilerServices.AsyncTaskMethodBuilder`1<bool>:Start<MCPForUnity.Editor.Services.Transport.TransportManager/<StartAsync>d__14> (MCPForUnity.Editor.Services.Transport.TransportManager/<StartAsync>d__14&)\nMCPForUnity.Editor.Services.Transport.TransportManager:StartAsync (MCPForUnity.Editor.Services.Transport.TransportMode)\nMCPForUnity.Editor.Services.StdioBridgeReloadHandler:TryStartBridgeImmediate () (at ./Library/PackageCache/com.coplaydev.unity-mcp@3f515245252a/Editor/Services/StdioBridgeReloadHandler.cs:87)\nMCPForUnity.Editor.Services.StdioBridgeReloadHandler:OnAfterAssemblyReload () (at ./Library/PackageCache/com.coplaydev.unity-mcp@3f515245252a/Editor/Services/StdioBridgeReloadHandler.cs:82)\nUnityEditor.AssemblyReloadEvents:OnAfterAssemblyReload ()"
+      },
+      {
+        "type": "Log",
+        "message": "[TutorialManager] Eğitim AÇILDI! Tutorial ana objesi devrede.",
+        "file": "Assets/Scripts/Managers/TutorialManager.cs",
+        "line": 74,
+        "stackTrace": "UnityEngine.Debug:Log (object)\nTutorialManager:SetupTutorialMode (bool) (at Assets/Scripts/Managers/TutorialManager.cs:74)\nTutorialManager:Start () (at Assets/Scripts/Managers/TutorialManager.cs:21)"
+      },
+      {
+        "type": "Log",
+        "message": "PasswordManager: Yeni oyun başlatılıyor...",
+        "file": "Assets/Scripts/Managers/PasswordManager.cs",
+        "line": 91,
+        "stackTrace": "UnityEngine.Debug:Log (object)\nPasswordManager:InitializeNewGame () (at Assets/Scripts/Managers/PasswordManager.cs:91)\nPasswordManager:Start () (at Assets/Scripts/Managers/PasswordManager.cs:81)"
+      },
+      {
+        "type": "Log",
+        "message": "[InteractableBook] Password Assigned: CHEMICAL_+_318 at Page 0. Hotspot: (x:0.22, y:0.08, width:0.29, height:0.10)",
+        "file": "Assets/Scripts/Interactables/InteractableBook.cs",
+        "line": 1143,
+        "stackTrace": "UnityEngine.Debug:Log (object)\nInteractableBook:AssignPassword (string,int) (at Assets/Scripts/Interactables/InteractableBook.cs:1143)\nPasswordManager:InitializeNewGame () (at Assets/Scripts/Managers/PasswordManager.cs:151)\nPasswordManager:Start () (at Assets/Scripts/Managers/PasswordManager.cs:81)"
+      },
+      {
+        "type": "Log",
+        "message": "[Oyun Şifresi - RASTGELE KİTAP] BookModel (1): CHEMICAL_+_318",
+        "file": "Assets/Scripts/Managers/PasswordManager.cs",
+        "line": 163,
+        "stackTrace": "UnityEngine.Debug:Log (object)\nPasswordManager:InitializeNewGame () (at Assets/Scripts/Managers/PasswordManager.cs:163)\nPasswordManager:Start () (at Assets/Scripts/Managers/PasswordManager.cs:81)"
+      },
+      {
+        "type": "Log",
+        "message": "<b><color=#2EA3FF>MCP-FOR-UNITY</color></b>: [ExecuteMenuItem] Handling menu item command",
+        "file": "./Library/PackageCache/com.coplaydev.unity-mcp@3f515245252a/Editor/Helpers/McpLog.cs",
+        "line": 40,
+        "stackTrace": "UnityEngine.Debug:Log (object)\nMCPForUnity.Editor.Helpers.McpLog:Info (string,bool) (at ./Library/PackageCache/com.coplaydev.unity-mcp@3f515245252a/Editor/Helpers/McpLog.cs:40)\nMCPForUnity.Editor.Tools.ExecuteMenuItem:HandleCommand (Newtonsoft.Json.Linq.JObject) (at ./Library/PackageCache/com.coplaydev.unity-mcp@3f515245252a/Editor/Tools/ExecuteMenuItem.cs:24)\nMCPForUnity.Editor.Tools.CommandRegistry:ExecuteCommand (string,Newtonsoft.Json.Linq.JObject,System.Threading.Tasks.TaskCompletionSource`1<string>) (at ./Library/PackageCache/com.coplaydev.unity-mcp@3f515245252a/Editor/Tools/CommandRegistry.cs:248)\nMCPForUnity.Editor.Services.Transport.TransportCommandDispatcher:ProcessCommand (string,MCPForUnity.Editor.Services.Transport.TransportCommandDispatcher/PendingCommand) (at ./Library/PackageCache/com.coplaydev.unity-mcp@3f515245252a/Editor/Services/Transport/TransportCommandDispatcher.cs:228)\nMCPForUnity.Editor.Services.Transport.TransportCommandDispatcher:ProcessQueue () (at ./Library/PackageCache/com.coplaydev.unity-mcp@3f515245252a/Editor/Services/Transport/TransportCommandDispatcher.cs:152)\nUnityEditor.EditorApplication:Internal_CallUpdateFunctions ()"
+      },
+      {
+        "type": "Log",
+        "message": "LAB HIGHLIGHT RESOURCE FAIL: Universal highlight did not restore the borrowed material.; Universal highlight material survived its component.",
+        "file": "Assets/Scripts/Editor/LaboratoryCleanupChecks.cs",
+        "line": 278,
+        "stackTrace": "UnityEngine.Debug:Log (object)\nLaboratoryCleanupChecks/<HighlightLifetime>d__16:MoveNext () (at Assets/Scripts/Editor/LaboratoryCleanupChecks.cs:278)\nUnityEngine.SetupCoroutine:InvokeMoveNext (System.Collections.IEnumerator,intptr)"
+      }
+    ]
+  }
+}

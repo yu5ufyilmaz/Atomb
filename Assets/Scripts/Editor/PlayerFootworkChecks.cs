@@ -16,6 +16,103 @@ public static class PlayerFootworkChecks
     private static readonly Vector3 Center = new Vector3(1000, FloorY, 1000);
     private static bool running;
 
+    [MenuItem("Senzora/Player Footwork/Validate Rapid Camera Turns")]
+    public static void ValidateRapidCameraTurns()
+    {
+        Require(Application.isPlaying, "Run rapid camera turn checks in Play mode.");
+        var player = UnityEngine.Object.FindFirstObjectByType<PlayerController>();
+        var animator = player.GetComponent<Animator>();
+        var capsule = player.GetComponent<UnityEngine.CharacterController>();
+        var inputs = player.GetComponent<StarterAssets.StarterAssetsInputs>();
+        var footwork = player.GetComponent<StarterAssets.PlayerFootwork>();
+        Require(footwork != null && footwork.CanApply, "Rapid turn checks require grounded free locomotion.");
+        var saved = new Snapshot(player, animator, capsule, inputs);
+        var cameraInput = typeof(PlayerController).GetMethod("CameraRotation", Members);
+        var lateUpdate = typeof(PlayerController).GetMethod("LateUpdate", Members);
+        Action rotate = () => { cameraInput.Invoke(player, null); lateUpdate.Invoke(player, null); };
+        try
+        {
+            Zero(inputs);
+            foreach (float start in new[] { 0f, 350f, -350f })
+            foreach (float turn in new[] { 20f, -20f, 180f, -180f, 270f, -270f, 720f, -720f })
+            {
+                player.transform.rotation = Quaternion.Euler(0, start, 0);
+                player.ForceCameraRotation(start + turn, 0);
+                rotate();
+                float gap = Mathf.Abs(Mathf.DeltaAngle(player.transform.eulerAngles.y, player.IntendedLookYaw));
+                Require(gap <= 60.01f, $"Rapid {turn}-degree turn left a {gap:F1}-degree body/view gap.");
+                Require(Mathf.Abs(Mathf.DeltaAngle(player.IntendedLookYaw,
+                    player.CinemachineCameraTarget.transform.eulerAngles.y)) < .01f, "Body catch-up changed the requested camera yaw.");
+                if (Mathf.Abs(turn) < 60)
+                    Require(Mathf.Abs(Mathf.DeltaAngle(start, player.transform.eulerAngles.y)) < .01f,
+                        "A small look turn bypassed normal smooth body rotation.");
+            }
+
+            foreach (var move in new[] { Vector2.zero, Vector2.up })
+            foreach (float look in new[] { 2000f, -2000f })
+            {
+                inputs.move = move;
+                inputs.look = new Vector2(look, 0);
+                for (int frame = 0; frame < 8; frame++)
+                {
+                    float previousYaw = player.IntendedLookYaw;
+                    rotate();
+                    Require(Mathf.Abs(Mathf.DeltaAngle(previousYaw, player.IntendedLookYaw)) > .1f,
+                        "Rapid look input did not reach the camera.");
+                    Require(Mathf.Abs(Mathf.DeltaAngle(player.transform.eulerAngles.y,
+                        player.CinemachineCameraTarget.transform.eulerAngles.y)) <= 60.01f,
+                        "Repeated rapid look input let the view outrun the body.");
+                }
+            }
+            Zero(inputs);
+
+            player.SetFrozen(true, false, false);
+            Quaternion body = player.transform.rotation;
+            player.ForceCameraRotation(player.transform.eulerAngles.y + 180, 0);
+            rotate();
+            Require(Quaternion.Angle(body, player.transform.rotation) < .01f, "Free look rotated a frozen interaction body.");
+
+            player.SetFrozen(true, true, false);
+            Quaternion view = player.CinemachineCameraTarget.transform.rotation;
+            inputs.look = new Vector2(500, 0);
+            rotate();
+            Require(Quaternion.Angle(view, player.CinemachineCameraTarget.transform.rotation) < .01f
+                && Quaternion.Angle(body, player.transform.rotation) < .01f, "A full view lock moved the camera or body.");
+
+            player.SetFrozen(false, false, false);
+            Zero(inputs);
+            animator.Play("Base Layer.SitIdle", 0, .4f);
+            animator.Update(0);
+            Require(!footwork.CanApply, "The sitting animation did not suspend footwork.");
+            body = player.transform.rotation;
+            player.ForceCameraRotation(player.transform.eulerAngles.y + 180, 0);
+            rotate();
+            Require(Quaternion.Angle(body, player.transform.rotation) < .01f, "Rapid-turn correction changed an authored sitting pose.");
+            Debug.Log("PLAYER CAMERA TURN PASS: rapid left/right/wrapped turns stay within 60 degrees; camera yaw, small turns, frozen/full-lock and sitting poses preserved.");
+        }
+        finally { saved.Restore(); }
+    }
+
+    private static IEnumerator CheckRapidTurnFrameOrder(PlayerController player, StarterAssets.StarterAssetsInputs inputs)
+    {
+        var probe = player.gameObject.AddComponent<PlayerCameraTurnFrameProbe>();
+        try
+        {
+            for (int frame = 0; frame < 12; frame++)
+            {
+                inputs.look = new Vector2(frame < 6 ? 90 : -90, 0);
+                yield return new WaitForEndOfFrame();
+                Require(Mathf.Abs(Mathf.DeltaAngle(player.transform.eulerAngles.y,
+                    player.CinemachineCameraTarget.transform.eulerAngles.y)) <= 60.01f,
+                    "The rendered view outran the body during a rapid turn.");
+            }
+            Require(probe.samples >= 10 && probe.maximumPostIkYaw < .1f,
+                $"Camera catch-up moved the body after foot IK by {probe.maximumPostIkYaw:F2} degrees ({probe.samples} frames).");
+            Debug.Log($"PLAYER CAMERA FRAME ORDER PASS: {probe.samples} rapid-input frames; post-IK body rotation {probe.maximumPostIkYaw:F3} degrees.");
+        }
+        finally { Zero(inputs); UnityEngine.Object.Destroy(probe); }
+    }
+
     [MenuItem("Senzora/Player Footwork/Validate Play Footwork")]
     public static void Validate()
     {
@@ -43,7 +140,7 @@ public static class PlayerFootworkChecks
             {
                 var menu = UnityEngine.Object.FindFirstObjectByType<MainMenuManager>();
                 Require(menu != null, "The original laboratory main menu is missing.");
-                menu.PlayGame();
+                menu.PlayGame(); menu.ChooseTutorial(true);
                 float deadline = Time.realtimeSinceStartup + 90;
                 while (!game.isGameStarted && Time.realtimeSinceStartup < deadline) yield return null;
                 Require(game.isGameStarted, "The original New Game / stand-up sequence did not finish.");
@@ -79,6 +176,12 @@ public static class PlayerFootworkChecks
                 + $"bones={left.position:F4}/{right.position:F4}; flat ankle offsets={leftSole:F4}/{rightSole:F4}.");
             Require(leftSole > -.02f && leftSole < .3f && rightSole > -.02f && rightSole < .3f,
                 "The flat idle pose cannot provide a credible anatomical sole-offset baseline.");
+
+            ValidateRapidCameraTurns();
+            yield return Settle(inputs, .2f);
+            yield return CheckRapidTurnFrameOrder(player, inputs);
+            Teleport(player, capsule);
+            yield return Settle(inputs, 1);
 
             foreach (bool leftHigh in new[] { true, false })
             {
@@ -315,5 +418,27 @@ public static class PlayerFootworkChecks
             Physics.SyncTransforms();
             Cursor.lockState = cursorLock; Cursor.visible = cursorVisible;
         }
+    }
+}
+
+// Test-only observer: planted feet must be solved against the final body rotation.
+[DefaultExecutionOrder(10000)]
+public sealed class PlayerCameraTurnFrameProbe : MonoBehaviour
+{
+    private int ikFrame = -1;
+    private float ikYaw;
+    public int samples;
+    public float maximumPostIkYaw;
+    private void OnAnimatorIK(int layer)
+    {
+        if (layer != 0) return;
+        ikFrame = Time.frameCount;
+        ikYaw = transform.eulerAngles.y;
+    }
+    private void LateUpdate()
+    {
+        if (ikFrame != Time.frameCount) return;
+        samples++;
+        maximumPostIkYaw = Mathf.Max(maximumPostIkYaw, Mathf.Abs(Mathf.DeltaAngle(ikYaw, transform.eulerAngles.y)));
     }
 }

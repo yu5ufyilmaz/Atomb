@@ -1,0 +1,17 @@
+{
+  "status": "success",
+  "result": {
+    "success": true,
+    "message": "Retrieved editor state.",
+    "data": {
+      "isPlaying": false,
+      "isPaused": false,
+      "isCompiling": false,
+      "isUpdating": false,
+      "timeSinceStartup": 35025.104311300005,
+      "activeSceneName": "scn_LaboratorySynthesis",
+      "selectionCount": 0,
+      "activeObjectName": null
+    }
+  }
+}

@@ -66,7 +66,7 @@ public class DynomaFlashLight : MonoBehaviour
     private void HandleInput()
     {
         // Sağ Tık Basılınca Şarj Et
-        if (Input.GetMouseButtonDown(1))
+        if (GameInput.Pressed("ChargeFlashlight"))
         {
             ChargeFlashlight();
         }

@@ -1,0 +1,17 @@
+{
+    "success": false,
+    "objects": 0,
+    "books": 0,
+    "catalogs": 0,
+    "oldSettingsChildren": 0,
+    "missingScripts": 0,
+    "issues": [
+        "Settings manager did not detach before requesting persistence.",
+        "Scene game manager survived its scene.",
+        "Scene subtitle manager survived its UI scene.",
+        "Scene debug manager survived its scene.",
+        "Settings manager was destroyed with its old parent scene."
+    ],
+    "changes": [],
+    "removedObjects": []
+}

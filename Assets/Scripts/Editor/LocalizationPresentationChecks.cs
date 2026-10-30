@@ -12,6 +12,9 @@ public static class LocalizationPresentationChecks
     [MenuItem("Tools/Localization/Validate Presentation")]
     public static void All()
     {
+        var originalScene = UnityEngine.SceneManagement.SceneManager.GetActiveScene();
+        var fixtureScene = UnityEditor.SceneManagement.EditorSceneManager.NewScene(UnityEditor.SceneManagement.NewSceneSetup.EmptyScene, UnityEditor.SceneManagement.NewSceneMode.Additive);
+        UnityEngine.SceneManagement.SceneManager.SetActiveScene(fixtureScene);
         string previousCode = GameLocalization.CurrentCode;
         var failures = new List<string>();
         try
@@ -21,7 +24,7 @@ public static class LocalizationPresentationChecks
                 try { check(); }
                 catch (Exception error) { failures.Add(check.Method.Name + ": " + error.GetBaseException().Message); }
         }
-        finally { GameLocalization.SetLanguage(previousCode); }
+        finally { GameLocalization.SetLanguage(previousCode);UnityEditor.SceneManagement.EditorSceneManager.CloseScene(fixtureScene,true);if(originalScene.IsValid())UnityEngine.SceneManagement.SceneManager.SetActiveScene(originalScene); }
         if (failures.Count > 0) throw new Exception(string.Join("\n", failures));
         Debug.Log("LOCALIZATION PRESENTATION PASS: Turkish glyphs and atlas overflow, menu alignment, both actual settings panels and EN/TR style restoration, artwork, overrides, 19 parts, 10 authored goals, observation notes and generated tutorial pages.");
     }
@@ -155,77 +158,30 @@ public static class LocalizationPresentationChecks
         if (opened) scene = UnityEditor.SceneManagement.EditorSceneManager.OpenScene(path, UnityEditor.SceneManagement.OpenSceneMode.Additive);
         var sources = new List<SettingsUIManager>();
         foreach (var root in scene.GetRootGameObjects()) sources.AddRange(root.GetComponentsInChildren<SettingsUIManager>(true));
-        Require(sources.Count >= 2, "The actual normal and pause settings panels were not found.");
+        Require(sources.Count >= 2, "Actual normal and pause settings panels are missing.");
         try
         {
             foreach (var source in sources)
             {
-                GameLocalization.SetLanguage("en");
                 var host = new GameObject("Settings canvas check", typeof(RectTransform), typeof(Canvas));
                 host.GetComponent<Canvas>().renderMode = RenderMode.WorldSpace;
-                ((RectTransform)host.transform).sizeDelta = new Vector2(1920, 1080);
-                var clone = Object.Instantiate(source.gameObject, host.transform).GetComponent<SettingsUIManager>();
+                ((RectTransform)host.transform).sizeDelta = new Vector2(1920,1080);
                 try
                 {
-                    clone.gameObject.SetActive(true);
-                    clone.EnsureLanguageSelector();
-                    foreach (var text in clone.GetComponentsInChildren<TMP_Text>(true))
-                        if (text.GetComponentInParent<TMP_Dropdown>(true) == null) GameLocalization.Set(text, text.text);
-                    typeof(GameLocalization).GetMethod("LocalizeSettingsArtwork", BindingFlags.NonPublic | BindingFlags.Static)
-                        .Invoke(null, new object[] { clone.gameObject });
-                    var rows = new List<(TMP_Text label, RectTransform control)>();
-                    for (int i = 0; i < clone.transform.childCount; i++)
+                    var clone = Object.Instantiate(source.gameObject,host.transform).GetComponent<SettingsUIManager>();
+                    clone.gameObject.SetActive(true); clone.EnsureLanguageSelector();
+                    Require(clone.View != null, "Shared settings view not attached.");
+                    foreach (string code in new[]{"en","tr","en"})
                     {
-                        var row = clone.transform.GetChild(i);
-                        var control = (Component)row.GetComponentInChildren<Slider>(true)
-                            ?? (Component)row.GetComponentInChildren<TMP_Dropdown>(true) ?? row.GetComponentInChildren<Toggle>(true);
-                        if (control == null || control.transform.parent != row) continue;
-                        foreach (var label in row.GetComponentsInChildren<TMP_Text>(true))
-                            if (label.transform.parent == row) { rows.Add((label, (RectTransform)control.transform)); break; }
+                        GameLocalization.SetLanguage(code);
+                        SettingsMenuChecks.ValidateView(clone.View);
                     }
-                    Require(rows.Count >= 9, source.name + ": settings row coverage is incomplete.");
-                    var baseline = new Dictionary<TMP_Text, string>();
-                    foreach (var row in rows) baseline.Add(row.label, Style(row.label));
-                    GameLocalization.SetLanguage("tr");
-                    foreach (var binding in clone.GetComponentsInChildren<LocalizedText>(true)) binding.Apply();
-                    Canvas.ForceUpdateCanvases();
-                    foreach (var row in rows)
-                    {
-                        var label = row.label;
-                        label.ForceMeshUpdate(true, true);
-                        if (label.transform.parent.name == "Language")
-                            Require(label.text == "Dil", source.name + ": language row has the wrong title: " + label.text
-                                + ", source=" + label.GetComponent<LocalizedText>().source + ", key=" + label.GetComponent<LocalizedText>().key);
-                        Require(label.font == MenuFont && label.fontSize == 30 && label.fontStyle == FontStyles.Normal && label.horizontalAlignment == HorizontalAlignmentOptions.Left
-                            && label.textInfo.lineCount == 1 && !label.isTextOverflowing,
-                            source.name + "/" + label.transform.parent.name + ": inconsistent Turkish presentation: " + Style(label)
-                            + ", lines=" + label.textInfo.lineCount + ", overflow=" + label.isTextOverflowing);
-                        foreach (var character in label.textInfo.characterInfo)
-                            if (character.isVisible) Require(character.fontAsset == label.font, source.name + "/" + label.text + ": a Turkish character switched font.");
-                        Rect area = InPanel(label.rectTransform, clone.transform), control = InPanel(row.control, clone.transform);
-                        Require(area.xMax <= control.xMin - 8, source.name + "/" + label.text + ": translated label overlaps its control.");
-                        foreach (var other in rows)
-                        {
-                            Require(!area.Overlaps(InPanel(other.control, clone.transform)), source.name + "/" + label.text + ": translated label overlaps another settings control.");
-                            if (Mathf.Abs(InPanel(other.control, clone.transform).xMin - control.xMin) < 120)
-                                Require(Mathf.Abs(InPanel(other.label.rectTransform, clone.transform).xMin - area.xMin) < .1f,
-                                    source.name + ": Turkish column labels do not share a left edge.");
-                        }
-                    }
-                    GameLocalization.SetLanguage("en");
-                    foreach (var binding in clone.GetComponentsInChildren<LocalizedText>(true)) binding.Apply();
-                    foreach (var row in rows) Require(Style(row.label) == baseline[row.label], source.name + ": English settings style was not restored.");
                 }
                 finally { Object.DestroyImmediate(host); }
             }
         }
-        finally
-        {
-            if (opened) UnityEditor.SceneManagement.EditorSceneManager.CloseScene(scene, true);
-            GameLocalization.SetLanguage("en");
-        }
+        finally { if (opened) UnityEditor.SceneManagement.EditorSceneManager.CloseScene(scene,true);GameLocalization.SetLanguage("en"); }
     }
-
     private static void Artwork()
     {
         GameLocalization.SetLanguage("en");
@@ -249,8 +205,9 @@ public static class LocalizationPresentationChecks
                 + ", sprite=" + image.sprite?.name);
             GameLocalization.SetLanguage("tr");
             label.GetComponent<LocalizedText>().Apply();
-            Require(!image.enabled && label.enabled && label.text == "Ses" && label.font == MenuFont,
-                "Translated artwork lost its menu font or did not update.");
+            string translatedTitle = GameLocalization.Get("ui.settings.sound");
+            Require(!image.enabled && label.enabled && label.text == translatedTitle && translatedTitle != "Sound" && label.font == MenuFont,
+                "Translated artwork lost its menu font or did not update: actual=" + label.text + ", expected=" + translatedTitle + ", font=" + label.font?.name);
             GameLocalization.SetLanguage("en");
             label.GetComponent<LocalizedText>().Apply();
             Require(image.enabled && !label.enabled && image.rectTransform.sizeDelta == new Vector2(95, 22),

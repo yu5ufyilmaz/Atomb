@@ -76,7 +76,7 @@ public class PhantomSpawnAction : ActionBase
         // 4. Belirdiği Yerde Sesi Çal
         if (spawnSound != null)
         {
-            AudioSource.PlayClipAtPoint(spawnSound, spawnPoint.position, volume);
+            SettingsManager.PlayEffectAtPoint(spawnSound, spawnPoint.position, volume);
         }
 
         // 5. Görevi Bitince Kendini Yok Et

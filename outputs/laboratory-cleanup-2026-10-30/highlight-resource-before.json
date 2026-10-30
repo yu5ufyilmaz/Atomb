@@ -1,0 +1,14 @@
+{
+    "success": false,
+    "objects": 0,
+    "books": 0,
+    "catalogs": 0,
+    "oldSettingsChildren": 0,
+    "missingScripts": 0,
+    "issues": [
+        "Universal highlight did not restore the borrowed material.",
+        "Universal highlight material survived its component."
+    ],
+    "changes": [],
+    "removedObjects": []
+}

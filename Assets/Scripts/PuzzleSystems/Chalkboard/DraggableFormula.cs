@@ -186,8 +186,8 @@ public class DraggableFormula : MonoBehaviour
 
     private void HandleInput()
     {
-        if (isDragged && Input.GetMouseButtonUp(0)) { Drop(true); return; }
-        if (!FormulaNode.IsPointerOverUI() && (Input.GetMouseButtonDown(0) || Input.GetMouseButtonDown(1)))
+        if (isDragged && GameInput.Released("Interact")) { Drop(true); return; }
+        if (!FormulaNode.IsPointerOverUI() && (GameInput.Pressed("Interact") || GameInput.Pressed("SecondaryInteract")))
         {
             Ray ray = mainCam.ScreenPointToRay(Input.mousePosition);
             RaycastHit[] hits = Physics.RaycastAll(ray, 100f);
@@ -200,7 +200,7 @@ public class DraggableFormula : MonoBehaviour
                 if (hitBody != null) break;
             }
             if (hitBody != this) return;
-            if (Input.GetMouseButtonDown(0) && FormulaNode.activeDraggingNode == null && CanMoveOnBoard)
+            if (GameInput.Pressed("Interact") && FormulaNode.activeDraggingNode == null && CanMoveOnBoard)
             {
                 DraggableFormula root = GetRootFormula();
                 root.SyncMovementTarget();
@@ -210,7 +210,7 @@ public class DraggableFormula : MonoBehaviour
                 if (new Plane(normal, root.transform.position).Raycast(ray, out float distance))
                     root.dragOffset = root.transform.position - ray.GetPoint(distance);
             }
-            else if (Input.GetMouseButtonDown(1) && !GetRootFormula().isDragged)
+            else if (GameInput.Pressed("SecondaryInteract") && !GetRootFormula().isDragged)
             {
                 bool hasBonds = false;
                 foreach (FormulaNode node in GetOwnNodes()) if (node.isOccupied) hasBonds = true;
@@ -219,9 +219,9 @@ public class DraggableFormula : MonoBehaviour
             }
         }
         if (!isDragged || GetRootFormula() != this || FormulaNode.IsPointerOverUI()) return;
-        float scroll = Input.GetAxis("Mouse ScrollWheel");
-        if (scroll > 0f || Input.GetKeyDown(KeyCode.Q)) targetRotation *= Quaternion.Euler(0f, 0f, rotationStep);
-        else if (scroll < 0f || Input.GetKeyDown(KeyCode.E)) targetRotation *= Quaternion.Euler(0f, 0f, -rotationStep);
+        float scroll = Mathf.Sign(GameInput.Scroll) * (Mathf.Abs(GameInput.Scroll) > 0 ? .1f : 0f);
+        if (scroll > 0f || GameInput.Pressed("RotateBoardPrevious")) targetRotation *= Quaternion.Euler(0f, 0f, rotationStep);
+        else if (scroll < 0f || GameInput.Pressed("RotateBoardNext")) targetRotation *= Quaternion.Euler(0f, 0f, -rotationStep);
     }
 
     private void CalculateDragPosition(Vector2 screenPosition)

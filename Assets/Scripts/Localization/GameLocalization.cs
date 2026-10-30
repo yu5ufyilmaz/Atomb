@@ -93,9 +93,9 @@ public static class GameLocalization
         LanguageChanged?.Invoke();
     }
 
-    public static string Get(string key, string fallback = null) { Initialize(); return catalog.Get(key, fallback); }
-    public static string Translate(string source) { Initialize(); return catalog.Translate(source); }
-    public static string Format(string canonicalFormat, params object[] arguments) { Initialize(); return catalog.Format(canonicalFormat, arguments); }
+    public static string Get(string key, string fallback = null) { Initialize(); return GameInput.ResolveHints(catalog.Get(key, fallback)); }
+    public static string Translate(string source) { Initialize(); return GameInput.ResolveHints(catalog.Translate(source)); }
+    public static string Format(string canonicalFormat, params object[] arguments) { Initialize(); return GameInput.ResolveHints(catalog.Format(canonicalFormat, arguments)); }
 
     public static void Set(TMP_Text target, string canonical)
     {
@@ -131,6 +131,7 @@ public static class GameLocalization
                 settingsUI.EnsureLanguageSelector();
             foreach (var text in root.GetComponentsInChildren<TMP_Text>(true))
             {
+                if (text.GetComponentInParent<SettingsMenuView>(true) != null) continue;
                 if (text.GetComponent<LocalizedText>() != null || text.GetComponentInParent<TMP_Dropdown>(true) != null || text.GetComponentInParent<TMP_InputField>(true) != null) continue;
                 var subtitles = text.GetComponentInParent<GlobalSubtitleManager>(true);
                 if (subtitles != null && subtitles.subtitleText == text) continue;
@@ -202,6 +203,7 @@ public static class GameLocalization
     {
         foreach (var image in root.GetComponentsInChildren<Image>(true))
         {
+            if (image.GetComponentInParent<SettingsMenuView>(true) != null) continue;
             if (!image.enabled || image.sprite == null || image.transform.Find("LocalizedTitle") != null) continue;
             string source;
             switch (image.sprite.name)

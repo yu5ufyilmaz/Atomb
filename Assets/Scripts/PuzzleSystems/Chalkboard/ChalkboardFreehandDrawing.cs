@@ -46,14 +46,14 @@ public sealed class ChalkboardFreehandDrawing : MonoBehaviour
         Vector2 local = Drawer.rectTransform.InverseTransformPoint(world);
         if (drawing)
         {
-            if (!Input.GetMouseButton(mouseButton)) { EndDrawing(); return; }
+            if (!GameInput.Held(mouseButton == 1 ? "SecondaryInteract" : "Interact")) { EndDrawing(); return; }
             Drawer.ContinueStroke(local);
             return;
         }
-        if (!Input.GetMouseButtonDown(0) && !Input.GetMouseButtonDown(1)) return;
+        if (!GameInput.Pressed("Interact") && !GameInput.Pressed("SecondaryInteract")) return;
         foreach (var hit in Physics.RaycastAll(Camera.main.ScreenPointToRay(Input.mousePosition), 100f))
             if (hit.collider.GetComponentInParent<DraggableFormula>() != null) return;
-        mouseButton = Input.GetMouseButtonDown(1) ? 1 : 0;
+        mouseButton = GameInput.Pressed("SecondaryInteract") ? 1 : 0;
         drawing = true;
         Drawer.BeginStroke(local, mouseButton == 1);
     }

@@ -24,7 +24,8 @@ public static class BookMotionChecks
         var game = GameManager.Instance;
         if (!game.isGameStarted)
         {
-            UnityEngine.Object.FindFirstObjectByType<MainMenuManager>().PlayGame();
+            var menu = UnityEngine.Object.FindFirstObjectByType<MainMenuManager>();
+            menu.PlayGame(); menu.ChooseTutorial(true);
             float deadline = Time.realtimeSinceStartup + 90;
             while (!game.isGameStarted && Time.realtimeSinceStartup < deadline) yield return null;
             Require(game.isGameStarted, "New game did not start.");

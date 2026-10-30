@@ -1,0 +1,164 @@
+[
+  {
+    "path": "Assets/Scripts/UniversalHighlighter.cs",
+    "deleted": false,
+    "beforeBytes": 5469,
+    "afterBytes": 5973
+  },
+  {
+    "path": "Assets/Scripts/Editor/LaboratorySynthesisChecks.cs",
+    "deleted": false,
+    "beforeBytes": 37032,
+    "afterBytes": 39694
+  },
+  {
+    "path": "Assets/Scripts/Interactables/InteractableBook.cs",
+    "deleted": false,
+    "beforeBytes": 45213,
+    "afterBytes": 46838
+  },
+  {
+    "path": "Assets/Scripts/Localization/LocalizedUIVariant.cs",
+    "deleted": true,
+    "beforeBytes": 4193,
+    "afterBytes": 0
+  },
+  {
+    "path": "Assets/Scripts/Localization/LocalizedUIVariant.cs.meta",
+    "deleted": true,
+    "beforeBytes": 60,
+    "afterBytes": 0
+  },
+  {
+    "path": "Assets/Scripts/Managers/CreditsManager.cs",
+    "deleted": true,
+    "beforeBytes": 622,
+    "afterBytes": 0
+  },
+  {
+    "path": "Assets/Scripts/Managers/CreditsManager.cs.meta",
+    "deleted": true,
+    "beforeBytes": 59,
+    "afterBytes": 0
+  },
+  {
+    "path": "Assets/Scripts/Managers/DebugMenuManager.cs",
+    "deleted": false,
+    "beforeBytes": 11470,
+    "afterBytes": 11500
+  },
+  {
+    "path": "Assets/Scripts/Managers/GameManager.cs",
+    "deleted": false,
+    "beforeBytes": 6432,
+    "afterBytes": 6506
+  },
+  {
+    "path": "Assets/Scripts/Managers/GlobalSubtitleManager.cs",
+    "deleted": false,
+    "beforeBytes": 8749,
+    "afterBytes": 8779
+  },
+  {
+    "path": "Assets/Scripts/Managers/PlayerReferences.cs",
+    "deleted": true,
+    "beforeBytes": 1567,
+    "afterBytes": 0
+  },
+  {
+    "path": "Assets/Scripts/Managers/PlayerReferences.cs.meta",
+    "deleted": true,
+    "beforeBytes": 60,
+    "afterBytes": 0
+  },
+  {
+    "path": "Assets/Scripts/Managers/SettingsManager.cs",
+    "deleted": false,
+    "beforeBytes": 12080,
+    "afterBytes": 12129
+  },
+  {
+    "path": "Assets/Scripts/NewEventSystem/Actions/ObjectiveAction.cs",
+    "deleted": true,
+    "beforeBytes": 1186,
+    "afterBytes": 0
+  },
+  {
+    "path": "Assets/Scripts/NewEventSystem/Actions/ObjectiveAction.cs.meta",
+    "deleted": true,
+    "beforeBytes": 60,
+    "afterBytes": 0
+  },
+  {
+    "path": "Assets/Scripts/PuzzleSystems/Chalkboard/ResearchPuzzleTrial.cs",
+    "deleted": false,
+    "beforeBytes": 14212,
+    "afterBytes": 13663
+  },
+  {
+    "path": "Assets/Scripts/Scriptables/Passwords/PasswordData 2.asset",
+    "deleted": true,
+    "beforeBytes": 644,
+    "afterBytes": 0
+  },
+  {
+    "path": "Assets/Scripts/Scriptables/Passwords/PasswordData 2.asset.meta",
+    "deleted": true,
+    "beforeBytes": 189,
+    "afterBytes": 0
+  },
+  {
+    "path": "Assets/Scripts/Scriptables/Passwords/PasswordData 3.asset",
+    "deleted": true,
+    "beforeBytes": 645,
+    "afterBytes": 0
+  },
+  {
+    "path": "Assets/Scripts/Scriptables/Passwords/PasswordData 3.asset.meta",
+    "deleted": true,
+    "beforeBytes": 189,
+    "afterBytes": 0
+  },
+  {
+    "path": "Assets/Scripts/Scriptables/Passwords/PasswordData 4.asset",
+    "deleted": true,
+    "beforeBytes": 579,
+    "afterBytes": 0
+  },
+  {
+    "path": "Assets/Scripts/Scriptables/Passwords/PasswordData 4.asset.meta",
+    "deleted": true,
+    "beforeBytes": 189,
+    "afterBytes": 0
+  },
+  {
+    "path": "Assets/Scripts/Scriptables/Passwords/PasswordData 5.asset",
+    "deleted": true,
+    "beforeBytes": 939,
+    "afterBytes": 0
+  },
+  {
+    "path": "Assets/Scripts/Scriptables/Passwords/PasswordData 5.asset.meta",
+    "deleted": true,
+    "beforeBytes": 197,
+    "afterBytes": 0
+  },
+  {
+    "path": "Assets/Scripts/UI/DesktopMenuInteract.cs",
+    "deleted": true,
+    "beforeBytes": 1484,
+    "afterBytes": 0
+  },
+  {
+    "path": "Assets/Scripts/UI/DesktopMenuInteract.cs.meta",
+    "deleted": true,
+    "beforeBytes": 60,
+    "afterBytes": 0
+  },
+  {
+    "path": "Assets/Scenes/scn_LaboratorySynthesis.unity",
+    "deleted": false,
+    "beforeBytes": 7112707,
+    "afterBytes": 6683963
+  }
+]

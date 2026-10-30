@@ -112,11 +112,11 @@ public class NotebookUI : MonoBehaviour, ISaveable
         if (workspace != null && workspace.IsArchiveNotebook)
         {
             if ((GameManager.Instance != null && (GameManager.Instance.isGamePaused || GameManager.Instance.activeInteraction != null)) || isOnMachine) return;
-            if (Input.GetKeyDown(KeyCode.Tab)) workspace.ToggleStandaloneNotebook();
+            if (GameInput.Pressed("ToggleNotebook")) workspace.ToggleStandaloneNotebook();
             else if (workspace.IsStandaloneOpen && !Input.GetKey(KeyCode.LeftAlt) && !Input.GetKey(KeyCode.RightAlt))
             {
-                int section = Input.GetKeyDown(KeyCode.Q) ? -1 : Input.GetKeyDown(KeyCode.E) ? 1 : 0;
-                float wheel = Input.GetAxis("Mouse ScrollWheel");
+                int section = GameInput.Pressed("PreviousTab") ? -1 : GameInput.Pressed("NextTab") ? 1 : 0;
+                float wheel = Mathf.Sign(GameInput.Scroll) * (Mathf.Abs(GameInput.Scroll) > 0 ? .1f : 0f);
                 workspace.BrowseStandaloneNotebook(section, wheel > .01f ? -1 : wheel < -.01f ? 1 : 0);
             }
             return;
@@ -125,7 +125,7 @@ public class NotebookUI : MonoBehaviour, ISaveable
         if (GameManager.Instance != null && (GameManager.Instance.activeInteraction is InteractableBook
             || GameManager.Instance.activeInteraction is InteractableChalkboard)) return;
         // Tuşa basıldığında sadece animatörü tetikler, modeli gösterme/gizleme işini EVENT'e bırakır.
-        if (Input.GetKeyDown(KeyCode.Tab) && !isOnMachine)
+        if (GameInput.Pressed("ToggleNotebook") && !isOnMachine)
         {
             ToggleNotebook();
         }
@@ -275,14 +275,14 @@ public class NotebookUI : MonoBehaviour, ISaveable
 
     private void HandleInput()
     {
-        if (Input.GetKeyDown(KeyCode.E))
+        if (GameInput.Pressed("NextTab"))
             SwitchCategory(1);
-        if (Input.GetKeyDown(KeyCode.Q))
+        if (GameInput.Pressed("PreviousTab"))
             SwitchCategory(-1);
 
         if ((NotebookCategory)currentCategoryIndex == NotebookCategory.Logs)
         {
-            float scroll = Input.mouseScrollDelta.y;
+            float scroll = GameInput.Scroll;
             if (scroll < -0.1f)
                 ChangeTutorialPage(1);
             else if (scroll > 0.1f)

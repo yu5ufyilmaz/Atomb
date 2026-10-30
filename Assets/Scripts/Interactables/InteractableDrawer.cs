@@ -55,7 +55,7 @@ public class InteractableDrawer : MonoBehaviour, IInteractable
     {
         if (isAnimating)
             return ""; // Hareket halindeyken yazı çıkmasın
-        return isOpen ? "[E] Çekmeceyi Kapat" : "[E] Çekmeceyi Aç";
+        return isOpen ? "[Sol Tık] Çekmeceyi Kapat" : "[Sol Tık] Çekmeceyi Aç";
     }
 
     private IEnumerator ToggleDrawer()

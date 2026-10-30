@@ -15,224 +15,243 @@ MonoBehaviour:
   entries:
   - id: chemistry_lab_entrance
     note: "Kimya lab\u0131na ilk giri\u015F"
+    voiceClip: {fileID: 0}
     segments:
     - duration: 3
-      textTR: "Evet buras\u0131 da G\xF6rd\xFC\u011F\xFCn \xFCzere kimya labarotuvar\u0131"
-      textEN: Welcome to the Chemistry Lab...
+      textTR: "Beni \xFCniversitede geride b\u0131rakt\u0131\u011F\u0131n\u0131 m\u0131
+        sand\u0131n Arthur?"
+      textEN: Did you think you left me behind at the university, Arthur?
       textDE: 
     - duration: 5
-      textTR: "Evet biliyorum biraz s\u0131k\u0131c\u0131 ama ramo gay"
-      textEN: Try not to touch anything you can't afford, which is everything.
+      textTR: "Art\u0131k bu rutubetli bodrumun duvarlar\u0131n\u0131n i\xE7indeyim."
+      textEN: I am inside the walls of this damp basement now.
       textDE: 
     - duration: 5
-      textTR: 
-      textEN: ' And this monstrosity? It''s the Mass... Spectro... Spectro-ma-thingy...'
+      textTR: "Duydu\u011Fun o a\u011F\u0131r ad\u0131mlar... binan\u0131n esnemesi
+        de\u011Fil."
+      textEN: Those heavy steps you hear... they aren't the building settling.
       textDE: 
     - duration: 4
-      textTR: 
-      textEN: whatever the hell they call it. It analyzes matter. You analyze the
-        machine.
+      textTR: Benim.
+      textEN: It's me.
       textDE: 
     - duration: 3
-      textTR: 
-      textEN: Just make it work. Don't bore me with the details.
+      textTR: "Raflara bak. De\u011Ferli verilerini o tozlu kitaplar\u0131n aras\u0131na
+        da\u011F\u0131tt\u0131m."
+      textEN: Look around at the shelves. I scattered your precious data inside those
+        dusty books.
       textDE: 
   - id: start_game
     note: "Kimya lab\u0131na ilk giri\u015F"
+    voiceClip: {fileID: 0}
     segments:
     - duration: 5
-      textTR: 
-      textEN: "Professor... I see you\u2019re enjoying American tax-payer funded
-        sleep."
+      textTR: "\xDCniversitedeki o parlak koltu\u011Fu b\u0131rakmak bir hatayd\u0131
+        Arthur."
+      textEN: Leaving that bright chair at the university was a mistake, Arthur.
       textDE: 
     - duration: 1
-      textTR: 
-      textEN: Wake up.
+      textTR: "Onlar\u0131n yan\u0131ld\u0131\u011F\u0131n\u0131 kan\u0131tlamak
+        i\xE7in kendini bu rutubetli bodruma g\xF6md\xFCn..."
+      textEN: You buried yourself in this damp basement to prove them wrong...
       textDE: 
     - duration: 5
-      textTR: 
-      textEN: There is a notepad on your desk with the test sequence. Pick it up.
+      textTR: "Geceyi sa\u011F \xE7\u0131karmak istiyorsan temellerden ba\u015Fla."
+      textEN: If you want to survive the night, start with the basics.
       textDE: 
     - duration: 7
-      textTR: 
-      textEN: Let's see if you can handle simple instructions before we let you play
-        with the big toys.
+      textTR: Masandaki notu al.
+      textEN: Pick up the note on your desk.
       textDE: 
   - id: pressure_emergency
     note: 
+    voiceClip: {fileID: 0}
     segments:
     - duration: 3
-      textTR: "Doktor! Bas\u0131n\xE7 g\xF6stergelerine bak!"
-      textEN: 
+      textTR: "Borulardaki bas\u0131n\xE7 \xE7ok fazla... t\u0131pk\u0131 kafatas\u0131n\u0131n
+        i\xE7indeki bas\u0131n\xE7 gibi."
+      textEN: Too much pressure in the pipes... just like the pressure inside your
+        skull.
       textDE: 
     - duration: 4
-      textTR: "Sistemi dengelemezsen aylar s\xFCren eme\u011Fimiz havaya u\xE7acak!"
-      textEN: 
+      textTR: "Vanay\u0131 bul ve buhar\u0131 bo\u015Falt Arthur!"
+      textEN: Find the valve and release the steam, Arthur!
       textDE: 
     - duration: 2.5
-      textTR: "Vanalar\u0131 \xE7evir! \u015E\u0130MD\u0130!"
-      textEN: 
+      textTR: "B\xFCt\xFCn oda y\xFCz\xFCne patlamadan \xF6nce!"
+      textEN: Before the whole room blows up in your face!
       textDE: 
   - id: particle_room_entrance
     note: 
+    voiceClip: {fileID: 0}
     segments:
     - duration: 6
-      textTR: 
-      textEN: Step inside. The Particle Accelerator. The belly of the beast. See
-        that terminal?
+      textTR: "K\xFCtle Spektrometresi..."
+      textEN: The Mass Spectrometer...
       textDE: 
     - duration: 3
-      textTR: 
-      textEN: That computer is the only thing keeping this monster on a leash.
+      textTR: "M\u0131knat\u0131slar\u0131 birlikte kalibre etti\u011Fimiz zamanlar\u0131
+        hat\u0131rl\u0131yor musun?"
+      textEN: Remember when we used to calibrate the magnets together?
       textDE: 
     - duration: 7
-      textTR: 
-      textEN: You smash atoms, Proffessor; I smash enemies. Use the terminal to keep
-        the cycle stable.
+      textTR: "\u015Eimdi o par\xE7ac\u0131klar da zihnin kadar karars\u0131z."
+      textEN: Now, those particles are as unstable as your mind.
       textDE: 
     - duration: 5
-      textTR: 
-      textEN: ' I don''t want a crater where my base used to be.'
+      textTR: "I\u015F\u0131n\u0131 merkeze y\xF6nlendir Arthur. Ellerinin titremesine
+        izin verme."
+      textEN: Guide the beam to the center, Arthur. Don't let your hands shake.
       textDE: 
   - id: first_notepad
     note: 
+    voiceClip: {fileID: 0}
     segments:
     - duration: 3
-      textTR: 
-      textEN: 'Now, write that code into the Siswan Machine.
-
-'
+      textTR: "G\xFCzel. Okumay\u0131 unutmam\u0131\u015Fs\u0131n."
+      textEN: Good. You haven't forgotten how to read.
       textDE: 
     - duration: 4
-      textTR: 
-      textEN: And Professor? Do it exactly as written.
+      textTR: "\u015Eimdi Turing Makinesi'nin ba\u015F\u0131na ge\xE7."
+      textEN: Now, walk over to the Turing Machine.
       textDE: 
     - duration: 1
-      textTR: 
-      textEN: No improvising.
+      textTR: "Az \xF6nce buldu\u011Fun kelimeyi, sembol\xFC ve say\u0131lar\u0131
+        gir."
+      textEN: Enter the word, the symbol, and the numbers you just found.
       textDE: 
     - duration: 2
-      textTR: 
-      textEN: No creative liberties.
+      textTR: "Bakal\u0131m parmaklar\u0131n \xE7al\u0131\u015Fmam\u0131z\u0131n
+        ritmini h\xE2l\xE2 hat\u0131rl\u0131yor mu."
+      textEN: Let's see if your fingers still remember the rhythm of our work.
       textDE: 
     - duration: 4
-      textTR: 
-      textEN: You are here to follow orders, not to think freely.
+      textTR: "Ben seni bulmadan \xF6nce i\u015Faretlediklerimi bul."
+      textEN: Find the ones I marked before I find you.
       textDE: 
     - duration: 6
-      textTR: 
-      textEN: 'We cured you of that habit when we brought you here. Move.
-
-'
+      textTR: "Ve ses \xE7\u0131karmamaya \xE7al\u0131\u015F."
+      textEN: And try not to make a sound.
       textDE: 
   - id: first_mistake
     note: 
+    voiceClip: {fileID: 0}
     segments:
     - duration: 4
-      textTR: 
-      textEN: Is this a joke? IS IT?!
+      textTR: "Yanl\u0131\u015F Arthur! T\u0131pk\u0131 kazaya sebep oldu\u011Fun
+        g\xFCnk\xFC gibi \xF6zensiz ve dikkatsiz!"
+      textEN: Wrong, Arthur! Sloppy and careless, just like the day you caused the
+        accident!
       textDE: 
     - duration: 4
-      textTR: 
-      textEN: I was told your people were perfectionists!
+      textTR: Odaklan!
+      textEN: Focus!
       textDE: 
     - duration: 7
-      textTR: 
-      textEN: ' ''Master Race,'' my ass... Right now, you can''t even type a few
-        numbers correctly.
-
-'
+      textTR: "O kap\u0131y\u0131 yaln\u0131zca be\u015F do\u011Fru dizilim a\xE7acak."
+      textEN: Only five correct sequences will unlock that door.
       textDE: 
     - duration: 4
-      textTR: 
-      textEN: ' Do I need to translate it into German for you, Jerry?'
+      textTR: "Radyasyon haf\u0131zan\u0131 da m\u0131 \xE7\xFCr\xFCtt\xFC?"
+      textEN: Did the radiation rot your memory too?
       textDE: 
     - duration: 3
-      textTR: 
-      textEN: DO IT AGAIN!
+      textTR: Defterine bak ve tekrar dene.
+      textEN: Look at your notebook and try again.
       textDE: 
   - id: tutorial_solved
     note: 
+    voiceClip: {fileID: 0}
     segments:
     - duration: 3
-      textTR: 
-      textEN: See? Not that hard when you focus.
+      textTR: Etkileyici. Makine girdini kabul etti.
+      textEN: Impressive. The machine accepts your input.
       textDE: 
     - duration: 3
-      textTR: 
-      textEN: I'm unlocking the lab doors. Get out there.
+      textTR: "Laboratuvar kap\u0131s\u0131ndaki kilidin nas\u0131l tepki verdi\u011Fini
+        fark ettin mi?"
+      textEN: Notice how the lock on the laboratory door reacted?
       textDE: 
     - duration: 7
-      textTR: 
-      textEN: 'Don''t expect a medal for doing what you''re told. Get back to work.
-
-'
+      textTR: "Art\u0131k a\xE7\u0131k. G\xFCvenli k\xFC\xE7\xFCk ofisinden d\u0131\u015Far\u0131
+        ad\u0131m at... ve ger\xE7ek \xE7al\u0131\u015Fmayla y\xFCzle\u015F."
+      textEN: It is open now. Step out of your safe little office... and come face
+        the real work.
       textDE: 
   - id: final_code
     note: 
+    voiceClip: {fileID: 0}
     segments:
     - duration: 4
-      textTR: 
-      textEN: Gute Arbeit. The math is done, Johan.
+      textTR: "Be\u015F dizilim... Hepsi do\u011Fruland\u0131."
+      textEN: Five sequences... All validated.
       textDE: 
     - duration: 5
-      textTR: 
-      textEN: But equations don't win wars. Fire does.
+      textTR: "Ger\xE7ekten ba\u015Fard\u0131n Arthur. Par\xE7alanm\u0131\u015F ara\u015Ft\u0131rmam\u0131z\u0131
+        yeniden bir araya getirdin."
+      textEN: You actually did it, Arthur. You pieced our shattered research back
+        together.
       textDE: 
     - duration: 10
-      textTR: 
-      textEN: Proceed to the Test Chamber. What you do in the next five minutes will
-        decide the fate of mankind for the next five hundred years.
+      textTR: "Son kilit de a\xE7\u0131ld\u0131."
+      textEN: The final lock is released.
       textDE: 
     - duration: 8
-      textTR: 
-      textEN: We are done playing with numbers... Go inside, and set the world on
-        fire.
+      textTR: "Devam et, \xE7\u0131k\u0131\u015F kap\u0131s\u0131n\u0131 a\xE7. Bakal\u0131m
+        di\u011Fer tarafta seni ne bekliyor."
+      textEN: Go on, open the exit door. Let's see what awaits you on the other side.
       textDE: 
   - id: pressure_room_entrance
     note: 
+    voiceClip: {fileID: 0}
     segments:
     - duration: 2
-      textTR: 
-      textEN: The Pressure Room.
+      textTR: "Borular\u0131n y\xFCk alt\u0131nda nas\u0131l inledi\u011Fini dinle."
+      textEN: Listen to the pipes groaning under the strain.
       textDE: 
     - duration: 7
-      textTR: 
-      textEN: Now, I know you scientists claim you work well 'under pressure,' but
-        these pipes do not.
+      textTR: "Buras\u0131 tamamen saatli bir bomba Arthur."
+      textEN: This whole place is a ticking time bomb, Arthur.
       textDE: 
     - duration: 4
-      textTR: 
-      textEN: Watch the gauges. If the needle hits the red, vent the system.
+      textTR: "T\u0131pk\u0131 in\u015Fa etti\u011Fimiz reakt\xF6r gibi."
+      textEN: Just like the reactor we built.
       textDE: 
     - duration: 4
-      textTR: 
-      textEN: Unless You want to scrap of the wall with a spatula.
+      textTR: "G\xF6z\xFCn\xFC bas\u0131n\xE7 g\xF6stergelerinden ay\u0131rma."
+      textEN: Keep your eyes on the pressure gauges.
       textDE: 
     - duration: 4
-      textTR: 
-      textEN: Your choise Johan.
+      textTR: "K\u0131rm\u0131z\u0131 b\xF6lgeye ula\u015F\u0131rlarsa, daha bana
+        f\u0131rsat kalmadan buhar seni diri diri ha\u015Flar."
+      textEN: If they hit the red zone, the steam will cook you alive before I even
+        get the chance.
       textDE: 
   - id: tut_001
     note: 
+    voiceClip: {fileID: 0}
     segments:
     - duration: 2
-      textTR: 
-      textEN: Look at that note and take it
+      textTR: "\xD6nce masadaki defteri a\xE7\u0131p kalibrasyon notunu almal\u0131y\u0131m."
+      textEN: First I must open the notebook on the desk and take the calibration
+        note.
       textDE: 
   - id: tut_002
     note: 
+    voiceClip: {fileID: 0}
     segments:
     - duration: 3
-      textTR: 
-      textEN: Dont forget to lock your door.
+      textTR: "\u015Eifreyi ald\u0131m. \u015Eimdi bunu Turing makinesine girmem
+        gerekiyor."
+      textEN: I got the code. Now I need to enter it into the Turing machine.
       textDE: 
   - id: tut_003
     note: 
+    voiceClip: {fileID: 0}
     segments:
     - duration: 3
-      textTR: "\t\t"
-      textEN: Do you hear the step voices.
+      textTR: O ses de neydi?... Elektrikler mi kesildi?
+      textEN: What was that sound?... Did the power just go out?
       textDE: 
     - duration: 2
       textTR: 
@@ -240,10 +259,13 @@ MonoBehaviour:
       textDE: 
   - id: tut_004
     note: 
+    voiceClip: {fileID: 0}
     segments:
     - duration: 3
-      textTR: "\t\t"
-      textEN: Just shut up and dont move.
+      textTR: "Her yer zifiri karanl\u0131k... B\xF6yle \xE7al\u0131\u015Famam. Fenerim
+        masan\u0131n \xFCzerinde, onu almal\u0131y\u0131m."
+      textEN: Everywhere is pitch black... I can't work like this. Look, my flashlight
+        is on the desk, I should take it.
       textDE: 
     - duration: 2
       textTR: 
@@ -251,14 +273,18 @@ MonoBehaviour:
       textDE: 
   - id: tut_005
     note: 
+    voiceClip: {fileID: 0}
     segments:
     - duration: 3
-      textTR: "\t\t"
-      textEN: Okey it is safe now.
+      textTR: "G\xFCzel, en az\u0131ndan \xF6n\xFCm\xFC g\xF6rebiliyorum. \u015Eimdi
+        koridora \xE7\u0131k\u0131p sigorta kutusunu bulmal\u0131 ve elektri\u011Fi
+        geri a\xE7mal\u0131y\u0131m."
+      textEN: Good, at least I can see ahead. Now I must go out to the corridor,
+        find the breaker box, and restore the power.
       textDE: 
     - duration: 2
       textTR: 
-      textEN: 'You can go out. '
+      textEN: You can go out.
       textDE: 
     - duration: 2
       textTR: 
@@ -266,14 +292,17 @@ MonoBehaviour:
       textDE: 
   - id: tut_006
     note: 
+    voiceClip: {fileID: 0}
     segments:
     - duration: 3
-      textTR: "\t\t"
-      textEN: Fuck this is Lees...
+      textTR: "San\u0131r\u0131m ana \u015Fartel koridorun sonundaki odada. Oraya
+        bakmal\u0131y\u0131m."
+      textEN: I think the main breaker is in the room at the end of the corridor.
+        I should check it.
       textDE: 
     - duration: 2
       textTR: 
-      textEN: 'Ju... just  turn around '
+      textEN: Ju... just  turn around
       textDE: 
     - duration: 2
       textTR: 
@@ -285,10 +314,13 @@ MonoBehaviour:
       textDE: 
   - id: tut_007
     note: 
+    voiceClip: {fileID: 0}
     segments:
     - duration: 3
-      textTR: "\t\t"
-      textEN: Allright. I think he is gone.
+      textTR: "Elektrik geldi, sistemler \xE7al\u0131\u015F\u0131yor. \u015Eimdi
+        di\u011Fer odalardaki gizli \u015Fifreleri bulmam gerekiyor."
+      textEN: Power is back, the systems are working. Now I need to find the hidden
+        passwords in the other rooms.
       textDE: 
     - duration: 2
       textTR: 
@@ -300,10 +332,13 @@ MonoBehaviour:
       textDE: 
   - id: tut_008
     note: 
+    voiceClip: {fileID: 0}
     segments:
     - duration: 3
-      textTR: "\t\t"
-      textEN: Damn it the pressure...
+      textTR: "Bas\u0131n\xE7 g\xF6stergesi tavan yapt\u0131! Kazan dairesindeki
+        vanalar\u0131 hemen kapatmazsam buras\u0131 havaya u\xE7acak!"
+      textEN: The pressure gauge has spiked! If I don't close the valves in the boiler
+        room right now, this place will blow up!
       textDE: 
     - duration: 2
       textTR: 
@@ -315,10 +350,14 @@ MonoBehaviour:
       textDE: 
   - id: tut_009
     note: 
+    voiceClip: {fileID: 0}
     segments:
     - duration: 3
-      textTR: "\t\t"
-      textEN: Now the lights...
+      textTR: "Bas\u0131n\xE7 normale d\xF6nd\xFC, tehlike ge\xE7ti. \u0130\u015Fe
+        geri d\xF6nelim... \u015Eifreleri bulmak i\xE7in raflardaki kitaplar\u0131
+        kar\u0131\u015Ft\u0131rabilirim."
+      textEN: Pressure is back to normal, danger has passed. Let's get back to work...
+        I can search the books on the shelves to find the passwords.
       textDE: 
     - duration: 2
       textTR: 
@@ -326,7 +365,7 @@ MonoBehaviour:
       textDE: 
     - duration: 2
       textTR: 
-      textEN: 'pul the level in the fuse room. '
+      textEN: pul the level in the fuse room.
       textDE: 
     - duration: 2
       textTR: 
@@ -334,10 +373,13 @@ MonoBehaviour:
       textDE: 
   - id: tut_010
     note: 
+    voiceClip: {fileID: 0}
     segments:
     - duration: 3
-      textTR: "\t\t\t"
-      textEN: You did well proffesor.
+      textTR: "Bu osiloskoptaki frekans tan\u0131d\u0131k g\xF6r\xFCn\xFCyor... Ekrandaki
+        dalgay\u0131 e\u015Fle\u015Ftirirsem \u015Fifreyi elde edebilirim."
+      textEN: The frequency on this oscilloscope looks familiar... If I match the
+        wave on the screen, I can obtain the password.
       textDE: 
     - duration: 2
       textTR: 
@@ -353,10 +395,13 @@ MonoBehaviour:
       textDE: 
   - id: tut_011
     note: 
+    voiceClip: {fileID: 0}
     segments:
     - duration: 3
-      textTR: "\t\t\t"
-      textEN: Good very good
+      textTR: "Burada bir \u015Fifre var! Birini buldum, bunu not al\u0131p hemen
+        Turing makinesinde denemeliyim."
+      textEN: There's a password here! I found one, I should note this down and try
+        it on the Turing machine right away.
       textDE: 
     - duration: 2
       textTR: 
@@ -368,10 +413,12 @@ MonoBehaviour:
       textDE: 
   - id: tut_012
     note: 
+    voiceClip: {fileID: 0}
     segments:
     - duration: 1.5
-      textTR: "\t\t\t"
-      textEN: Be slow mate
+      textTR: "Bu ses... Buraya geliyor! Hemen dolab\u0131n i\xE7ine saklanmal\u0131y\u0131m!"
+      textEN: That sound... He's coming here! I must hide inside the locker right
+        now!
       textDE: 
     - duration: 2
       textTR: 
@@ -382,616 +429,791 @@ MonoBehaviour:
       textEN: never ever.
       textDE: 
   - id: tut_board_intro
-    note: Kara tahta eğitiminin kitap başlangıcı
+    note: "Kara tahta e\u011Fitiminin kitap ba\u015Flang\u0131c\u0131"
+    voiceClip: {fileID: 0}
     segments:
     - duration: 5
-      textTR: Masadaki kitabı aç. Hedefi, bağlantı ipucunu ve üç parçayı deftere sürükle.
-      textEN: Open the desk book. Drag the target, connection clue and all three parts into your notebook.
-      textDE: Öffne das Buch auf dem Tisch. Ziehe das Ziel, den Hinweis und alle drei Teile in dein Notizbuch.
+      textTR: "\xD6nce defterdeki kalibrasyon \u015Femas\u0131na bakmal\u0131y\u0131m.
+        [{input:ToggleNotebook}] ile a\xE7\u0131p hedefi ve par\xE7alar\u0131 tahtaya
+        s\xFCr\xFCkleyebilirim."
+      textEN: First I should check the calibration diagram in my notebook. I can
+        open it with [{input:ToggleNotebook}] and drag the target and parts onto
+        the board.
+      textDE: "\xD6ffne das Buch auf dem Tisch. Ziehe das Ziel, den Hinweis und alle
+        drei Teile in dein Notizbuch."
   - id: tut_board_terminal
-    note: İlk ölçümün Turing kontrolü
+    note: "\u0130lk \xF6l\xE7\xFCm\xFCn Turing kontrol\xFC"
+    voiceClip: {fileID: 0}
     segments:
     - duration: 5
-      textTR: Ölçümün defterde. Turing'e geç; ölçüm kağıdını okuyucuya bırak ve Enter ile onayla.
-      textEN: Your measurement is in the notebook. Take it to Turing, drop the paper into the reader and press Enter.
-      textDE: Deine Messung ist im Notizbuch. Lege sie in Turings Lesegerät und bestätige mit Enter.
+      textTR: "Sentez tamamland\u0131. Tahtan\u0131n verdi\u011Fi kodu Turing makinesine
+        girersem kilit a\xE7\u0131lacak."
+      textEN: Synthesis complete. If I enter the code from the board into the Turing
+        machine, the lock will open.
+      textDE: "Deine Messung ist im Notizbuch. Lege sie in Turings Leseger\xE4t und
+        best\xE4tige mit Enter."
   - id: thought_book_0
     note: Tutorial inner companion / book
     voiceClip: {fileID: 0}
     segments:
     - duration: 4
-      textTR: "Şu masadaki kitap... Belki burada ne olduğunu anlatıyordur."
-      textEN: "That book on the desk... Maybe it can tell us what happened here."
-      textDE: "Das Buch auf dem Tisch... Vielleicht steht darin, was hier passiert ist."
+      textTR: "\u015Eu masadaki kitap... Belki burada ne oldu\u011Funu anlat\u0131yordur."
+      textEN: That book on the desk... Maybe it can tell us what happened here.
+      textDE: Das Buch auf dem Tisch... Vielleicht steht darin, was hier passiert
+        ist.
   - id: thought_book_1
     note: Tutorial inner companion / book
     voiceClip: {fileID: 0}
     segments:
     - duration: 4
-      textTR: "Aklım hâlâ o kitapta. Sen hiç merak etmedin mi?"
-      textEN: "I'm still thinking about that book. Aren't you curious?"
-      textDE: "Ich denke noch an das Buch. Bist du gar nicht neugierig?"
+      textTR: "Akl\u0131m h\xE2l\xE2 o kitapta. Sen hi\xE7 merak etmedin mi?"
+      textEN: I'm still thinking about that book. Aren't you curious?
+      textDE: Ich denke noch an das Buch. Bist du gar nicht neugierig?
   - id: thought_book_2
     note: Tutorial inner companion / book
     voiceClip: {fileID: 0}
     segments:
     - duration: 5
-      textTR: "Hemen önündeki masada. Kitaba tıklayınca birlikte bakabiliriz."
-      textEN: "On the desk right in front of you. Click the book and we can take a look."
-      textDE: "Auf dem Tisch direkt vor dir. Klick auf das Buch, dann sehen wir gemeinsam nach."
+      textTR: "Hemen \xF6n\xFCndeki masada. Kitaba t\u0131klay\u0131nca birlikte
+        bakabiliriz."
+      textEN: On the desk right in front of you. Click the book and we can take a
+        look.
+      textDE: Auf dem Tisch direkt vor dir. Klick auf das Buch, dann sehen wir gemeinsam
+        nach.
   - id: thought_collect_0
     note: Tutorial inner companion / collect
     voiceClip: {fileID: 0}
     segments:
     - duration: 6
-      textTR: "Hedef, bağlantı notu ve üç parça... Bunlar defterinde dursa iyi olur. Tab ile açabiliyorsun."
-      textEN: "The target, connection note and three parts... We could keep them in your notebook. Tab opens it."
-      textDE: "Das Ziel, die Verbindungsnotiz und drei Teile... Im Notizbuch wären sie gut aufgehoben. Tab öffnet es."
+      textTR: "Hedef, ba\u011Flant\u0131 notu ve \xFC\xE7 par\xE7a... Bunlar defterinde
+        dursa iyi olur. Tab ile a\xE7abiliyorsun."
+      textEN: The target, connection note and three parts... We could keep them in
+        your notebook. Tab opens it.
+      textDE: "Das Ziel, die Verbindungsnotiz und drei Teile... Im Notizbuch w\xE4ren
+        sie gut aufgehoben. Tab \xF6ffnet es."
   - id: thought_collect_1
     note: Tutorial inner companion / collect
     voiceClip: {fileID: 0}
     segments:
     - duration: 5
-      textTR: "Sayfalardaki notlar orada kalacak. Defterine sürüklersen yanımızda da olur."
-      textEN: "Those notes will stay on the pages. Drag them into your notebook and we can take them with us."
-      textDE: "Die Notizen bleiben auf den Seiten. Ziehst du sie ins Notizbuch, haben wir sie auch dabei."
+      textTR: "Sayfalardaki notlar orada kalacak. Defterine s\xFCr\xFCklersen yan\u0131m\u0131zda
+        da olur."
+      textEN: Those notes will stay on the pages. Drag them into your notebook and
+        we can take them with us.
+      textDE: Die Notizen bleiben auf den Seiten. Ziehst du sie ins Notizbuch, haben
+        wir sie auch dabei.
   - id: thought_collect_2
     note: Tutorial inner companion / collect
     voiceClip: {fileID: 0}
     segments:
     - duration: 7
-      textTR: "Bir şeyler eksik hâlâ. Hedef, Bağlantı Sırası ve yan sayfadaki üç parça... Hepsi lazım olabilir."
-      textEN: "Something's still missing. The target, connection order and three parts on the other page... We may need all of them."
-      textDE: "Etwas fehlt noch. Ziel, Verbindungsfolge und die drei Teile auf der anderen Seite... Vielleicht brauchen wir alles."
+      textTR: "Bir \u015Feyler eksik h\xE2l\xE2. Hedef, Ba\u011Flant\u0131 S\u0131ras\u0131
+        ve yan sayfadaki \xFC\xE7 par\xE7a... Hepsi laz\u0131m olabilir."
+      textEN: Something's still missing. The target, connection order and three parts
+        on the other page... We may need all of them.
+      textDE: Etwas fehlt noch. Ziel, Verbindungsfolge und die drei Teile auf der
+        anderen Seite... Vielleicht brauchen wir alles.
   - id: thought_leave_book_0
     note: Tutorial inner companion / leave_book
     voiceClip: {fileID: 0}
     segments:
     - duration: 5
-      textTR: "Tamam, hepsi yanımızda. Şu kara tahtada bunlarla bir şey yapabiliriz."
-      textEN: "Good, we have everything. We could try something with these on that chalkboard."
-      textDE: "Gut, wir haben alles. An der Tafel könnten wir etwas damit versuchen."
+      textTR: "Tamam, hepsi yan\u0131m\u0131zda. \u015Eu kara tahtada bunlarla bir
+        \u015Fey yapabiliriz."
+      textEN: Good, we have everything. We could try something with these on that
+        chalkboard.
+      textDE: "Gut, wir haben alles. An der Tafel k\xF6nnten wir etwas damit versuchen."
   - id: thought_leave_book_1
     note: Tutorial inner companion / leave_book
     voiceClip: {fileID: 0}
     segments:
     - duration: 5
-      textTR: "Kitaptaki işimiz bitti gibi. F ile bıraktığında tahtaya geçebiliriz."
-      textEN: "I think we're done with the book. F puts it down, then we can try the board."
-      textDE: "Mit dem Buch sind wir wohl fertig. Mit F legst du es weg, dann können wir zur Tafel."
+      textTR: "Kitaptaki i\u015Fimiz bitti gibi. F ile b\u0131rakt\u0131\u011F\u0131nda
+        tahtaya ge\xE7ebiliriz."
+      textEN: I think we're done with the book. F puts it down, then we can try the
+        board.
+      textDE: "Mit dem Buch sind wir wohl fertig. Mit F legst du es weg, dann k\xF6nnen
+        wir zur Tafel."
   - id: thought_leave_book_2
     note: Tutorial inner companion / leave_book
     voiceClip: {fileID: 0}
     segments:
     - duration: 6
-      textTR: "Notlar kaybolmayacak; defterindeler. F ile kitabı bırakıp etrafa bakabiliriz."
-      textEN: "The notes won't disappear; they're in your notebook. F lets us leave the book and look around."
-      textDE: "Die Notizen verschwinden nicht; sie sind im Notizbuch. Mit F können wir das Buch verlassen und uns umsehen."
+      textTR: "Notlar kaybolmayacak; defterindeler. F ile kitab\u0131 b\u0131rak\u0131p
+        etrafa bakabiliriz."
+      textEN: The notes won't disappear; they're in your notebook. F lets us leave
+        the book and look around.
+      textDE: "Die Notizen verschwinden nicht; sie sind im Notizbuch. Mit F k\xF6nnen
+        wir das Buch verlassen und uns umsehen."
   - id: thought_board_0
     note: Tutorial inner companion / board
     voiceClip: {fileID: 0}
     segments:
     - duration: 6
-      textTR: "Kara tahta... Belki bu parçaların nasıl bir araya geldiğini orada anlayabiliriz."
-      textEN: "The chalkboard... Maybe we can work out how these pieces fit together there."
-      textDE: "Die Tafel... Vielleicht finden wir dort heraus, wie diese Teile zusammenpassen."
+      textTR: "Kara tahta... Belki bu par\xE7alar\u0131n nas\u0131l bir araya geldi\u011Fini
+        orada anlayabiliriz."
+      textEN: The chalkboard... Maybe we can work out how these pieces fit together
+        there.
+      textDE: Die Tafel... Vielleicht finden wir dort heraus, wie diese Teile zusammenpassen.
   - id: thought_board_1
     note: Tutorial inner companion / board
     voiceClip: {fileID: 0}
     segments:
     - duration: 5
-      textTR: "Tahtayı merak ediyorum. Kitaptan aldıklarımızı orada deneyebiliriz."
-      textEN: "I'm curious about the board. We could try out what we took from the book."
-      textDE: "Die Tafel interessiert mich. Dort könnten wir ausprobieren, was wir aus dem Buch haben."
+      textTR: "Tahtay\u0131 merak ediyorum. Kitaptan ald\u0131klar\u0131m\u0131z\u0131
+        orada deneyebiliriz."
+      textEN: I'm curious about the board. We could try out what we took from the
+        book.
+      textDE: "Die Tafel interessiert mich. Dort k\xF6nnten wir ausprobieren, was
+        wir aus dem Buch haben."
   - id: thought_board_2
     note: Tutorial inner companion / board
     voiceClip: {fileID: 0}
     segments:
     - duration: 6
-      textTR: "Şu kara tahtaya tıklayınca çalışabiliriz. Notların da defterinde; Tab ile elinin altında."
-      textEN: "Clicking that chalkboard lets us work. Your notes are in the notebook; Tab brings them up."
-      textDE: "Ein Klick auf die Tafel lässt uns arbeiten. Die Notizen sind im Notizbuch; Tab holt sie hervor."
+      textTR: "\u015Eu kara tahtaya t\u0131klay\u0131nca \xE7al\u0131\u015Fabiliriz.
+        Notlar\u0131n da defterinde; Tab ile elinin alt\u0131nda."
+      textEN: Clicking that chalkboard lets us work. Your notes are in the notebook;
+        Tab brings them up.
+      textDE: "Ein Klick auf die Tafel l\xE4sst uns arbeiten. Die Notizen sind im
+        Notizbuch; Tab holt sie hervor."
   - id: thought_pin_0
     note: Tutorial inner companion / pin
     voiceClip: {fileID: 0}
     segments:
     - duration: 6
-      textTR: "Hedefle bağlantı notunu şu panoda yan yana görebilsek, düşünmek daha kolay olurdu."
-      textEN: "It would be easier to think with the target and connection note side by side on that panel."
-      textDE: "Mit Ziel und Verbindungsnotiz nebeneinander an der Pinnwand könnten wir besser nachdenken."
+      textTR: "Hedefle ba\u011Flant\u0131 notunu \u015Fu panoda yan yana g\xF6rebilsek,
+        d\xFC\u015F\xFCnmek daha kolay olurdu."
+      textEN: It would be easier to think with the target and connection note side
+        by side on that panel.
+      textDE: "Mit Ziel und Verbindungsnotiz nebeneinander an der Pinnwand k\xF6nnten
+        wir besser nachdenken."
   - id: thought_pin_1
     note: Tutorial inner companion / pin
     voiceClip: {fileID: 0}
     segments:
     - duration: 6
-      textTR: "Defterde Hedefler ve Bilgiler vardı. İkisindeki notları panoya taşıyabiliriz."
-      textEN: "Your notebook had Targets and Information. We can move a note from each onto the panel."
-      textDE: "Im Notizbuch gab es Ziele und Informationen. Je eine Notiz daraus können wir an die Pinnwand ziehen."
+      textTR: "Defterde Hedefler ve Bilgiler vard\u0131. \u0130kisindeki notlar\u0131
+        panoya ta\u015F\u0131yabiliriz."
+      textEN: Your notebook had Targets and Information. We can move a note from
+        each onto the panel.
+      textDE: "Im Notizbuch gab es Ziele und Informationen. Je eine Notiz daraus
+        k\xF6nnen wir an die Pinnwand ziehen."
   - id: thought_pin_2
     note: Tutorial inner companion / pin
     voiceClip: {fileID: 0}
     segments:
     - duration: 6
-      textTR: "Hedef ve Bağlantı Sırası... İkisi de panoya sürüklendiğinde gözümüzün önünde olacak."
-      textEN: "The target and connection order... Drag both onto the panel and we'll have them in sight."
-      textDE: "Ziel und Verbindungsfolge... Ziehen wir beide an die Pinnwand, haben wir sie vor Augen."
+      textTR: "Hedef ve Ba\u011Flant\u0131 S\u0131ras\u0131... \u0130kisi de panoya
+        s\xFCr\xFCklendi\u011Finde g\xF6z\xFCm\xFCz\xFCn \xF6n\xFCnde olacak."
+      textEN: The target and connection order... Drag both onto the panel and we'll
+        have them in sight.
+      textDE: Ziel und Verbindungsfolge... Ziehen wir beide an die Pinnwand, haben
+        wir sie vor Augen.
   - id: thought_clear_board_0
     note: Tutorial inner companion / clear_board
     voiceClip: {fileID: 0}
     segments:
     - duration: 6
-      textTR: "Şimdi önümüzde yer olsa iyi olur. Panonun üstündeki tutamak belgeleri topluyor galiba."
-      textEN: "We could use some room now. I think that handle above the panel folds the documents away."
-      textDE: "Jetzt könnten wir Platz gebrauchen. Der Griff über der Pinnwand klappt die Unterlagen wohl zusammen."
+      textTR: "\u015Eimdi \xF6n\xFCm\xFCzde yer olsa iyi olur. Panonun \xFCst\xFCndeki
+        tutamak belgeleri topluyor galiba."
+      textEN: We could use some room now. I think that handle above the panel folds
+        the documents away.
+      textDE: "Jetzt k\xF6nnten wir Platz gebrauchen. Der Griff \xFCber der Pinnwand
+        klappt die Unterlagen wohl zusammen."
   - id: thought_clear_board_1
     note: Tutorial inner companion / clear_board
     voiceClip: {fileID: 0}
     segments:
     - duration: 5
-      textTR: "Şu BELGELERİ TOPLA tutamağı... Notlar dururken çalışma alanını açabiliriz."
-      textEN: "That BELGELERİ TOPLA handle... We can clear the working area without losing the notes."
-      textDE: "Dieser Griff BELGELERİ TOPLA... Damit wird die Arbeitsfläche frei, ohne dass die Notizen verschwinden."
+      textTR: "\u015Eu BELGELER\u0130 TOPLA tutama\u011F\u0131... Notlar dururken
+        \xE7al\u0131\u015Fma alan\u0131n\u0131 a\xE7abiliriz."
+      textEN: "That BELGELER\u0130 TOPLA handle... We can clear the working area
+        without losing the notes."
+      textDE: "Dieser Griff BELGELER\u0130 TOPLA... Damit wird die Arbeitsfl\xE4che
+        frei, ohne dass die Notizen verschwinden."
   - id: thought_clear_board_2
     note: Tutorial inner companion / clear_board
     voiceClip: {fileID: 0}
     segments:
     - duration: 6
-      textTR: "Panoyu tutamaktan kapatınca parçalara yer açılıyor. Sonra tekrar bakabiliriz."
-      textEN: "Closing the panel with its handle makes room for the parts. We can open it again later."
-      textDE: "Klappen wir die Pinnwand am Griff zu, ist Platz für die Teile. Später können wir wieder nachsehen."
+      textTR: "Panoyu tutamaktan kapat\u0131nca par\xE7alara yer a\xE7\u0131l\u0131yor.
+        Sonra tekrar bakabiliriz."
+      textEN: Closing the panel with its handle makes room for the parts. We can
+        open it again later.
+      textDE: "Klappen wir die Pinnwand am Griff zu, ist Platz f\xFCr die Teile.
+        Sp\xE4ter k\xF6nnen wir wieder nachsehen."
   - id: thought_build_0
     note: Tutorial inner companion / build
     voiceClip: {fileID: 0}
     segments:
     - duration: 6
-      textTR: "Üç parçayı defterden tahtaya taşıyabiliriz. Nasıl bağlanacakları aldığımız notta yazıyordu."
-      textEN: "We can bring the three parts from your notebook onto the board. That note had the connection order."
-      textDE: "Die drei Teile können vom Notizbuch auf die Tafel. Die Reihenfolge stand auf unserer Notiz."
+      textTR: "\xDC\xE7 par\xE7ay\u0131 defterden tahtaya ta\u015F\u0131yabiliriz.
+        Nas\u0131l ba\u011Flanacaklar\u0131 ald\u0131\u011F\u0131m\u0131z notta yaz\u0131yordu."
+      textEN: We can bring the three parts from your notebook onto the board. That
+        note had the connection order.
+      textDE: "Die drei Teile k\xF6nnen vom Notizbuch auf die Tafel. Die Reihenfolge
+        stand auf unserer Notiz."
   - id: thought_build_1
     note: Tutorial inner companion / build
     voiceClip: {fileID: 0}
     segments:
     - duration: 6
-      textTR: "Oklar çıkış, halkalar giriş... Aralarını sürükleyerek bağlayabiliriz. Sonucu merak ediyorum."
-      textEN: "Arrows are outputs, rings are inputs... We can drag between them to connect them. I'm curious what we'll get."
-      textDE: "Pfeile sind Ausgänge, Ringe Eingänge... Dazwischen ziehen verbindet sie. Ich bin gespannt auf das Ergebnis."
+      textTR: "Oklar \xE7\u0131k\u0131\u015F, halkalar giri\u015F... Aralar\u0131n\u0131
+        s\xFCr\xFCkleyerek ba\u011Flayabiliriz. Sonucu merak ediyorum."
+      textEN: Arrows are outputs, rings are inputs... We can drag between them to
+        connect them. I'm curious what we'll get.
+      textDE: "Pfeile sind Ausg\xE4nge, Ringe Eing\xE4nge... Dazwischen ziehen verbindet
+        sie. Ich bin gespannt auf das Ergebnis."
   - id: thought_build_2
     note: Tutorial inner companion / build
     voiceClip: {fileID: 0}
     segments:
     - duration: 7
-      textTR: "Bağlantı notuna bir daha bakabiliriz. DENEYİ ÖLÇ sonucu gösteriyor; yanlış bağı sağ tıkla silebiliyorsun."
-      textEN: "We could check the connection note again. DENEYİ ÖLÇ measures it; right-click removes a wrong connection."
-      textDE: "Wir könnten die Verbindungsnotiz prüfen. DENEYİ ÖLÇ misst das Ergebnis; ein Rechtsklick entfernt falsche Verbindungen."
+      textTR: "Ba\u011Flant\u0131 notuna bir daha bakabiliriz. DENEY\u0130 \xD6L\xC7
+        sonucu g\xF6steriyor; yanl\u0131\u015F ba\u011F\u0131 sa\u011F t\u0131kla
+        silebiliyorsun."
+      textEN: "We could check the connection note again. DENEY\u0130 \xD6L\xC7 measures
+        it; right-click removes a wrong connection."
+      textDE: "Wir k\xF6nnten die Verbindungsnotiz pr\xFCfen. DENEY\u0130 \xD6L\xC7
+        misst das Ergebnis; ein Rechtsklick entfernt falsche Verbindungen."
   - id: thought_store_0
     note: Tutorial inner companion / store
     voiceClip: {fileID: 0}
     segments:
     - duration: 5
-      textTR: "İşte bu iz... İşimize yarayacak. Ölçüm kağıdını defterinde saklayabiliriz."
-      textEN: "That trace... We'll need it. We can keep the measurement paper in your notebook."
-      textDE: "Diese Spur... Die werden wir brauchen. Das Messblatt können wir im Notizbuch aufheben."
+      textTR: "\u0130\u015Fte bu iz... \u0130\u015Fimize yarayacak. \xD6l\xE7\xFCm
+        ka\u011F\u0131d\u0131n\u0131 defterinde saklayabiliriz."
+      textEN: That trace... We'll need it. We can keep the measurement paper in your
+        notebook.
+      textDE: "Diese Spur... Die werden wir brauchen. Das Messblatt k\xF6nnen wir
+        im Notizbuch aufheben."
   - id: thought_store_1
     note: Tutorial inner companion / store
     voiceClip: {fileID: 0}
     segments:
     - duration: 6
-      textTR: "O kağıdı burada bırakırsak geri dönmemiz gerekir. Defterine sürüklemek daha iyi olabilir."
-      textEN: "If we leave that paper here, we'll have to come back. Dragging it into your notebook might be better."
-      textDE: "Lassen wir das Blatt hier, müssen wir zurück. Im Notizbuch wäre es wohl besser aufgehoben."
+      textTR: "O ka\u011F\u0131d\u0131 burada b\u0131rak\u0131rsak geri d\xF6nmemiz
+        gerekir. Defterine s\xFCr\xFCklemek daha iyi olabilir."
+      textEN: If we leave that paper here, we'll have to come back. Dragging it into
+        your notebook might be better.
+      textDE: "Lassen wir das Blatt hier, m\xFCssen wir zur\xFCck. Im Notizbuch w\xE4re
+        es wohl besser aufgehoben."
   - id: thought_store_2
     note: Tutorial inner companion / store
     voiceClip: {fileID: 0}
     segments:
     - duration: 5
-      textTR: "Tahtadaki ölçüm kağıdı hâlâ orada. Defterine sürükleyince yanımızda olacak."
-      textEN: "The measurement paper is still on the board. Drag it into your notebook and we can take it along."
-      textDE: "Das Messblatt liegt noch an der Tafel. Ziehst du es ins Notizbuch, haben wir es dabei."
+      textTR: "Tahtadaki \xF6l\xE7\xFCm ka\u011F\u0131d\u0131 h\xE2l\xE2 orada. Defterine
+        s\xFCr\xFCkleyince yan\u0131m\u0131zda olacak."
+      textEN: The measurement paper is still on the board. Drag it into your notebook
+        and we can take it along.
+      textDE: Das Messblatt liegt noch an der Tafel. Ziehst du es ins Notizbuch,
+        haben wir es dabei.
   - id: thought_leave_board_0
     note: Tutorial inner companion / leave_board
     voiceClip: {fileID: 0}
     segments:
     - duration: 6
-      textTR: "Ölçüm defterde. Burada biraz fazla kaldık sanki... Kapıya da bir baksak iyi olur."
-      textEN: "The measurement's in your notebook. We've been here a while... We should probably check the door."
-      textDE: "Die Messung ist im Notizbuch. Wir sind schon eine Weile hier... Ein Blick zur Tür wäre wohl gut."
+      textTR: "\xD6l\xE7\xFCm defterde. Burada biraz fazla kald\u0131k sanki... Kap\u0131ya
+        da bir baksak iyi olur."
+      textEN: The measurement's in your notebook. We've been here a while... We should
+        probably check the door.
+      textDE: "Die Messung ist im Notizbuch. Wir sind schon eine Weile hier... Ein
+        Blick zur T\xFCr w\xE4re wohl gut."
   - id: thought_leave_board_1
     note: Tutorial inner companion / leave_board
     voiceClip: {fileID: 0}
     segments:
     - duration: 5
-      textTR: "Tahtadaki işimiz şimdilik bitti. F ile buradan ayrılabiliriz."
-      textEN: "I think we're done with the board for now. F lets us leave."
-      textDE: "An der Tafel sind wir vorerst fertig. Mit F können wir sie verlassen."
+      textTR: "Tahtadaki i\u015Fimiz \u015Fimdilik bitti. F ile buradan ayr\u0131labiliriz."
+      textEN: I think we're done with the board for now. F lets us leave.
+      textDE: "An der Tafel sind wir vorerst fertig. Mit F k\xF6nnen wir sie verlassen."
   - id: thought_leave_board_2
     note: Tutorial inner companion / leave_board
     voiceClip: {fileID: 0}
     segments:
     - duration: 5
-      textTR: "Notların güvende. F ile tahtadan çıkınca kapıya bakabiliriz."
-      textEN: "Your notes are safe. Once we leave the board with F, we can check the door."
-      textDE: "Die Notizen sind sicher. Verlassen wir die Tafel mit F, können wir nach der Tür sehen."
+      textTR: "Notlar\u0131n g\xFCvende. F ile tahtadan \xE7\u0131k\u0131nca kap\u0131ya
+        bakabiliriz."
+      textEN: Your notes are safe. Once we leave the board with F, we can check the
+        door.
+      textDE: "Die Notizen sind sicher. Verlassen wir die Tafel mit F, k\xF6nnen
+        wir nach der T\xFCr sehen."
   - id: thought_lock_0
     note: Tutorial inner companion / lock
     voiceClip: {fileID: 0}
     segments:
     - duration: 5
-      textTR: "Kapı açık kalmasın... Buraya birinin rahatça girebilmesi hoşuma gitmiyor."
-      textEN: "That door... I don't like how easily someone could walk in here."
-      textDE: "Diese Tür... Mir gefällt nicht, wie leicht hier jemand hereinkommen könnte."
+      textTR: "Kap\u0131 a\xE7\u0131k kalmas\u0131n... Buraya birinin rahat\xE7a
+        girebilmesi ho\u015Fuma gitmiyor."
+      textEN: That door... I don't like how easily someone could walk in here.
+      textDE: "Diese T\xFCr... Mir gef\xE4llt nicht, wie leicht hier jemand hereinkommen
+        k\xF6nnte."
   - id: thought_lock_1
     note: Tutorial inner companion / lock
     voiceClip: {fileID: 0}
     segments:
     - duration: 6
-      textTR: "Kapının kilidini fark ettin mi? Kendimi biraz daha güvende hissetmek isterdim."
-      textEN: "Did you notice the lock? I'd feel a little safer if that door were locked."
-      textDE: "Hast du das Schloss bemerkt? Mit verriegelter Tür würde ich mich etwas sicherer fühlen."
+      textTR: "Kap\u0131n\u0131n kilidini fark ettin mi? Kendimi biraz daha g\xFCvende
+        hissetmek isterdim."
+      textEN: Did you notice the lock? I'd feel a little safer if that door were
+        locked.
+      textDE: "Hast du das Schloss bemerkt? Mit verriegelter T\xFCr w\xFCrde ich
+        mich etwas sicherer f\xFChlen."
   - id: thought_lock_2
     note: Tutorial inner companion / lock
     voiceClip: {fileID: 0}
     segments:
     - duration: 5
-      textTR: "Ofis kapısının üzerindeki kilit... Üzerine tıklamak yeterli olmalı."
-      textEN: "The lock on the office door... A click on it should do it."
-      textDE: "Das Schloss an der Bürotür... Ein Klick darauf müsste genügen."
+      textTR: "Ofis kap\u0131s\u0131n\u0131n \xFCzerindeki kilit... \xDCzerine t\u0131klamak
+        yeterli olmal\u0131."
+      textEN: The lock on the office door... A click on it should do it.
+      textDE: "Das Schloss an der B\xFCrot\xFCr... Ein Klick darauf m\xFCsste gen\xFCgen."
   - id: thought_hide_0
     note: Tutorial inner companion / hide
     voiceClip: {fileID: 0}
     segments:
     - duration: 5
-      textTR: "Ayak sesleri... Sen de duydun, değil mi? Şu dolapta bizi göremeyebilir."
-      textEN: "Footsteps... You heard them too, right? They might not see us in that wardrobe."
-      textDE: "Schritte... Du hast sie auch gehört, oder? Im Schrank sieht man uns vielleicht nicht."
+      textTR: "Ayak sesleri... Sen de duydun, de\u011Fil mi? \u015Eu dolapta bizi
+        g\xF6remeyebilir."
+      textEN: Footsteps... You heard them too, right? They might not see us in that
+        wardrobe.
+      textDE: "Schritte... Du hast sie auch geh\xF6rt, oder? Im Schrank sieht man
+        uns vielleicht nicht."
   - id: thought_hide_1
     note: Tutorial inner companion / hide
     voiceClip: {fileID: 0}
     segments:
     - duration: 4
-      textTR: "Yaklaşıyor. Dolap hâlâ hemen orada..."
-      textEN: "It's getting closer. The wardrobe's still right there..."
-      textDE: "Es kommt näher. Der Schrank ist noch direkt dort..."
+      textTR: "Yakla\u015F\u0131yor. Dolap h\xE2l\xE2 hemen orada..."
+      textEN: It's getting closer. The wardrobe's still right there...
+      textDE: "Es kommt n\xE4her. Der Schrank ist noch direkt dort..."
   - id: thought_hide_2
     note: Tutorial inner companion / hide
     voiceClip: {fileID: 0}
     segments:
     - duration: 5
-      textTR: "İşaretli dolaba tıklayabiliriz. Şu an görünür olmak istemiyorum."
-      textEN: "We can click the marked wardrobe. I really don't want to be seen right now."
-      textDE: "Wir können auf den markierten Schrank klicken. Ich möchte gerade wirklich nicht gesehen werden."
+      textTR: "\u0130\u015Faretli dolaba t\u0131klayabiliriz. \u015Eu an g\xF6r\xFCn\xFCr
+        olmak istemiyorum."
+      textEN: We can click the marked wardrobe. I really don't want to be seen right
+        now.
+      textDE: "Wir k\xF6nnen auf den markierten Schrank klicken. Ich m\xF6chte gerade
+        wirklich nicht gesehen werden."
   - id: thought_wait_hidden_0
     note: Tutorial inner companion / wait_hidden
     voiceClip: {fileID: 0}
     segments:
     - duration: 5
-      textTR: "Ben buradayım. Biraz daha sessiz kalalım... Dışarıda hâlâ biri var."
-      textEN: "I'm here. Let's stay quiet a little longer... Someone's still out there."
-      textDE: "Ich bin hier. Bleiben wir noch etwas leise... Draußen ist noch jemand."
+      textTR: "Ben buraday\u0131m. Biraz daha sessiz kalal\u0131m... D\u0131\u015Far\u0131da
+        h\xE2l\xE2 biri var."
+      textEN: I'm here. Let's stay quiet a little longer... Someone's still out there.
+      textDE: "Ich bin hier. Bleiben wir noch etwas leise... Drau\xDFen ist noch
+        jemand."
   - id: thought_wait_hidden_1
     note: Tutorial inner companion / wait_hidden
     voiceClip: {fileID: 0}
     segments:
     - duration: 4
-      textTR: "Henüz uzaklaşmadı. Burada beklemek daha iyi geliyor."
-      textEN: "They haven't gone yet. Staying here feels safer."
-      textDE: "Noch ist niemand gegangen. Hier zu warten fühlt sich sicherer an."
+      textTR: "Hen\xFCz uzakla\u015Fmad\u0131. Burada beklemek daha iyi geliyor."
+      textEN: They haven't gone yet. Staying here feels safer.
+      textDE: "Noch ist niemand gegangen. Hier zu warten f\xFChlt sich sicherer an."
   - id: thought_wait_hidden_2
     note: Tutorial inner companion / wait_hidden
     voiceClip: {fileID: 0}
     segments:
     - duration: 4
-      textTR: "Sesleri dinliyorum. Güvenli olduğunda sana söyleyeceğim."
-      textEN: "I'm listening. I'll tell you when it feels safe."
-      textDE: "Ich höre zu. Ich sage dir, wenn es sicher scheint."
+      textTR: "Sesleri dinliyorum. G\xFCvenli oldu\u011Funda sana s\xF6yleyece\u011Fim."
+      textEN: I'm listening. I'll tell you when it feels safe.
+      textDE: "Ich h\xF6re zu. Ich sage dir, wenn es sicher scheint."
   - id: thought_leave_hiding_0
     note: Tutorial inner companion / leave_hiding
     voiceClip: {fileID: 0}
     segments:
     - duration: 4
-      textTR: "Sesler uzaklaştı. Sanırım artık dışarı bakabiliriz."
-      textEN: "The footsteps have faded. I think we can look outside now."
-      textDE: "Die Schritte sind verklungen. Ich glaube, wir können wieder nach draußen sehen."
+      textTR: "Sesler uzakla\u015Ft\u0131. San\u0131r\u0131m art\u0131k d\u0131\u015Far\u0131
+        bakabiliriz."
+      textEN: The footsteps have faded. I think we can look outside now.
+      textDE: "Die Schritte sind verklungen. Ich glaube, wir k\xF6nnen wieder nach
+        drau\xDFen sehen."
   - id: thought_leave_hiding_1
     note: Tutorial inner companion / leave_hiding
     voiceClip: {fileID: 0}
     segments:
     - duration: 6
-      textTR: "Artık kapının önünde kimseyi duymuyorum. Çıkış için F vardı, hatırlıyor musun?"
-      textEN: "I can't hear anyone by the door now. F was the way out, remember?"
-      textDE: "Ich höre niemanden mehr vor der Tür. Mit F geht es hinaus, erinnerst du dich?"
+      textTR: "Art\u0131k kap\u0131n\u0131n \xF6n\xFCnde kimseyi duymuyorum. \xC7\u0131k\u0131\u015F
+        i\xE7in F vard\u0131, hat\u0131rl\u0131yor musun?"
+      textEN: I can't hear anyone by the door now. F was the way out, remember?
+      textDE: "Ich h\xF6re niemanden mehr vor der T\xFCr. Mit F geht es hinaus, erinnerst
+        du dich?"
   - id: thought_leave_hiding_2
     note: Tutorial inner companion / leave_hiding
     voiceClip: {fileID: 0}
     segments:
     - duration: 5
-      textTR: "Burada kalmak zorunda değiliz. F ile dolaptan çıkabiliyorsun."
-      textEN: "We don't have to stay in here. F lets you leave the wardrobe."
-      textDE: "Wir müssen nicht hierbleiben. Mit F kannst du den Schrank verlassen."
+      textTR: "Burada kalmak zorunda de\u011Filiz. F ile dolaptan \xE7\u0131kabiliyorsun."
+      textEN: We don't have to stay in here. F lets you leave the wardrobe.
+      textDE: "Wir m\xFCssen nicht hierbleiben. Mit F kannst du den Schrank verlassen."
   - id: thought_notice_lees_0
     note: Tutorial inner companion / notice_lees
     voiceClip: {fileID: 0}
     segments:
     - duration: 5
-      textTR: "Bir saniye... Odada bir şey değişti. Yalnız olduğumuzdan emin değilim."
-      textEN: "Wait a second... Something in the room has changed. I'm not sure we're alone."
-      textDE: "Warte kurz... Im Raum hat sich etwas verändert. Ich bin nicht sicher, ob wir allein sind."
+      textTR: "Bir saniye... Odada bir \u015Fey de\u011Fi\u015Fti. Yaln\u0131z oldu\u011Fumuzdan
+        emin de\u011Filim."
+      textEN: Wait a second... Something in the room has changed. I'm not sure we're
+        alone.
+      textDE: "Warte kurz... Im Raum hat sich etwas ver\xE4ndert. Ich bin nicht sicher,
+        ob wir allein sind."
   - id: thought_notice_lees_1
     note: Tutorial inner companion / notice_lees
     voiceClip: {fileID: 0}
     segments:
     - duration: 4
-      textTR: "Odada bir şey var. Sen de gördün mü?"
-      textEN: "There's something in the room. Did you see it too?"
-      textDE: "Da ist etwas im Raum. Hast du es auch gesehen?"
+      textTR: "Odada bir \u015Fey var. Sen de g\xF6rd\xFCn m\xFC?"
+      textEN: There's something in the room. Did you see it too?
+      textDE: Da ist etwas im Raum. Hast du es auch gesehen?
   - id: thought_notice_lees_2
     note: Tutorial inner companion / notice_lees
     voiceClip: {fileID: 0}
     segments:
     - duration: 5
-      textTR: "Etrafına bakarken dikkatli ol... Birinin varlığını hissediyorum."
-      textEN: "Be careful looking around... I can feel someone here."
-      textDE: "Vorsicht beim Umsehen... Ich spüre, dass hier jemand ist."
+      textTR: "Etraf\u0131na bakarken dikkatli ol... Birinin varl\u0131\u011F\u0131n\u0131
+        hissediyorum."
+      textEN: Be careful looking around... I can feel someone here.
+      textDE: "Vorsicht beim Umsehen... Ich sp\xFCre, dass hier jemand ist."
   - id: thought_avoid_lees_0
     note: Tutorial inner companion / avoid_lees
     voiceClip: {fileID: 0}
     segments:
     - duration: 6
-      textTR: "Lees... Ona bakmak iyi gelmiyor. Bakışını çevirsek... ve bir süre kıpırdamasak."
-      textEN: "Lees... Looking at him feels wrong. Maybe look away... and stay still for a moment."
-      textDE: "Lees... Ihn anzusehen fühlt sich falsch an. Vielleicht wegsehen... und einen Moment stillhalten."
+      textTR: "Lees... Ona bakmak iyi gelmiyor. Bak\u0131\u015F\u0131n\u0131 \xE7evirsek...
+        ve bir s\xFCre k\u0131p\u0131rdamasak."
+      textEN: Lees... Looking at him feels wrong. Maybe look away... and stay still
+        for a moment.
+      textDE: "Lees... Ihn anzusehen f\xFChlt sich falsch an. Vielleicht wegsehen...
+        und einen Moment stillhalten."
   - id: thought_avoid_lees_1
     note: Tutorial inner companion / avoid_lees
     voiceClip: {fileID: 0}
     segments:
     - duration: 5
-      textTR: "Gözlerin hâlâ onda mı? Ben olsam başka yere bakıp sessizce beklerdim."
-      textEN: "Are your eyes still on him? I'd look somewhere else and wait quietly."
-      textDE: "Siehst du ihn noch an? Ich würde woanders hinsehen und leise warten."
+      textTR: "G\xF6zlerin h\xE2l\xE2 onda m\u0131? Ben olsam ba\u015Fka yere bak\u0131p
+        sessizce beklerdim."
+      textEN: Are your eyes still on him? I'd look somewhere else and wait quietly.
+      textDE: "Siehst du ihn noch an? Ich w\xFCrde woanders hinsehen und leise warten."
   - id: thought_avoid_lees_2
     note: Tutorial inner companion / avoid_lees
     voiceClip: {fileID: 0}
     segments:
     - duration: 5
-      textTR: "Başını ondan çevirince ve hareket etmeyince uzaklaşabilir... Buradayım."
-      textEN: "He might leave if you look away and stop moving... I'm here."
-      textDE: "Vielleicht geht er, wenn du wegsiehst und dich nicht bewegst... Ich bin hier."
+      textTR: "Ba\u015F\u0131n\u0131 ondan \xE7evirince ve hareket etmeyince uzakla\u015Fabilir...
+        Buraday\u0131m."
+      textEN: He might leave if you look away and stop moving... I'm here.
+      textDE: Vielleicht geht er, wenn du wegsiehst und dich nicht bewegst... Ich
+        bin hier.
   - id: thought_turing_0
     note: Tutorial inner companion / turing
     voiceClip: {fileID: 0}
     segments:
     - duration: 6
-      textTR: "Tamam... Ölçümü hâlâ taşıyoruz. Turing'in o kağıttan ne çıkaracağını merak ediyorum."
-      textEN: "All right... We still have the measurement. I wonder what Turing will make of that paper."
-      textDE: "Gut... Die Messung haben wir noch. Ich frage mich, was Turing aus dem Blatt macht."
+      textTR: "Tamam... \xD6l\xE7\xFCm\xFC h\xE2l\xE2 ta\u015F\u0131yoruz. Turing'in
+        o ka\u011F\u0131ttan ne \xE7\u0131karaca\u011F\u0131n\u0131 merak ediyorum."
+      textEN: All right... We still have the measurement. I wonder what Turing will
+        make of that paper.
+      textDE: Gut... Die Messung haben wir noch. Ich frage mich, was Turing aus dem
+        Blatt macht.
   - id: thought_turing_1
     note: Tutorial inner companion / turing
     voiceClip: {fileID: 0}
     segments:
     - duration: 5
-      textTR: "Tahtadan aldığımız kağıt defterde. Şu Turing makinesinde deneyebiliriz."
-      textEN: "The paper from the board is in your notebook. We could try it in that Turing machine."
-      textDE: "Das Blatt von der Tafel ist im Notizbuch. Wir könnten es an der Turing-Maschine versuchen."
+      textTR: "Tahtadan ald\u0131\u011F\u0131m\u0131z ka\u011F\u0131t defterde. \u015Eu
+        Turing makinesinde deneyebiliriz."
+      textEN: The paper from the board is in your notebook. We could try it in that
+        Turing machine.
+      textDE: "Das Blatt von der Tafel ist im Notizbuch. Wir k\xF6nnten es an der
+        Turing-Maschine versuchen."
   - id: thought_turing_2
     note: Tutorial inner companion / turing
     voiceClip: {fileID: 0}
     segments:
     - duration: 6
-      textTR: "Turing'e tıklayınca okuyucuya ulaşabiliriz. Ölçüm de defterindeki Ölçümler bölümünde."
-      textEN: "Click Turing and we can reach its reader. The paper is under Measurements in your notebook."
-      textDE: "Ein Klick auf Turing führt zum Lesegerät. Das Blatt liegt unter Messungen im Notizbuch."
+      textTR: "Turing'e t\u0131klay\u0131nca okuyucuya ula\u015Fabiliriz. \xD6l\xE7\xFCm
+        de defterindeki \xD6l\xE7\xFCmler b\xF6l\xFCm\xFCnde."
+      textEN: Click Turing and we can reach its reader. The paper is under Measurements
+        in your notebook.
+      textDE: "Ein Klick auf Turing f\xFChrt zum Leseger\xE4t. Das Blatt liegt unter
+        Messungen im Notizbuch."
   - id: thought_insert_0
     note: Tutorial inner companion / insert
     voiceClip: {fileID: 0}
     segments:
     - duration: 5
-      textTR: "Sol klavyedeki okuyucu... Ölçüm kağıdı oraya uyacak gibi görünüyor."
-      textEN: "The reader on the left keyboard... That measurement paper looks like it would fit."
-      textDE: "Das Lesegerät auf der linken Tastatur... Das Messblatt scheint dort hineinzupassen."
+      textTR: "Sol klavyedeki okuyucu... \xD6l\xE7\xFCm ka\u011F\u0131d\u0131 oraya
+        uyacak gibi g\xF6r\xFCn\xFCyor."
+      textEN: The reader on the left keyboard... That measurement paper looks like
+        it would fit.
+      textDE: "Das Leseger\xE4t auf der linken Tastatur... Das Messblatt scheint
+        dort hineinzupassen."
   - id: thought_insert_1
     note: Tutorial inner companion / insert
     voiceClip: {fileID: 0}
     segments:
     - duration: 5
-      textTR: "Defterinin Ölçümler bölümündeki İlk İz kağıdını okuyucuya taşıyabiliriz."
-      textEN: "We can move the First Trace paper from Measurements in your notebook into the reader."
-      textDE: "Das Blatt Erste Spur unter Messungen im Notizbuch können wir ins Lesegerät ziehen."
+      textTR: "Defterinin \xD6l\xE7\xFCmler b\xF6l\xFCm\xFCndeki \u0130lk \u0130z
+        ka\u011F\u0131d\u0131n\u0131 okuyucuya ta\u015F\u0131yabiliriz."
+      textEN: We can move the First Trace paper from Measurements in your notebook
+        into the reader.
+      textDE: "Das Blatt Erste Spur unter Messungen im Notizbuch k\xF6nnen wir ins
+        Leseger\xE4t ziehen."
   - id: thought_insert_2
     note: Tutorial inner companion / insert
     voiceClip: {fileID: 0}
     segments:
     - duration: 5
-      textTR: "Kağıdı sol klavyedeki yuvaya sürükleyince makine kendisi okumaya başlıyor."
-      textEN: "Dragging the paper to that slot on the left keyboard lets the machine read it."
-      textDE: "Zieht man das Blatt in den Schlitz auf der linken Tastatur, liest die Maschine es selbst ein."
+      textTR: "Ka\u011F\u0131d\u0131 sol klavyedeki yuvaya s\xFCr\xFCkleyince makine
+        kendisi okumaya ba\u015Fl\u0131yor."
+      textEN: Dragging the paper to that slot on the left keyboard lets the machine
+        read it.
+      textDE: Zieht man das Blatt in den Schlitz auf der linken Tastatur, liest die
+        Maschine es selbst ein.
   - id: thought_reader_0
     note: Tutorial inner companion / reader
     voiceClip: {fileID: 0}
     segments:
     - duration: 6
-      textTR: "Çalışıyor... Kağıdı okumayı bitirmesini bekleyelim. Ben de sonucu merak ediyorum."
-      textEN: "It's working... Let's give it time to read the paper. I'm curious about the result too."
-      textDE: "Sie arbeitet... Geben wir ihr Zeit zum Lesen. Ich bin auch auf das Ergebnis gespannt."
+      textTR: "\xC7al\u0131\u015F\u0131yor... Ka\u011F\u0131d\u0131 okumay\u0131
+        bitirmesini bekleyelim. Ben de sonucu merak ediyorum."
+      textEN: It's working... Let's give it time to read the paper. I'm curious about
+        the result too.
+      textDE: Sie arbeitet... Geben wir ihr Zeit zum Lesen. Ich bin auch auf das
+        Ergebnis gespannt.
   - id: thought_reader_1
     note: Tutorial inner companion / reader
     voiceClip: {fileID: 0}
     segments:
     - duration: 4
-      textTR: "Hâlâ okuyor. Şimdilik makineye biraz zaman verebiliriz."
-      textEN: "It's still reading. We can give the machine a little more time."
-      textDE: "Sie liest noch. Wir können der Maschine noch etwas Zeit geben."
+      textTR: "H\xE2l\xE2 okuyor. \u015Eimdilik makineye biraz zaman verebiliriz."
+      textEN: It's still reading. We can give the machine a little more time.
+      textDE: "Sie liest noch. Wir k\xF6nnen der Maschine noch etwas Zeit geben."
   - id: thought_reader_2
     note: Tutorial inner companion / reader
     voiceClip: {fileID: 0}
     segments:
     - duration: 4
-      textTR: "Kod yerleşince hazır olacak. Şu an işlemi bitiriyor gibi."
-      textEN: "Once the code settles, it'll be ready. It seems to be finishing up."
-      textDE: "Sobald der Code steht, ist sie bereit. Sie scheint gerade fertig zu werden."
+      textTR: "Kod yerle\u015Fince haz\u0131r olacak. \u015Eu an i\u015Flemi bitiriyor
+        gibi."
+      textEN: Once the code settles, it'll be ready. It seems to be finishing up.
+      textDE: Sobald der Code steht, ist sie bereit. Sie scheint gerade fertig zu
+        werden.
   - id: thought_confirm_0
     note: Tutorial inner companion / confirm
     voiceClip: {fileID: 0}
     segments:
     - duration: 6
-      textTR: "Kod yerleşti. Enter ile sınayınca elimizdekinin doğru olup olmadığını öğrenebiliriz."
-      textEN: "The code's in place. Enter should tell us whether our measurement holds up."
-      textDE: "Der Code steht. Mit Enter erfahren wir wohl, ob unsere Messung stimmt."
+      textTR: "Kod yerle\u015Fti. Enter ile s\u0131nay\u0131nca elimizdekinin do\u011Fru
+        olup olmad\u0131\u011F\u0131n\u0131 \xF6\u011Frenebiliriz."
+      textEN: The code's in place. Enter should tell us whether our measurement holds
+        up.
+      textDE: Der Code steht. Mit Enter erfahren wir wohl, ob unsere Messung stimmt.
   - id: thought_confirm_1
     note: Tutorial inner companion / confirm
     voiceClip: {fileID: 0}
     segments:
     - duration: 4
-      textTR: "Hazır görünüyor. Sonucu görmek için Enter kalmış olmalı."
-      textEN: "It looks ready. I think Enter is all that's left before we see the result."
-      textDE: "Sieht bereit aus. Ich glaube, nur Enter fehlt noch bis zum Ergebnis."
+      textTR: "Haz\u0131r g\xF6r\xFCn\xFCyor. Sonucu g\xF6rmek i\xE7in Enter kalm\u0131\u015F
+        olmal\u0131."
+      textEN: It looks ready. I think Enter is all that's left before we see the
+        result.
+      textDE: Sieht bereit aus. Ich glaube, nur Enter fehlt noch bis zum Ergebnis.
   - id: thought_confirm_2
     note: Tutorial inner companion / confirm
     voiceClip: {fileID: 0}
     segments:
     - duration: 5
-      textTR: "Okuma bitti, ama henüz sınamadık. Enter'a basınca Turing kararını verecek."
-      textEN: "It's finished reading, but we haven't tested it yet. Enter lets Turing give its verdict."
-      textDE: "Das Lesen ist fertig, geprüft haben wir noch nicht. Mit Enter fällt Turing sein Urteil."
+      textTR: "Okuma bitti, ama hen\xFCz s\u0131namad\u0131k. Enter'a bas\u0131nca
+        Turing karar\u0131n\u0131 verecek."
+      textEN: It's finished reading, but we haven't tested it yet. Enter lets Turing
+        give its verdict.
+      textDE: "Das Lesen ist fertig, gepr\xFCft haben wir noch nicht. Mit Enter f\xE4llt
+        Turing sein Urteil."
   - id: thought_valve_room_0
     note: Tutorial inner companion / valve_room
     voiceClip: {fileID: 0}
     segments:
     - duration: 5
-      textTR: "Şu basınç sesi... Vana odasından geliyor olabilir. Oraya baksak iyi olur."
-      textEN: "That pressure noise... It might be coming from the valve room. We should have a look."
-      textDE: "Dieses Druckgeräusch... Es kommt vielleicht aus dem Ventilraum. Ein Blick dorthin wäre gut."
+      textTR: "\u015Eu bas\u0131n\xE7 sesi... Vana odas\u0131ndan geliyor olabilir.
+        Oraya baksak iyi olur."
+      textEN: That pressure noise... It might be coming from the valve room. We should
+        have a look.
+      textDE: "Dieses Druckger\xE4usch... Es kommt vielleicht aus dem Ventilraum.
+        Ein Blick dorthin w\xE4re gut."
   - id: thought_valve_room_1
     note: Tutorial inner companion / valve_room
     voiceClip: {fileID: 0}
     segments:
     - duration: 5
-      textTR: "Vana odasına giden kapı işaretliydi. Ses oradan geliyor gibi."
-      textEN: "The door to the valve room was marked. The sound seems to be coming from there."
-      textDE: "Die Tür zum Ventilraum war markiert. Das Geräusch scheint von dort zu kommen."
+      textTR: "Vana odas\u0131na giden kap\u0131 i\u015Faretliydi. Ses oradan geliyor
+        gibi."
+      textEN: The door to the valve room was marked. The sound seems to be coming
+        from there.
+      textDE: "Die T\xFCr zum Ventilraum war markiert. Das Ger\xE4usch scheint von
+        dort zu kommen."
   - id: thought_valve_room_2
     note: Tutorial inner companion / valve_room
     voiceClip: {fileID: 0}
     segments:
     - duration: 6
-      textTR: "İşaretli kapıdan geçince vanalara ulaşabiliriz. Bu sesi burada bırakmak içime sinmiyor."
-      textEN: "The marked door leads to the valves. I don't feel right ignoring that sound."
-      textDE: "Durch die markierte Tür kommen wir zu den Ventilen. Das Geräusch zu ignorieren fühlt sich falsch an."
+      textTR: "\u0130\u015Faretli kap\u0131dan ge\xE7ince vanalara ula\u015Fabiliriz.
+        Bu sesi burada b\u0131rakmak i\xE7ime sinmiyor."
+      textEN: The marked door leads to the valves. I don't feel right ignoring that
+        sound.
+      textDE: "Durch die markierte T\xFCr kommen wir zu den Ventilen. Das Ger\xE4usch
+        zu ignorieren f\xFChlt sich falsch an."
   - id: thought_valve_0
     note: Tutorial inner companion / valve
     voiceClip: {fileID: 0}
     segments:
     - duration: 5
-      textTR: "Gösterge hiç iyi görünmüyor. Vanayı çevirsek basınç düşer mi dersin?"
-      textEN: "That gauge doesn't look good. Do you think turning the valve would lower the pressure?"
-      textDE: "Die Anzeige sieht nicht gut aus. Ob sich der Druck durch Drehen am Ventil senken lässt?"
+      textTR: "G\xF6sterge hi\xE7 iyi g\xF6r\xFCnm\xFCyor. Vanay\u0131 \xE7evirsek
+        bas\u0131n\xE7 d\xFC\u015Fer mi dersin?"
+      textEN: That gauge doesn't look good. Do you think turning the valve would
+        lower the pressure?
+      textDE: "Die Anzeige sieht nicht gut aus. Ob sich der Druck durch Drehen am
+        Ventil senken l\xE4sst?"
   - id: thought_valve_1
     note: Tutorial inner companion / valve
     voiceClip: {fileID: 0}
     segments:
     - duration: 6
-      textTR: "İbre hâlâ yüksek. Vanaya tıklayıp fareyle çevirince hareket etmesi gerekiyor."
-      textEN: "The needle's still high. Clicking the valve and turning with the mouse should move it."
-      textDE: "Der Zeiger steht noch hoch. Ein Klick aufs Ventil und Drehen mit der Maus sollte ihn bewegen."
+      textTR: "\u0130bre h\xE2l\xE2 y\xFCksek. Vanaya t\u0131klay\u0131p fareyle
+        \xE7evirince hareket etmesi gerekiyor."
+      textEN: The needle's still high. Clicking the valve and turning with the mouse
+        should move it.
+      textDE: Der Zeiger steht noch hoch. Ein Klick aufs Ventil und Drehen mit der
+        Maus sollte ihn bewegen.
   - id: thought_valve_2
     note: Tutorial inner companion / valve
     voiceClip: {fileID: 0}
     segments:
     - duration: 5
-      textTR: "Yirmi ya da altı... İbre oraya inince biraz rahatlayabiliriz."
-      textEN: "Twenty or below... We can breathe easier once the needle gets there."
-      textDE: "Zwanzig oder weniger... Ist der Zeiger dort, können wir etwas aufatmen."
+      textTR: "Yirmi ya da alt\u0131... \u0130bre oraya inince biraz rahatlayabiliriz."
+      textEN: Twenty or below... We can breathe easier once the needle gets there.
+      textDE: "Zwanzig oder weniger... Ist der Zeiger dort, k\xF6nnen wir etwas aufatmen."
   - id: thought_leave_valve_0
     note: Tutorial inner companion / leave_valve
     voiceClip: {fileID: 0}
     segments:
     - duration: 5
-      textTR: "İbre indi. Tamam, bu daha iyi... F ile vanayı bırakabiliriz."
-      textEN: "The needle's down. That's better... F lets us leave the valve."
-      textDE: "Der Zeiger ist gesunken. Schon besser... Mit F können wir das Ventil loslassen."
+      textTR: "\u0130bre indi. Tamam, bu daha iyi... F ile vanay\u0131 b\u0131rakabiliriz."
+      textEN: The needle's down. That's better... F lets us leave the valve.
+      textDE: "Der Zeiger ist gesunken. Schon besser... Mit F k\xF6nnen wir das Ventil
+        loslassen."
   - id: thought_leave_valve_1
     note: Tutorial inner companion / leave_valve
     voiceClip: {fileID: 0}
     segments:
     - duration: 5
-      textTR: "Basınç artık yeterince düşük. Burada daha fazla kalmamız gerekmiyor gibi."
-      textEN: "The pressure's low enough now. I don't think we need to stay here."
-      textDE: "Der Druck ist jetzt niedrig genug. Ich glaube, wir müssen nicht länger hierbleiben."
+      textTR: "Bas\u0131n\xE7 art\u0131k yeterince d\xFC\u015F\xFCk. Burada daha
+        fazla kalmam\u0131z gerekmiyor gibi."
+      textEN: The pressure's low enough now. I don't think we need to stay here.
+      textDE: "Der Druck ist jetzt niedrig genug. Ich glaube, wir m\xFCssen nicht
+        l\xE4nger hierbleiben."
   - id: thought_leave_valve_2
     note: Tutorial inner companion / leave_valve
     voiceClip: {fileID: 0}
     segments:
     - duration: 4
-      textTR: "Vanadaki işimiz bitti. F ile geri çekilebiliriz."
-      textEN: "We're done with the valve. F lets us step back."
-      textDE: "Am Ventil sind wir fertig. Mit F können wir zurücktreten."
+      textTR: "Vanadaki i\u015Fimiz bitti. F ile geri \xE7ekilebiliriz."
+      textEN: We're done with the valve. F lets us step back.
+      textDE: "Am Ventil sind wir fertig. Mit F k\xF6nnen wir zur\xFCcktreten."
   - id: thought_wait_power_0
     note: Tutorial inner companion / wait_power
     voiceClip: {fileID: 0}
     segments:
     - duration: 4
-      textTR: "Bu sessizlik... Bir an dinleyelim."
-      textEN: "That silence... Let's listen for a moment."
-      textDE: "Diese Stille... Hören wir einen Moment hin."
+      textTR: Bu sessizlik... Bir an dinleyelim.
+      textEN: That silence... Let's listen for a moment.
+      textDE: "Diese Stille... H\xF6ren wir einen Moment hin."
   - id: thought_wait_power_1
     note: Tutorial inner companion / wait_power
     voiceClip: {fileID: 0}
     segments:
     - duration: 4
-      textTR: "Bir şey olacakmış gibi geliyor. Sen de hissediyor musun?"
-      textEN: "It feels like something's about to happen. Do you feel it too?"
-      textDE: "Es fühlt sich an, als würde gleich etwas passieren. Spürst du es auch?"
+      textTR: "Bir \u015Fey olacakm\u0131\u015F gibi geliyor. Sen de hissediyor musun?"
+      textEN: It feels like something's about to happen. Do you feel it too?
+      textDE: "Es f\xFChlt sich an, als w\xFCrde gleich etwas passieren. Sp\xFCrst
+        du es auch?"
   - id: thought_wait_power_2
     note: Tutorial inner companion / wait_power
     voiceClip: {fileID: 0}
     segments:
     - duration: 4
-      textTR: "Hâlâ buradayım. Biraz etrafa bakabiliriz."
-      textEN: "I'm still here. We can take a look around."
-      textDE: "Ich bin noch hier. Wir können uns etwas umsehen."
+      textTR: "H\xE2l\xE2 buraday\u0131m. Biraz etrafa bakabiliriz."
+      textEN: I'm still here. We can take a look around.
+      textDE: "Ich bin noch hier. Wir k\xF6nnen uns etwas umsehen."
   - id: thought_breaker_0
     note: Tutorial inner companion / breaker
     voiceClip: {fileID: 0}
     segments:
     - duration: 5
-      textTR: "Işıklar... Sanırım sigorta attı. Ana şalter sigorta odasında olmalı."
-      textEN: "The lights... I think the breaker tripped. The main switch should be in the breaker room."
-      textDE: "Das Licht... Ich glaube, die Sicherung ist raus. Der Hauptschalter müsste im Sicherungsraum sein."
+      textTR: "I\u015F\u0131klar... San\u0131r\u0131m sigorta att\u0131. Ana \u015Falter
+        sigorta odas\u0131nda olmal\u0131."
+      textEN: The lights... I think the breaker tripped. The main switch should be
+        in the breaker room.
+      textDE: "Das Licht... Ich glaube, die Sicherung ist raus. Der Hauptschalter
+        m\xFCsste im Sicherungsraum sein."
   - id: thought_breaker_1
     note: Tutorial inner companion / breaker
     voiceClip: {fileID: 0}
     segments:
     - duration: 5
-      textTR: "Karanlıkta kalmak içime sinmiyor. Sigorta odasına bakabiliriz."
-      textEN: "I don't like staying in the dark. We could check the breaker room."
-      textDE: "Mir gefällt es nicht, im Dunkeln zu bleiben. Wir könnten im Sicherungsraum nachsehen."
+      textTR: "Karanl\u0131kta kalmak i\xE7ime sinmiyor. Sigorta odas\u0131na bakabiliriz."
+      textEN: I don't like staying in the dark. We could check the breaker room.
+      textDE: "Mir gef\xE4llt es nicht, im Dunkeln zu bleiben. Wir k\xF6nnten im
+        Sicherungsraum nachsehen."
   - id: thought_breaker_2
     note: Tutorial inner companion / breaker
     voiceClip: {fileID: 0}
     segments:
     - duration: 5
-      textTR: "Sigorta odasındaki ana şaltere tıklayınca elektriği geri getirebiliriz."
-      textEN: "Clicking the main switch in the breaker room should bring the power back."
-      textDE: "Ein Klick auf den Hauptschalter im Sicherungsraum sollte den Strom zurückbringen."
+      textTR: "Sigorta odas\u0131ndaki ana \u015Faltere t\u0131klay\u0131nca elektri\u011Fi
+        geri getirebiliriz."
+      textEN: Clicking the main switch in the breaker room should bring the power
+        back.
+      textDE: "Ein Klick auf den Hauptschalter im Sicherungsraum sollte den Strom
+        zur\xFCckbringen."
   - id: thought_retry_measurement_0
     note: Tutorial inner companion / rejected measurement
     voiceClip: {fileID: 0}
     segments:
     - duration: 8
-      textTR: "Bu kayıt uymadı. Defterdeki İlk İz ölçümlerinden hedefe uyanı seçmemiz gerekiyor."
-      textEN: "That record didn't match. We need the First Trace measurement that meets the target in your notebook."
-      textDE: "Diese Aufzeichnung passt nicht. Wir brauchen die Messung Erste Spur im Notizbuch, die dem Ziel entspricht."
+      textTR: "Bu kay\u0131t uymad\u0131. Defterdeki \u0130lk \u0130z \xF6l\xE7\xFCmlerinden
+        hedefe uyan\u0131 se\xE7memiz gerekiyor."
+      textEN: That record didn't match. We need the First Trace measurement that
+        meets the target in your notebook.
+      textDE: Diese Aufzeichnung passt nicht. Wir brauchen die Messung Erste Spur
+        im Notizbuch, die dem Ziel entspricht.
   - id: thought_retry_measurement_1
     note: Tutorial inner companion / rejected measurement
     voiceClip: {fileID: 0}
     segments:
     - duration: 9
-      textTR: "Birden fazla deneme vardı. Tek kısa iz çıkan ölçüm kağıdını yeniden okuyucuya bırakabiliriz."
-      textEN: "We made more than one attempt. We can feed the paper with one short trace into the reader again."
-      textDE: "Wir hatten mehrere Versuche. Das Messblatt mit einer kurzen Spur können wir erneut ins Lesegerät legen."
+      textTR: "Birden fazla deneme vard\u0131. Tek k\u0131sa iz \xE7\u0131kan \xF6l\xE7\xFCm
+        ka\u011F\u0131d\u0131n\u0131 yeniden okuyucuya b\u0131rakabiliriz."
+      textEN: We made more than one attempt. We can feed the paper with one short
+        trace into the reader again.
+      textDE: "Wir hatten mehrere Versuche. Das Messblatt mit einer kurzen Spur k\xF6nnen
+        wir erneut ins Leseger\xE4t legen."
   - id: thought_retry_measurement_2
     note: Tutorial inner companion / rejected measurement
     voiceClip: {fileID: 0}
     segments:
     - duration: 9
-      textTR: "Aynı kaydı tekrar onaylayınca sonuç değişmiyor. Ölçümler bölümündeki doğru kağıdı deneyebiliriz."
-      textEN: "Confirming the same record won't change the result. We could try the matching paper under Measurements."
-      textDE: "Dieselbe Aufzeichnung erneut zu bestätigen ändert nichts. Wir könnten das passende Blatt unter Messungen versuchen."
+      textTR: "Ayn\u0131 kayd\u0131 tekrar onaylay\u0131nca sonu\xE7 de\u011Fi\u015Fmiyor.
+        \xD6l\xE7\xFCmler b\xF6l\xFCm\xFCndeki do\u011Fru ka\u011F\u0131d\u0131 deneyebiliriz."
+      textEN: Confirming the same record won't change the result. We could try the
+        matching paper under Measurements.
+      textDE: "Dieselbe Aufzeichnung erneut zu best\xE4tigen \xE4ndert nichts. Wir
+        k\xF6nnten das passende Blatt unter Messungen versuchen."

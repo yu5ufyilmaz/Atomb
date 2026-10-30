@@ -108,6 +108,13 @@ public class LeesEnemyAI : MonoBehaviour
     private StarterAssetsInputs playerInputs;
     public MonoBehaviour playerMovementScript;
     public MonoBehaviour playerLookScript;
+    [Header("Başı Çevirmeye Direnme")]
+    public LeesResistanceController resistance;
+    private Vector3 resistanceApproachStart;
+    private Vector3 resistanceApproachForward;
+    public bool IsPracticeEncounter => isSafeSpawn && TutorialManager.Instance != null && TutorialManager.Instance.IsRunning;
+    private Coroutine shockRoutine;
+    private float shockBaseFov;
 
     // RAM Optimizasyonu: Önbelleklenmiş renderer ve collider'lar
     private Renderer[] cachedRenderers;
@@ -161,6 +168,12 @@ public class LeesEnemyAI : MonoBehaviour
 
         if (playerCamera == null)
             playerCamera = Camera.main;
+        if (resistance != null)
+        {
+            // A gameplay enemy must never inherit the standalone workshop's retry/pause settings.
+            resistance.keepResultVisible = false; resistance.useGamePause = true;
+            resistance.playerMovement = playerTransform.GetComponent<StarterAssets.CharacterController>();
+        }
 
         if (audioSource != null)
         {
@@ -189,10 +202,11 @@ public class LeesEnemyAI : MonoBehaviour
 
     private void Update()
     {
-        if (!GameManager.Instance.isGameStarted)
+        if (GameManager.Instance == null || !GameManager.Instance.isGameStarted)
             return;
         if (GlobalEnemyManager.Instance != null && GlobalEnemyManager.Instance.stopAllEnemies)
         {
+            if (resistance != null && resistance.IsRunning) DespawnLees();
             return; // Eğer sistem durdurulmuşsa hiçbir sayacı ilerletme, burada kal!
         }
         if (currentCooldownTimer > 0)
@@ -225,6 +239,7 @@ public class LeesEnemyAI : MonoBehaviour
 
     private void HandleActiveLogic()
     {
+        if (Time.deltaTime <= 0 || playerTransform == null) return;
         float playerSpeed =
             Vector3.Distance(playerTransform.position, lastPlayerPos) / Time.deltaTime;
         lastPlayerPos = playerTransform.position;
@@ -232,6 +247,11 @@ public class LeesEnemyAI : MonoBehaviour
         if (currentRoom != spawnRoom)
         {
             TriggerDeath("There is no escape.", true);
+            return;
+        }
+        if (resistance != null && resistance.IsRunning)
+        {
+            HandleResistance(playerSpeed);
             return;
         }
 
@@ -252,10 +272,10 @@ public class LeesEnemyAI : MonoBehaviour
                 currentReactionTimer = 0f;
                 currentMovementGraceTimer = 0f;
 
-                if (audioSource && stareSound)
+                if (resistance == null && audioSource && stareSound)
                     StartFadeAudio(stareSound, true);
                 if (useShockEffect)
-                    StartCoroutine(ShockRoutine());
+                    shockRoutine = StartCoroutine(ShockRoutine());
                 Debug.Log("Lees: FARK EDİLDİ!");
             }
             else
@@ -282,7 +302,12 @@ public class LeesEnemyAI : MonoBehaviour
             }
             else
             {
-                hasTurnedAway = true;
+                Vector3 towardLees = transform.position - playerCamera.transform.position;
+                towardLees.y = 0;
+                Vector3 look = playerCamera.transform.forward; look.y = 0;
+                bool facingAway = Vector3.Dot(look.normalized, towardLees.normalized) < -.65f;
+                // Frustum changes and brief occlusion are not the player turning their back.
+                hasTurnedAway |= facingAway;
                 bool isInputting = (playerInputs != null && playerInputs.move != Vector2.zero);
 
                 if (isInputting && playerSpeed > movementTolerance)
@@ -296,6 +321,18 @@ public class LeesEnemyAI : MonoBehaviour
                 else
                 {
                     currentMovementGraceTimer = 0f;
+                    if (resistance != null)
+                    {
+                        if (facingAway
+                            && !isInputting && isPlayerControllable && GameManager.Instance.activeInteraction == null)
+                        {
+                            StopShock(); StopEncounterAudio();
+                            resistanceApproachStart = transform.position;
+                            resistanceApproachForward = look.normalized;
+                            resistance.BeginResistance();
+                        }
+                        return; // The old waiting timer must not bypass the resistance encounter.
+                    }
                     currentSurvivalTimer += Time.deltaTime;
                     currentReactionTimer = Mathf.Max(0, currentReactionTimer - Time.deltaTime);
 
@@ -309,10 +346,63 @@ public class LeesEnemyAI : MonoBehaviour
         }
     }
 
+    private void HandleResistance(float playerSpeed)
+    {
+        if (resistance.IsPaused) return;
+        if (resistance.Model.State != LeesResistanceModel.Phase.Approaching && resistance.Model.State != LeesResistanceModel.Phase.Struggling) return;
+        bool moving = (playerInputs != null && playerInputs.move.sqrMagnitude > .01f) || playerSpeed > movementTolerance;
+        currentMovementGraceTimer = moving ? currentMovementGraceTimer + Time.deltaTime : 0;
+        if (currentMovementGraceTimer >= movementGraceTime) { TriggerDeath("You moved.", true); return; }
+        if (resistance.Model.State == LeesResistanceModel.Phase.Approaching)
+        {
+            if (CheckIfVisible()) { TriggerDeath("You look him again.", true); return; }
+            Vector3 behind = playerTransform.position - resistanceApproachForward * 1.15f; behind.y = resistanceApproachStart.y;
+            float progress = resistance.Model.Elapsed / Mathf.Max(.01f, resistance.tuning.approachSeconds);
+            transform.position = Vector3.Lerp(resistanceApproachStart, behind, Mathf.SmoothStep(0, 1, progress));
+            Vector3 facing = playerTransform.position - transform.position; facing.y = 0;
+            if (facing.sqrMagnitude > .001f) transform.rotation = Quaternion.LookRotation(facing);
+        }
+    }
+    public void ResistanceEscaped()
+    {
+        if (currentState != LeesState.Active) return;
+        if (playerInputs != null) playerInputs.look = Vector2.zero;
+        DespawnLees();
+    }
+    public void ResistanceCaught()
+    {
+        if (currentState != LeesState.Active) return;
+        if (IsPracticeEncounter)
+        {
+            currentMovementGraceTimer = 0;
+            resistanceApproachStart = transform.position;
+            resistanceApproachForward = playerCamera.transform.forward; resistanceApproachForward.y = 0;
+            resistanceApproachForward.Normalize();
+            resistance.BeginResistance();
+            return;
+        }
+        TriggerDeath("He turned your head.", true);
+    }
+    private void StopEncounterAudio()
+    {
+        if (audioFadeRoutine != null) { StopCoroutine(audioFadeRoutine); audioFadeRoutine = null; }
+        if (audioSource != null) { audioSource.Stop(); audioSource.volume = 0; }
+    }
+    private void StopShock()
+    {
+        if (shockRoutine == null) return;
+        StopCoroutine(shockRoutine); shockRoutine = null;
+        if (playerCamera != null) playerCamera.fieldOfView = shockBaseFov;
+        if (m_Vignette != null) m_Vignette.intensity.Override(baseVignette);
+        if (m_LensDistortion != null) m_LensDistortion.intensity.Override(baseLens);
+        if (m_Aberration != null) m_Aberration.intensity.Override(baseAberration);
+    }
+    private void OnDisable() { StopShock(); if (resistance != null) resistance.CancelResistance(); }
+
     private IEnumerator ShockRoutine()
     {
         // 1. Sesi Patlat (Eğer atandıysa)
-        if (shockSound != null && audioSource != null)
+        if (resistance == null && shockSound != null && audioSource != null)
         {
             // Orijinal sesi kesmemesi için PlayOneShot kullanıyoruz
             audioSource.PlayOneShot(shockSound);
@@ -320,6 +410,7 @@ public class LeesEnemyAI : MonoBehaviour
 
         float elapsed = 0f;
         float baseFOV = playerCamera != null ? playerCamera.fieldOfView : 60f;
+        shockBaseFov = baseFOV;
         float targetFOV = baseFOV + peakFOVOffset;
 
         while (elapsed < shockDuration)
@@ -359,6 +450,7 @@ public class LeesEnemyAI : MonoBehaviour
             m_LensDistortion.intensity.Override(baseLens);
         if (m_Aberration != null)
             m_Aberration.intensity.Override(baseAberration);
+        shockRoutine = null;
     }
 
     private bool CheckIfVisible()
@@ -418,10 +510,16 @@ public class LeesEnemyAI : MonoBehaviour
 
     public void TriggerDeath(string reason, bool spawnBehind = false)
     {
-        if (isSafeSpawn)
+        if (IsPracticeEncounter)
+        {
+            if (resistance != null && resistance.IsRunning) resistance.CatchForMovement();
             return;
+        }
         if (currentState == LeesState.Jumpscare)
             return;
+        StopShock();
+        if (resistance != null) resistance.CancelResistance();
+        if (playerInputs != null) playerInputs.look = Vector2.zero;
 
         // ÇÖZÜM BURADA: Ölüm tetiklendiği an durumu Jumpscare'e alıyoruz ki
         // Update() içindeki HandleActiveLogic her frame'de burayı tekrar çağırmasın.
@@ -632,6 +730,9 @@ public class LeesEnemyAI : MonoBehaviour
             return;
         }
 
+        StopShock();
+        if (resistance != null) resistance.CancelResistance();
+        StopEncounterAudio();
         spawnRoom = currentRoom;
         transform.position = bestPoint.position;
         transform.LookAt(
@@ -650,6 +751,7 @@ public class LeesEnemyAI : MonoBehaviour
         currentIgnoranceTimer = 0;
         currentReactionTimer = 0;
         currentSurvivalTimer = 0;
+        currentMovementGraceTimer = 0;
         HasBeenSpotted = false;
         hasTurnedAway = false;
         lastPlayerPos = playerTransform.position;
@@ -727,6 +829,8 @@ public class LeesEnemyAI : MonoBehaviour
 
     public void DespawnLees()
     {
+        if (resistance != null) resistance.CancelResistance();
+        isSafeSpawn = false;
         if (GlobalEnemyManager.Instance != null && currentState == LeesState.Active)
             GlobalEnemyManager.Instance.RegisterAttackEnd();
 

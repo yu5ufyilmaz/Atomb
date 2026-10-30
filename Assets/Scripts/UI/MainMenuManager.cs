@@ -24,6 +24,9 @@ public class MainMenuManager : MonoBehaviour
 
     private CanvasGroup _menuCanvasGroup;
     private TMPro.TextMeshProUGUI loadError;
+    private TutorialChoicePrompt tutorialChoice;
+    private bool awaitingTutorialChoice, startingGame;
+    public bool IsTutorialChoiceOpen => awaitingTutorialChoice;
 
     private void Start()
     {
@@ -103,100 +106,72 @@ public class MainMenuManager : MonoBehaviour
     private GameObject BuildFallbackSettingsPanel(Transform canvasTransform, Button referenceButton)
     {
         SettingsManager.EnsureInstance();
-        var panel = new GameObject("SettingsPanel", typeof(RectTransform), typeof(Image), typeof(SettingsUIManager));
-        panel.transform.SetParent(canvasTransform, false);
-        var panelRect = (RectTransform)panel.transform;
-        panelRect.anchorMin = Vector2.zero;
-        panelRect.anchorMax = Vector2.one;
-        panelRect.sizeDelta = Vector2.zero;
-        panel.GetComponent<Image>().color = new Color(0.05f, 0.05f, 0.06f, 0.94f);
-
-        TMPro.TMP_FontAsset font = referenceButton != null
-            ? referenceButton.GetComponentInChildren<TMPro.TMP_Text>(true)?.font
-            : TMPro.TMP_Settings.defaultFontAsset;
-
-        var titleObj = new GameObject("Title", typeof(RectTransform), typeof(TMPro.TextMeshProUGUI));
-        titleObj.transform.SetParent(panel.transform, false);
-        var titleText = titleObj.GetComponent<TMPro.TextMeshProUGUI>();
-        if (font != null) titleText.font = font;
-        titleText.rectTransform.anchorMin = titleText.rectTransform.anchorMax = new Vector2(0.5f, 0.78f);
-        titleText.rectTransform.sizeDelta = new Vector2(420f, 60f);
-        titleText.alignment = TMPro.TextAlignmentOptions.Center;
-        titleText.fontSize = 36f;
-        titleText.color = Color.white;
-        titleText.text = "SETTINGS";
-        GameLocalization.Set(titleText, "SETTINGS");
-
-        var langLabelObj = new GameObject("LanguageLabel", typeof(RectTransform), typeof(TMPro.TextMeshProUGUI));
-        langLabelObj.transform.SetParent(panel.transform, false);
-        var langLabel = langLabelObj.GetComponent<TMPro.TextMeshProUGUI>();
-        if (font != null) langLabel.font = font;
-        langLabel.rectTransform.anchorMin = langLabel.rectTransform.anchorMax = new Vector2(0.5f, 0.58f);
-        langLabel.rectTransform.sizeDelta = new Vector2(360f, 40f);
-        langLabel.alignment = TMPro.TextAlignmentOptions.Center;
-        langLabel.fontSize = 24f;
-        langLabel.color = new Color(0.9f, 0.85f, 0.7f);
-        langLabel.text = "LANGUAGE";
-        GameLocalization.Set(langLabel, "LANGUAGE");
-
-        var dropdownResources = new TMPro.TMP_DefaultControls.Resources();
-        var dropdownObj = TMPro.TMP_DefaultControls.CreateDropdown(dropdownResources);
-        dropdownObj.name = "LanguageDropdown";
-        dropdownObj.transform.SetParent(panel.transform, false);
-        var dropdownRect = (RectTransform)dropdownObj.transform;
-        dropdownRect.anchorMin = dropdownRect.anchorMax = new Vector2(0.5f, 0.48f);
-        dropdownRect.sizeDelta = new Vector2(280f, 44f);
-        var dropdown = dropdownObj.GetComponent<TMPro.TMP_Dropdown>();
-        if (font != null)
-        {
-            foreach (var tmp in dropdownObj.GetComponentsInChildren<TMPro.TMP_Text>(true))
-                tmp.font = font;
-        }
-
-        var backObj = new GameObject("Back", typeof(RectTransform), typeof(Image), typeof(Button));
-        backObj.transform.SetParent(panel.transform, false);
-        var backRect = (RectTransform)backObj.transform;
-        backRect.anchorMin = backRect.anchorMax = new Vector2(0.5f, 0.25f);
-        backRect.sizeDelta = new Vector2(220f, 48f);
-        backObj.GetComponent<Image>().color = new Color(0.18f, 0.18f, 0.2f, 0.95f);
-        var backBtn = backObj.GetComponent<Button>();
-        backBtn.onClick.AddListener(CloseSettings);
-
-        var backTextObj = new GameObject("Text", typeof(RectTransform), typeof(TMPro.TextMeshProUGUI));
-        backTextObj.transform.SetParent(backObj.transform, false);
-        var backText = backTextObj.GetComponent<TMPro.TextMeshProUGUI>();
-        if (font != null) backText.font = font;
-        backText.rectTransform.anchorMin = Vector2.zero;
-        backText.rectTransform.anchorMax = Vector2.one;
-        backText.rectTransform.sizeDelta = Vector2.zero;
-        backText.alignment = TMPro.TextAlignmentOptions.Center;
-        backText.fontSize = 24f;
-        backText.color = Color.white;
-        backText.text = "Back";
-        GameLocalization.Set(backText, "Back");
-
-        var settingsUI = panel.GetComponent<SettingsUIManager>();
-        settingsUI.languageDropdown = dropdown;
-        settingsUI.EnsureLanguageSelector();
+        var panel = new GameObject("SettingsPanel", typeof(RectTransform));
         panel.SetActive(false);
+        panel.transform.SetParent(canvasTransform, false);
+        SettingsMenuStyle.Stretch((RectTransform)panel.transform);
+        panel.AddComponent<SettingsUIManager>();
         return panel;
     }
-
     // =========================================================
     // 1. MEVCUT PLAY BUTONU (YENİ OYUN - HİÇ BOZULMADI)
     // =========================================================
     public void PlayGame()
     {
+        if (startingGame || awaitingTutorialChoice) return;
+        if (TutorialManager.Instance == null) { BeginNewGame(false); return; }
+        awaitingTutorialChoice = true;
+        if (tutorialChoice == null)
+        {
+            var prompt = new GameObject("Tutorial Choice", typeof(RectTransform), typeof(TutorialChoicePrompt));
+            UnityEngine.SceneManagement.SceneManager.MoveGameObjectToScene(prompt, gameObject.scene);
+            tutorialChoice = prompt.GetComponent<TutorialChoicePrompt>();
+        }
+        if (_menuCanvasGroup != null) { _menuCanvasGroup.interactable = false; _menuCanvasGroup.blocksRaycasts = false; }
+        tutorialChoice.Show(ChooseTutorial, CancelTutorialChoice);
+    }
+
+    public void ChooseTutorial(bool enabled)
+    {
+        if (!awaitingTutorialChoice) return;
+        awaitingTutorialChoice = false; tutorialChoice.Hide();
+        BeginNewGame(enabled);
+    }
+
+    public void CancelTutorialChoice()
+    {
+        if (!awaitingTutorialChoice) return;
+        awaitingTutorialChoice = false;
+        if (_menuCanvasGroup != null) { _menuCanvasGroup.interactable = true; _menuCanvasGroup.blocksRaycasts = true; }
+        tutorialChoice.Hide();
+    }
+
+    private void OnDisable() { CancelTutorialChoice(); }
+    private void OnDestroy() { if (tutorialChoice != null) Destroy(tutorialChoice.gameObject); }
+
+    private void BeginNewGame(bool tutorialEnabled)
+    {
+        startingGame = true;
         if (_menuCanvasGroup != null)
         {
             _menuCanvasGroup.interactable = false;
             _menuCanvasGroup.blocksRaycasts = false;
         }
 
+        // Only enabled tutorial events may add lessons to the new research session.
+        var tutorialEvents = TutorialManager.Instance != null ? TutorialManager.Instance.tutorialEventsParent : null;
+        bool tutorialWasActive = tutorialEvents != null && tutorialEvents.activeSelf;
+        if (tutorialEvents != null) tutorialEvents.SetActive(tutorialEnabled);
+
         // SaveDatasını sıfırla ki yeni oyun verileriyle başlasın
         if (SaveManager.Instance != null)
             SaveManager.Instance.NewGame();
-        if (SaveManager.Instance != null && SaveManager.Instance.SaveBlocked) { RestoreMenuAfterFailure(); return; }
+        if (SaveManager.Instance != null && SaveManager.Instance.SaveBlocked)
+        {
+            if (tutorialEvents != null) tutorialEvents.SetActive(tutorialWasActive);
+            RestoreMenuAfterFailure(); return;
+        }
+        TutorialManager.Instance?.SetTutorialEnabled(tutorialEnabled);
         if (loadError != null) loadError.gameObject.SetActive(false);
         // Geçişi başlat (Kayıt Yükleme = FALSE)
         StartCoroutine(StartGameTransitionRoutine(isLoadGame: false));
@@ -207,6 +182,8 @@ public class MainMenuManager : MonoBehaviour
     // =========================================================
     public void ContinueGame()
     {
+        if (startingGame || awaitingTutorialChoice) return;
+        startingGame = true;
         if (_menuCanvasGroup != null)
         {
             _menuCanvasGroup.interactable = false;
@@ -220,22 +197,34 @@ public class MainMenuManager : MonoBehaviour
     // Diğer UI fonksiyonların (OpenSettings, vs. aynı kalıyor)...
     public void OpenSettings()
     {
+        if (startingGame || awaitingTutorialChoice) return;
         if (settingsPanel != null)
             settingsPanel.SetActive(true);
         if (mainMenuPanel != null)
             mainMenuPanel.SetActive(false);
+        var view = settingsPanel != null ? settingsPanel.GetComponentInChildren<SettingsMenuView>(true) : null;
+        if (view != null) view.SetCloseAction(CloseSettingsImmediately);
     }
 
     public void CloseSettings()
     {
+        var view = settingsPanel != null ? settingsPanel.GetComponentInChildren<SettingsMenuView>(true) : null;
+        if (view != null) view.RequestClose(CloseSettingsImmediately); else CloseSettingsImmediately();
+    }
+
+    private void CloseSettingsImmediately()
+    {
+        var view = settingsPanel != null ? settingsPanel.GetComponentInChildren<SettingsMenuView>(true) : null;
         if (settingsPanel != null)
             settingsPanel.SetActive(false);
         if (mainMenuPanel != null)
             mainMenuPanel.SetActive(true);
+        view?.RestoreFocusTo(mainMenuPanel);
     }
 
     public void OpenCredits()
     {
+        if (startingGame || awaitingTutorialChoice) return;
         if (creditsPanel != null)
             creditsPanel.SetActive(true);
         if (mainMenuPanel != null)
@@ -342,6 +331,7 @@ public class MainMenuManager : MonoBehaviour
 
     private void RestoreMenuAfterFailure()
     {
+        startingGame = false;
         if (mainMenuPanel != null) mainMenuPanel.SetActive(true);
         if (_menuCanvasGroup != null) { _menuCanvasGroup.alpha = 1; _menuCanvasGroup.interactable = true; _menuCanvasGroup.blocksRaycasts = true; }
         Cursor.lockState = CursorLockMode.None; Cursor.visible = true;

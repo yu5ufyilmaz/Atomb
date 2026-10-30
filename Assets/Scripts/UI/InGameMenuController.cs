@@ -130,7 +130,7 @@ public class InGameMenuController : MonoBehaviour
             while (timelineTimer < (float)introTimeline.duration)
             {
                 timelineTimer += Time.deltaTime;
-                if (Input.GetKey(KeyCode.E))
+                if (GameInput.Held("SkipIntro"))
                 {
                     skipTimer += Time.deltaTime;
                     if (skipTimer >= skipHoldTime)

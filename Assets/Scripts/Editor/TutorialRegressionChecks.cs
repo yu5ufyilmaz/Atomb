@@ -17,7 +17,7 @@ public static class TutorialRegressionChecks
         manager.tutorialEventsParent.SetActive(false);
         SaveManager.Instance.sessionOnly = true;
         var failures = new List<string>();
-        foreach (var check in new Func<ChalkboardTutorial, IEnumerator>[] { CameraOwnership, DialogueReentry })
+        foreach (var check in new Func<ChalkboardTutorial, IEnumerator>[] { CameraOwnership, SceneBookReentry, DialogueReentry })
         {
             var routine = check(lesson);
             while (true)
@@ -67,6 +67,50 @@ public static class TutorialRegressionChecks
         finally { Object.Destroy(host); }
         yield return new WaitForSeconds(2);
         Require(game.activeInteraction == null, "The book did not close after the focus action.");
+        var queuedHost = new GameObject("Queued focus regression");
+        try
+        {
+            var first = queuedHost.AddComponent<LookAction>();
+            var next = queuedHost.AddComponent<LookAction>();
+            first.lookTarget = next.lookTarget = book.transform;
+            first.delay = 2; first.waitUntilInput = false;
+            next.delay = 0; next.headTurnDuration = .15f; next.waitUntilInput = true;
+            first.Execute(); next.Execute();
+            first.enabled = false;
+            yield return new WaitForSeconds(.4f);
+            Require(PlayerInteraction.Instance.IsInteractionBlocked, "A queued camera action was dropped when the prior action was cancelled.");
+            next.enabled = false;
+            Require(!PlayerInteraction.Instance.IsInteractionBlocked, "Cancelling a camera action left an interaction lock behind.");
+        }
+        finally { Object.Destroy(queuedHost); }
+    }
+
+    private static IEnumerator SceneBookReentry(ChalkboardTutorial lesson)
+    {
+        var manager = TutorialManager.Instance;
+        var game = GameManager.Instance;
+        var subtitles = GlobalSubtitleManager.Instance;
+        var book = lesson.lessonBook;
+        manager.tutorialEventsParent.SetActive(true);
+        yield return Until(() => subtitles.CurrentID == "thought_book_0", "Scene event's initial book instruction", 12);
+        yield return Until(() => PlayerInteraction.Instance.CanInteractWithWorld, "Actual opening camera release", 12);
+        book.Interact();
+        yield return Until(() => subtitles.CurrentID == "thought_collect_0", "Actual book's collection instruction", 12);
+        book.ForceExit();
+        yield return Until(() => game.activeInteraction == null && !book.isAnimating, "Actual book close", 8);
+        yield return new WaitForSeconds(.5f);
+        Require(subtitles.CurrentID != "thought_book_0", "Closing the actual tutorial book replayed its first instruction.");
+        book.Interact();
+        yield return Until(() => book.isOpen && !book.isAnimating, "Actual book reopen", 8);
+        yield return new WaitForSeconds(.5f);
+        Require(subtitles.CurrentID != "thought_collect_0", "Reopening the actual tutorial book replayed collection dialogue.");
+        book.ForceExit();
+        yield return Until(() => game.activeInteraction == null && !book.isAnimating, "Second book close", 8);
+        manager.tutorialEventsParent.SetActive(false);
+        manager.tutorialEventsParent.SetActive(true);
+        yield return new WaitForSeconds(.5f);
+        Require(subtitles.CurrentID != "thought_book_0", "Re-enabling the same tutorial session reset dialogue history.");
+        manager.tutorialEventsParent.SetActive(false);
     }
 
     private static IEnumerator DialogueReentry(ChalkboardTutorial lesson)
@@ -131,9 +175,9 @@ public static class TutorialRegressionChecks
         }
     }
 
-    private static IEnumerator Until(Func<bool> condition, string label)
+    private static IEnumerator Until(Func<bool> condition, string label, float seconds = 6)
     {
-        float end = Time.realtimeSinceStartup + 6;
+        float end = Time.realtimeSinceStartup + seconds;
         while (!condition() && Time.realtimeSinceStartup < end) yield return null;
         Require(condition(), label + " did not occur.");
     }

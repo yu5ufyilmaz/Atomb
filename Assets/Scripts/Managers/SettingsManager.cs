@@ -1,321 +1,189 @@
+using System;
 using System.Collections;
 using System.IO;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Audio;
-using UnityEngine.Rendering; // Post-Processing için gerekli
+using UnityEngine.Rendering;
+using UnityEngine.Rendering.HighDefinition;
 using UnityEngine.SceneManagement;
-
-// 1. Ayarlarımızı JSON olarak kaydedebilmek için bir veri sınıfı oluşturuyoruz
-[System.Serializable]
-public class SettingsData
-{
-    // Ses Ayarları
-    public float masterVolume = 1f;
-    public float musicVolume = 1f;
-    public float sfxVolume = 1f;
-
-    // Grafik Ayarları
-    public int qualityIndex = 2;
-    public bool isFullscreen = true;
-    public int resolutionIndex = -1;
-
-    // --- YENİ: Parlaklık (Exposure) ---
-    // Değeri 0 varsayılan kabul edeceğiz (Genelde -2 ile +2 arası çalışır)
-    public float brightness = 0f;
-
-    // Oynanış ve Kontrol
-    public float mouseSensitivity = 1f;
-    public int languageIndex = 0;
-    public string languageCode = "";
-    public bool subtitlesEnabled = true;
-}
 
 public class SettingsManager : MonoBehaviour
 {
     public static SettingsManager Instance;
-
+    public static SettingsData Current => Instance != null ? Instance.currentSettings : null;
+    public AudioMixer mainAudioMixer;
+    public AudioMixerGroup voiceGroup, effectsGroup;
+    public Volume globalVolume;
+    public SettingsData currentSettings;
+    public event Action Changed;
+    public event Action SaveFailed;
+    public string LastSaveError { get; private set; }
+    string saveFilePath;
+    DisplaySettings pendingDisplay;
+    double displayDeadline;
+    Volume preferenceVolume;
+    ColorAdjustments color;
+    MotionBlur blur;
+    FilmGrain grain;
+    bool savePending;
+    float saveDeadline;
+    public bool IsTestingDisplay => pendingDisplay != null;
+    public float DisplayTestRemaining => IsTestingDisplay ? Mathf.Max(0, (float)(displayDeadline - Time.realtimeSinceStartupAsDouble)) : 0;
+    public DisplaySettings EffectiveDisplay => (pendingDisplay ?? currentSettings.display).Copy();
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
+    static void Bootstrap() { EnsureInstance(); }
     public static SettingsManager EnsureInstance()
     {
         if (Instance != null) return Instance;
-        var existing = Object.FindFirstObjectByType<SettingsManager>();
-        if (existing != null) return existing;
-        var go = new GameObject("SettingsManager");
-        return go.AddComponent<SettingsManager>();
+        var existing = FindFirstObjectByType<SettingsManager>();
+        return existing != null ? existing : new GameObject("SettingsManager").AddComponent<SettingsManager>();
     }
-
-    public static string CodeFromLegacyIndex(int index)
+    public static string CodeFromLegacyIndex(int index) => index == 0 ? "tr" : index == 2 ? "de" : "en";
+    public static int LegacyIndexFromCode(string code) => string.Equals(code, "tr", StringComparison.OrdinalIgnoreCase) ? 0 : string.Equals(code, "de", StringComparison.OrdinalIgnoreCase) ? 2 : 1;
+    void Awake()
     {
-        switch (index)
+        if (Instance != null && Instance != this)
         {
-            case 0: return "tr";
-            case 2: return "de";
-            default: return "en";
+            if (mainAudioMixer != null) Instance.mainAudioMixer = mainAudioMixer;
+            if (voiceGroup != null) Instance.voiceGroup = voiceGroup;
+            if (effectsGroup != null) Instance.effectsGroup = effectsGroup;
+            Destroy(gameObject); return;
         }
+        Instance = this;
+        transform.SetParent(null, true);
+        DontDestroyOnLoad(gameObject);
+        var style = Resources.Load<SettingsMenuStyle>("Settings/SettingsMenuStyle");
+        if (style != null) { mainAudioMixer = style.mixer; voiceGroup = style.voice; effectsGroup = style.effects; }
+        saveFilePath = Path.Combine(Application.persistentDataPath, "SettingsSave.json"); LoadSettings();
     }
-
-    public static int LegacyIndexFromCode(string code)
+    IEnumerator Start() { ApplyAllSettings(); yield return null; ApplyAudioSettings(); }
+    void OnEnable() { SceneManager.sceneLoaded += SceneLoaded; }
+    void OnDisable() { SceneManager.sceneLoaded -= SceneLoaded; }
+    void OnDestroy()
     {
-        if (string.Equals(code, "tr", System.StringComparison.OrdinalIgnoreCase)) return 0;
-        if (string.Equals(code, "de", System.StringComparison.OrdinalIgnoreCase)) return 2;
-        return 1;
+        if (Instance != this) return;
+        if (preferenceVolume != null && preferenceVolume.sharedProfile != null) Destroy(preferenceVolume.sharedProfile);
+        Instance = null;
     }
-
-    [Header("Referanslar")]
-    public AudioMixer mainAudioMixer;
-
-    [Tooltip("Sahnede Post-Processing ayarlarını barındıran Global Volume objesi")]
-    public Volume globalVolume;
-
-    public SettingsData currentSettings;
-
-    private string saveFilePath;
-    private Resolution[] availableResolutions;
-
-    private void Awake()
+    void SceneLoaded(Scene scene, LoadSceneMode mode) { RevertDisplayTest(); ApplyPreferences(); StartCoroutine(SceneAudio()); }
+    IEnumerator SceneAudio() { yield return null; ApplyAudioSettings(); }
+    void Update()
     {
-        // Singleton yapısı (Sahneler arası silinmesin)
-        if (Instance == null)
-        {
-            Instance = this;
-            DontDestroyOnLoad(gameObject);
-        }
-        else
-        {
-            if (Instance.mainAudioMixer == null && mainAudioMixer != null)
-                Instance.mainAudioMixer = mainAudioMixer;
-            if (Instance.globalVolume == null && globalVolume != null)
-                Instance.globalVolume = globalVolume;
-            Destroy(gameObject);
-            return;
-        }
-
-        // Kayıt dosyasının yolu: AppData/LocalLow/SeninSirketin/Senzora/settings.json
-        saveFilePath = Path.Combine(Application.persistentDataPath, "SettingsSave.json");
-
-        // Cihazın desteklediği çözünürlükleri al
-        availableResolutions = Screen.resolutions;
-
-        LoadSettings();
+        if (IsTestingDisplay && DisplayTestRemaining <= 0) RevertDisplayTest();
+        if (savePending && Time.unscaledTime >= saveDeadline) SaveSettings();
     }
-
-    private IEnumerator Start()
-    {
-        ApplyGraphicsSettings();
-        // Unity'nin AudioMixer'ı tam yükleyebilmesi için çeyrek saniye bekle
-        yield return new WaitForSeconds(0.25f);
-
-        // Oyun ilk başladığında ayarları sisteme uygula
-        ApplyAudioSettings();
-    }
-
-    private void OnEnable()
-    {
-        // Script aktif olduğunda sahne yüklenme olayına abone ol
-        SceneManager.sceneLoaded += OnSceneLoaded;
-    }
-
-    private void OnDisable()
-    {
-        // Script kapandığında abonelikten çık
-        SceneManager.sceneLoaded -= OnSceneLoaded;
-    }
-
-    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
-    {
-        // Sahne her baştan yüklendiğinde (öldükten sonra vb.) sesleri tekrar uygula
-        StartCoroutine(ReapplyAudioRoutine());
-    }
-
-    private IEnumerator ReapplyAudioRoutine()
-    {
-        // AudioMixer'ın yeni sahneye tam oturması için çok kısa bir süre bekle
-        yield return new WaitForSeconds(0.1f);
-        ApplyAudioSettings();
-    }
-
-    // --- KAYIT VE YÜKLEME (JSON) ---
-    public void SaveSettings()
-    {
-        string json = JsonUtility.ToJson(currentSettings, true);
-        File.WriteAllText(saveFilePath, json);
-        Debug.Log("Ayarlar Kaydedildi: " + saveFilePath);
-    }
-
+    void OnApplicationQuit() { RevertDisplayTest(); if (savePending) SaveSettings(); }
     public void LoadSettings()
     {
-        if (File.Exists(saveFilePath))
+        try { currentSettings = File.Exists(saveFilePath) ? SettingsData.Parse(File.ReadAllText(saveFilePath), Screen.resolutions) : new SettingsData(); }
+        catch (Exception error)
         {
-            string json = File.ReadAllText(saveFilePath);
-            currentSettings = JsonUtility.FromJson<SettingsData>(json);
-        }
-        else
-        {
-            // OYUNCU OYUNA İLK DEFA GİRİYOR (JSON DOSYASI YOK)
+            Debug.LogWarning("Settings could not be loaded: " + error.Message);
+            try { if (File.Exists(saveFilePath)) File.Copy(saveFilePath, saveFilePath + ".corrupt-" + DateTime.UtcNow.ToString("yyyyMMddHHmmssfff")); }
+            catch (Exception backupError) { Debug.LogWarning(backupError.Message); }
             currentSettings = new SettingsData();
-
-            // Varsayılan olarak tam ekran başlasın
-            currentSettings.isFullscreen = true;
-
-            // Listede 1920x1080 çözünürlüğünü ara
-            int targetResIndex = availableResolutions.Length - 1; // Bulamazsa en yükseği seçer
-            for (int i = 0; i < availableResolutions.Length; i++)
-            {
-                if (availableResolutions[i].width == 1920 && availableResolutions[i].height == 1080)
-                {
-                    targetResIndex = i; // 1920x1080 bulundu!
-                }
-            }
-
-            currentSettings.resolutionIndex = targetResIndex;
-            currentSettings.languageCode = CodeFromLegacyIndex(currentSettings.languageIndex);
-
-            SaveSettings();
         }
-
-        NormalizeLanguageSetting();
+        currentSettings.Normalize(QualitySettings.names.Length); currentSettings.display = SupportedDisplay(currentSettings.display);
         GameLocalization.SetLanguage(currentSettings.languageCode);
+        currentSettings.languageCode=GameLocalization.CurrentCode;currentSettings.languageIndex=LegacyIndexFromCode(currentSettings.languageCode);
     }
-
-    private void NormalizeLanguageSetting()
+    public void SaveSettings()
     {
-        if (currentSettings == null)
-            currentSettings = new SettingsData();
-        if (string.IsNullOrWhiteSpace(currentSettings.languageCode))
-            currentSettings.languageCode = CodeFromLegacyIndex(currentSettings.languageIndex);
-        else
-            currentSettings.languageCode = currentSettings.languageCode.Trim().ToLowerInvariant();
-        currentSettings.languageIndex = LegacyIndexFromCode(currentSettings.languageCode);
+        savePending = false;
+        try { SettingsStore.Write(saveFilePath, currentSettings); LastSaveError = null; }
+        catch (Exception error) { LastSaveError = error.Message; Debug.LogWarning("Settings could not be saved: " + error.Message); SaveFailed?.Invoke(); }
     }
-
-    // --- AYARLARI SİSTEME UYGULAMA METOTLARI ---
-    public void ApplyAllSettings()
+    public void ChangedAndSave()
     {
-        ApplyGraphicsSettings();
-        ApplyAudioSettings();
+        currentSettings.Normalize(QualitySettings.names.Length); ApplyPreferences(); Changed?.Invoke(); savePending = true; saveDeadline = Time.unscaledTime + .35f;
     }
-
-    private void ApplyGraphicsSettings()
+    public void ApplyAllSettings() { QualitySettings.SetQualityLevel(currentSettings.qualityIndex); ApplyDisplay(currentSettings.display); ApplyPreferences(); }
+    public void ApplyPreferences()
     {
-        SetQuality(currentSettings.qualityIndex);
-        SetFullscreen(currentSettings.isFullscreen);
-
-        if (
-            currentSettings.resolutionIndex >= 0
-            && currentSettings.resolutionIndex < availableResolutions.Length
-        )
+        QualitySettings.vSyncCount = currentSettings.vSync ? 1 : 0; Application.targetFrameRate = currentSettings.vSync ? -1 : currentSettings.frameRateLimit;
+        ApplyVolume(); ApplyAudioSettings(); GameInput.ApplyControlSettings(currentSettings.gamepadDeadzone);
+    }
+    void ApplyVolume()
+    {
+        if (preferenceVolume == null)
         {
-            SetResolution(currentSettings.resolutionIndex);
+            var go = new GameObject("User display preferences"); go.transform.SetParent(transform, false);
+            preferenceVolume = go.AddComponent<Volume>(); preferenceVolume.isGlobal = true; preferenceVolume.priority = 100000;
+            preferenceVolume.sharedProfile = ScriptableObject.CreateInstance<VolumeProfile>();
+            color = preferenceVolume.sharedProfile.Add<ColorAdjustments>(); blur = preferenceVolume.sharedProfile.Add<MotionBlur>(); grain = preferenceVolume.sharedProfile.Add<FilmGrain>();
         }
-
-        NormalizeLanguageSetting();
-        SetLanguage(currentSettings.languageCode);
-        SetBrightness(currentSettings.brightness);
+        color.postExposure.Override(currentSettings.brightness); blur.active = !currentSettings.motionBlur; blur.intensity.Override(0); grain.active = !currentSettings.filmGrain; grain.intensity.Override(0);
     }
-
-    // Sesleri ayırdık ki Start içinde çeyrek saniye bekleyip sorunsuz çalışabilsin
-    private void ApplyAudioSettings()
+    static float Decibels(float value) => value <= 0 ? -80 : Mathf.Log10(value) * 20;
+    public void ApplyAudioSettings()
     {
-        SetMasterVolume(currentSettings.masterVolume);
-        SetMusicVolume(currentSettings.musicVolume);
-        SetSFXVolume(currentSettings.sfxVolume);
+        if (mainAudioMixer == null) return;
+        mainAudioMixer.SetFloat("Master", Decibels(currentSettings.masterVolume)); mainAudioMixer.SetFloat("Music", Decibels(currentSettings.musicVolume));
+        mainAudioMixer.SetFloat("SFX", Decibels(currentSettings.sfxVolume)); mainAudioMixer.SetFloat("Voice", Decibels(currentSettings.voiceVolume));
+        AudioListener.volume = currentSettings.masterVolume == 0 ? 0 : 1;
     }
-
-    // -- SES AYARLARI -- (AudioMixer'daki parametre isimleri Master, Music, SFX olmalı)
-    public void SetMasterVolume(float volume)
+    public void RouteVoice(AudioSource source) { if (source != null && voiceGroup != null) source.outputAudioMixerGroup = voiceGroup; }
+    public static void PlayEffectAtPoint(AudioClip clip, Vector3 position, float volume)
     {
-        currentSettings.masterVolume = volume;
-        mainAudioMixer?.SetFloat("Master", Mathf.Log10(Mathf.Clamp(volume, 0.0001f, 1f)) * 20f);
+        if(clip==null)return;
+        var go=new GameObject("One shot effect");go.transform.position=position;
+        var source=go.AddComponent<AudioSource>();source.playOnAwake=false;source.spatialBlend=1;source.volume=Mathf.Clamp01(volume);source.clip=clip;
+        source.outputAudioMixerGroup=EnsureInstance().effectsGroup;source.Play();Destroy(go,clip.length);
     }
-
-    public void SetMusicVolume(float volume)
+    public void SetMasterVolume(float value) { currentSettings.masterVolume = value; ChangedAndSave(); }
+    public void SetMusicVolume(float value) { currentSettings.musicVolume = value; ChangedAndSave(); }
+    public void SetSFXVolume(float value) { currentSettings.sfxVolume = value; ChangedAndSave(); }
+    public void SetQuality(int value) { currentSettings.qualityIndex = Mathf.Clamp(value, 0, QualitySettings.names.Length - 1); QualitySettings.SetQualityLevel(currentSettings.qualityIndex); ChangedAndSave(); }
+    public void SetBrightness(float value) { currentSettings.brightness = value; ChangedAndSave(); }
+    public void SetMouseSensitivity(float value) { currentSettings.mouseSensitivity = value; ChangedAndSave(); }
+    public void SetSubtitlesEnabled(bool value) { currentSettings.subtitlesEnabled = value; ChangedAndSave(); }
+    public void SetLanguage(int index) { var list = GameLocalization.Languages; SetLanguage(index >= 0 && index < list.Count ? list[index].code : CodeFromLegacyIndex(index)); }
+    public void SetLanguage(string code)
     {
-        currentSettings.musicVolume = volume;
-        mainAudioMixer?.SetFloat("Music", Mathf.Log10(Mathf.Clamp(volume, 0.0001f, 1f)) * 20f);
+        GameLocalization.SetLanguage(code); currentSettings.languageCode = GameLocalization.CurrentCode; currentSettings.languageIndex = LegacyIndexFromCode(currentSettings.languageCode); ChangedAndSave();
     }
-
-    public void SetSFXVolume(float volume)
+    public void SetFullscreen(bool value) { var next = currentSettings.display.Copy(); next.mode = (int)(value ? FullScreenMode.FullScreenWindow : FullScreenMode.Windowed); BeginDisplayTest(next); }
+    public void SetResolution(int index)
     {
-        currentSettings.sfxVolume = volume;
-        mainAudioMixer?.SetFloat("SFX", Mathf.Log10(Mathf.Clamp(volume, 0.0001f, 1f)) * 20f);
+        if (index < 0 || index >= Screen.resolutions.Length) return;
+        var next = currentSettings.display.Copy(); var res = Screen.resolutions[index]; next.width = res.width; next.height = res.height;
+        next.refreshNumerator = res.refreshRateRatio.numerator; next.refreshDenominator = res.refreshRateRatio.denominator; BeginDisplayTest(next);
     }
-
-    // -- GRAFİK AYARLARI --
-    public void SetQuality(int qualityIndex)
+    public static DisplaySettings SupportedDisplay(DisplaySettings value)
     {
-        currentSettings.qualityIndex = qualityIndex;
-        QualitySettings.SetQualityLevel(qualityIndex);
-    }
-
-    public void SetFullscreen(bool isFullscreen)
-    {
-        currentSettings.isFullscreen = isFullscreen;
-        Screen.fullScreen = isFullscreen;
-    }
-
-    public void SetResolution(int resolutionIndex)
-    {
-        if (resolutionIndex >= 0 && resolutionIndex < availableResolutions.Length)
+        var result = value.Copy(); var resolutions = Screen.resolutions;
+        if (resolutions.Length > 0)
         {
-            currentSettings.resolutionIndex = resolutionIndex;
-            Resolution res = availableResolutions[resolutionIndex];
-            Screen.SetResolution(res.width, res.height, Screen.fullScreen);
+            var res = resolutions.OrderBy(r => Math.Abs((long)r.width - result.width) + Math.Abs((long)r.height - result.height))
+                .ThenBy(r => Math.Abs(r.refreshRateRatio.value - result.Hz)).First();
+            result.width = res.width; result.height = res.height; result.refreshNumerator = res.refreshRateRatio.numerator; result.refreshDenominator = res.refreshRateRatio.denominator;
         }
+        if (Application.platform != RuntimePlatform.WindowsPlayer && Application.platform != RuntimePlatform.WindowsEditor && result.mode == (int)FullScreenMode.ExclusiveFullScreen) result.mode = (int)FullScreenMode.FullScreenWindow;
+        return result;
     }
-
-    // -- OYNANIŞ AYARLARI --
-    public void SetMouseSensitivity(float sensitivity)
+    static void ApplyDisplay(DisplaySettings value)
     {
-        currentSettings.mouseSensitivity = sensitivity;
-        // Not: StarterAssetsInputs içindeki Look hassasiyetini buraya bağlayacağız
+        var rate = value.mode == (int)FullScreenMode.FullScreenWindow ? Screen.currentResolution.refreshRateRatio : value.RefreshRate;
+        Screen.SetResolution(value.width, value.height, (FullScreenMode)value.mode, rate);
     }
-
-    public void SetLanguage(int languageIndex)
+    public void BeginDisplayTest(DisplaySettings value) { pendingDisplay = SupportedDisplay(value); displayDeadline = Time.realtimeSinceStartupAsDouble + 15; ApplyDisplay(pendingDisplay); Changed?.Invoke(); }
+    public void ConfirmDisplayTest()
     {
-        if (currentSettings == null)
-            currentSettings = new SettingsData();
-        var languages = GameLocalization.Languages;
-        if (languages != null && languageIndex >= 0 && languageIndex < languages.Count)
+        if (!IsTestingDisplay) return;
+        currentSettings.display = pendingDisplay.Copy(); currentSettings.isFullscreen = pendingDisplay.mode != (int)FullScreenMode.Windowed; pendingDisplay = null; Changed?.Invoke(); SaveSettings();
+    }
+    public void RevertDisplayTest() { if (!IsTestingDisplay) return; pendingDisplay = null; ApplyDisplay(currentSettings.display); Changed?.Invoke(); }
+    public void ResetSection(string section)
+    {
+        var d = currentSettings;
+        switch (section)
         {
-            SetLanguage(languages[languageIndex].code);
-            return;
+            case "audio": d.masterVolume = d.musicVolume = d.sfxVolume = d.voiceVolume = 1; break;
+            case "video": d.qualityIndex = Math.Min(1, QualitySettings.names.Length - 1); d.vSync = true; d.frameRateLimit = 144; d.brightness = 0; d.motionBlur = d.filmGrain = true; d.headBob = 1; QualitySettings.SetQualityLevel(d.qualityIndex); break;
+            case "controls": d.mouseSensitivity = d.gamepadSensitivity = 1; d.invertMouseY = d.invertGamepadY = false; d.gamepadDeadzone = .125f; GameInput.ResetBindings(); break;
+            case "language": d.subtitlesEnabled = true; d.subtitleSize = 1; d.subtitleBackground = .5f; SetLanguage("en"); break;
         }
-        currentSettings.languageIndex = languageIndex;
-        currentSettings.languageCode = CodeFromLegacyIndex(languageIndex);
-        GameLocalization.SetLanguage(currentSettings.languageCode);
-    }
-
-    public void SetLanguage(string languageCode)
-    {
-        if (currentSettings == null)
-            currentSettings = new SettingsData();
-        currentSettings.languageCode = string.IsNullOrWhiteSpace(languageCode)
-            ? "en"
-            : languageCode.Trim().ToLowerInvariant();
-        currentSettings.languageIndex = LegacyIndexFromCode(currentSettings.languageCode);
-        GameLocalization.SetLanguage(currentSettings.languageCode);
-    }
-
-    public void SetSubtitlesEnabled(bool isEnabled)
-    {
-        currentSettings.subtitlesEnabled = isEnabled;
-    }
-
-    public void SetBrightness(float value)
-    {
-        currentSettings.brightness = value;
-
-        if (globalVolume != null && globalVolume.profile != null)
-        {
-            // HDRP ColorAdjustments bileşenini bulmaya çalış
-            if (
-                globalVolume.profile.TryGet(
-                    out UnityEngine.Rendering.HighDefinition.ColorAdjustments colorAdjustments
-                )
-            )
-            {
-                // Post Exposure (Pozlama) değerini değiştir
-                colorAdjustments.postExposure.value = value;
-            }
-        }
+        ChangedAndSave();
     }
 }

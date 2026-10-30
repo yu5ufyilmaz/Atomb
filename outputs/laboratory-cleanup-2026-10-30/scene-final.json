@@ -1,0 +1,15 @@
+{
+  "status": "success",
+  "result": {
+    "success": true,
+    "message": "Retrieved active scene information.",
+    "data": {
+      "name": "scn_LaboratorySynthesis",
+      "path": "Assets/Scenes/scn_LaboratorySynthesis.unity",
+      "buildIndex": -1,
+      "isDirty": false,
+      "isLoaded": true,
+      "rootCount": 13
+    }
+  }
+}

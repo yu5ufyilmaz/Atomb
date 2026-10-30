@@ -59,7 +59,7 @@ public class UniversalHighlighter : MonoBehaviour
 
             RendererHighlightData data = new RendererHighlightData();
             data.renderer = r;
-            data.originalMaterials = r.materials;
+            data.originalMaterials = r.sharedMaterials;
             data.highlightMaterials = new Material[data.originalMaterials.Length];
 
             for (int i = 0; i < data.originalMaterials.Length; i++)
@@ -74,6 +74,21 @@ public class UniversalHighlighter : MonoBehaviour
         }
 
         UpdateEmissionColor(emissionIntensity);
+    }
+
+    private void OnDestroy()
+    {
+        foreach (var data in allRenderersData)
+        {
+            if (isHighlighted && data.renderer != null)
+                data.renderer.sharedMaterials = data.originalMaterials;
+            foreach (var material in data.highlightMaterials)
+            {
+                if (material == null) continue;
+                if (Application.isPlaying) Destroy(material);
+                else DestroyImmediate(material);
+            }
+        }
     }
 
     private void UpdateEmissionColor(float intensity)
@@ -112,7 +127,7 @@ public class UniversalHighlighter : MonoBehaviour
             foreach (var data in allRenderersData)
             {
                 if (data.renderer != null)
-                    data.renderer.materials = data.highlightMaterials;
+                    data.renderer.sharedMaterials = data.highlightMaterials;
             }
         }
 
@@ -141,7 +156,7 @@ public class UniversalHighlighter : MonoBehaviour
             foreach (var data in allRenderersData)
             {
                 if (data.renderer != null)
-                    data.renderer.materials = data.originalMaterials;
+                    data.renderer.sharedMaterials = data.originalMaterials;
             }
         }
 

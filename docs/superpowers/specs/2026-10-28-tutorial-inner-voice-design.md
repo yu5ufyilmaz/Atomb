@@ -1,5 +1,7 @@
 # Tutorial: kafanın içindeki diğer kişi
 
+29 Ekim güncellemesi: konuşma yönetimi mevcut event sistemine taşındı. Güncel uygulama ve Inspector kullanımı için [TutorialEvents](../../TutorialEvents.md) belgesine bakın. Aşağıdaki metin ilk tasarımın kaydıdır.
+
 Kullanıcı tüm tutorial boyunca kalıcı görev panelinin kaldırılmasını ve oyuncuyla konuşan ayrı bir kişinin altyazılarla yol göstermesini istedi. Oyuncu adımı kaçırırsa bir tuşa ihtiyaç duymadan, farklı cümlelerle hatırlatma yapılır. Ses emir veren bir anlatıcı gibi yazılmaz.
 
 Seçilen yaklaşım mevcut gerçek ilerleme koşullarını ve GlobalSubtitleManager'ı kullanır. Alternatif olan oyuncunun tuşla hatırlatma istemesi kullanıcı tarafından reddedildi; kalıcı görev kutusu da kaldırılır. Mevcut sahne ve tamamlanmamış tutorial değişiklikleri korunarak yerinde çalışılır; commit/push yapılmaz.

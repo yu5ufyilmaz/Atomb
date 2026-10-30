@@ -135,6 +135,8 @@ namespace StarterAssets
 
         [Tooltip("For locking the camera position on all axis")]
         public bool LockCameraPosition = false;
+        // A head-grip may own the view while walking, gravity and movement input remain live.
+        public bool ExternalCameraControl { get; set; }
 
         // cinemachine
         private float _cinemachineTargetYaw;
@@ -217,12 +219,9 @@ namespace StarterAssets
 
             _hasAnimator = TryGetComponent(out _animator);
             // Karakterde AudioSource var mı diye bak, yoksa otomatik ekle
-            _audioSource = GetComponent<AudioSource>();
-            if (_audioSource == null)
-            {
-                _audioSource = gameObject.AddComponent<AudioSource>();
-                _audioSource.spatialBlend = 1f; // Sesi 3D (uzamsal) yapar
-            }
+            _audioSource = gameObject.AddComponent<AudioSource>();
+            _audioSource.playOnAwake = false; _audioSource.spatialBlend = 1f;
+            _audioSource.outputAudioMixerGroup = SettingsManager.EnsureInstance().effectsGroup;
             _controller = GetComponent<UnityEngine.CharacterController>();
             _input = GetComponent<StarterAssetsInputs>();
 #if ENABLE_INPUT_SYSTEM
@@ -264,13 +263,14 @@ namespace StarterAssets
             GroundedCheck();
             HandleStamina();
             CalculateDrunkEffects(); // <--- [YENİ] BURAYA EKLENDİ
+            CameraRotation();
             Move();
             HandleHeadBob(); // <-- YENİ: Bunu buraya ekle!
         }
 
         private void LateUpdate()
         {
-            CameraRotation();
+            ApplyCameraRotation();
         }
 
         private void AssignAnimationIDs()
@@ -318,7 +318,7 @@ namespace StarterAssets
         private void CameraRotation()
         {
             // 1. TAM KİLİT (Hiç hareket yok)
-            if (_lockCamera)
+            if (_lockCamera || ExternalCameraControl)
                 return;
 
             // Mouse/Gamepad giriş kontrolü
@@ -334,7 +334,8 @@ namespace StarterAssets
                 float sensitivity = 1f;
                 if (SettingsManager.Instance != null)
                 {
-                    sensitivity = SettingsManager.Instance.currentSettings.mouseSensitivity;
+                    var settings = SettingsManager.Instance.currentSettings;
+                    sensitivity = IsCurrentDeviceMouse ? settings.mouseSensitivity : settings.gamepadSensitivity * 120f;
                 }
                 // -------------------------------------------------------
 
@@ -342,7 +343,8 @@ namespace StarterAssets
                 _cinemachineTargetYaw +=
                     _input.look.x * deltaTimeMultiplier * controlLag * sensitivity;
                 _cinemachineTargetPitch +=
-                    _input.look.y * deltaTimeMultiplier * controlLag * sensitivity;
+                    _input.look.y * deltaTimeMultiplier * controlLag * sensitivity
+                    * ((IsCurrentDeviceMouse ? SettingsManager.Current?.invertMouseY : SettingsManager.Current?.invertGamepadY) == true ? -1 : 1);
             }
 
             // Pitch (Yukarı/Aşağı) Clamp (Eski kodun)
@@ -370,6 +372,26 @@ namespace StarterAssets
             // ----------------------------------------------------
 
             // Sarhoşluk Etkisi (Mevcut kodların)
+            float addedYaw = (drunkIntensity > 0.01f) ? currentDrunkYaw : 0f;
+
+            // Catch the body up before movement and foot IK, without slowing the camera.
+            // Footwork's locomotion gate leaves authored interaction poses untouched.
+            if (_footwork != null && _footwork.CanApply)
+            {
+                float viewYaw = _cinemachineTargetYaw + addedYaw;
+                float yawDifference = Mathf.DeltaAngle(transform.eulerAngles.y, viewYaw);
+                if (Mathf.Abs(yawDifference) > 60f)
+                    transform.rotation = Quaternion.Euler(0f,
+                        viewYaw - Mathf.Clamp(yawDifference, -60f, 60f), 0f);
+            }
+        }
+
+        private void ApplyCameraRotation()
+        {
+            if (_lockCamera || ExternalCameraControl)
+                return;
+
+            // Restore world rotation after the body and animated parent bones have moved.
             float addedYaw = (drunkIntensity > 0.01f) ? currentDrunkYaw : 0f;
             float addedRoll = (drunkIntensity > 0.01f) ? currentDrunkRoll : 0f;
 
@@ -472,12 +494,12 @@ namespace StarterAssets
                 _animationBlend = 0f;
 
             // ROTASYON: Karakteri her zaman KAMERANIN baktığı yöne kilitle.
-            _targetRotation = _footwork != null && _footwork.CanApply
-                ? _cinemachineTargetYaw : _mainCamera.transform.eulerAngles.y;
+            _targetRotation = ExternalCameraControl ? transform.eulerAngles.y
+                : _footwork != null && _footwork.CanApply ? _cinemachineTargetYaw : _mainCamera.transform.eulerAngles.y;
 
             // Sarhoşluk yalpalamasını rotasyona ekle
             float rotationWithDrunk = _targetRotation;
-            if (drunkIntensity > 0.01f)
+            if (!ExternalCameraControl && drunkIntensity > 0.01f)
                 rotationWithDrunk += currentDrunkYaw;
 
             // Hedef rotasyonu Quaternion olarak oluştur
@@ -730,6 +752,7 @@ namespace StarterAssets
 
         private void HandleHeadBob()
         {
+            if (ExternalCameraControl) return;
             if (!Grounded)
                 return;
 
@@ -744,8 +767,8 @@ namespace StarterAssets
                 float freq = _input.sprint ? BobFrequency * 1.3f : BobFrequency;
 
                 // Varsayılan sallantı genliklerini al
-                float currentBobY = BobYAmplitude;
-                float currentBobX = BobXAmplitude;
+                float currentBobY = BobYAmplitude * (SettingsManager.Current?.headBob ?? 1);
+                float currentBobX = BobXAmplitude * (SettingsManager.Current?.headBob ?? 1);
 
                 // --- YENİ: YORGUNLUK (EXHAUSTED) ETKİSİ ---
                 if (isExhausted)

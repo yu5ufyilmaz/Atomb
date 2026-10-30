@@ -1,0 +1,158 @@
+ M .gitignore
+ M "Assets/Fonts/Caveat/Caveat-Regular SDF.asset"
+ M Assets/MainMixer.mixer
+ M Assets/Resources/Localization/Tables/en.json
+ M Assets/Resources/Localization/Tables/tr.json
+ M Assets/Scenes/MainMenu.unity
+ M Assets/Scenes/scn_LaboratorySynthesis.unity
+ M Assets/Scenes/scn_MainMenu.unity
+ M Assets/Scenes/scn_PressAnyKeyMenu.unity
+ M Assets/Scenes/scn_labratory.unity
+ M Assets/Scenes/scn_labratoryfast.unity
+ M Assets/Scripts/Editor/BookMotionChecks.cs
+ M Assets/Scripts/Editor/LaboratorySynthesisChecks.cs
+ M Assets/Scripts/Editor/LocalizationPresentationChecks.cs
+ M Assets/Scripts/Editor/PlayerFootworkChecks.cs
+ M Assets/Scripts/Editor/ResearchGuidanceChecks.cs
+ M Assets/Scripts/Editor/TutorialFlowChecks.cs
+ M Assets/Scripts/Editor/TutorialPlayChecks.cs
+ M Assets/Scripts/Editor/TutorialRegressionChecks.cs
+ D Assets/Scripts/Editor/TutorialTemporaryRunner.cs
+ D Assets/Scripts/Editor/TutorialTemporaryRunner.cs.meta
+ M Assets/Scripts/EnemyAI/LeesEnemyAI.cs
+ M Assets/Scripts/Interactables/InteractableBook.cs
+ M Assets/Scripts/Interactables/InteractableChalkboard.cs
+ M Assets/Scripts/Interactables/InteractableDoor.cs
+ M Assets/Scripts/Interactables/InteractableDoorLock.cs
+ M Assets/Scripts/Interactables/InteractableDrawer.cs
+ M Assets/Scripts/Interactables/InteractableHidingSpot.cs
+ M Assets/Scripts/Interactables/InteractableMassSpectrometer.cs
+ M Assets/Scripts/Interactables/InteractableNote.cs
+ M Assets/Scripts/Interactables/InteractableOscilloscope.cs
+ M Assets/Scripts/Interactables/InteractablePressureValve.cs
+ M Assets/Scripts/Interactables/InteractableRetroOscilloscope.cs
+ M Assets/Scripts/Interactables/InteractableTuringMachine.MeasurementReader.cs
+ M Assets/Scripts/Interactables/InteractableTuringMachine.cs
+ M Assets/Scripts/Localization/GameLocalization.cs
+ M Assets/Scripts/Localization/LocalizationCatalog.cs
+ M Assets/Scripts/Localization/LocalizedText.cs
+ M Assets/Scripts/Managers/GlobalSubtitleManager.cs
+ M Assets/Scripts/Managers/SettingsManager.cs
+ M Assets/Scripts/Managers/TutorialManager.cs
+ M Assets/Scripts/NewEventSystem/Actions/DialogAction.cs
+ M Assets/Scripts/NewEventSystem/Actions/LookAction.cs
+ M Assets/Scripts/NewEventSystem/Actions/PhantomSpawnAction.cs
+ M Assets/Scripts/NewEventSystem/Actions/SanityGlitchAction.cs
+ M Assets/Scripts/NewEventSystem/Conditions/InputCondition.cs
+ M Assets/Scripts/Player/CharacterController.cs
+ M Assets/Scripts/Player/DynomaFlashLight.cs
+ M Assets/Scripts/Player/PlayerInteraction.cs
+ M Assets/Scripts/PuzzleSystems/Chalkboard/ChalkboardButton.cs
+ M Assets/Scripts/PuzzleSystems/Chalkboard/ChalkboardFreehandDrawing.cs
+ M Assets/Scripts/PuzzleSystems/Chalkboard/ChalkboardTutorial.cs
+ M Assets/Scripts/PuzzleSystems/Chalkboard/DraggableFormula.cs
+ M Assets/Scripts/PuzzleSystems/Chalkboard/FormulaNode.cs
+ M Assets/Scripts/Scriptables/Subtitles/MainSubtitles.asset
+ M Assets/Scripts/UI/DesktopMenuInteract.cs
+ M Assets/Scripts/UI/InGameMenuController.cs
+ M Assets/Scripts/UI/MainMenuManager.cs
+ M Assets/Scripts/UI/NotebookUI.cs
+ M Assets/Scripts/UI/NotebookWorkspaceController.cs
+ M Assets/Scripts/UI/PauseManager.cs
+ M Assets/Scripts/UI/SettingsUIManager.cs
+ M "Assets/Sprites/UI/MainMenu/Font/static/DMSans-ExtraLight SDF.asset"
+ M "Assets/Sprites/UI/MainMenu/Font/static/DMSans-Medium SDF.asset"
+ M "Assets/Sprites/UI/MainMenu/Font/static/DMSans-Thin SDF.asset"
+ M Assets/Sprites/UI/UI3/SettingsMenuScreen/BarInside.png.meta
+ M Assets/Sprites/UI/UI3/SettingsMenuScreen/BarOutside.png.meta
+ M Assets/Sprites/UI/UI3/SettingsMenuScreen/Box.png.meta
+ M Assets/Sprites/UI/UI3/SettingsMenuScreen/QualityArrow.png.meta
+ M Assets/Sprites/UI/UI3/SettingsMenuScreen/QualityFrame.png.meta
+ M Assets/Sprites/UI/UI3/SettingsMenuScreen/x.png.meta
+ M Assets/StarterAssets/InputSystem/StarterAssets.inputactions
+ M Assets/StarterAssets/InputSystem/StarterAssetsInputs.cs
+ M "Assets/TextMesh Pro/Fonts/SpecialElite-Regular SDF.asset"
+ M "Assets/TextMesh Pro/Resources/Fonts & Materials/LiberationSans SDF.asset"
+ M ProjectSettings/EditorBuildSettings.asset
+ M ProjectSettings/ProjectSettings.asset
+ M ProjectSettings/TimeManager.asset
+ M docs/superpowers/plans/2026-10-29-tutorial-event-repair.md
+ M docs/superpowers/specs/2026-10-28-tutorial-inner-voice-design.md
+ M tools/check-tutorial-voice.ps1
+?? Assets/LeesResistanceWorkshop.meta
+?? Assets/LeesResistanceWorkshop/
+?? Assets/Resources/Localization/InputActions.json
+?? Assets/Resources/Localization/InputActions.json.meta
+?? Assets/Resources/Localization/InputBindings.json
+?? Assets/Resources/Localization/InputBindings.json.meta
+?? Assets/Resources/Settings.meta
+?? Assets/Resources/Settings/
+?? Assets/Scenes/scn_LeesResistanceWorkshop.unity
+?? Assets/Scenes/scn_LeesResistanceWorkshop.unity.meta
+?? Assets/Scripts/Editor/ContentWorkbook.meta
+?? Assets/Scripts/Editor/ContentWorkbook/
+?? Assets/Scripts/Editor/LeesResistanceGameplaySetup.cs
+?? Assets/Scripts/Editor/LeesResistanceGameplaySetup.cs.meta
+?? Assets/Scripts/Editor/LeesResistanceIntegrationChecks.cs
+?? Assets/Scripts/Editor/LeesResistanceIntegrationChecks.cs.meta
+?? Assets/Scripts/Editor/LeesResistancePlayChecks.cs
+?? Assets/Scripts/Editor/LeesResistancePlayChecks.cs.meta
+?? Assets/Scripts/Editor/LeesResistanceWorkshopChecks.cs
+?? Assets/Scripts/Editor/LeesResistanceWorkshopChecks.cs.meta
+?? Assets/Scripts/Editor/LeesResistanceWorkshopSetup.cs
+?? Assets/Scripts/Editor/LeesResistanceWorkshopSetup.cs.meta
+?? Assets/Scripts/Editor/SettingsMenuChecks.cs
+?? Assets/Scripts/Editor/SettingsMenuChecks.cs.meta
+?? Assets/Scripts/Editor/SettingsMenuPlayChecks.cs
+?? Assets/Scripts/Editor/SettingsMenuPlayChecks.cs.meta
+?? Assets/Scripts/Editor/SettingsMenuSetup.cs
+?? Assets/Scripts/Editor/SettingsMenuSetup.cs.meta
+?? Assets/Scripts/Editor/TutorialChoiceChecks.cs
+?? Assets/Scripts/Editor/TutorialChoiceChecks.cs.meta
+?? Assets/Scripts/EnemyAI/LeesResistanceController.cs
+?? Assets/Scripts/EnemyAI/LeesResistanceController.cs.meta
+?? Assets/Scripts/EnemyAI/LeesResistanceDemo.cs
+?? Assets/Scripts/EnemyAI/LeesResistanceDemo.cs.meta
+?? Assets/Scripts/EnemyAI/LeesResistanceGraphic.cs
+?? Assets/Scripts/EnemyAI/LeesResistanceGraphic.cs.meta
+?? Assets/Scripts/EnemyAI/LeesResistanceHands.cs
+?? Assets/Scripts/EnemyAI/LeesResistanceHands.cs.meta
+?? Assets/Scripts/EnemyAI/LeesResistanceHud.cs
+?? Assets/Scripts/EnemyAI/LeesResistanceHud.cs.meta
+?? Assets/Scripts/EnemyAI/LeesResistanceModel.cs
+?? Assets/Scripts/EnemyAI/LeesResistanceModel.cs.meta
+?? Assets/Scripts/Localization/InputHintText.cs
+?? Assets/Scripts/Localization/InputHintText.cs.meta
+?? Assets/Scripts/Managers/SettingsData.cs
+?? Assets/Scripts/Managers/SettingsData.cs.meta
+?? Assets/Scripts/Player/GameInput.cs
+?? Assets/Scripts/Player/GameInput.cs.meta
+?? Assets/Scripts/UI/InputBindingIcon.cs
+?? Assets/Scripts/UI/InputBindingIcon.cs.meta
+?? Assets/Scripts/UI/SettingsMenuStyle.cs
+?? Assets/Scripts/UI/SettingsMenuStyle.cs.meta
+?? Assets/Scripts/UI/SettingsMenuView.cs
+?? Assets/Scripts/UI/SettingsMenuView.cs.meta
+?? Assets/Scripts/UI/TutorialChoicePrompt.cs
+?? Assets/Scripts/UI/TutorialChoicePrompt.cs.meta
+?? "Assets/_Recovery/0 (1).unity"
+?? "Assets/_Recovery/0 (1).unity.meta"
+?? Content/
+?? docs/ContentWorkbook.md
+?? docs/LaboratorySynthesisAudit-2026-10-30.md
+?? docs/LeesResistanceWorkshop.md
+?? docs/SettingsMenu.md
+?? docs/TutorialEvents.md
+?? docs/superpowers/plans/2026-10-29-content-workbook.md
+?? docs/superpowers/plans/2026-10-29-settings-menu.md
+?? docs/superpowers/plans/2026-10-30-laboratory-cleanup.md
+?? docs/superpowers/plans/2026-10-30-lees-gameplay-hands.md
+?? docs/superpowers/plans/2026-10-30-lees-resistance.md
+?? docs/superpowers/specs/2026-10-29-content-workbook-design.md
+?? docs/superpowers/specs/2026-10-29-settings-menu-design.md
+?? docs/superpowers/specs/2026-10-30-lees-gameplay-hands-design.md
+?? docs/superpowers/specs/2026-10-30-lees-resistance-design.md
+?? outputs/
+?? tools/check-content-workbook.ps1
+?? tools/check-input-hints.ps1
+?? tools/check-lees-resistance.ps1

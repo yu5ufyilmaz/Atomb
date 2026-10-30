@@ -20,7 +20,7 @@ public class ChalkboardButton : MonoBehaviour
         )
             return;
 
-        if (Input.GetMouseButtonDown(0) && !FormulaNode.IsPointerOverUI())
+        if (GameInput.Pressed("Interact") && !FormulaNode.IsPointerOverUI())
         {
             if (mainCam == null) mainCam = Camera.main;
             if (mainCam == null) return;

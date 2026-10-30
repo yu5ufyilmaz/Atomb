@@ -16,9 +16,7 @@ public class LeesCondition : MonoBehaviour, ICondition
 
     private bool conditionMet = false;
     private PrerequisiteCondition prereq;
-
-    // Konsolu spamlememek için zamanlayıcı
-    private float debugTimer = 0f;
+    private bool hasLoggedPrereqWait = false;
 
     public bool IsMet() => conditionMet;
 
@@ -36,12 +34,12 @@ public class LeesCondition : MonoBehaviour, ICondition
         // 2. Ön koşul varsa ve tamamlanmadıysa GİREMEZ
         if (prereq != null && !prereq.IsMet())
         {
-            if (Time.time > debugTimer)
+            if (!hasLoggedPrereqWait)
             {
-                Debug.LogWarning(
+                hasLoggedPrereqWait = true;
+                Debug.Log(
                     $"[LeesCondition - {gameObject.name}] Bekliyor: Ön koşul (PrerequisiteCondition) henüz tamamlanmamış!"
                 );
-                debugTimer = Time.time + 1f;
             }
             return;
         }

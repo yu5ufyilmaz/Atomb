@@ -453,7 +453,7 @@ public partial class InteractableTuringMachine : MonoBehaviour, IInteractable, I
         if (IsMeasurementTerminal && ReaderPaused) return;
 
         // ÇIKIŞ
-        if (Input.GetKeyDown(KeyCode.F))
+        if (GameInput.Pressed("Cancel"))
         {
             StartCoroutine(ExitMachineView());
             return;
@@ -465,35 +465,35 @@ public partial class InteractableTuringMachine : MonoBehaviour, IInteractable, I
         }
 
         // --- MAKİNE KONTROLLERİ ---
-        if (Input.GetKeyDown(KeyCode.W))
+        if (GameInput.Pressed("DeviceUp"))
         {
             currentGroup = (currentGroup - 1 + 3) % 3;
             UpdateActiveWheelHighlight();
         }
-        else if (Input.GetKeyDown(KeyCode.S))
+        else if (GameInput.Pressed("DeviceDown"))
         {
             currentGroup = (currentGroup + 1) % 3;
             UpdateActiveWheelHighlight();
         }
 
-        if (Input.GetKeyDown(KeyCode.A))
+        if (GameInput.Pressed("DeviceLeft"))
         {
             HandleIndexChange(-1);
             UpdateActiveWheelHighlight();
         }
-        else if (Input.GetKeyDown(KeyCode.D))
+        else if (GameInput.Pressed("DeviceRight"))
         {
             HandleIndexChange(1);
             UpdateActiveWheelHighlight();
         }
 
         float rotationInput = 0f;
-        if (Input.GetKeyDown(KeyCode.RightArrow))
+        if (GameInput.Pressed("RotateNext"))
             rotationInput = 1f;
-        if (Input.GetKeyDown(KeyCode.LeftArrow))
+        if (GameInput.Pressed("RotatePrevious"))
             rotationInput = -1f;
 
-        float scroll = Input.mouseScrollDelta.y;
+        float scroll = GameInput.Scroll;
         if (scroll > 0.1f)
             rotationInput = 1f;
         if (scroll < -0.1f)
@@ -501,7 +501,7 @@ public partial class InteractableTuringMachine : MonoBehaviour, IInteractable, I
 
         if (rotationInput != 0)
             RotateActiveWheel((int)rotationInput);
-        if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter))
+        if (GameInput.Pressed("Confirm"))
             CheckPassword();
 
         AnimateWheels();

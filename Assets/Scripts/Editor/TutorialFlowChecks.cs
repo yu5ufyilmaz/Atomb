@@ -14,12 +14,19 @@ public static class TutorialFlowChecks
     [MenuItem("Senzora/Doğrulama/Tutorial ve Kapanan Pano")]
     public static void Core()
     {
+        var originalScene = UnityEngine.SceneManagement.SceneManager.GetActiveScene();
+        var fixtureScene = UnityEditor.SceneManagement.EditorSceneManager.NewScene(UnityEditor.SceneManagement.NewSceneSetup.EmptyScene, UnityEditor.SceneManagement.NewSceneMode.Additive);
         var failures = new List<string>();
+        try
+        {
         foreach (Action check in new Action[] { ClosedPanelReleasesBoard, DisabledBreakerCannotTrip, EarlyInteractionCannotCompleteStep, LessonRequiresCollectedCards, DoorIsReachableAfterBoard })
         {
+            UnityEngine.SceneManagement.SceneManager.SetActiveScene(check == (Action)DoorIsReachableAfterBoard ? originalScene : fixtureScene);
             try { check(); Debug.Log("TUTORIAL CHECK PASS: " + check.Method.Name); }
             catch (Exception error) { failures.Add(check.Method.Name + ": " + error.GetBaseException().Message); }
         }
+        }
+        finally { UnityEditor.SceneManagement.EditorSceneManager.CloseScene(fixtureScene,true);if(originalScene.IsValid())UnityEngine.SceneManagement.SceneManager.SetActiveScene(originalScene); }
         if (failures.Count > 0) throw new InvalidOperationException(string.Join("\n", failures));
         Debug.Log("TUTORIAL CORE PASS");
     }

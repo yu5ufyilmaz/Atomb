@@ -285,7 +285,7 @@ public class InteractableRetroOscilloscope : MonoBehaviour, IInteractable, IForc
         if (!inMachineMode || isExiting)
             return;
 
-        if (Input.GetKeyDown(KeyCode.F))
+        if (GameInput.Pressed("Cancel"))
         {
             StartCoroutine(ExitMachineView());
             return;
@@ -296,7 +296,7 @@ public class InteractableRetroOscilloscope : MonoBehaviour, IInteractable, IForc
 
         if (!GameActive)
         {
-            if (Input.GetMouseButtonDown(0))
+            if (GameInput.Pressed("Interact"))
             {
                 GameActive = true;
                 ResetMiniGame();
@@ -309,7 +309,7 @@ public class InteractableRetroOscilloscope : MonoBehaviour, IInteractable, IForc
         {
             HandlePaddleInput();
 
-            if (Input.GetMouseButtonDown(0))
+            if (GameInput.Pressed("Interact"))
             {
                 // Sen tıkladığın an, topu raketin olduğu yöne doğru fırlat!
                 // Tam dümdüz olmasın diye +-10 derece rastgele kavis katıyoruz.
@@ -331,12 +331,12 @@ public class InteractableRetroOscilloscope : MonoBehaviour, IInteractable, IForc
     private void HandlePaddleInput()
     {
         float rotationInput = 0f;
-        if (Input.GetKey(KeyCode.A))
+        if (GameInput.Held("DeviceLeft"))
             rotationInput = 1f;
-        if (Input.GetKey(KeyCode.D))
+        if (GameInput.Held("DeviceRight"))
             rotationInput = -1f;
 
-        float scroll = Input.mouseScrollDelta.y;
+        float scroll = GameInput.Scroll;
         if (scroll > 0.1f)
             rotationInput = 1f;
         if (scroll < -0.1f)

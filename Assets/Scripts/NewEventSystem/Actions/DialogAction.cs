@@ -42,12 +42,15 @@ public class DialogAction : ActionBase
     protected override void PerformAction()
     {
         if (followConditions) { started = true; return; }
+        var database = GlobalSubtitleManager.Instance != null ? GlobalSubtitleManager.Instance.database : null;
+        var clip = dialogClip != null ? dialogClip : database != null ? database.GetEntry(subtitleID)?.voiceClip : null;
+        if (clip != null) EnsureAudioSource();
         // 1. Altyazıyı Tetikle (Mevcut GlobalSubtitleManager üzerinden)
-        if (!string.IsNullOrEmpty(subtitleID) || (dialogClip != null && audioSource != null))
+        if (!string.IsNullOrEmpty(subtitleID) || clip != null)
         {
             if (GlobalSubtitleManager.Instance != null)
             {
-                GlobalSubtitleManager.Instance.Show(subtitleID, voiceSource: dialogClip != null ? audioSource : null);
+                GlobalSubtitleManager.Instance.Show(subtitleID, voiceSource: clip != null ? audioSource : null);
             }
             else
             {
@@ -56,10 +59,10 @@ public class DialogAction : ActionBase
         }
 
         // 2. İlgili Sesi Çal
-        if (dialogClip != null && audioSource != null)
+        if (clip != null && audioSource != null)
         {
             audioSource.Stop();
-            audioSource.clip = dialogClip;
+            audioSource.clip = clip;
             audioSource.Play();
         }
     }
@@ -92,15 +95,10 @@ public class DialogAction : ActionBase
         var entry = subtitles.database != null ? subtitles.database.GetEntry(id) : null;
         if (entry == null) { Debug.LogWarning("[DialogAction] Altyazı bulunamadı: " + id, this); return; }
         ownedSubtitle = id;
-        ownedClip = entry.voiceClip;
+        ownedClip = line == 0 && dialogClip != null ? dialogClip : entry.voiceClip;
         if (ownedClip != null)
         {
-            if (audioSource == null)
-            {
-                audioSource = gameObject.AddComponent<AudioSource>();
-                audioSource.playOnAwake = false;
-                audioSource.spatialBlend = 0;
-            }
+            EnsureAudioSource();
             audioSource.clip = ownedClip;
             audioSource.Play();
         }
@@ -108,6 +106,15 @@ public class DialogAction : ActionBase
     }
 
     private bool OwnsAudio => ownedClip != null && audioSource != null && audioSource.clip == ownedClip;
+
+    private void EnsureAudioSource()
+    {
+        if (audioSource != null) { SettingsManager.Instance?.RouteVoice(audioSource); return; }
+        audioSource = gameObject.AddComponent<AudioSource>();
+        audioSource.playOnAwake = false;
+        audioSource.spatialBlend = 0;
+        SettingsManager.Instance?.RouteVoice(audioSource);
+    }
 
     private void StopOwnedSpeech()
     {

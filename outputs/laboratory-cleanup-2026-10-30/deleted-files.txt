@@ -1,0 +1,18 @@
+F:\Documents\UnityProjects\Atomb\Atomb\Assets\Scripts\Localization\LocalizedUIVariant.cs
+F:\Documents\UnityProjects\Atomb\Atomb\Assets\Scripts\Localization\LocalizedUIVariant.cs.meta
+F:\Documents\UnityProjects\Atomb\Atomb\Assets\Scripts\Managers\CreditsManager.cs
+F:\Documents\UnityProjects\Atomb\Atomb\Assets\Scripts\Managers\CreditsManager.cs.meta
+F:\Documents\UnityProjects\Atomb\Atomb\Assets\Scripts\Managers\PlayerReferences.cs
+F:\Documents\UnityProjects\Atomb\Atomb\Assets\Scripts\Managers\PlayerReferences.cs.meta
+F:\Documents\UnityProjects\Atomb\Atomb\Assets\Scripts\NewEventSystem\Actions\ObjectiveAction.cs
+F:\Documents\UnityProjects\Atomb\Atomb\Assets\Scripts\NewEventSystem\Actions\ObjectiveAction.cs.meta
+F:\Documents\UnityProjects\Atomb\Atomb\Assets\Scripts\UI\DesktopMenuInteract.cs
+F:\Documents\UnityProjects\Atomb\Atomb\Assets\Scripts\UI\DesktopMenuInteract.cs.meta
+F:\Documents\UnityProjects\Atomb\Atomb\Assets\Scripts\Scriptables\Passwords\PasswordData 2.asset
+F:\Documents\UnityProjects\Atomb\Atomb\Assets\Scripts\Scriptables\Passwords\PasswordData 2.asset.meta
+F:\Documents\UnityProjects\Atomb\Atomb\Assets\Scripts\Scriptables\Passwords\PasswordData 3.asset
+F:\Documents\UnityProjects\Atomb\Atomb\Assets\Scripts\Scriptables\Passwords\PasswordData 3.asset.meta
+F:\Documents\UnityProjects\Atomb\Atomb\Assets\Scripts\Scriptables\Passwords\PasswordData 4.asset
+F:\Documents\UnityProjects\Atomb\Atomb\Assets\Scripts\Scriptables\Passwords\PasswordData 4.asset.meta
+F:\Documents\UnityProjects\Atomb\Atomb\Assets\Scripts\Scriptables\Passwords\PasswordData 5.asset
+F:\Documents\UnityProjects\Atomb\Atomb\Assets\Scripts\Scriptables\Passwords\PasswordData 5.asset.meta

@@ -75,12 +75,14 @@ public sealed class LocalizedText : MonoBehaviour
     {
         GameLocalization.Initialize();
         GameLocalization.LanguageChanged += Apply;
+        GameInput.BindingsChanged += Apply;
         Apply();
     }
 
     private void OnDisable()
     {
         GameLocalization.LanguageChanged -= Apply;
+        GameInput.BindingsChanged -= Apply;
     }
 
     public void SetSource(string canonicalSource)

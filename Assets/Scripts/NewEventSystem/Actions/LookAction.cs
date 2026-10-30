@@ -187,7 +187,7 @@ public class LookAction : ActionBase
             {
                 if (waitUntilInput)
                 {
-                    while (lookTarget != null && !Input.GetKeyDown(KeyCode.F))
+                    while (lookTarget != null && !GameInput.Pressed("Cancel"))
                     {
                         TrackTarget();
                         yield return null;
@@ -208,7 +208,7 @@ public class LookAction : ActionBase
             {
                 if (waitUntilInput)
                 {
-                    while (!Input.GetKeyDown(KeyCode.F))
+                    while (!GameInput.Pressed("Cancel"))
                         yield return null;
                 }
                 else

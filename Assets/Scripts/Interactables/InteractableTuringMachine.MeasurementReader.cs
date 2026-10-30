@@ -281,6 +281,7 @@ public partial class InteractableTuringMachine
             var source = obj.AddComponent<AudioSource>(); source.playOnAwake = false;
             source.spatialBlend = 1; source.minDistance = .7f; source.maxDistance = 12; source.dopplerLevel = 0;
             if (audioSource != null) source.outputAudioMixerGroup = audioSource.outputAudioMixerGroup;
+            if(source.outputAudioMixerGroup==null)source.outputAudioMixerGroup=SettingsManager.EnsureInstance().effectsGroup;
             return source;
         }
         readerMotor = Source("Okuyucu Motoru"); readerTicks = Source("Dişli ve Kilit Sesleri");

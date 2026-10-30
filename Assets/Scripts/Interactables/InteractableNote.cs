@@ -98,12 +98,12 @@ public class InteractableNote : MonoBehaviour, IInteractable, IForceExitable
     {
         if (isOpen && !isAnimating)
         {
-            if (isPasswordNote && !hasPasswordBeenFound && Input.GetMouseButtonDown(0))
+            if (isPasswordNote && !hasPasswordBeenFound && GameInput.Pressed("Interact"))
             {
                 CheckForPasswordClick();
             }
 
-            if (Input.GetKeyDown(KeyCode.F))
+            if (GameInput.Pressed("Cancel"))
             {
                 StartCoroutine(CloseNote());
             }

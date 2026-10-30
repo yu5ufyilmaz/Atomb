@@ -23,4 +23,7 @@ Assert-Voice ($clock.Advance('hide', 0, 200, 10, $true) -eq -1) 'A blocked trans
 Assert-Voice ($clock.Advance('hide', 0, .4, 10, $false) -eq 0) 'Blocked transition lost its opening.'
 Assert-Voice ($clock.Advance('hide', 0, 10000, 10, $false) -eq 1) 'A long frame skipped reminder variants.'
 Assert-Voice ($clock.Advance('hide', 0, 0, 10, $false) -eq -1) 'A long frame caused a burst of reminders.'
+$clock.Postpone(10)
+Assert-Voice ($clock.Advance('hide', 0, 9, 10, $false) -eq -1) 'Returning to a condition did not postpone its reminder.'
+Assert-Voice ($clock.Advance('hide', 0, 1, 10, $false) -eq 2) 'Returning to a condition replayed the introduction or lost its next reminder.'
 Write-Output 'TUTORIAL THOUGHT CLOCK PASS: timing, progress, step changes, blocked time, reset, backoff and frame spikes.'

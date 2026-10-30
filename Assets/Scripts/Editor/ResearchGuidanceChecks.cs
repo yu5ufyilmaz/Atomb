@@ -48,7 +48,8 @@ public static class ResearchGuidanceChecks
         {
             var sequence = UnityEngine.Object.FindFirstObjectByType<InGameMenuController>();
             bool awaitSequence = sequence != null && sequence.enabled;
-            menu.PlayGame(); end = Time.realtimeSinceStartup + 90;
+            menu.PlayGame(); if (menu.IsTutorialChoiceOpen) menu.ChooseTutorial(true);
+            end = Time.realtimeSinceStartup + 90;
             while ((panel.activeInHierarchy || !game.isGameStarted || awaitSequence && sequence.enabled) && Time.realtimeSinceStartup < end) yield return null;
             Require(!panel.activeInHierarchy && game.isGameStarted && (!awaitSequence || !sequence.enabled), "Gerçek Yeni Oyun geçişi bitmedi.");
         }

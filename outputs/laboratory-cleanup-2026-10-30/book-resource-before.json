@@ -1,0 +1,31 @@
+{
+    "success": false,
+    "objects": 0,
+    "books": 0,
+    "catalogs": 0,
+    "oldSettingsChildren": 0,
+    "missingScripts": 0,
+    "issues": [
+        "Owned resource survived destroyed book: Book14BookPages",
+        "Owned resource survived destroyed book: Book14PageTurn",
+        "Owned resource survived destroyed book: Blockout_Tahta (Instance) (Instance)",
+        "Owned resource survived destroyed book: Blockout_Tahta (Instance) (Instance)",
+        "Owned resource survived destroyed book: SpecialElite-Regular Atlas Material (Instance)",
+        "Owned resource survived destroyed book: SpecialElite-Regular Atlas Material (Instance)",
+        "Owned resource survived destroyed book: Blockout_Tahta (Instance) (Instance)",
+        "Owned resource survived destroyed book: Blockout_Tahta (Instance) (Instance)",
+        "Owned resource survived destroyed book: SpecialElite-Regular Atlas Material (Instance)",
+        "Owned resource survived destroyed book: SpecialElite-Regular Atlas Material (Instance)",
+        "Owned resource survived destroyed book: M_PageEffect (Instance) (Instance)",
+        "Owned resource survived destroyed book: Kitap_Cover (Instance) (Instance)",
+        "Owned resource survived destroyed book: Book14BookPages (Instance)",
+        "Owned resource survived destroyed book: M_PageEffect (Instance) (Instance)",
+        "Owned resource survived destroyed book: Kitap_Cover (Instance) (Instance)",
+        "Owned resource survived destroyed book: Book14BookPages (Instance)",
+        "Owned resource survived destroyed book: BakedBookCollider"
+    ],
+    "changes": [
+        "Checked 17 runtime materials/meshes."
+    ],
+    "removedObjects": []
+}

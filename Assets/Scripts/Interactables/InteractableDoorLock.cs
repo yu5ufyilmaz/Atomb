@@ -56,7 +56,7 @@ public class InteractableDoorLock : MonoBehaviour, IInteractable
     {
         if (targetDoor == null)
             return "";
-        return targetDoor.IsLocked() ? "[E] Kilidi Aç" : "[E] Kilitle";
+        return targetDoor.IsLocked() ? "[Sol Tık] Kilidi Aç" : "[Sol Tık] Kilitle";
     }
 
     private void ToggleLock()

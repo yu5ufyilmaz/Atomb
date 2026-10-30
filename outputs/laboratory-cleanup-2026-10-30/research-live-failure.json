@@ -1,0 +1,23 @@
+{
+  "status": "success",
+  "result": {
+    "success": true,
+    "message": "Retrieved 2 log entries.",
+    "data": [
+      {
+        "type": "Assert",
+        "message": "TUTORIAL CHOICE PLAY PASS: False; 25 assertions.",
+        "file": "Assets/Scripts/Editor/TutorialChoiceChecks.cs",
+        "line": 92,
+        "stackTrace": "UnityEngine.Debug:Log (object)\nTutorialChoiceChecks/<Flow>d__8:MoveNext () (at Assets/Scripts/Editor/TutorialChoiceChecks.cs:92)\nUnityEngine.SetupCoroutine:InvokeMoveNext (System.Collections.IEnumerator,intptr)"
+      },
+      {
+        "type": "Exception",
+        "message": "InvalidOperationException: Kitap metni karta sığmıyor: Kayıt C-43 / DENEYİN KOŞULLARI / RECORD  Record C-43 / EXPERIMENT CONDITIONS",
+        "file": "Assets/Scripts/Editor/ResearchTrialBookChecks.cs",
+        "line": 57,
+        "stackTrace": "ResearchTrialBookChecks.CheckReadability () (at Assets/Scripts/Editor/ResearchTrialBookChecks.cs:57)\nLaboratoryBlindPackChecks+<LiveFlow>d__8.MoveNext () (at Assets/Scripts/Editor/LaboratoryBlindPackChecks.cs:150)\nUnityEngine.SetupCoroutine.InvokeMoveNext (System.Collections.IEnumerator enumerator, System.IntPtr returnValueAddress) (at <dc764b59c049482b93bebc78a7e33a04>:0)"
+      }
+    ]
+  }
+}

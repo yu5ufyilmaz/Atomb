@@ -249,30 +249,47 @@ public void UpdateTutorialWhitelist(List<GameObject> newObjects)
         ActivateCursor(handCursor);
     }
 
-    // Sadece hedef imleci açıp diğerlerini kapatan fonksiyon
+    // Sadece hedef imleci açıp diğerlerini kapatan fonksiyon (CanvasGroup ile SetActive döngüsünü önler)
+    private GameObject currentActiveCursor;
+    private CanvasGroup crosshairCanvasGroup;
+
+    private static void SetCursorObjectVisible(GameObject cursorObj, bool visible)
+    {
+        if (cursorObj == null)
+            return;
+
+        if (!cursorObj.activeSelf)
+            cursorObj.SetActive(true);
+
+        CanvasGroup group = cursorObj.GetComponent<CanvasGroup>();
+        if (group == null)
+        {
+            group = cursorObj.AddComponent<CanvasGroup>();
+            group.interactable = false;
+            group.blocksRaycasts = false;
+        }
+
+        group.alpha = visible ? 1f : 0f;
+    }
+
     private void ActivateCursor(GameObject targetCursor)
     {
         if (targetCursor == null)
             return;
-        if (targetCursor.activeSelf)
+        if (currentActiveCursor == targetCursor)
             return; // Zaten açıksa işlem yapma
 
-        // Tümünü kapat
-        if (defaultCursor)
-            defaultCursor.SetActive(false);
-        if (handCursor)
-            handCursor.SetActive(false);
-        if (lockedCursor)
-            lockedCursor.SetActive(false);
-        if (unlockedCursor)
-            unlockedCursor.SetActive(false);
-        if (lightOnCursor)
-            lightOnCursor.SetActive(false);
-        if (lightOffCursor)
-            lightOffCursor.SetActive(false);
+        // Tümünü gizle
+        SetCursorObjectVisible(defaultCursor, false);
+        SetCursorObjectVisible(handCursor, false);
+        SetCursorObjectVisible(lockedCursor, false);
+        SetCursorObjectVisible(unlockedCursor, false);
+        SetCursorObjectVisible(lightOnCursor, false);
+        SetCursorObjectVisible(lightOffCursor, false);
 
-        // Hedefi aç
-        targetCursor.SetActive(true);
+        // Hedefi göster
+        SetCursorObjectVisible(targetCursor, true);
+        currentActiveCursor = targetCursor;
     }
 
     public void DisableTutorialMode()
@@ -283,7 +300,21 @@ public void UpdateTutorialWhitelist(List<GameObject> newObjects)
     public void ToggleCrosshair(bool state)
     {
         if (crosshairMainObject != null)
-            crosshairMainObject.SetActive(state);
+        {
+            if (!crosshairMainObject.activeSelf)
+                crosshairMainObject.SetActive(true);
+
+            if (crosshairCanvasGroup == null)
+            {
+                crosshairCanvasGroup = crosshairMainObject.GetComponent<CanvasGroup>();
+                if (crosshairCanvasGroup == null)
+                    crosshairCanvasGroup = crosshairMainObject.AddComponent<CanvasGroup>();
+                crosshairCanvasGroup.interactable = false;
+                crosshairCanvasGroup.blocksRaycasts = false;
+            }
+
+            crosshairCanvasGroup.alpha = state ? 1f : 0f;
+        }
 
         if (state)
             ActivateCursor(defaultCursor);
@@ -301,7 +332,7 @@ public void UpdateTutorialWhitelist(List<GameObject> newObjects)
 
     private void HandleInteractionInput()
     {
-        if (currentInteractable != null && Input.GetMouseButtonDown(0))
+        if (currentInteractable != null && GameInput.Pressed("Interact"))
         {
             currentInteractable.Interact();
 

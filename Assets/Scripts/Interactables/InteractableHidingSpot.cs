@@ -145,7 +145,7 @@ public class InteractableHidingSpot : MonoBehaviour, IInteractable, IForceExitab
             HandlePeeking();
 
             // Sol tık artık peek yaptığı için çıkış sadece F tuşuna bağlandı
-            if (Input.GetKeyDown(KeyCode.F))
+            if (GameInput.Pressed("Cancel"))
             {
                 if (canExit)
                     AttemptExit();
@@ -156,7 +156,7 @@ public class InteractableHidingSpot : MonoBehaviour, IInteractable, IForceExitab
     private void HandlePeeking()
     {
         // Sağ tık fenerle çakışmasın diye Sol Tık (0) ve W tuşuna bağlandı
-        bool holdingPeek = Input.GetKey(KeyCode.W) || Input.GetMouseButton(0);
+        bool holdingPeek = GameInput.Held("Peek");
 
         if (holdingPeek != isPeeking)
         {

@@ -1,0 +1,45 @@
+{
+  "checks": [
+    {
+      "name": "Object active counts match",
+      "pass": true
+    },
+    {
+      "name": "Six catalog instances",
+      "pass": true
+    },
+    {
+      "name": "47 active and six inactive books",
+      "pass": true
+    },
+    {
+      "name": "169 old settings descendants",
+      "pass": true
+    },
+    {
+      "name": "Five script candidates",
+      "pass": true
+    },
+    {
+      "name": "Four SO candidates",
+      "pass": true
+    },
+    {
+      "name": "Two missing scene script GUIDs",
+      "pass": true
+    },
+    {
+      "name": "No unresolved local file IDs",
+      "pass": true
+    },
+    {
+      "name": "Audit helper syntax",
+      "pass": true
+    },
+    {
+      "name": "Report covers priority, candidates, hierarchy, verification",
+      "pass": true
+    }
+  ],
+  "note": "Static audit consistency only; Unity compile, Play and Profiler were not run."
+}

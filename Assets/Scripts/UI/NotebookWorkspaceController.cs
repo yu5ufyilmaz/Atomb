@@ -163,7 +163,7 @@ public partial class NotebookWorkspaceController : MonoBehaviour
         if (IsPaused) ResetNotebookPageTurn();
         else
         {
-            if (IsArchiveNotebook && !IsStandaloneOpen && Input.GetKeyDown(KeyCode.Tab)) ToggleNotebook();
+            if (IsArchiveNotebook && !IsStandaloneOpen && GameInput.Pressed("ToggleNotebook")) ToggleNotebook();
             UpdateNotebookPopup(Time.unscaledDeltaTime);
             UpdateNotebookPageTurn(Time.unscaledDeltaTime);
         }

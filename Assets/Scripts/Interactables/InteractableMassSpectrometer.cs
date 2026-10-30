@@ -347,7 +347,7 @@ public class InteractableMassSpectrometer : MonoBehaviour, IInteractable, IForce
         if (Time.timeScale == 0f)
             return;
 
-        if (Input.GetKeyDown(KeyCode.F))
+        if (GameInput.Pressed("Cancel"))
         {
             StartCoroutine(ExitMachineView());
             return;
@@ -360,9 +360,9 @@ public class InteractableMassSpectrometer : MonoBehaviour, IInteractable, IForce
         float mouseX = Input.GetAxis("Mouse X");
 
         float ringInput = 0f;
-        if (Input.GetKey(KeyCode.D))
+        if (GameInput.Held("DeviceRight"))
             ringInput = 1f;
-        if (Input.GetKey(KeyCode.A))
+        if (GameInput.Held("DeviceLeft"))
             ringInput = -1f;
 
         // Mıknatıs Açısı Kontrolü

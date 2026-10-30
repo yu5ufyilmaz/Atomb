@@ -145,14 +145,7 @@ public sealed class ResearchPuzzleTrial : MonoBehaviour
             var surface = book.GetComponent<BookPageBlockSurface>() ?? book.gameObject.AddComponent<BookPageBlockSurface>();
             surface.InvalidatePages();
             if (book.printNotesOnPages && book.bookPagesMaterial != null) book.bookPagesMaterial.SetTexture("_PagesTex", Texture2D.whiteTexture);
-            book.emissionIntensity = 0;
-            foreach (var renderer in book.GetComponentsInChildren<Renderer>(true)) foreach (var material in renderer.materials)
-            {
-                if (material.HasProperty("_EmissiveColor")) material.SetColor("_EmissiveColor", Color.black);
-                if (material.HasProperty("_EmissionColor")) material.SetColor("_EmissionColor", Color.black);
-                if (material.HasProperty("_EmissiveIntensity")) material.SetFloat("_EmissiveIntensity", 0);
-                material.DisableKeyword("_EMISSION");
-            }
+            book.DisableEmission();
             if (pages != null && Content.Books[i].Count > 0)
             {
                 var identity = book.GetComponent<PuzzleBookIdentity>();

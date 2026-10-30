@@ -39,6 +39,7 @@ public class PauseManager : MonoBehaviour
 
     private void Update()
     {
+        if (SettingsMenuView.Open != null || Time.frameCount <= SettingsMenuView.LastClosedFrame) { if (playerInputs != null) playerInputs.pause = false; return; }
         // Oyun henüz başlamadıysa menü tuşunu yok say
         if (GameManager.Instance != null && !GameManager.Instance.isGameStarted)
             return;
@@ -127,14 +128,24 @@ public class PauseManager : MonoBehaviour
             pauseMenuPanel.SetActive(false);
         if (settingsPanel != null)
             settingsPanel.SetActive(true);
+        var view = settingsPanel != null ? settingsPanel.GetComponentInChildren<SettingsMenuView>(true) : null;
+        if (view != null) view.SetCloseAction(CloseSettingsImmediately);
     }
 
     public void CloseSettings()
     {
+        var view = settingsPanel != null ? settingsPanel.GetComponentInChildren<SettingsMenuView>(true) : null;
+        if (view != null) view.RequestClose(CloseSettingsImmediately); else CloseSettingsImmediately();
+    }
+
+    private void CloseSettingsImmediately()
+    {
+        var view = settingsPanel != null ? settingsPanel.GetComponentInChildren<SettingsMenuView>(true) : null;
         if (settingsPanel != null)
             settingsPanel.SetActive(false);
         if (pauseMenuPanel != null)
             pauseMenuPanel.SetActive(true);
+        view?.RestoreFocusTo(pauseMenuPanel);
     }
 
     public void LoadMainMenu()
