@@ -6,6 +6,8 @@ public interface IForceExitable
     void ForceExit(); // "Zorla çıkış yap" komutu
 }
 
+public enum GameEnding { None, Death, Final }
+
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
@@ -29,7 +31,32 @@ public class GameManager : MonoBehaviour
 
     [Header("Oyun Durumu")]
     public bool isGamePaused = false;
+    public GameEnding Ending { get; private set; }
+    public bool IsGameplayOver => Ending != GameEnding.None;
     private Queue<char> inputQueue = new Queue<char>();
+
+    // Ölüm ve final buradan geçer: ilk gelen kazanır, oynanış sahne yeniden yüklenene dek açılmaz.
+    public bool BeginEnding(GameEnding ending)
+    {
+        if (IsGameplayOver) return false;
+        Ending = ending;
+        if (GlobalEnemyManager.Instance != null) GlobalEnemyManager.Instance.stopAllEnemies = true;
+        if (PressureSystemManager.Instance != null) PressureSystemManager.Instance.isSystemActive = false;
+        if (BreakerBox.Instance != null) BreakerBox.Instance.isSystemActive = false;
+        if (NotebookUI.Instance != null) NotebookUI.Instance.ForceClose();
+        var inputs = Object.FindFirstObjectByType<StarterAssets.StarterAssetsInputs>();
+        if (inputs != null)
+        {
+            inputs.look = inputs.move = Vector2.zero;
+            inputs.cursorInputForLook = false;
+            inputs.enabled = false;
+        }
+        var player = Object.FindFirstObjectByType<StarterAssets.CharacterController>();
+        if (player != null) player.SetFrozen(true, lockCameraInput: true, restrictRotation: false);
+        return true;
+    }
+
+    public static bool TryBeginDeath() => Instance == null || Instance.BeginEnding(GameEnding.Death);
 
     private void Awake()
     {

@@ -123,6 +123,10 @@ public class JumpscareManager : MonoBehaviour
         string deathMessage = ""
     )
     {
+        if (GameManager.Instance != null && GameManager.Instance.Ending == GameEnding.Final)
+            return;
+        GameManager.TryBeginDeath();
+
         // Eğer profil gönderilmediyse varsayılanı kullan
         JumpscareProfile activeProfile = profile != null ? profile : defaultProfile;
 

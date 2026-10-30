@@ -40,6 +40,12 @@ public class PauseManager : MonoBehaviour
         // Oyun henüz başlamadıysa menü tuşunu yok say
         if (GameManager.Instance != null && !GameManager.Instance.isGameStarted)
             return;
+        // Oyun bittiyse menü açılmaz: ResumeGame ölüm ekranının durdurduğu zamanı yeniden başlatırdı.
+        if (GameManager.Instance != null && GameManager.Instance.IsGameplayOver)
+        {
+            if (playerInputs != null) playerInputs.pause = false;
+            return;
+        }
 
         // YENİ: Input.GetKeyDown(KeyCode.Escape) yerine
         if (playerInputs != null && playerInputs.pause)

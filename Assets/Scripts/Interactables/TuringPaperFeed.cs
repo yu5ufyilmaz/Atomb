@@ -85,6 +85,27 @@ public sealed class TuringPaperFeed : IDisposable
         result.owned.Add(ink);
         GameLocalization.Set(label, "ÖLÇÜM KARTI");
 
+        // Okuyucu gövdesi makinenin içinde kalır; tabela ağzın üstünde, makinenin ön yüzüne paralel durur.
+        var sign = new GameObject("Kart yuvası tabelası").transform;
+        sign.SetParent(result.Root, false);
+        Vector3 inward = Vector3.ProjectOnPlane(feed, Vector3.up).normalized;
+        sign.SetPositionAndRotation(mouth + Vector3.up * .1f - inward * .09f, Quaternion.LookRotation(inward, Vector3.up));
+        var plate = result.Material(source, "Okuyucu / yuva plakası", PaperColor, 0, .3f);
+        result.Box("Kart yuvası plakası", Vector3.zero, new Vector3(.32f, .075f, .002f), plate).SetParent(sign, false);
+        var glow = result.Material(source, "Okuyucu / yuva ışığı", new Color(.9f, .6f, .12f), 0, .4f);
+        glow.SetColor("_EmissiveColor", new Color(1f, .62f, .12f) * 20);
+        result.Box("Yuva ışığı", new Vector3(0, -.0105f, .0066f), new Vector3(.21f, .003f, .0008f), glow);
+        var title = new GameObject("Kart yuvası etiketi", typeof(TextMeshPro)).GetComponent<TextMeshPro>();
+        title.transform.SetParent(sign, false);
+        title.transform.localPosition = new Vector3(0, 0, -.0016f);
+        title.rectTransform.sizeDelta = new Vector2(.3f, .065f);
+        title.alignment = TextAlignmentOptions.Center; title.color = new Color(.1f, .07f, .03f);
+        title.enableAutoSizing = true; title.fontSizeMin = .06f; title.fontSizeMax = .22f;
+        var titleInk = title.fontMaterial;
+        titleInk.SetFloat("_ZTestMode", (float)CompareFunction.LessEqual);
+        result.owned.Add(titleInk);
+        GameLocalization.Set(title, "ÖLÇÜM KARTI YUVASI\n<size=70%>Kartı defterden buraya sürükle</size>");
+
         var card = new GameObject("Ölçüm Kağıdı", typeof(MeshFilter), typeof(MeshRenderer));
         result.Paper = card.transform;
         result.Paper.SetParent(result.Root, false);
@@ -198,13 +219,14 @@ public sealed class TuringPaperFeed : IDisposable
         return material;
     }
 
-    private void Box(string name, Vector3 position, Vector3 size, Material material)
+    private Transform Box(string name, Vector3 position, Vector3 size, Material material)
     {
         var box = GameObject.CreatePrimitive(PrimitiveType.Cube);
         box.name = name; box.transform.SetParent(Root, false);
         box.transform.localPosition = position; box.transform.localScale = size;
         UnityEngine.Object.Destroy(box.GetComponent<Collider>());
         box.GetComponent<MeshRenderer>().sharedMaterial = material;
+        return box.transform;
     }
 
     private Mesh PaperMesh()

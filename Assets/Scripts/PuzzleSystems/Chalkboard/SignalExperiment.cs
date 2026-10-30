@@ -49,7 +49,11 @@ public sealed class SignalExperiment : MonoBehaviour
         trial = research;
         trial.Board.SynthesisFeedback -= ShowFeedback;
         trial.Board.SynthesisFeedback += ShowFeedback;
-        terminal?.ResetMeasurementSession();
+        if (terminal != null)
+        {
+            terminal.ResetMeasurementSession();
+            terminal.PrepareMeasurementReader();
+        }
         readings.Clear();
         if (output != null)
         {
@@ -60,7 +64,8 @@ public sealed class SignalExperiment : MonoBehaviour
         var root = new GameObject("İz Ölçüm Çıktısı", typeof(RectTransform), typeof(Canvas), typeof(GraphicRaycaster), typeof(CanvasGroup));
         var rect = (RectTransform)root.transform;
         rect.SetParent(trial.Board.boardTransform, false);
-        rect.localPosition = new Vector3(trial.Board.minBounds.x + .375f, trial.Board.minBounds.y + .42f, .045f);
+        // Defter tahtanın sağ altında durur; cihaz ve DENEYİ ÖLÇ düğmesi onun altında kalmasın.
+        rect.localPosition = new Vector3(trial.Board.minBounds.x + .95f, trial.Board.minBounds.y + .42f, .045f);
         rect.localRotation = Quaternion.Euler(0, 180, 0);
         rect.localScale = Vector3.one / 300;
         rect.sizeDelta = new Vector2(218, 246);

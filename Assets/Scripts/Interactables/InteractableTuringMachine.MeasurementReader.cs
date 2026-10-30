@@ -25,11 +25,18 @@ public partial class InteractableTuringMachine
     public bool RequiresMeasurementCursor => IsMeasurementTerminal && inMachineMode && !isExiting;
     private bool ReaderPaused => GameManager.Instance != null && GameManager.Instance.isGamePaused;
 
-    private void OpenMeasurementReader()
+    // Yuva oyunun başından makinede durur; oyuncu kartı taşımadan önce neresi olduğunu görür.
+    public void PrepareMeasurementReader()
     {
         if (!IsMeasurementTerminal) return;
         if (physicalFeed == null) BuildMeasurementReader();
         measurementReader.gameObject.SetActive(true);
+    }
+
+    private void OpenMeasurementReader()
+    {
+        if (!IsMeasurementTerminal) return;
+        PrepareMeasurementReader();
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
         if (NotebookUI.Instance != null)

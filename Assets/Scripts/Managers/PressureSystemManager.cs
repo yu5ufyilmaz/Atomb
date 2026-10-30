@@ -281,7 +281,7 @@ public class PressureSystemManager : MonoBehaviour, ISaveable
 
     private void TriggerGameOver()
     {
-        if (isGameOver)
+        if (isGameOver || !GameManager.TryBeginDeath())
             return;
         isGameOver = true;
 

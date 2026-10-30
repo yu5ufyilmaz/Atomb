@@ -1027,6 +1027,14 @@ MonoBehaviour:
       textEN: It looks ready. I think Enter is all that's left before we see the
         result.
       textDE: Sieht bereit aus. Ich glaube, nur Enter fehlt noch bis zum Ergebnis.
+  - id: thought_close_door_0
+    note: Tutorial inner companion / close_door
+    voiceClip: {fileID: 0}
+    segments:
+    - duration: 6
+      textTR: "Dur, kap\u0131y\u0131 a\xE7\u0131k b\u0131rakmayal\u0131m. Kapal\u0131yken biri gelirse en az\u0131ndan ayak seslerini duyar\u0131z."
+      textEN: "Wait, let's not leave the door open. If it's shut, at least we'll hear someone coming."
+      textDE: "Warte, lassen wir die T\xFCr nicht offen. Ist sie zu, h\xF6ren wir wenigstens, wenn jemand kommt."
   - id: thought_confirm_2
     note: Tutorial inner companion / confirm
     voiceClip: {fileID: 0}

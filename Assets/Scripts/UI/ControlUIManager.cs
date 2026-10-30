@@ -1,7 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class ControlsUIManager : MonoBehaviour
 {
@@ -17,6 +19,7 @@ public class ControlsUIManager : MonoBehaviour
         Book, // Kitap Okuma
         HidingSpot,
         Chalkboard,
+        DoorLesson,
     }
 
     [Header("Ana UI Referansları")]
@@ -58,6 +61,7 @@ public class ControlsUIManager : MonoBehaviour
 
     private CanvasGroup canvasGroup;
     private GameObject currentActivePanel;
+    private GameObject chalkboardPanel, doorLessonPanel;
 
     [Header("Makine Focus (Bulanıklık) Ayarları")]
     public float chalkboardFocus = 0.8f;
@@ -137,8 +141,10 @@ public class ControlsUIManager : MonoBehaviour
                 break;
             case MachineType.Chalkboard: // <--- YENİ EKLENEN KISIM
                 DoFManager.Instance.SetFocus(chalkboardFocus);
-                // Eğer Chalkboard'a özel sol altta açılan bir UI panelin yoksa null kalabilir. Varsa buraya atayabilirsin.
-                currentActivePanel = null;
+                currentActivePanel = EnsureChalkboardPanel();
+                break;
+            case MachineType.DoorLesson:
+                currentActivePanel = EnsureDoorLessonPanel();
                 break;
             default:
                 Debug.LogWarning("ControlsUI: Tanımlanmamış makine tipi!");
@@ -152,6 +158,60 @@ public class ControlsUIManager : MonoBehaviour
         mainCanvasObj.SetActive(true);
         StopAllCoroutines();
         StartCoroutine(FadeRoutine(1f));
+    }
+
+    // Sahnede tahta paneli yok; aynı görünsün diye kitap panelinin tuş satırları tahtaya uyarlanır.
+    private GameObject EnsureChalkboardPanel()
+    {
+        if (chalkboardPanel != null || bookPanel == null) return chalkboardPanel;
+        chalkboardPanel = Instantiate(bookPanel, bookPanel.transform.parent);
+        chalkboardPanel.name = "Chalkboard";
+        var panel = chalkboardPanel.transform;
+        Destroy(panel.Find("Icon (5)").gameObject);
+        var leftClick = panel.Find("Icon (3)");
+        SetControlRow(leftClick, -820, "Sürükle / Bağla");
+        var rightClick = panel.Find("Icon (4)");
+        ((RectTransform)rightClick).sizeDelta = ((RectTransform)leftClick).sizeDelta;
+        SetControlRow(rightClick, -590, "Sil");
+        SetControlIcon(rightClick, "MouseRightButton", "SecondaryInteract", "<Mouse>/rightButton");
+        var notebookKey = panel.Find("Icon (1)");
+        ((RectTransform)notebookKey).sizeDelta = new Vector2(46, 36);
+        SetControlRow(notebookKey, -480, "Defter");
+        SetControlIcon(notebookKey, "Tab", "ToggleNotebook", "<Keyboard>/tab");
+        return chalkboardPanel;
+    }
+
+    private GameObject EnsureDoorLessonPanel()
+    {
+        if (doorLessonPanel != null || bookPanel == null) return doorLessonPanel;
+        doorLessonPanel = Instantiate(bookPanel, bookPanel.transform.parent);
+        doorLessonPanel.name = "DoorLesson";
+        var panel = doorLessonPanel.transform;
+        foreach (string row in new[] { "Icon", "Icon (1)", "Icon (4)", "Icon (5)" })
+            Destroy(panel.Find(row).gameObject);
+        SetControlRow(panel.Find("Icon (3)"), -60, "Kapıyı Kapat");
+        return doorLessonPanel;
+    }
+
+    private static void SetControlRow(Transform row, float x, string label)
+    {
+        var rect = (RectTransform)row;
+        rect.anchorMin = rect.anchorMax = new Vector2(.5f, .5f);
+        rect.anchoredPosition = new Vector2(x, 2);
+        var text = row.GetComponentInChildren<TMP_Text>(true);
+        text.rectTransform.anchoredPosition = new Vector2(132.3f, 0);
+        text.rectTransform.sizeDelta = new Vector2(220.9f, 36);
+        text.alignment = TextAlignmentOptions.Left;
+        GameLocalization.Set(text, label);
+    }
+
+    private static void SetControlIcon(Transform row, string sprite, string action, string control)
+    {
+        row.GetComponent<Image>().sprite = Resources.Load<Sprite>("ControlIcons/" + sprite);
+        var icon = row.GetComponent<InputBindingIcon>();
+        if (icon == null) icon = row.gameObject.AddComponent<InputBindingIcon>();
+        icon.bindingID = GameInput.Action(action).bindings.FirstOrDefault(b => b.path == control).id.ToString();
+        icon.artworkControlPath = control;
     }
 
     /// <summary>
@@ -221,6 +281,10 @@ public class ControlsUIManager : MonoBehaviour
             bookPanel.SetActive(false);
         if (hidingSpotPanel != null)
             hidingSpotPanel.SetActive(false);
+        if (chalkboardPanel != null)
+            chalkboardPanel.SetActive(false);
+        if (doorLessonPanel != null)
+            doorLessonPanel.SetActive(false);
     }
 
     private IEnumerator FadeRoutine(float targetAlpha)

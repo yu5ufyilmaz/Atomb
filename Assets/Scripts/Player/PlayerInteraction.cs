@@ -67,7 +67,8 @@ public class PlayerInteraction : MonoBehaviour
     private Object interactionBlockOwner;
     public bool IsInteractionBlocked => interactionBlockOwner != null;
     public bool CanInteractWithWorld => !IsInteractionBlocked && (GameManager.Instance == null
-        || (GameManager.Instance.isGameStarted && !GameManager.Instance.isGamePaused && GameManager.Instance.activeInteraction == null));
+        || (GameManager.Instance.isGameStarted && !GameManager.Instance.isGamePaused && !GameManager.Instance.IsGameplayOver
+            && GameManager.Instance.activeInteraction == null));
 
     public bool TryBlockInteraction(Object owner)
     {

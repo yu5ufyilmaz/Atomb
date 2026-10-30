@@ -161,10 +161,7 @@ public class InteractableChalkboard : MonoBehaviour, IInteractable, IForceExitab
         Cursor.visible = true;
 
         if (ControlsUIManager.Instance != null)
-            ControlsUIManager.Instance.ShowMachineUI(
-                ControlsUIManager.MachineType.Chalkboard,
-                "Sentez Tahtası\n[F] Çık"
-            );
+            ControlsUIManager.Instance.ShowMachineUI(ControlsUIManager.MachineType.Chalkboard);
         else if (playerInteractionScript != null)
             playerInteractionScript.ToggleCrosshair(false);
 

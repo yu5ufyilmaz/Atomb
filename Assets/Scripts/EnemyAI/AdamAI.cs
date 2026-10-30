@@ -179,6 +179,8 @@ public class AdamAI : MonoBehaviour
     {
         if (GlobalEnemyManager.Instance != null && GlobalEnemyManager.Instance.stopAllEnemies)
             return;
+        if (!GameManager.TryBeginDeath())
+            return;
 
         debugStatus = "ÖLDÜRÜYOR!";
         if (GlobalEnemyManager.Instance)

@@ -51,10 +51,12 @@ public sealed partial class ChalkboardTutorial
         for (int i = 0; i + 1 < chain.Length; i++)
         {
             string firstID = chain[i], secondID = chain[i + 1];
-            var first = parts.First(p => p.formulaData?.itemID == firstID);
-            var second = parts.First(p => p.formulaData?.itemID == secondID);
-            if (first.GetOwnNodes().Any(n => n.connectedNode != null && n.connectedNode.parentFormula == second)) continue;
-            FormulaNode output = FreePort(first, true), input = FreePort(second, false);
+            // Tahtada boşta duran ikinci bir kopya, kurulmuş bağı "eksik" göstermesin.
+            var firsts = parts.Where(p => p.formulaData?.itemID == firstID).ToList();
+            var seconds = parts.Where(p => p.formulaData?.itemID == secondID).ToList();
+            if (firsts.Any(a => a.GetOwnNodes().Any(n => n.connectedNode != null && seconds.Contains(n.connectedNode.parentFormula)))) continue;
+            FormulaNode output = firsts.Select(p => FreePort(p, true)).FirstOrDefault(n => n != null);
+            FormulaNode input = seconds.Select(p => FreePort(p, false)).FirstOrDefault(n => n != null);
             if (output == null || input == null) { workspace.ClearGuide(); return; }
             workspace.GuideMark(NotebookWorkspaceController.ScreenPoint(output.transform.position),
                 NotebookWorkspaceController.ScreenPoint(input.transform.position), "ÇIKIŞI GİRİŞE BAĞLA", true);

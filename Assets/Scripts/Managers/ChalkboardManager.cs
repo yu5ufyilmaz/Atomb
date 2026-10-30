@@ -336,17 +336,34 @@ public class ChalkboardManager : MonoBehaviour, ISaveable
             foreach (var connected in part.GetConnectedParts()) visited.Add(connected);
         }
         if (roots.Count == 0) { Report("Deney alanı boş.", false); return; }
-        if (roots.Count != 1)
-        { Report("Parçaları tek bir yapıda birleştir; fazlalıkları silgiyle kaldır.", false); return; }
+        // Bağlanmamış parçalar deneye girmez; başlatıcıdan sonlandırıcıya uzanan en büyük yapı ölçülür.
+        DraggableFormula measured = null;
+        int bestScore = -1;
         foreach (var root in roots)
         {
-            foreach (var part in root.GetConnectedParts())
-                if (!zone.ContainsFormula(part))
-                { Report("Yapının tamamını tahta alanına yerleştir.", false); return; }
-            if (SignalExperiment.Active == null || !ResearchPuzzleTrial.IsResearch(this))
-            { Report("Deney bağlantıları hazır değil.", false); return; }
-            SignalExperiment.Active.Measure(BuildGraph(root));
+            var structure = root.GetConnectedParts();
+            int score = structure.Count + (IsCompleteStructure(structure) ? PuzzleSimulation.MaxParts : 0);
+            if (score > bestScore) { bestScore = score; measured = root; }
         }
+        foreach (var part in measured.GetConnectedParts())
+            if (!zone.ContainsFormula(part))
+            { Report("Yapının tamamını tahta alanına yerleştir.", false); return; }
+        if (SignalExperiment.Active == null || !ResearchPuzzleTrial.IsResearch(this))
+        { Report("Deney bağlantıları hazır değil.", false); return; }
+        SignalExperiment.Active.Measure(BuildGraph(measured));
+    }
+
+    private static bool IsCompleteStructure(List<DraggableFormula> structure)
+    {
+        bool starts = false, ends = false;
+        foreach (var part in structure)
+        {
+            var info = PuzzleParts.Find(part.formulaData != null ? part.formulaData.itemID : null);
+            if (info == null) continue;
+            starts |= info.inputs == 0;
+            ends |= info.outputs == 0;
+        }
+        return starts && ends;
     }
 
     private void Report(string message, bool success)

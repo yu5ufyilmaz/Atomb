@@ -61,6 +61,9 @@ public class DeathUIManager : MonoBehaviour
 
     public void ShowDeathScreen(string reason = "")
     {
+        // Final başladıysa geciken bir saldırı veya patlama ölüm ekranı açamaz.
+        if (GameManager.Instance != null && GameManager.Instance.Ending == GameEnding.Final) return;
+        GameManager.TryBeginDeath();
         Debug.Log("Ölüm Ekranı Açılıyor...");
 
         HideGameplayUI();
@@ -129,21 +132,21 @@ public class DeathUIManager : MonoBehaviour
         fadeImage.color = finalColor;
     }
 
-    private void HideGameplayUI()
+    public void HideGameplayUI()
     {
         if (NotebookWorkspaceController.Instance != null)
             NotebookWorkspaceController.Instance.Close();
+        // HideControls HUD'u geri açar; bu yüzden gizleme listesinden önce çalışmalı.
+        if (ControlsUIManager.Instance != null)
+        {
+            ControlsUIManager.Instance.HideControls();
+            ControlsUIManager.Instance.gameObject.SetActive(false);
+        }
         if (uiElementsToHide != null)
         {
             foreach (var uiObj in uiElementsToHide)
                 if (uiObj != null)
                     uiObj.SetActive(false);
-        }
-
-        if (ControlsUIManager.Instance != null)
-        {
-            ControlsUIManager.Instance.HideControls();
-            ControlsUIManager.Instance.gameObject.SetActive(false);
         }
     }
 

@@ -107,12 +107,15 @@ public class NotebookUI : MonoBehaviour, ISaveable
             notebookPanel.SetActive(false);
     }
 
+    // Kamera oyuncudan alınmışken (ders odağı) defter yeni açılmaz; açık olan kapatılabilir.
+    private static bool CameraFocusRunning => PlayerInteraction.Instance != null && PlayerInteraction.Instance.IsInteractionBlocked;
+
     private void Update()
     {
         if (workspace != null && workspace.IsArchiveNotebook)
         {
             if ((GameManager.Instance != null && (GameManager.Instance.isGamePaused || GameManager.Instance.activeInteraction != null)) || isOnMachine) return;
-            if (GameInput.Pressed("ToggleNotebook")) workspace.ToggleStandaloneNotebook();
+            if (GameInput.Pressed("ToggleNotebook") && (workspace.IsStandaloneOpen || !CameraFocusRunning)) workspace.ToggleStandaloneNotebook();
             else if (workspace.IsStandaloneOpen && !Input.GetKey(KeyCode.LeftAlt) && !Input.GetKey(KeyCode.RightAlt))
             {
                 int section = GameInput.Pressed("PreviousTab") ? -1 : GameInput.Pressed("NextTab") ? 1 : 0;
@@ -121,11 +124,11 @@ public class NotebookUI : MonoBehaviour, ISaveable
             }
             return;
         }
-        if (IsWorkspaceActive || (GameManager.Instance != null && GameManager.Instance.isGamePaused)) return;
+        if (IsWorkspaceActive || (GameManager.Instance != null && (GameManager.Instance.isGamePaused || !GameManager.Instance.isGameStarted))) return;
         if (GameManager.Instance != null && (GameManager.Instance.activeInteraction is InteractableBook
             || GameManager.Instance.activeInteraction is InteractableChalkboard)) return;
         // Tuşa basıldığında sadece animatörü tetikler, modeli gösterme/gizleme işini EVENT'e bırakır.
-        if (GameInput.Pressed("ToggleNotebook") && !isOnMachine)
+        if (GameInput.Pressed("ToggleNotebook") && !isOnMachine && (isNotebookOpen || !CameraFocusRunning))
         {
             ToggleNotebook();
         }

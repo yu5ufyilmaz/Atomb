@@ -21,6 +21,8 @@ public static class GameInput
     static BindingSettings policy;
     static float gamepadDeadzone = .125f;
     public static bool GameplayBlocked { get; set; }
+    // GameplayBlocked statiktir, sahne yüklense de kalır; oyun sonu bu yüzden sahneyle ölen GameManager'da tutulur.
+    public static bool Blocked => GameplayBlocked || (GameManager.Instance != null && GameManager.Instance.IsGameplayOver);
     public static string ContextOf(BindingPolicy binding)
     {
         if (!string.IsNullOrWhiteSpace(binding.context) && binding.context != "Player") return binding.context;
@@ -67,10 +69,10 @@ public static class GameInput
         Ensure(); if (player != null) LoadOverrides(player.actions);
     }
     public static InputAction Action(string code) { Ensure(); return actions != null ? actions.FindAction("Player/" + code) : null; }
-    public static bool Pressed(string code) => !GameplayBlocked && (Action(code)?.WasPressedThisFrame() ?? false);
-    public static bool Released(string code) => !GameplayBlocked && (Action(code)?.WasReleasedThisFrame() ?? false);
-    public static bool Held(string code) => !GameplayBlocked && (Action(code)?.IsPressed() ?? false);
-    public static float Scroll => GameplayBlocked ? 0 : Action("Scroll")?.ReadValue<Vector2>().y ?? 0f;
+    public static bool Pressed(string code) => !Blocked && (Action(code)?.WasPressedThisFrame() ?? false);
+    public static bool Released(string code) => !Blocked && (Action(code)?.WasReleasedThisFrame() ?? false);
+    public static bool Held(string code) => !Blocked && (Action(code)?.IsPressed() ?? false);
+    public static float Scroll => Blocked ? 0 : Action("Scroll")?.ReadValue<Vector2>().y ?? 0f;
     public static void ApplyControlSettings(float deadzone)
     {
         gamepadDeadzone = Mathf.Clamp(deadzone, .05f, .4f);

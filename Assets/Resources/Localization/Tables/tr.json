@@ -826,6 +826,36 @@
             "text": "Önce tüm notları deftere sürükle."
         },
         {
+            "key": "subtitle.thought_close_door_0.0",
+            "source": "",
+            "text": "Dur, kapıyı açık bırakmayalım. Kapalıyken biri gelirse en azından ayak seslerini duyarız."
+        },
+        {
+            "key": "notebook.ws.board_drag_connect",
+            "source": "Sürükle / Bağla",
+            "text": "Sürükle / Bağla"
+        },
+        {
+            "key": "notebook.ws.board_erase",
+            "source": "Sil",
+            "text": "Sil"
+        },
+        {
+            "key": "notebook.ws.board_notebook",
+            "source": "Defter",
+            "text": "Defter"
+        },
+        {
+            "key": "notebook.ws.reader_slot",
+            "source": "ÖLÇÜM KARTI YUVASI\n<size=70%>Kartı defterden buraya sürükle</size>",
+            "text": "ÖLÇÜM KARTI YUVASI\n<size=70%>Kartı defterden buraya sürükle</size>"
+        },
+        {
+            "key": "notebook.ws.door_close",
+            "source": "Kapıyı Kapat",
+            "text": "Kapıyı Kapat"
+        },
+        {
             "key": "notebook.ws.tutorial_drag_board",
             "source": "TAHTAYA SÜRÜKLE",
             "text": "TAHTAYA SÜRÜKLE"

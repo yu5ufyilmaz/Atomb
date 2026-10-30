@@ -81,6 +81,8 @@ public sealed partial class ChalkboardTutorial : MonoBehaviour
         experiment = research.GetComponent<SignalExperiment>();
         experiment.MeasurementAccepted += OnMeasurementAccepted;
         finalStep.OnEventTriggered += Complete;
+        closeDoorStep = GetComponentsInChildren<EventLogicController>(true).First(e => e.name.EndsWith("_014"));
+        closeDoorStep.OnEventTriggered += BeginDoorLesson;
         if (research.Content != null) PrepareLesson();
     }
 
@@ -91,6 +93,8 @@ public sealed partial class ChalkboardTutorial : MonoBehaviour
         if (finalStep != null) finalStep.OnEventTriggered -= Complete;
         if (lessonBook != null) lessonBook.ExitLocked = false;
         NotebookWorkspaceController.Instance?.ClearGuide();
+        if (closeDoorStep != null) closeDoorStep.OnEventTriggered -= BeginDoorLesson;
+        EndDoorLesson();
     }
 
     private void PrepareLesson()

@@ -24,6 +24,8 @@ public class EndGameButton : MonoBehaviour, IInteractable
     {
         if (isTriggered)
             return;
+        if (GameManager.Instance != null && !GameManager.Instance.BeginEnding(GameEnding.Final))
+            return;
         StartCoroutine(EndingSequence());
     }
 
@@ -43,6 +45,8 @@ public class EndGameButton : MonoBehaviour, IInteractable
         // 1. OYUNCU KONTROLLERİNİ KAPAT VE DONDUR
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
+        if (DeathUIManager.Instance != null)
+            DeathUIManager.Instance.HideGameplayUI();
 
         if (playerMovementScript != null)
             playerMovementScript.enabled = false;

@@ -11,16 +11,20 @@ public static class GuderianBehindTimelineSetup
 {
     const string TimelinePath = "Assets/CutScenes/TL_GuderianBehindJS.playable";
     const float CrawlStart = 1.85f; // Guderian starts walking at 1.88.
-    const float CrawlEnd = 4.1f;
-    const float ShotTime = 4.3f; // The shot lands on the audio transient and impact frame.
-    const float ImpactFrameEnd = 4.3833f;
-    const float EyesCloseStart = 5.6f;
-    const float End = 7.9f; // He dies on the floor: the eyes fail and close before the death screen.
+    const float CrawlEnd = 4.3f;
+    const float AimStart = CrawlEnd; // The arm starts up as the crawl gives out.
+    const float AimEnd = 4.6f; // Arm fully extended in the mocap.
+    const float ShotTime = 5.2f; // A held beat down the barrel, then the shot.
+    const float ImpactFrameEnd = ShotTime + .0833f;
+    const float EyesCloseStart = ShotTime + 1.3f;
+    const float End = ShotTime + 3.6f; // He dies on the floor: the eyes fail and close before the death screen.
     const float VoiceLength = 2.654626f; // The last audio clip's full length.
+    const float VoiceLeadIn = .3f; // From the last audio clip's start to its gunshot transient.
+    const float AimHoldSpeed = .05f; // Guderian stays frozen on the extended arm until he fires.
     const float DazeEnd = 1.62f; // Stunned on the floor, then the head snaps back to him.
-    // Panic: long shoves first, shorter and faster as he closes in. Durations add up to CrawlEnd - CrawlStart.
-    static readonly float[] PushDurations = { .52f, .46f, .4f, .36f, .3f, .21f };
-    static readonly float[] PushDistances = { .22f, .2f, .19f, .17f, .14f, .08f };
+    // Panic: long shoves first, shorter as he tires. Durations add up to CrawlEnd - CrawlStart.
+    static readonly float[] PushDurations = { .5f, .46f, .42f, .4f, .36f, .31f };
+    static readonly float[] PushDistances = { .24f, .21f, .19f, .16f, .12f, .08f };
     const float FloorHeight = -.379f;
     const float PropHeight = -.31f; // Eyes about 45 cm off the floor, propped on the elbows.
     const float PushDip = .014f;
@@ -29,13 +33,14 @@ public static class GuderianBehindTimelineSetup
     const float PushNod = 4f;
     static readonly Vector3 LandedPosition = new Vector3(-.165f, FloorHeight, .095f);
     static readonly Vector3 PropPosition = new Vector3(-.165f, PropHeight, .095f);
-    static readonly Vector3 ShotPosition = new Vector3(-.06f, -.33f, .4f);
+    static readonly Vector3 ShotPosition = new Vector3(-.02f, -.33f, .56f); // About 1.1 m from the muzzle.
+    static readonly Vector3 AimFlinch = new Vector3(0, .006f, .012f);
     static readonly Vector3 CameraOrigin = new Vector3(0, .424f, .0587f);
-    // Guderian in the same space, from Guderian_behind.fbx: he walks forward until 4.28 with the gun hand up.
+    // Guderian in the same space, from Guderian_behind.fbx: he walks forward until 4.28.
     static readonly Vector3 HeadStart = new Vector3(0, .436f, -.095f), HeadEnd = new Vector3(-.045f, .428f, .158f);
-    static readonly Vector3 GunStart = new Vector3(.14f, .462f, .19f), GunEnd = new Vector3(.109f, .454f, .252f);
-    const float HeadStartTime = 1.88f, HeadEndTime = 4.28f, GunStartTime = 3.5f;
-    const float GunFocus = .7f; // Eyes drop from his face to the gun, keeping both in frame.
+    static readonly Vector3 MuzzleAimed = new Vector3(.05f, .28f, .37f); // Estimated: the arm is swung down at runtime.
+    const float HeadStartTime = 1.88f, HeadEndTime = 4.28f;
+    const float ChestDrop = .12f; // Looking at his chest, not up at his head, keeps the floor sliding through frame.
 
     struct Pose
     {
@@ -59,18 +64,25 @@ public static class GuderianBehindTimelineSetup
         var active = blackBarActive.GetClips().FirstOrDefault() ?? blackBarActive.CreateDefaultClip();
         active.start = EyesCloseStart; active.duration = End - EyesCloseStart;
         // These hold until the end; the first version of this tool cut them at 5.3.
-        foreach (var name in new[] { "Activation Track", "Cinemachine Track", "Animation Track" })
+        foreach (var name in new[] { "Activation Track", "Cinemachine Track" })
         {
             var last = tracks[name].GetClips().OrderBy(clip => clip.end).Last();
             last.duration = End - last.start;
         }
+        WriteGuderian((AnimationTrack)tracks["Animation Track"]);
+        tracks["Activation Track (3)"].GetClips().First().start = ShotTime; // Impact frame.
         var voice = tracks["Audio Track"].GetClips().OrderBy(clip => clip.end).Last();
+        voice.start = ShotTime - VoiceLeadIn;
         voice.duration = Mathf.Min(VoiceLength, End - (float)voice.start);
         var damageTrack = timeline.GetOutputTracks().OfType<DamageFxTrack>().FirstOrDefault() ?? timeline.CreateTrack<DamageFxTrack>(null, "Damage FX");
         var damage = damageTrack.GetClips().FirstOrDefault() ?? damageTrack.CreateClip<DamageFxClip>();
         damage.start = 0; damage.duration = End; damage.displayName = "Damage FX";
         WriteDamage((DamageFxClip)damage.asset);
-        EditorUtility.SetDirty(damage.asset); EditorUtility.SetDirty(timeline); EditorUtility.SetDirty(camera); EditorUtility.SetDirty(blackBar);
+        var aimTrack = timeline.GetOutputTracks().OfType<GunAimTrack>().FirstOrDefault() ?? timeline.CreateTrack<GunAimTrack>(null, "Gun Aim");
+        var aim = aimTrack.GetClips().FirstOrDefault() ?? aimTrack.CreateClip<GunAimClip>();
+        aim.start = 0; aim.duration = End; aim.displayName = "Gun Aim";
+        ((GunAimClip)aim.asset).weight = Keys(0, 0, AimStart, 0, AimEnd, 1, ShotTime + .05f, 1, ShotTime + .7f, 0, End, 0);
+        EditorUtility.SetDirty(aim.asset); EditorUtility.SetDirty(damage.asset); EditorUtility.SetDirty(timeline); EditorUtility.SetDirty(camera); EditorUtility.SetDirty(blackBar);
         AssetDatabase.SaveAssets();
         TimelineEditor.Refresh(RefreshReason.ContentsModified);
         if (Mathf.Abs((float)timeline.duration - End) > .01f) Debug.LogError($"GUDERIAN BEHIND INVALID: süre {timeline.duration:0.###}, beklenen {End}.");
@@ -106,26 +118,27 @@ public static class GuderianBehindTimelineSetup
             poses.Add(Look(time + duration, to, 0));
             time += duration; travelled = next;
         }
-        // Frozen on the gun for the last beat, then the bullet throws him onto his back.
-        var shot = Look(ShotTime, ShotPosition, 0);
+        // Frozen staring down the barrel, then the bullet throws him onto his back.
+        poses.Add(Look(AimEnd, ShotPosition + AimFlinch, 0));
+        var shot = Look(ShotTime, ShotPosition + AimFlinch, 0);
         poses.Add(shot);
         poses.Add(new Pose(ImpactFrameEnd, shot.Position + new Vector3(0, -.008f, .014f), shot.Euler + new Vector3(10, 4, 8)));
-        poses.Add(new Pose(4.62f, new Vector3(-.066f, -.372f, .43f), new Vector3(-68, -205, 14)));
-        poses.Add(new Pose(4.72f, new Vector3(-.068f, FloorHeight - .004f, .44f), new Vector3(-74, -204, 20)));
-        poses.Add(new Pose(4.82f, new Vector3(-.068f, -.374f, .44f), new Vector3(-70, -204, 17)));
-        poses.Add(new Pose(5, new Vector3(-.07f, -.381f, .443f), new Vector3(-73, -205, 22)));
+        var settled = ShotPosition + new Vector3(-.01f, -.051f, .043f);
+        poses.Add(new Pose(ShotTime + .32f, ShotPosition + new Vector3(-.006f, -.042f, .03f), new Vector3(-68, -205, 14)));
+        poses.Add(new Pose(ShotTime + .42f, ShotPosition + new Vector3(-.008f, -.053f, .04f), new Vector3(-74, -204, 20)));
+        poses.Add(new Pose(ShotTime + .52f, ShotPosition + new Vector3(-.008f, -.044f, .04f), new Vector3(-70, -204, 17)));
+        poses.Add(new Pose(ShotTime + .7f, settled, new Vector3(-73, -205, 22)));
         // The head goes slack and rolls to the side.
-        poses.Add(new Pose(5.6f, new Vector3(-.07f, -.381f, .443f), new Vector3(-66, -222, 34)));
-        poses.Add(new Pose(6.3f, new Vector3(-.07f, -.381f, .443f), new Vector3(-58, -236, 42)));
-        poses.Add(new Pose(End, new Vector3(-.07f, -.381f, .443f), new Vector3(-57, -238, 43)));
+        poses.Add(new Pose(EyesCloseStart, settled, new Vector3(-66, -222, 34)));
+        poses.Add(new Pose(ShotTime + 2, settled, new Vector3(-58, -236, 42)));
+        poses.Add(new Pose(End, settled, new Vector3(-57, -238, 43)));
         return poses;
     }
 
     static Pose Look(float time, Vector3 position, float roll, float pitchOffset = 0, float yawOffset = 0)
     {
-        var head = Vector3.Lerp(HeadStart, HeadEnd, Mathf.InverseLerp(HeadStartTime, HeadEndTime, time));
-        var gun = Vector3.Lerp(GunStart, GunEnd, Mathf.InverseLerp(GunStartTime, HeadEndTime, time));
-        var target = Vector3.Lerp(head, gun, GunFocus * Mathf.SmoothStep(0, 1, Mathf.InverseLerp(GunStartTime - .5f, CrawlEnd, time)));
+        var chest = Vector3.Lerp(HeadStart, HeadEnd, Mathf.InverseLerp(HeadStartTime, HeadEndTime, time)) + Vector3.down * ChestDrop;
+        var target = Vector3.Lerp(chest, MuzzleAimed, Mathf.SmoothStep(0, 1, Mathf.InverseLerp(AimStart, AimEnd, time)));
         var direction = target - (position + CameraOrigin);
         float yaw = Mathf.Atan2(direction.x, direction.z) * Mathf.Rad2Deg;
         if (yaw > 0) yaw -= 360; // Stay on the negative side the fall ended on.
@@ -145,6 +158,24 @@ public static class GuderianBehindTimelineSetup
             SetCurve(clip, typeof(Transform), "m_LocalPosition." + name, poses.Select(pose => new Keyframe(pose.Time, pose.Position[index])));
             SetCurve(clip, typeof(Transform), "localEulerAnglesRaw." + name, poses.Select(pose => new Keyframe(pose.Time, pose.Euler[index])));
         }
+    }
+
+    // Walk, freeze on the extended arm, then the same animation carries on after the shot.
+    static void WriteGuderian(AnimationTrack track)
+    {
+        var clips = track.GetClips().OrderBy(clip => clip.start).ToList();
+        var walk = clips[0];
+        while (clips.Count < 3)
+        {
+            var added = track.CreateClip(walk.animationClip);
+            EditorUtility.CopySerialized(walk.asset, added.asset);
+            clips.Add(added);
+        }
+        walk.duration = AimEnd - walk.start;
+        var hold = clips[1];
+        hold.start = AimEnd; hold.duration = ShotTime - AimEnd; hold.clipIn = walk.clipIn + walk.duration; hold.timeScale = AimHoldSpeed;
+        var after = clips[2];
+        after.start = ShotTime; after.duration = End - ShotTime; after.clipIn = hold.clipIn + hold.duration * AimHoldSpeed;
     }
 
     static void SetCurve(AnimationClip clip, System.Type type, string property, IEnumerable<Keyframe> keys)
@@ -174,18 +205,19 @@ public static class GuderianBehindTimelineSetup
     static void WriteBlackBar(AnimationClip clip)
     {
         var binding = AnimationUtility.GetCurveBindings(clip).First(item => item.propertyName == "m_Color.a");
-        AnimationUtility.SetEditorCurve(clip, binding, Keys(0, 0, EyesCloseStart, 0, 5.95f, .75f, 6.25f, .2f, 6.7f, .95f, 6.95f, .45f, 7.4f, 1, End, 1));
+        const float Close = EyesCloseStart;
+        AnimationUtility.SetEditorCurve(clip, binding, Keys(0, 0, Close, 0, Close + .35f, .75f, Close + .65f, .2f, Close + 1.1f, .95f, Close + 1.35f, .45f, Close + 1.8f, 1, End, 1));
     }
 
     // Punch: white flash, then concussion that clears as adrenaline takes over. Shot: the same kick, then blood loss.
     static void WriteDamage(DamageFxClip clip)
     {
-        const float Hit = .7833f, Windup = .7f, Bullet = ImpactFrameEnd;
-        clip.vignette = Keys(0, 0, Windup, 0, Hit, .7f, 1.4f, .5f, 1.85f, .42f, 2.4f, .34f, 3.4f, .3f, 4.1f, .36f, ShotTime, .42f, Bullet, .8f, 5, .72f, 6.2f, .95f, End, 1);
-        clip.aberration = Keys(0, 0, Windup, 0, Hit, 1, 1.2f, .4f, 2.4f, .12f, ShotTime, .1f, Bullet, 1, 5, .45f, End, .3f);
-        clip.distortion = Keys(0, 0, Windup, 0, Hit, -.45f, .95f, .12f, 1.15f, 0, ShotTime, 0, Bullet, -.5f, 4.6f, .1f, 4.85f, 0, End, 0);
-        clip.exposure = Keys(0, 0, Windup, 0, Hit, 2.5f, .9f, -.5f, 1.3f, -.8f, 1.85f, -.2f, 2.6f, 0, ShotTime, 0, Bullet, 2, 4.6f, -.6f, 6, -1.2f, End, -2);
-        clip.desaturate = Keys(0, 0, Windup, 0, .9f, .25f, 2.6f, .1f, ShotTime, .1f, 4.7f, .4f, 6.4f, 1, End, 1);
-        clip.blur = Keys(0, 0, Windup, 0, Hit, .85f, DazeEnd, .8f, CrawlStart, .3f, 2.8f, .12f, 3.6f, 0, ShotTime, 0, Bullet, .35f, 5.2f, .8f, End, 1);
+        const float Hit = .7833f, Windup = .7f, Shot = ShotTime, Bullet = ImpactFrameEnd;
+        clip.vignette = Keys(0, 0, Windup, 0, Hit, .7f, 1.4f, .5f, 1.85f, .42f, 2.4f, .34f, 3.4f, .3f, 4.1f, .36f, Shot, .42f, Bullet, .8f, Shot + .7f, .72f, Shot + 1.9f, .95f, End, 1);
+        clip.aberration = Keys(0, 0, Windup, 0, Hit, 1, 1.2f, .4f, 2.4f, .12f, Shot, .1f, Bullet, 1, Shot + .7f, .45f, End, .3f);
+        clip.distortion = Keys(0, 0, Windup, 0, Hit, -.45f, .95f, .12f, 1.15f, 0, Shot, 0, Bullet, -.5f, Shot + .3f, .1f, Shot + .55f, 0, End, 0);
+        clip.exposure = Keys(0, 0, Windup, 0, Hit, 2.5f, .9f, -.5f, 1.3f, -.8f, 1.85f, -.2f, 2.6f, 0, Shot, 0, Bullet, 2, Shot + .3f, -.6f, Shot + 1.7f, -1.2f, End, -2);
+        clip.desaturate = Keys(0, 0, Windup, 0, .9f, .25f, 2.6f, .1f, Shot, .1f, Shot + .4f, .4f, Shot + 2.1f, 1, End, 1);
+        clip.blur = Keys(0, 0, Windup, 0, Hit, .85f, DazeEnd, .8f, CrawlStart, .3f, 2.8f, .12f, 3.6f, 0, Shot, 0, Bullet, .35f, Shot + .9f, .8f, End, 1);
     }
 }

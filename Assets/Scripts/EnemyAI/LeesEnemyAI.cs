@@ -329,7 +329,7 @@ public class LeesEnemyAI : MonoBehaviour
                             StopShock(); StopEncounterAudio();
                             resistanceApproachStart = transform.position;
                             resistanceApproachForward = look.normalized;
-                            resistance.BeginResistance();
+                            resistance.BeginResistance(IsPracticeEncounter);
                         }
                         return; // The old waiting timer must not bypass the resistance encounter.
                     }
@@ -357,7 +357,7 @@ public class LeesEnemyAI : MonoBehaviour
         {
             if (CheckIfVisible()) { TriggerDeath("You look him again.", true); return; }
             Vector3 behind = playerTransform.position - resistanceApproachForward * 1.15f; behind.y = resistanceApproachStart.y;
-            float progress = resistance.Model.Elapsed / Mathf.Max(.01f, resistance.tuning.approachSeconds);
+            float progress = resistance.Model.Elapsed / Mathf.Max(.01f, resistance.Model.Settings.approachSeconds);
             transform.position = Vector3.Lerp(resistanceApproachStart, behind, Mathf.SmoothStep(0, 1, progress));
             Vector3 facing = playerTransform.position - transform.position; facing.y = 0;
             if (facing.sqrMagnitude > .001f) transform.rotation = Quaternion.LookRotation(facing);
@@ -378,7 +378,7 @@ public class LeesEnemyAI : MonoBehaviour
             resistanceApproachStart = transform.position;
             resistanceApproachForward = playerCamera.transform.forward; resistanceApproachForward.y = 0;
             resistanceApproachForward.Normalize();
-            resistance.BeginResistance();
+            resistance.BeginResistance(true);
             return;
         }
         TriggerDeath("He turned your head.", true);
@@ -515,7 +515,7 @@ public class LeesEnemyAI : MonoBehaviour
             if (resistance != null && resistance.IsRunning) resistance.CatchForMovement();
             return;
         }
-        if (currentState == LeesState.Jumpscare)
+        if (currentState == LeesState.Jumpscare || !GameManager.TryBeginDeath())
             return;
         StopShock();
         if (resistance != null) resistance.CancelResistance();

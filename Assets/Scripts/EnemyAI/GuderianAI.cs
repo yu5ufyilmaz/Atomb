@@ -733,6 +733,8 @@ public class GuderianAI : MonoBehaviour
 
     private void TriggerPositionedJumpscare(JumpscareType type, string reason = "You didn't hide.")
     {
+        if (!GameManager.TryBeginDeath())
+            return;
         // Eğer oyuncu bir makinede/kitaptaysa, jumpscare'i patlatmadan önce oradan çıkmasını bekle
         if (GameManager.Instance != null && GameManager.Instance.activeInteraction != null)
         {

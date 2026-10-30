@@ -11,6 +11,9 @@ public sealed class LeesResistanceController : MonoBehaviour
     public LeesResistanceHands hands;
     public StarterAssets.CharacterController playerMovement;
     public LeesResistanceModel.Tuning tuning = new LeesResistanceModel.Tuning();
+    [Tooltip("Eğitimdeki güvenli karşılaşma: daha kısa ve daha zayıf çekiş.")]
+    public LeesResistanceModel.Tuning practiceTuning = new LeesResistanceModel.Tuning
+    { survivalSeconds = 8, pullDegreesPerSecond = 28, failureAngle = 80, strainRate = .4f, mouseDegreesPerPixel = .045f };
     [Range(0, 1)] public float motionIntensity = .9f;
     [Tooltip("Enable in the workshop to keep the retry prompt after a result.")]
     public bool keepResultVisible;
@@ -37,10 +40,12 @@ public sealed class LeesResistanceController : MonoBehaviour
 
     void Awake() { Model = new LeesResistanceModel(tuning); if (hud != null) hud.gameObject.SetActive(false); hands?.Hide(); }
 
-    public void BeginResistance()
+    public void BeginResistance() { BeginResistance(false); }
+
+    public void BeginResistance(bool practice)
     {
         if (ownsCamera || !isActiveAndEnabled || headPivot == null || viewCamera == null) return;
-        Model = new LeesResistanceModel(tuning); Model.Begin(Random.Range(0, int.MaxValue));
+        Model = new LeesResistanceModel(practice ? practiceTuning : tuning); Model.Begin(Random.Range(0, int.MaxValue));
         originalRotation = headPivot.localRotation; originalPosition = headPivot.localPosition;
         originalFov = viewCamera.fieldOfView;
         previousExternalCamera = playerMovement != null && playerMovement.ExternalCameraControl;
@@ -110,7 +115,7 @@ public sealed class LeesResistanceController : MonoBehaviour
         float shake = struggling ? motionIntensity * (.08f + danger * .32f) : 0;
         float angle = Model.HeadAngle;
         if (Model.State == LeesResistanceModel.Phase.Survived) angle *= 1 - Mathf.SmoothStep(0, 1, endingTime / .65f);
-        if (Model.State == LeesResistanceModel.Phase.Caught) angle = Mathf.Lerp(angle, Model.PullDirection * tuning.failureAngle, endingTime / .3f);
+        if (Model.State == LeesResistanceModel.Phase.Caught) angle = Mathf.Lerp(angle, Model.PullDirection * Model.Settings.failureAngle, endingTime / .3f);
         float roll = -Model.PullDirection * Model.PullStrength * .14f * motionIntensity;
         var offset = Quaternion.Euler(Mathf.Sin(t * 21) * shake, angle, roll + Mathf.Sin(t * 27) * shake);
         if (playerMovement != null) headPivot.rotation = originalWorldRotation * offset;

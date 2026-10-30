@@ -6,6 +6,8 @@ using System.Reflection;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.LowLevel;
 using UnityEngine.UI;
 using Object = UnityEngine.Object;
 
@@ -108,7 +110,11 @@ public static class TutorialPlayChecks
             var input = parts[i + 1].GetOwnNodes().First(n => n.gameObject.activeSelf && !n.GetComponent<SignalPort>().output);
             output.ConnectTo(input); Require(output.connectedNode == input, "Gerçek yönlü portlar bağlanamadı.");
         }
-        board.AttemptSynthesis(); Require(experiment.LastReading.MeetsTarget, "Gerçek tahta başlangıç hedefini üretemedi.");
+        var loose = board.SpawnFormula(FormulaCatalog.Instance.ResolveFormula(SignalTrial.Narrow),
+            Camera.main.WorldToScreenPoint(board.boardTransform.TransformPoint(board.minBounds + Vector2.Scale(board.maxBounds - board.minBounds, new Vector2(.5f, .3f)))));
+        Require(loose != null, "Boşta durması gereken parça tahtaya konamadı.");
+        board.AttemptSynthesis(); Require(experiment.LastReading.MeetsTarget, "Boştaki parça ölçümü bozdu veya tahta başlangıç hedefini üretemedi.");
+        board.RemoveFormula(loose);
         Require(!lesson.boardStep.HasTriggered, "Ölçüm deftere alınmadan tahta dersi geçildi.");
         yield return null;
         Require(Field<NotebookDraggableBlock>(workspace, "ghostCard") == experiment.OutputCard, "Ölçüm kartı rehberi görünmüyor.");
@@ -134,6 +140,14 @@ public static class TutorialPlayChecks
             && Camera.main.GetComponent<Cinemachine.CinemachineBrain>().enabled, "Dolap çıkış animasyonu ve oyuncu kontrolü");
         yield return WaitFor(() => LeesEnemyAI.Instance.currentState == LeesEnemyAI.LeesState.Active, "Lees'in görünmesi");
         var enemy = LeesEnemyAI.Instance;
+        // Doğma noktası rastgele; raf arkasına düşerse görülemez, oyuncu Lees'in görüş hattına alınır.
+        var body = Object.FindFirstObjectByType<UnityEngine.CharacterController>();
+        Vector3 leesEyes = enemy.eyesPosition != null ? enemy.eyesPosition.position : enemy.transform.position + Vector3.up * 1.5f;
+        Vector3 sightPoint = Enumerable.Range(0, 16).Select(i => Quaternion.Euler(0, i * 22.5f, 0) * Vector3.forward * 2.5f + enemy.transform.position)
+            .First(p => !Physics.Linecast(new Vector3(p.x, leesEyes.y, p.z), leesEyes, ~LayerMask.GetMask("Enemy"), QueryTriggerInteraction.Ignore)
+                && !Physics.CheckSphere(new Vector3(p.x, leesEyes.y, p.z), .45f, ~LayerMask.GetMask("Player", "Enemy"), QueryTriggerInteraction.Ignore));
+        sightPoint.y = body.transform.position.y;
+        body.enabled = false; body.transform.position = sightPoint; body.enabled = true;
         float sightDeadline = Time.realtimeSinceStartup + 12;
         while (!enemy.HasBeenSpotted && Time.realtimeSinceStartup < sightDeadline)
         {
@@ -160,7 +174,7 @@ public static class TutorialPlayChecks
             yield return new WaitForEndOfFrame();
         }
         Require(enemy.HasBeenSpotted, "Gerçek kamera/raycast Lees'i görmedi; Temp/tutorial-lees-state.txt ayrıntılarını kontrol et.");
-        yield return WaitFor(() => lesson.terminalReadyStep.HasTriggered, "Lees eğitimi", 55);
+        yield return ResistWithMouse(enemy, () => lesson.terminalReadyStep.HasTriggered);
         Debug.Log("TUTORIAL PLAY STAGE PASS: lock, hiding and scripted enemies");
 
         yield return WaitFor(() => PlayerInteraction.Instance.CanInteractWithWorld, "Turing kamera odağının bitmesi");
@@ -182,8 +196,17 @@ public static class TutorialPlayChecks
         Require(manager.IsRunning && PlayerInteraction.Instance.isTutorialMode, "Turing eğitimi erkenden bitirdi.");
         Debug.Log("TUTORIAL PLAY STAGE PASS: real Turing reader and acceptance");
 
+        var movement = Object.FindFirstObjectByType<StarterAssets.CharacterController>();
+        var closeDoor = Field<EventLogicController>(lesson, "closeDoorStep");
+        lesson.officeDoor.SetLocked(false); lesson.officeDoor.SetOpen(true);
+        body.enabled = false; body.transform.position = closeDoor.GetComponent<Collider>().bounds.center + Vector3.forward * .55f; body.enabled = true;
+        yield return WaitFor(() => closeDoor.HasTriggered && movement.IsFrozen, "Kapıdan ilk çıkışta oyuncunun durması");
+        Require(lesson.officeDoor.isOpen, "Kapı dersi kapıyı oyuncudan önce kapattı.");
+        yield return ClickLeftMouse();
+        yield return WaitFor(() => !lesson.officeDoor.isOpen && !movement.IsFrozen, "Kapı kapanınca oyuncunun serbest kalması");
+        Debug.Log("TUTORIAL PLAY STAGE PASS: first door exit stops the player until the door closes");
+
         var trigger = lesson.valveRoomStep.GetComponent<Collider>();
-        var body = Object.FindFirstObjectByType<UnityEngine.CharacterController>();
         body.enabled = false; body.transform.position = trigger.bounds.center; body.enabled = true;
         yield return WaitFor(() => lesson.valveRoomStep.HasTriggered, "Vana odası tetikleyicisi");
         yield return new WaitForSeconds(2);
@@ -203,6 +226,53 @@ public static class TutorialPlayChecks
         Require(!PlayerInteraction.Instance.isTutorialMode && BreakerBox.Instance.isSystemActive && PressureSystemManager.Instance.isSystemActive,
             "Eğitim bittiğinde normal oynanış açılmadı.");
         Debug.Log("TUTORIAL REAL FLOW PASS: book → archive → pinned documents → closed panel → physical graph → measured note → lock/hiding/enemies → Turing → valve → single scripted breaker reset → normal play.");
+    }
+
+    // Direniş gerçek fare deltasını okur; sanal fare çekişin tersine sürerek oyuncu gibi kazanır.
+    private static IEnumerator ResistWithMouse(LeesEnemyAI enemy, Func<bool> finished)
+    {
+        var mouse = AddGameMouse();
+        float end = Time.realtimeSinceStartup + 75;
+        while (!finished() && Time.realtimeSinceStartup < end)
+        {
+            var resistance = enemy.resistance;
+            if (resistance.IsRunning && resistance.Model.State == LeesResistanceModel.Phase.Struggling)
+                InputSystem.QueueDeltaStateEvent(mouse.delta, new Vector2(-resistance.Model.PullDirection * 400 * Time.deltaTime, 0));
+            yield return null;
+        }
+        RemoveGameMouse(mouse);
+        Require(finished(), "Lees eğitimi fareyle tamamlanamadı.");
+    }
+
+    private static IEnumerator ClickLeftMouse()
+    {
+        var mouse = AddGameMouse();
+        InputSystem.QueueStateEvent(mouse, new MouseState().WithButton(MouseButton.Left));
+        yield return null; yield return null;
+        InputSystem.QueueStateEvent(mouse, new MouseState());
+        yield return null; yield return null;
+        RemoveGameMouse(mouse);
+    }
+
+    private static InputSettings originalInput;
+
+    private static Mouse AddGameMouse()
+    {
+        var mouse = InputSystem.AddDevice<Mouse>();
+        originalInput = InputSystem.settings;
+        var isolated = Object.Instantiate(originalInput);
+        isolated.editorInputBehaviorInPlayMode = InputSettings.EditorInputBehaviorInPlayMode.AllDeviceInputAlwaysGoesToGameView;
+        InputSystem.settings = isolated; mouse.MakeCurrent();
+        return mouse;
+    }
+
+    // Kopya ayar play sonuna kalırsa Input System bir sonraki etki alanı yenilemesinde açılamaz.
+    private static void RemoveGameMouse(Mouse mouse)
+    {
+        var isolated = InputSystem.settings;
+        InputSystem.RemoveDevice(mouse);
+        InputSystem.settings = originalInput;
+        Object.Destroy(isolated);
     }
 
     private static void DropAwayFromNotebook(NotebookWorkspaceController workspace, NotebookDraggableBlock note, Vector2 point)

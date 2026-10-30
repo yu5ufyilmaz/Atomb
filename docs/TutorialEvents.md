@@ -15,6 +15,8 @@ Her aksiyon kendi konuşma geçmişini tutar. Kitabı kapatıp açmak veya aynı
 
 `LookAction`, gecikmesi dahil kamera odağı boyunca dünya etkileşimini kilitler. Peş peşe gelen kamera aksiyonları sırayla çalışır. Aksiyon kapatılırsa veya hedefi yok olursa kilit bırakılır. Açılış sekansı ve duraklama sırasında kitap alınamaz.
 
+`Tutorial_CloseDoor_014` tetikleyicisi ofis kapısının dışındadır. Oyuncu kilit dersinden sonra kapıdan ilk çıktığında `ChalkboardTutorial.DoorLesson` onu kapı kanadının alanı dışında durdurur, kamerayı kapıya çevirir ve kapıyı kapatana kadar bırakmaz.
+
 Sahneyi yeniden bağlamak için: `Senzora > Tutorial > Konuşmaları Event Sistemine Bağla`. Bu bir Editor hazırlık aracıdır; oyunda düğüm üretmez. Mevcut düğümlerin Inspector ayarlarını standart değerlere döndürür.
 
 Doğrulama menüleri: `Senzora > Doğrulama > Tutorial İç Ses` (koşullar/veri), `Tutorial İç Ses Gerçek Oyun` (erken kitap, kamera sırası/iptali, gerçek kitap tekrarları, hatırlatma ve dış konuşma), `Tutorial Gerçek Oyun Akışı` (kitaptan sigortaya tam akış). Testten önce Play'e gir; gerçek oyun testi geliştirme oturumunu kullanır.

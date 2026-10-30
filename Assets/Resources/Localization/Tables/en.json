@@ -826,6 +826,36 @@
             "text": "Drag every note into your notebook first."
         },
         {
+            "key": "subtitle.thought_close_door_0.0",
+            "source": "",
+            "text": "Wait, let's not leave the door open. If it's shut, at least we'll hear someone coming."
+        },
+        {
+            "key": "notebook.ws.board_drag_connect",
+            "source": "Sürükle / Bağla",
+            "text": "Drag / Connect"
+        },
+        {
+            "key": "notebook.ws.board_erase",
+            "source": "Sil",
+            "text": "Erase"
+        },
+        {
+            "key": "notebook.ws.board_notebook",
+            "source": "Defter",
+            "text": "Notebook"
+        },
+        {
+            "key": "notebook.ws.reader_slot",
+            "source": "ÖLÇÜM KARTI YUVASI\n<size=70%>Kartı defterden buraya sürükle</size>",
+            "text": "MEASUREMENT CARD SLOT\n<size=70%>Drag the card here from your notebook</size>"
+        },
+        {
+            "key": "notebook.ws.door_close",
+            "source": "Kapıyı Kapat",
+            "text": "Close Door"
+        },
+        {
             "key": "notebook.ws.tutorial_drag_board",
             "source": "TAHTAYA SÜRÜKLE",
             "text": "DRAG TO BOARD"

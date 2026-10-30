@@ -13,6 +13,7 @@ public sealed class LeesResistanceModel
         public float mouseDegreesPerPixel = .075f;
         public float failureAngle = 52f;
         public float directionWarningSeconds = .25f;
+        public float strainRate = 1f;
     }
     public Phase State { get; private set; }
     public float HeadAngle { get; private set; }
@@ -58,8 +59,8 @@ public sealed class LeesResistanceModel
         float opposing = Math.Max(0, -pixels * PullDirection);
         // A light twitch no longer clears a large amount of accumulated pressure.
         float effort = Clamp(opposing / (430 * seconds), 0, 1);
-        Strain = Clamp(Strain + seconds * (.48f * (1 - effort) - .24f * effort
-            + .2f * Math.Abs(HeadAngle) / Math.Max(10, Settings.failureAngle)), .08f, 1);
+        Strain = Clamp(Strain + seconds * (Settings.strainRate * (.48f * (1 - effort)
+            + .2f * Math.Abs(HeadAngle) / Math.Max(10, Settings.failureAngle)) - .24f * effort), .08f, 1);
         if (Danger >= 1) State = Phase.Caught;
         else if (Progress >= 1) State = Phase.Survived;
     }
