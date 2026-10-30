@@ -5,6 +5,8 @@ public partial class InteractableBook
     public bool IsOpening { get; private set; }
     public bool IsClosing { get; private set; }
     public bool IsShelfPulling { get; private set; }
+    // Eğitim kartları toplanana dek oyuncu kitabı bırakamaz; ForceExit tehlike anları için çalışır.
+    public bool ExitLocked { get; set; }
     [Header("Raftan Alma")]
     [Min(.1f)] public float shelfPullDuration = .28f;
     [Min(.01f)] public float shelfPullClearance = .08f;

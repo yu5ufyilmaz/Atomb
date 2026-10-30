@@ -3,7 +3,7 @@ using System.Linq;
 using UnityEngine;
 
 // Bridges the existing scene sequence to real archive, board and Turing actions.
-public sealed class ChalkboardTutorial : MonoBehaviour
+public sealed partial class ChalkboardTutorial : MonoBehaviour
 {
     public const string QuestID = "tutorial-first-trace";
     public ResearchPuzzleTrial research;
@@ -89,6 +89,8 @@ public sealed class ChalkboardTutorial : MonoBehaviour
         if (research != null) research.SessionStarted -= PrepareLesson;
         if (experiment != null) experiment.MeasurementAccepted -= OnMeasurementAccepted;
         if (finalStep != null) finalStep.OnEventTriggered -= Complete;
+        if (lessonBook != null) lessonBook.ExitLocked = false;
+        NotebookWorkspaceController.Instance?.ClearGuide();
     }
 
     private void PrepareLesson()
@@ -121,7 +123,13 @@ public sealed class ChalkboardTutorial : MonoBehaviour
         // The player may already be inside the opening trigger when New Game ends.
         firstStep.RefreshConditions();
         if (!firstStep.HasTriggered) return;
-        if (!collectedStep.HasTriggered && (HasCollectedCards(NotebookUI.Instance) || HasCorrectReading)) cardsCollected.ReceiveSignal();
+        if (!collectedStep.HasTriggered)
+        {
+            bool collected = HasCollectedCards(NotebookUI.Instance) || HasCorrectReading;
+            lessonBook.ExitLocked = !collected;
+            if (collected) cardsCollected.ReceiveSignal();
+        }
+        UpdateGuide();
         if (boardStep.HasTriggered && !doorStep.HasTriggered && officeDoor.IsLocked()) doorLocked.ReceiveSignal();
         if (valveRoomStep.HasTriggered && !valveStep.HasTriggered)
         {

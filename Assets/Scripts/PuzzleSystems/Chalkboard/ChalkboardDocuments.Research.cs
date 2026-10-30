@@ -13,6 +13,8 @@ public sealed partial class ChalkboardDocuments
     private bool shadeExpanded, targetDetailsOpen;
     private float shadeReveal;
     public bool IsDocumentPanelOpen => freeLayout && shadeExpanded;
+    public Vector3 TargetSlot => targetArea.position;
+    public Vector3 PanelHandle => shadeToggle.position;
 
     private readonly Dictionary<string, Vector2> documentPositions = new Dictionary<string, Vector2>();
     private readonly Dictionary<string, RectTransform> noteCards = new Dictionary<string, RectTransform>();

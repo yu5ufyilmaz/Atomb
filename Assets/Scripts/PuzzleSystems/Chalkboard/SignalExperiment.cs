@@ -15,6 +15,9 @@ public sealed class SignalExperiment : MonoBehaviour
         && ((note.itemID ?? "").StartsWith("signal-result/") || (note.itemID ?? "").StartsWith("mixture-result/"));
     private ResearchPuzzleTrial trial;
     private NotebookDraggableBlock output;
+    private RectTransform measureButton;
+    public NotebookDraggableBlock OutputCard => output;
+    public Vector3 MeasureButton => measureButton.position;
     private CanvasGroup outputInput;
     private TextMeshProUGUI deviceFeedback;
     private readonly Dictionary<string, Reading> readings = new Dictionary<string, Reading>();
@@ -66,7 +69,7 @@ public sealed class SignalExperiment : MonoBehaviour
         outputInput = root.GetComponent<CanvasGroup>();
         PhysicalBoardFixture.Attach(rect, "Ölçüm Cihazı", Vector2.zero, rect.sizeDelta, new Color(.14f, .18f, .16f));
         var measure = new GameObject("Deneyi Ölç", typeof(RectTransform), typeof(Image), typeof(Button));
-        var measureRect = (RectTransform)measure.transform;
+        var measureRect = measureButton = (RectTransform)measure.transform;
         measureRect.SetParent(rect, false); measureRect.sizeDelta = new Vector2(206, 36); measureRect.anchoredPosition = new Vector2(0, 100);
         measure.GetComponent<Image>().color = new Color(.65f, .51f, .27f);
         measure.GetComponent<Button>().onClick.AddListener(() =>

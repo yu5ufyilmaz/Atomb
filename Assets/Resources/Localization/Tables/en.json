@@ -816,6 +816,41 @@
             "text": "DRAG NOTE  /  ORIGINAL STAYS IN NOTEBOOK"
         },
         {
+            "key": "notebook.ws.tutorial_drag_hint",
+            "source": "DEFTERE SÜRÜKLE",
+            "text": "DRAG TO NOTEBOOK"
+        },
+        {
+            "key": "notebook.ws.tutorial_exit_locked",
+            "source": "Önce tüm notları deftere sürükle.",
+            "text": "Drag every note into your notebook first."
+        },
+        {
+            "key": "notebook.ws.tutorial_drag_board",
+            "source": "TAHTAYA SÜRÜKLE",
+            "text": "DRAG TO BOARD"
+        },
+        {
+            "key": "notebook.ws.tutorial_open_tab",
+            "source": "BU BÖLÜMÜ AÇ",
+            "text": "OPEN THIS TAB"
+        },
+        {
+            "key": "notebook.ws.tutorial_open_notebook",
+            "source": "[{input:ToggleNotebook}] DEFTERİ AÇ",
+            "text": "[{input:ToggleNotebook}] OPEN NOTEBOOK"
+        },
+        {
+            "key": "notebook.ws.tutorial_connect",
+            "source": "ÇIKIŞI GİRİŞE BAĞLA",
+            "text": "CONNECT OUTPUT TO INPUT"
+        },
+        {
+            "key": "notebook.ws.tutorial_drag_reader",
+            "source": "OKUYUCUYA SÜRÜKLE",
+            "text": "DRAG TO READER"
+        },
+        {
             "key": "notebook.ws.select_goal_hint",
             "source": "Defterden bir hedef seç; mevcut bilgilerinle bir hipotez kur.",
             "text": "Select a target from the notebook; form a hypothesis with your current findings."

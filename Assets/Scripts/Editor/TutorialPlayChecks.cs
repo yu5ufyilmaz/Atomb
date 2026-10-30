@@ -39,11 +39,17 @@ public static class TutorialPlayChecks
         lesson.lessonBook.Interact(); BroadcastInteraction(lesson.lessonBook.gameObject);
         yield return WaitFor(() => lesson.lessonBook.isOpen && !lesson.lessonBook.isAnimating && workspace.IsActive, "Eğitim kitabı");
         yield return null;
+        Require(lesson.lessonBook.ExitLocked, "Kartlar toplanmadan kitaptan çıkılabiliyor.");
+        yield return WaitFor(() => Field<RectTransform>(workspace, "ghost") != null, "Sürükleme hayaleti");
+        workspace.ToggleNotebook();
+        Require(Field<bool>(workspace, "notebookExpanded"), "Kilitli kitapta defter, kartların tek bırakma alanı kapatılabiliyor.");
         ResearchTrialBookChecks.CheckReadability();
         ScreenCapture.CaptureScreenshot("Temp/tutorial-book.png");
         ResearchTrialBookChecks.CollectVisible();
         yield return WaitFor(() => lesson.collectedStep.HasTriggered, "Gerçek kartların toplanması");
         Require(ChalkboardTutorial.HasCollectedCards(NotebookUI.Instance), "Beş eğitim kartı arşivlenmedi.");
+        yield return null;
+        Require(!lesson.lessonBook.ExitLocked && Field<RectTransform>(workspace, "ghost") == null, "Kartlar toplanınca kitap kilidi veya hayalet kalkmadı.");
         lesson.lessonBook.ForceExit(); yield return WaitFor(() => game.activeInteraction == null, "Kitaptan çıkış");
         Debug.Log("TUTORIAL PLAY STAGE PASS: book collection");
 
@@ -61,6 +67,7 @@ public static class TutorialPlayChecks
         }, "Tahta kamera geçişi");
         Vector2 handlePoint = Camera.main.WorldToScreenPoint(handle.position);
         Require(handlePoint.x > 0 && handlePoint.x < Screen.width && handlePoint.y > 0 && handlePoint.y < Screen.height, "Pano tutamağı kamerada görünmüyor.");
+        Require(Field<RectTransform>(workspace, "ghost") != null, "Tahtada hedef rehberi görünmüyor.");
         workspace.ShowCollectedTargets(); Canvas.ForceUpdateCanvases();
         var target = Object.FindObjectsByType<NotebookDraggableBlock>(FindObjectsSortMode.None)
             .First(n => !n.IsSource && n.isActiveAndEnabled && n.Data.questID == ChalkboardTutorial.QuestID && n.Data.blockType == NotebookBlockType.Quest);
@@ -93,6 +100,8 @@ public static class TutorialPlayChecks
             parts.Add(board.boardTransform.GetComponentsInChildren<DraggableFormula>().Single(p => !before.Contains(p)));
         }
         board.AttemptSynthesis(); Require(!experiment.LastReading.MeetsTarget && !lesson.boardStep.HasTriggered, "Bağlanmamış parçalar doğru ölçüm sayıldı.");
+        yield return null;
+        Require(Field<RectTransform>(workspace, "ghostLine") != null, "Parçalar arası bağ rehberi görünmüyor.");
         for (int i = 0; i < 2; i++)
         {
             var output = parts[i].GetOwnNodes().First(n => n.gameObject.activeSelf && n.GetComponent<SignalPort>().output);
@@ -101,6 +110,8 @@ public static class TutorialPlayChecks
         }
         board.AttemptSynthesis(); Require(experiment.LastReading.MeetsTarget, "Gerçek tahta başlangıç hedefini üretemedi.");
         Require(!lesson.boardStep.HasTriggered, "Ölçüm deftere alınmadan tahta dersi geçildi.");
+        yield return null;
+        Require(Field<NotebookDraggableBlock>(workspace, "ghostCard") == experiment.OutputCard, "Ölçüm kartı rehberi görünmüyor.");
         SignalTrialPlayChecks.CollectOutput();
         workspace.ToggleNotebook(); yield return new WaitForSeconds(.35f);
         ScreenCapture.CaptureScreenshot("Temp/tutorial-board.png");
@@ -155,6 +166,7 @@ public static class TutorialPlayChecks
         yield return WaitFor(() => PlayerInteraction.Instance.CanInteractWithWorld, "Turing kamera odağının bitmesi");
         RequireAllowed(experiment.terminal.gameObject); experiment.terminal.Interact();
         yield return WaitFor(() => game.activeInteraction == experiment.terminal && experiment.terminal.RequiresMeasurementCursor, "Turing'e giriş");
+        yield return WaitFor(() => Field<RectTransform>(workspace, "ghost") != null, "Turing okuyucu rehberi");
         Call(experiment.terminal, "CheckPassword");
         yield return null;
         Require(!lesson.terminalAccepted.IsMet() && manager.tutorialEventsParent.GetComponentsInChildren<ChalkboardTutorialCondition>()

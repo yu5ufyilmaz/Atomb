@@ -12,9 +12,9 @@ public partial class NotebookWorkspaceController
     private Vector2 notebookOpenPosition;
     private Vector2 workstationNotebookPosition;
     private bool standalonePositioned;
-    // Tahtada .68, defteri tahtanın sağındaki boşluğa sığdırır; ölçüm cihazının üstüne binmez.
+    // Tahtada .6, defteri tahtanın sağındaki boşluğa sığdırır; ölçüm cihazının üstüne binmez.
     private float NotebookScale => notebook == null || !notebook.useScreenSpaceNotebook ? 1f
-        : ChalkboardManager.Instance != null && ChalkboardManager.Instance.isMachineActive ? .68f : .8f;
+        : ChalkboardManager.Instance != null && ChalkboardManager.Instance.isMachineActive ? .6f : .7f;
 
     private void RestoreWorkstationNotebookPosition()
     {
@@ -114,6 +114,8 @@ public partial class NotebookWorkspaceController
     public void ToggleNotebook()
     {
         if (IsPaused || notebookWindow == null) return;
+        // Kilitli kitapta defter tek bırakma alanıdır; kapanırsa oyuncu kartları taşıyamaz.
+        if (activeBook != null && activeBook.ExitLocked && notebookExpanded) return;
         ResetNotebookPageTurn();
         if (IsStandaloneOpen) { Close(); return; }
         if (notebookExpanded && notebookReveal >= 1) notebookOpenPosition = notebookWindow.anchoredPosition;

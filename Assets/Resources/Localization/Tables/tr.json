@@ -816,6 +816,41 @@
             "text": "NOTU SÜRÜKLE  /  ASLI DEFTERDE KALIR"
         },
         {
+            "key": "notebook.ws.tutorial_drag_hint",
+            "source": "DEFTERE SÜRÜKLE",
+            "text": "DEFTERE SÜRÜKLE"
+        },
+        {
+            "key": "notebook.ws.tutorial_exit_locked",
+            "source": "Önce tüm notları deftere sürükle.",
+            "text": "Önce tüm notları deftere sürükle."
+        },
+        {
+            "key": "notebook.ws.tutorial_drag_board",
+            "source": "TAHTAYA SÜRÜKLE",
+            "text": "TAHTAYA SÜRÜKLE"
+        },
+        {
+            "key": "notebook.ws.tutorial_open_tab",
+            "source": "BU BÖLÜMÜ AÇ",
+            "text": "BU BÖLÜMÜ AÇ"
+        },
+        {
+            "key": "notebook.ws.tutorial_open_notebook",
+            "source": "[{input:ToggleNotebook}] DEFTERİ AÇ",
+            "text": "[{input:ToggleNotebook}] DEFTERİ AÇ"
+        },
+        {
+            "key": "notebook.ws.tutorial_connect",
+            "source": "ÇIKIŞI GİRİŞE BAĞLA",
+            "text": "ÇIKIŞI GİRİŞE BAĞLA"
+        },
+        {
+            "key": "notebook.ws.tutorial_drag_reader",
+            "source": "OKUYUCUYA SÜRÜKLE",
+            "text": "OKUYUCUYA SÜRÜKLE"
+        },
+        {
             "key": "notebook.ws.select_goal_hint",
             "source": "Defterden bir hedef seç; mevcut bilgilerinle bir hipotez kur.",
             "text": "Defterden bir hedef seç; mevcut bilgilerinle bir hipotez kur."

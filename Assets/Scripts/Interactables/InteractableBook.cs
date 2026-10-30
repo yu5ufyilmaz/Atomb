@@ -486,14 +486,16 @@ public partial class InteractableBook : MonoBehaviour, IInteractable, IForceExit
                 && GameManager.Instance.activeInteraction == (IInteractable)this
             )
             {
-                HandlePageInput(); // A ve D ile sayfa çevirme her zaman serbest
+                // Ders kartları ilk açılımdadır; kilitliyken oyuncu onlardan uzaklaşmaz.
+                if (!ExitLocked) HandlePageInput();
 
                 if (isPasswordBook && !hasPasswordBeenFound && GameInput.Pressed("Interact"))
                     CheckForPasswordClick();
 
                 if (GameInput.Pressed("Cancel"))
                 {
-                    StartCoroutine(CloseBook());
+                    if (ExitLocked) NotebookWorkspaceController.Instance?.ShowBookExitLocked();
+                    else StartCoroutine(CloseBook());
                 }
 
                 if (playerGameScript != null)

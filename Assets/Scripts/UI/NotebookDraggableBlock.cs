@@ -302,6 +302,44 @@ public class NotebookDraggableBlock : MonoBehaviour, IBeginDragHandler, IDragHan
         return label;
     }
 
+    // Instantiate grafik ve biçimli metin verisini kopyalamaz; sürüklenen kart hep Data'dan yeniden kurulur.
+    internal RectTransform CreateFloatingCopy(Canvas canvas, bool fromWorld)
+    {
+        var copy = new GameObject("Sürüklenen Not", typeof(RectTransform), typeof(CanvasGroup), typeof(NotebookDraggableBlock));
+        copy.transform.SetParent(canvas.transform, false);
+        var copyBlock = copy.GetComponent<NotebookDraggableBlock>();
+        copyBlock.Initialize(Data, false);
+        copyBlock.enabled = false;
+        var copyRect = (RectTransform)copy.transform;
+        if (fromWorld)
+        {
+            copyRect.localScale = Vector3.one;
+            copyRect.localRotation = Quaternion.identity;
+            copyRect.pivot = new Vector2(.5f, .5f);
+            copyRect.sizeDelta = Data.blockType == NotebookBlockType.Quest ? new Vector2(380, 400) : new Vector2(300, 230);
+        }
+        else
+        {
+            var source = (RectTransform)transform;
+            copyRect.pivot = source.pivot;
+            copyRect.sizeDelta = source.rect.size;
+            copyRect.localScale = Vector3.one * (source.lossyScale.x / canvas.transform.lossyScale.x);
+            copyRect.SetPositionAndRotation(source.position, source.rotation);
+        }
+        NotebookWorkspaceController.Instance.StyleNotebookNote(copyBlock);
+        // Notebook ink is transparent on the page; every detached copy needs its own paper.
+        var fill = copy.GetComponent<Image>();
+        if (fill != null) { fill.sprite = null; fill.color = new Color(.96f, .93f, .83f, 1); }
+        var shadow = copy.AddComponent<Shadow>();
+        shadow.effectColor = new Color(0, 0, 0, .35f); shadow.effectDistance = new Vector2(5, -6);
+        copyRect.SetAsLastSibling();
+        var copyGroup = copy.GetComponent<CanvasGroup>();
+        copyGroup.blocksRaycasts = false;
+        copyGroup.interactable = false;
+        copyGroup.alpha = 1;
+        return copyRect;
+    }
+
     public void OnBeginDrag(PointerEventData eventData)
     {
         var workspace = NotebookWorkspaceController.Instance;
@@ -314,39 +352,7 @@ public class NotebookDraggableBlock : MonoBehaviour, IBeginDragHandler, IDragHan
         bool fromWorld = canvas.renderMode == RenderMode.WorldSpace;
         if (fromWorld && workspace.DragCanvas != null) canvas = workspace.DragCanvas;
         canvas = canvas.rootCanvas;
-        // Instantiate grafik ve biçimli metin verisini kopyalamaz; sürüklenen kart hep Data'dan yeniden kurulur.
-        var copy = new GameObject("Sürüklenen Not", typeof(RectTransform), typeof(CanvasGroup), typeof(NotebookDraggableBlock));
-        copy.transform.SetParent(canvas.transform, false);
-        var copyBlock = copy.GetComponent<NotebookDraggableBlock>();
-        copyBlock.Initialize(Data, false);
-        copyBlock.enabled = false;
-        floatingRect = (RectTransform)copy.transform;
-        if (fromWorld)
-        {
-            floatingRect.localScale = Vector3.one;
-            floatingRect.localRotation = Quaternion.identity;
-            floatingRect.pivot = new Vector2(.5f, .5f);
-            floatingRect.sizeDelta = Data.blockType == NotebookBlockType.Quest ? new Vector2(380, 400) : new Vector2(300, 230);
-        }
-        else
-        {
-            var source = (RectTransform)transform;
-            floatingRect.pivot = source.pivot;
-            floatingRect.sizeDelta = source.rect.size;
-            floatingRect.localScale = Vector3.one * (source.lossyScale.x / canvas.transform.lossyScale.x);
-            floatingRect.SetPositionAndRotation(source.position, source.rotation);
-        }
-        workspace.StyleNotebookNote(copyBlock);
-        // Notebook ink is transparent on the page; every detached copy needs its own paper.
-        var fill = copy.GetComponent<Image>();
-        if (fill != null) { fill.sprite = null; fill.color = new Color(.96f, .93f, .83f, 1); }
-        var shadow = copy.AddComponent<Shadow>();
-        shadow.effectColor = new Color(0, 0, 0, .35f); shadow.effectDistance = new Vector2(5, -6);
-        floatingRect.SetAsLastSibling();
-        var floatingGroup = copy.GetComponent<CanvasGroup>();
-        floatingGroup.blocksRaycasts = false;
-        floatingGroup.interactable = false;
-        floatingGroup.alpha = 1;
+        floatingRect = CreateFloatingCopy(canvas, fromWorld);
         canvasGroup = GetComponent<CanvasGroup>();
         originalAlpha = canvasGroup.alpha;
         originalRaycastState = canvasGroup.blocksRaycasts;

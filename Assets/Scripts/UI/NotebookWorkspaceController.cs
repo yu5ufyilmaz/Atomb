@@ -172,6 +172,7 @@ public partial class NotebookWorkspaceController : MonoBehaviour
             }
             UpdateNotebookPopup(Time.unscaledDeltaTime);
             UpdateNotebookPageTurn(Time.unscaledDeltaTime);
+            UpdateDragGhost(Time.unscaledDeltaTime);
         }
     }
 
@@ -313,20 +314,22 @@ public partial class NotebookWorkspaceController : MonoBehaviour
         RefreshInformation();
     }
 
-    private void StoreArchiveNote(NotebookBlockData note)
+    private bool IsArchived(NotebookBlockData note)
     {
-        var copy = note.Clone();
-        copy.instanceID = Guid.NewGuid().ToString("N"); copy.rotation = 0;
         if (note.blockType == NotebookBlockType.Quest)
-        {
-            var targets = notebook.EnsureCollectedQuests();
-            if (!targets.Exists(n => n.questID == note.questID)) targets.Add(copy);
-            return;
-        }
+            return notebook.EnsureCollectedQuests().Exists(n => n.questID == note.questID);
         foreach (var saved in notebook.workspacePages)
             if (saved?.blocks != null && saved.blocks.Exists(n => n != null && n.blockType == note.blockType
-                && (note.blockType == NotebookBlockType.PartClue ? n.itemID == note.itemID : SameInformation(n, note)))) return;
-        notebook.EnsureWorkspacePage().blocks.Add(copy);
+                && (note.blockType == NotebookBlockType.PartClue ? n.itemID == note.itemID : SameInformation(n, note)))) return true;
+        return false;
+    }
+
+    private void StoreArchiveNote(NotebookBlockData note)
+    {
+        if (IsArchived(note)) return;
+        var copy = note.Clone();
+        copy.instanceID = Guid.NewGuid().ToString("N"); copy.rotation = 0;
+        (note.blockType == NotebookBlockType.Quest ? notebook.EnsureCollectedQuests() : notebook.EnsureWorkspacePage().blocks).Add(copy);
     }
 
     private List<NotebookBlockData> ArchivedParts()

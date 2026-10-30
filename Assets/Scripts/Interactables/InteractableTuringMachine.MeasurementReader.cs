@@ -17,6 +17,7 @@ public partial class InteractableTuringMachine
     private AudioSource readerMotor, readerTicks;
     private AudioClip readerMotorClip;
     public bool IsReadingMeasurement { get; private set; }
+    public Vector3 ReaderPoint => measurementReader.position;
     public bool HasReadMeasurement => readerPaper != null && !IsReadingMeasurement;
     public bool MeasurementRejected => readerFeedback != null;
     private bool IsMeasurementTerminal => SignalExperiment.Active != null
