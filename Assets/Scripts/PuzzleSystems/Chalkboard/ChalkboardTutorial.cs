@@ -135,7 +135,8 @@ public sealed class ChalkboardTutorial : MonoBehaviour
             else if (sawBreakerTrip) breakerRestored.ReceiveSignal();
         }
         if (!collectedStep.HasTriggered || boardStep.HasTriggered) return;
-        if (!research.Board.EnsureDocuments().IsDocumentPanelOpen && (HasPinnedCards || research.Board.PinnedQuest?.questID == QuestID))
+        // Hedef artık panoyu açmaz; yalnız hedefi takmak "panoyu topla" adımını atlatmamalı.
+        if (!research.Board.EnsureDocuments().IsDocumentPanelOpen && HasPinnedCards)
             panelWasClosed = true;
         if (HasCorrectReading && GameManager.Instance.activeInteraction == null)
         {

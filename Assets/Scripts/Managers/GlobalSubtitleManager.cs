@@ -158,12 +158,23 @@ public class GlobalSubtitleManager : MonoBehaviour
             while (remaining > 0)
             {
                 if (GameManager.Instance == null || !GameManager.Instance.isGamePaused) remaining -= Time.deltaTime;
+                KeepAboveNotebook();
                 yield return null;
             }
         }
 
         // 3. Hepsi bitince kapat
         HideSubtitle();
+    }
+
+    // Defter ayrı kanvasta (sıra 70) çizilir; altyazı yalnızca defter açıkken öne çıkar, pause ve ölüm ekranının üstüne binmez.
+    private void KeepAboveNotebook()
+    {
+        if (subtitlePanel == null || !subtitlePanel.activeInHierarchy) return;
+        if (!subtitlePanel.TryGetComponent(out Canvas canvas)) canvas = subtitlePanel.AddComponent<Canvas>();
+        var notebook = NotebookWorkspaceController.Instance;
+        canvas.overrideSorting = notebook != null && notebook.IsActive && !notebook.IsPaused;
+        canvas.sortingOrder = 71;
     }
 
     // Toplam süreyi artık Duration'ları toplayarak buluyoruz

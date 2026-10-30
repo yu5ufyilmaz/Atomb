@@ -94,7 +94,9 @@ public partial class NotebookWorkspaceController : MonoBehaviour
             notebookWindow.anchoredPosition = notebookOpenPosition;
         }
         activeBook = book;
-        if (archiveFooter != null && IsArchiveNotebook) GameLocalization.Set(archiveFooter, "NOTU SÜRÜKLE  /  ASLI DEFTERDE KALIR");
+        if (archiveFooter != null && IsArchiveNotebook)
+            GameLocalization.Set(archiveFooter, book == null && ChalkboardManager.Instance.isMachineActive
+                ? "TAB: KAPAT   /   Q E: BÖLÜM   /   TEKERLEK: SAYFA" : "NOTU SÜRÜKLE  /  ASLI DEFTERDE KALIR");
         bookWindow.gameObject.SetActive(book != null && !book.usePhysicalPageBlocks
             && book.synthesisPages.Count > 0);
         if (ChalkboardManager.Instance != null)
@@ -163,7 +165,11 @@ public partial class NotebookWorkspaceController : MonoBehaviour
         if (IsPaused) ResetNotebookPageTurn();
         else
         {
-            if (IsArchiveNotebook && !IsStandaloneOpen && GameInput.Pressed("ToggleNotebook")) ToggleNotebook();
+            if (IsArchiveNotebook && !IsStandaloneOpen)
+            {
+                if (GameInput.Pressed("ToggleNotebook")) ToggleNotebook();
+                else BrowseNotebookOnBoard();
+            }
             UpdateNotebookPopup(Time.unscaledDeltaTime);
             UpdateNotebookPageTurn(Time.unscaledDeltaTime);
         }

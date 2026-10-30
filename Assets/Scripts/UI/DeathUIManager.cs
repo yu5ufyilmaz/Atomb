@@ -12,9 +12,6 @@ public class DeathUIManager : MonoBehaviour
     [SerializeField]
     private GameObject deathScreenPanel; // Siyah Arka Plan Paneli
 
-    [SerializeField]
-    private string mainMenuSceneName = "MainMenu";
-
     [Header("Gizlenecek Arayüzler")]
     [SerializeField]
     private List<GameObject> uiElementsToHide;
@@ -152,8 +149,8 @@ public class DeathUIManager : MonoBehaviour
 
     public void LoadMainMenu()
     {
-        Time.timeScale = 1f;
-        SceneManager.LoadScene(mainMenuSceneName);
+        // Ana menü oyun sahnesinin içindedir; PressAnyKey yalnızca ilk açılışta görünür.
+        RestartGame();
     }
 
     public void RestartGame()

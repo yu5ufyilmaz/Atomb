@@ -9,8 +9,8 @@ public sealed partial class ChalkboardDocuments
     private bool freeLayout, loadingLayout;
     private RectTransform documentBoard, shadeViewport, shadeToggle, shadeBottomBar, goalDirectionsViewport;
     private CanvasGroup shadeInput;
-    private TextMeshProUGUI shadeToggleLabel;
-    private bool shadeExpanded;
+    private TextMeshProUGUI shadeToggleLabel, targetToggleLabel;
+    private bool shadeExpanded, targetDetailsOpen;
     private float shadeReveal;
     public bool IsDocumentPanelOpen => freeLayout && shadeExpanded;
 
@@ -32,10 +32,14 @@ public sealed partial class ChalkboardDocuments
         canvas.renderMode = RenderMode.WorldSpace; canvas.worldCamera = Camera.main; canvas.sortingOrder = 5;
         input = obj.GetComponent<CanvasGroup>();
         BuildDocumentShade();
-        targetArea = PinnedCard("Hedef Kartı", new Color(.93f, .85f, .62f));
-        targetArea.anchoredPosition = new Vector2(documentBoard.rect.xMin + 125, documentBoard.rect.yMax - 90);
+        // Hedef belge panosundan bağımsızdır: pano toplansa da sol üstteki yuvada görünür kalır.
+        targetArea = PinnedCard("Hedef Kartı", new Color(.93f, .85f, .62f), false);
+        targetArea.gameObject.AddComponent<Outline>().effectColor = new Color(.94f, .9f, .75f, .8f);
+        targetArea.gameObject.AddComponent<Button>().onClick.AddListener(() => SetTargetDetailsOpen(!targetDetailsOpen));
         title = Text(targetArea, "", new Vector2(2, 49), new Vector2(184, 30), 14);
         title.fontStyle = FontStyles.Bold;
+        targetToggleLabel = Text(targetArea, "", Vector2.zero, new Vector2(56, 22), 12);
+        targetToggleLabel.fontStyle = FontStyles.Bold;
         diagram = new GameObject("Tahtadaki Hedef Şema", typeof(RectTransform), typeof(QuestDiagramGraphic)).GetComponent<QuestDiagramGraphic>();
         diagram.transform.SetParent(targetArea, false);
         diagram.rectTransform.sizeDelta = new Vector2(196, 66);
@@ -57,7 +61,7 @@ public sealed partial class ChalkboardDocuments
 
     private void BuildDocumentShade()
     {
-        float width = Mathf.Min(740, surface.rect.width - 28), height = surface.rect.height - 110;
+        float width = Mathf.Min(740, surface.rect.width - 28), height = surface.rect.height - 56;
         shadeViewport = new GameObject("Stor Belge Panosu", typeof(RectTransform), typeof(RectMask2D), typeof(CanvasGroup)).GetComponent<RectTransform>();
         shadeViewport.SetParent(surface, false); shadeViewport.pivot = new Vector2(.5f, 1);
         shadeViewport.anchoredPosition = new Vector2(surface.rect.xMin + width / 2 + 14, surface.rect.yMax - 48);
@@ -77,7 +81,7 @@ public sealed partial class ChalkboardDocuments
         }
         shadeBottomBar = Paper(shadeViewport, "Stor Alt Çıtası", Vector2.zero, new Vector2(width, 10), new Color(.22f, .23f, .2f));
         shadeBottomBar.anchorMin = shadeBottomBar.anchorMax = new Vector2(.5f, 1);
-        shadeToggle = Paper(surface, "Belge Panosu Tutamağı", new Vector2(surface.rect.xMin + 142, surface.rect.yMax - 22),
+        shadeToggle = Paper(surface, "Belge Panosu Tutamağı", new Vector2(surface.rect.xMin + 422, surface.rect.yMax - 22),
             new Vector2(256, 30), new Color(.22f, .24f, .2f));
         shadeToggle.gameObject.AddComponent<Button>().onClick.AddListener(() => SetDocumentPanelOpen(!shadeExpanded));
         PhysicalBoardFixture.Attach(shadeToggle, "Belge Tutamağı", Vector2.zero, shadeToggle.sizeDelta, new Color(.18f, .22f, .18f));
@@ -93,6 +97,13 @@ public sealed partial class ChalkboardDocuments
         if (open) shadeViewport.gameObject.SetActive(true);
         if (immediate) shadeReveal = open ? 1 : 0;
         ApplyShadeReveal();
+    }
+
+    public void SetTargetDetailsOpen(bool open)
+    {
+        if (!freeLayout || board.PinnedQuest == null) return;
+        targetDetailsOpen = open;
+        RefreshResearch();
     }
 
     private void ApplyShadeReveal()
@@ -115,13 +126,16 @@ public sealed partial class ChalkboardDocuments
         }
     }
 
-    private RectTransform PinnedCard(string name, Color tint)
+    private RectTransform PinnedCard(string name, Color tint, bool movable = true)
     {
-        var card = Paper(documentBoard, name, Vector2.zero, new Vector2(218, 156), tint);
+        var card = Paper(movable ? documentBoard : surface, name, Vector2.zero, new Vector2(218, 156), tint);
         var shadow = card.gameObject.AddComponent<Shadow>();
         shadow.effectColor = new Color(0, 0, 0, .4f); shadow.effectDistance = new Vector2(3, -4);
-        var drag = card.gameObject.AddComponent<DraggableWorkspaceItem>();
-        drag.target = card; drag.workspaceBounds = documentBoard;
+        if (movable)
+        {
+            var drag = card.gameObject.AddComponent<DraggableWorkspaceItem>();
+            drag.target = card; drag.workspaceBounds = documentBoard;
+        }
         var pin = Text(card, "●", new Vector2(-93, 69), new Vector2(18, 18), 17);
         pin.name = "Raptiye"; pin.color = new Color(.68f, .12f, .08f);
         return card;
@@ -129,7 +143,6 @@ public sealed partial class ChalkboardDocuments
 
     private void CaptureLayout()
     {
-        documentPositions["target"] = targetArea.anchoredPosition;
         foreach (var pair in noteCards) documentPositions[pair.Key] = pair.Value.anchoredPosition;
     }
 
@@ -140,17 +153,28 @@ public sealed partial class ChalkboardDocuments
         foreach (var card in noteCards.Values) RemoveResearchObject(card.gameObject);
         foreach (var links in noteThreads.Values) foreach (var line in links) RemoveResearchObject(line.gameObject);
         noteCards.Clear(); noteThreads.Clear();
-        if (documentPositions.TryGetValue("target", out var targetPosition)) targetArea.anchoredPosition = targetPosition;
         var quest = board.PinnedQuest;
-        targetArea.sizeDelta = quest != null ? new Vector2(270, 246) : new Vector2(218, 66);
-        targetArea.Find("Raptiye").GetComponent<RectTransform>().anchoredPosition = new Vector2(-targetArea.rect.width / 2 + 16, targetArea.rect.height / 2 - 9);
+        if (quest == null) targetDetailsOpen = false;
+        targetArea.sizeDelta = new Vector2(270, targetDetailsOpen ? 246 : 42);
+        // Açılan ayrıntı aşağı doğru büyür; kartın sol üst köşesi yuvada sabit kalır.
+        targetArea.anchoredPosition = new Vector2(surface.rect.xMin + 149, surface.rect.yMax - 6 - targetArea.sizeDelta.y / 2);
+        targetArea.GetComponent<Image>().color = quest != null ? new Color(.93f, .85f, .62f) : new Color(.2f, .23f, .19f, .7f);
+        targetArea.GetComponent<Outline>().enabled = quest == null;
+        var targetPin = targetArea.Find("Raptiye");
+        targetPin.gameObject.SetActive(quest != null);
+        targetPin.GetComponent<RectTransform>().anchoredPosition = new Vector2(-targetArea.rect.width / 2 + 16, targetArea.rect.height / 2 - 9);
         if (quest != null) GameLocalization.SetFormat(title, "HEDEF / {0}", quest.title);
-        else GameLocalization.Set(title, "HEDEFİ TAHTAYA BIRAK");
-        title.rectTransform.anchoredPosition = new Vector2(2, quest != null ? 100 : 7);
-        title.rectTransform.sizeDelta = new Vector2(quest != null ? 238 : 184, 34);
+        else GameLocalization.Set(title, "HEDEFİ BURAYA BIRAK");
+        title.color = hint.color = quest != null ? new Color(.12f, .15f, .13f) : new Color(.94f, .9f, .75f);
+        title.rectTransform.anchoredPosition = quest == null ? new Vector2(0, 8) : new Vector2(-26, targetDetailsOpen ? 100 : 0);
+        title.rectTransform.sizeDelta = quest == null ? new Vector2(250, 22) : new Vector2(190, 34);
+        targetToggleLabel.gameObject.SetActive(quest != null);
+        GameLocalization.Set(targetToggleLabel, targetDetailsOpen ? "KAPAT" : "AÇ");
+        targetToggleLabel.rectTransform.anchoredPosition = new Vector2(100, targetDetailsOpen ? 100 : 0);
         GameLocalization.Set(hint, quest != null ? board.practiceQuest?.clueSummary ?? "Kayıtları karşılaştır." : "Defter > Hedefler");
-        goalDirectionsViewport.anchoredPosition = new Vector2(0, quest != null ? -60 : -18);
-        goalDirectionsViewport.sizeDelta = quest != null ? new Vector2(246, 110) : new Vector2(196, 22);
+        goalDirectionsViewport.gameObject.SetActive(true);
+        goalDirectionsViewport.anchoredPosition = new Vector2(0, quest != null ? -60 : -10);
+        goalDirectionsViewport.sizeDelta = quest != null ? new Vector2(246, 110) : new Vector2(250, 18);
         hint.rectTransform.anchoredPosition = Vector2.zero;
         hint.rectTransform.sizeDelta = new Vector2(goalDirectionsViewport.rect.width,
             Mathf.Max(goalDirectionsViewport.rect.height, hint.GetPreferredValues(hint.text, goalDirectionsViewport.rect.width, 0).y + 2));
@@ -158,10 +182,11 @@ public sealed partial class ChalkboardDocuments
         hint.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical,
             Mathf.Max(goalDirectionsViewport.rect.height, hint.preferredHeight + 2));
         hint.alignment = quest != null ? TextAlignmentOptions.TopLeft : TextAlignmentOptions.Center;
+        goalDirectionsViewport.gameObject.SetActive(quest == null || targetDetailsOpen);
         diagram.rectTransform.sizeDelta = new Vector2(246, 66);
         diagram.rectTransform.anchoredPosition = new Vector2(0, 47);
-        diagram.gameObject.SetActive(quest != null);
-        if (quest != null) diagram.SetQuest(quest);
+        diagram.gameObject.SetActive(targetDetailsOpen);
+        if (targetDetailsOpen) diagram.SetQuest(quest);
         informationArea.gameObject.SetActive(board.pinnedInformation.Count == 0);
         informationArea.anchoredPosition = new Vector2(quest != null ? documentBoard.rect.xMax - 125 : documentBoard.rect.xMin + 125,
             documentBoard.rect.yMax - (quest != null ? 90 : 200));
@@ -172,8 +197,9 @@ public sealed partial class ChalkboardDocuments
             string id = "note/" + note.instanceID;
             var card = PinnedCard("Kayıt / " + note.title, new Color(.79f, .86f, .86f));
             card.anchoredPosition = documentPositions.TryGetValue(id, out var position) ? position
-                : quest != null ? new Vector2(documentBoard.rect.xMax - 125, documentBoard.rect.yMax - 90 - index * 175)
-                : new Vector2(documentBoard.rect.xMin + 125 + index % 3 * 238, documentBoard.rect.yMax - 280 - index / 3 * 175);
+                // Sağdan sola iki sıra; altı karttan sonrası kaydırılarak dizilir, böylece hiçbiri tam örtülmez.
+                : new Vector2(documentBoard.rect.xMax - 125 - index / 2 % 3 * 238 - index / 6 * 16,
+                    documentBoard.rect.yMax - 90 - index % 2 * 175 - index / 6 * 16);
             ClampDocument(card);
             var heading = Text(card, note.title, new Vector2(0, 49), new Vector2(180, 30), 14);
             heading.fontStyle = FontStyles.Bold;
@@ -193,7 +219,6 @@ public sealed partial class ChalkboardDocuments
             }
             noteThreads[id] = lines; index++;
         }
-        ClampDocument(targetArea);
         GameLocalization.Set(shadeToggleLabel, shadeExpanded ? "BELGELERİ TOPLA" : "BELGELERİ AÇ");
         foreach (var localized in surface.GetComponentsInChildren<LocalizedText>(true)) localized.RefreshBaseline();
         UpdateResearchThreads();
@@ -234,9 +259,9 @@ public sealed partial class ChalkboardDocuments
         RectTransform card;
         if (note.blockType == NotebookBlockType.Quest)
         {
+            // Hedef nereye bırakılırsa bırakılsın sabit yuvaya oturur; belge panosunu açmaz.
             var quest = NotebookWorkspaceController.FindQuest(note.questID);
-            if (quest == null || !board.TryPinQuest(quest)) return false;
-            card = targetArea;
+            return quest != null && board.TryPinQuest(quest);
         }
         else if (note.blockType == NotebookBlockType.RuleClue)
         {

@@ -314,15 +314,12 @@ public class NotebookDraggableBlock : MonoBehaviour, IBeginDragHandler, IDragHan
         bool fromWorld = canvas.renderMode == RenderMode.WorldSpace;
         if (fromWorld && workspace.DragCanvas != null) canvas = workspace.DragCanvas;
         canvas = canvas.rootCanvas;
-        // Printed book meshes belong to the curved page. Rebuild their drag copy as a normal paper note.
-        var copy = fromWorld
-            ? new GameObject("Sürüklenen Not", typeof(RectTransform), typeof(CanvasGroup), typeof(NotebookDraggableBlock))
-            : Instantiate(gameObject, canvas.transform, true);
-        if (fromWorld) copy.transform.SetParent(canvas.transform, false);
+        // Instantiate grafik ve biçimli metin verisini kopyalamaz; sürüklenen kart hep Data'dan yeniden kurulur.
+        var copy = new GameObject("Sürüklenen Not", typeof(RectTransform), typeof(CanvasGroup), typeof(NotebookDraggableBlock));
+        copy.transform.SetParent(canvas.transform, false);
         var copyBlock = copy.GetComponent<NotebookDraggableBlock>();
-        if (fromWorld) copyBlock.Initialize(Data, false);
+        copyBlock.Initialize(Data, false);
         copyBlock.enabled = false;
-        copyBlock.ShowClueAsFloating();
         floatingRect = (RectTransform)copy.transform;
         if (fromWorld)
         {
@@ -330,8 +327,16 @@ public class NotebookDraggableBlock : MonoBehaviour, IBeginDragHandler, IDragHan
             floatingRect.localRotation = Quaternion.identity;
             floatingRect.pivot = new Vector2(.5f, .5f);
             floatingRect.sizeDelta = Data.blockType == NotebookBlockType.Quest ? new Vector2(380, 400) : new Vector2(300, 230);
-            workspace.StyleNotebookNote(copyBlock);
         }
+        else
+        {
+            var source = (RectTransform)transform;
+            floatingRect.pivot = source.pivot;
+            floatingRect.sizeDelta = source.rect.size;
+            floatingRect.localScale = Vector3.one * (source.lossyScale.x / canvas.transform.lossyScale.x);
+            floatingRect.SetPositionAndRotation(source.position, source.rotation);
+        }
+        workspace.StyleNotebookNote(copyBlock);
         // Notebook ink is transparent on the page; every detached copy needs its own paper.
         var fill = copy.GetComponent<Image>();
         if (fill != null) { fill.sprite = null; fill.color = new Color(.96f, .93f, .83f, 1); }
@@ -569,19 +574,6 @@ public class NotebookDraggableBlock : MonoBehaviour, IBeginDragHandler, IDragHan
         background.color = on ? ClueHoverFill : ClueIdleFill;
         foreach (var line in clueFrame)
             if (line != null) line.color = on ? ClueHoverFrame : ClueIdleFrame;
-    }
-
-    // Sürüklenen kopya özel durumudur (Data ve alanlar kopyalanmaz); görseli çocuk adlarından bulunur.
-    private void ShowClueAsFloating()
-    {
-        Transform imageTransform = transform.Find(ClueImageName);
-        if (imageTransform == null) return;
-        var image = imageTransform.GetComponent<RawImage>();
-        if (image != null) image.enabled = true;
-        var fill = GetComponent<Image>();
-        if (fill != null) fill.color = new Color(1f, 1f, 1f, 0f);
-        Transform frame = transform.Find(ClueFrameName);
-        if (frame != null) frame.gameObject.SetActive(false);
     }
 }
 

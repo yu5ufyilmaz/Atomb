@@ -141,16 +141,13 @@ public static class PhysicalBoardChecks
                 documents.SetDocumentPanelOpen(initiallyOpen, true);
                 Require(board.TryPinQuest(trial.Content.Quests.Find(q => q.questID == puzzle.id).CreateQuest()), "Gerçek hedef sabitlenemedi.");
                 documents.SetDocumentPanelOpen(true, true);
+                documents.SetTargetDetailsOpen(true);
                 Canvas.ForceUpdateCanvases();
                 var card = Field<RectTransform>(documents, "targetArea");
                 Require(card.rect.width <= 290 && card.rect.height <= 270, "Tahta hedefi dev defter kartı boyutunda: " + card.rect.size);
                 var bounds = ((RectTransform)card.parent).rect;
                 Require(bounds.Contains(card.anchoredPosition - card.rect.size / 2) && bounds.Contains(card.anchoredPosition + card.rect.size / 2),
-                    "Hedef kartı belge panosunun dışına taşıyor.");
-                var dropHint = Field<RectTransform>(documents, "informationArea");
-                Require(!dropHint.gameObject.activeSelf || !new Rect(card.anchoredPosition - card.rect.size / 2, card.rect.size)
-                    .Overlaps(new Rect(dropHint.anchoredPosition - dropHint.rect.size / 2, dropHint.rect.size)),
-                    "Kayıt bırakma ipucu hedef metnini örtüyor.");
+                    "Hedef kartı tahtanın dışına taşıyor.");
                 var scroll = card.GetComponentInChildren<ScrollRect>(true);
                 Require(scroll != null && scroll.vertical && scroll.content != null, "Kompakt hedefte kaynak metni kaydırılamıyor.");
                 var hint = Field<TextMeshProUGUI>(documents, "hint"); hint.ForceMeshUpdate();

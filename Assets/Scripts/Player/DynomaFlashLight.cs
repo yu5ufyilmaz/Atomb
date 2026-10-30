@@ -65,6 +65,11 @@ public class DynomaFlashLight : MonoBehaviour
 
     private void HandleInput()
     {
+        // Tahta, kitap ve makinelerde sağ tık etkileşime aittir; saklanırken fener kullanılabilir kalır.
+        var interaction = GameManager.Instance != null ? GameManager.Instance.activeInteraction : null;
+        if (interaction != null && !(interaction is InteractableHidingSpot))
+            return;
+
         // Sağ Tık Basılınca Şarj Et
         if (GameInput.Pressed("ChargeFlashlight"))
         {

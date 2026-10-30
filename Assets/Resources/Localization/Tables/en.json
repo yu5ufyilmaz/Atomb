@@ -1207,8 +1207,18 @@
         },
         {
             "key": "board.doc.drop_goal_board",
-            "source": "HEDEFİ TAHTAYA BIRAK",
-            "text": "DROP TARGET ON BOARD"
+            "source": "HEDEFİ BURAYA BIRAK",
+            "text": "DROP TARGET HERE"
+        },
+        {
+            "key": "board.doc.goal_details_open",
+            "source": "AÇ",
+            "text": "OPEN"
+        },
+        {
+            "key": "board.doc.goal_details_close",
+            "source": "KAPAT",
+            "text": "CLOSE"
         },
         {
             "key": "board.doc.compare_records",

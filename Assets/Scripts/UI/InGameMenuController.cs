@@ -12,6 +12,9 @@ public class InGameMenuController : MonoBehaviour
     [Tooltip("Başlangıçta çalışacak Timeline objesini (StartCutScene) buraya sürükle")]
     public PlayableDirector introTimeline;
 
+    [Tooltip("Timeline'daki ilk Cinemachine klibinin Ease In süresiyle aynı olmalı")]
+    public float introCameraBlend = 2.5f;
+
     [Header("Menü Objeleri (Masadaki Yazılar)")]
     public GameObject[] menuObjectsToHide;
 
@@ -118,8 +121,6 @@ public class InGameMenuController : MonoBehaviour
         bool wasSkipped = false;
         if (introTimeline != null)
         {
-            isCameraLocked = false;
-
             introTimeline.Play();
 
             // 🚨 SİHİRLİ DOKUNUŞ: Timeline oynadığı süre boyunca her kare (frame) çalışır
@@ -145,9 +146,11 @@ public class InGameMenuController : MonoBehaviour
                 {
                     skipTimer = 0f; // Tuş bırakılırsa sayacı sıfırla
                 }
+                // Blend sürerken menü kamerası yerinde kalmalı; hedefi taşımak geçişi aniden hızlandırır.
                 // Root objesini (0,0,0'da unutulan objeyi) her saniye zorla kameranın içine çekiyoruz
-                if (cameraTarget != null && Camera.main != null)
+                if (timelineTimer >= introCameraBlend && cameraTarget != null && Camera.main != null)
                 {
+                    isCameraLocked = false;
                     cameraTarget.position = Camera.main.transform.position;
                     cameraTarget.rotation = Camera.main.transform.rotation;
                     lockedPosition = cameraTarget.position;

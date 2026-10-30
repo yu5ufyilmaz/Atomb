@@ -9,9 +9,6 @@ public class PauseManager : MonoBehaviour
     private GameObject pauseMenuPanel;
 
     [SerializeField]
-    private string mainMenuSceneName = "MainMenu"; // Ana menü sahnesinin tam adı
-
-    [SerializeField]
     private GameObject settingsPanel; // <--- YENİ EKLENDİ
 
     [Header("Oyuncu Referansları")]
@@ -159,7 +156,8 @@ public class PauseManager : MonoBehaviour
         if (GameManager.Instance != null)
             GameManager.Instance.isGamePaused = false;
 
-        SceneManager.LoadScene(mainMenuSceneName);
+        // Ana menü oyun sahnesinin içindedir; PressAnyKey yalnızca ilk açılışta görünür.
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 
     public void QuitToDesktop()

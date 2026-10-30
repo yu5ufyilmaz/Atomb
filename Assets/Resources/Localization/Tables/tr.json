@@ -1207,8 +1207,18 @@
         },
         {
             "key": "board.doc.drop_goal_board",
-            "source": "HEDEFİ TAHTAYA BIRAK",
-            "text": "HEDEFİ TAHTAYA BIRAK"
+            "source": "HEDEFİ BURAYA BIRAK",
+            "text": "HEDEFİ BURAYA BIRAK"
+        },
+        {
+            "key": "board.doc.goal_details_open",
+            "source": "AÇ",
+            "text": "AÇ"
+        },
+        {
+            "key": "board.doc.goal_details_close",
+            "source": "KAPAT",
+            "text": "KAPAT"
         },
         {
             "key": "board.doc.compare_records",

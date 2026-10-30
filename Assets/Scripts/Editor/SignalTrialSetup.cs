@@ -296,12 +296,13 @@ public static class SignalTrialSetup
         var docs = board.EnsureDocuments();
         var target = (RectTransform)typeof(ChalkboardDocuments).GetField("targetArea", Private).GetValue(docs);
         var surface = (RectTransform)target.parent;
-        Check(target.rect.width == 218 && docs.WorkingMaxX == board.maxBounds.x, "The old reserved document column remains.");
+        Check(docs.WorkingMaxX == board.maxBounds.x, "The old reserved document column remains.");
         Check(docs.TryDropDocument(firstNote, Camera.main.WorldToScreenPoint(board.boardTransform.TransformPoint(new Vector3(.95f, -.15f, .04f)))), "Record cannot be pinned freely.");
         docs.SetDocumentPanelOpen(true, true);
         var noteCards = (Dictionary<string, RectTransform>)typeof(ChalkboardDocuments).GetField("noteCards", Private).GetValue(docs);
         var pinned = new List<RectTransform>(noteCards.Values)[0];
-        foreach (var card in new[] { target, pinned })
+        var targetPosition = target.anchoredPosition;
+        foreach (var card in new[] { pinned })
         {
             var before = card.anchoredPosition;
             var raycaster = surface.GetComponentInParent<UnityEngine.UI.GraphicRaycaster>();
@@ -315,8 +316,9 @@ public static class SignalTrialSetup
             foreach (var text in card.GetComponentsInChildren<TMP_Text>())
             { text.ForceMeshUpdate(); Check(!text.isTextOverflowing, "Board card text overflow: " + text.text); }
         }
+        Check(target.GetComponent<DraggableWorkspaceItem>() == null && target.anchoredPosition == targetPosition, "The target must stay in its fixed slot.");
         var saved = new GameData(); board.SaveData(ref saved);
-        Check(saved.savedChalkboard.documents.Count >= 2, "Card positions were not saved.");
+        Check(saved.savedChalkboard.documents.Count >= 1, "Card positions were not saved.");
         board.LoadData(JsonUtility.FromJson<GameData>(JsonUtility.ToJson(saved)));
         var again = new GameData(); board.SaveData(ref again);
         foreach (var item in saved.savedChalkboard.documents)
@@ -335,7 +337,7 @@ public static class SignalTrialSetup
         var target = (RectTransform)typeof(ChalkboardDocuments).GetField("targetArea", Private).GetValue(docs);
         docs.SetDocumentPanelOpen(true, true);
         var saved = new GameData(); board.SaveData(ref saved);
-        Check(saved.savedChalkboard.documents.Count > 1 && saved.savedChalkboard.documentShadeOpen, "The open document panel wasn't saved.");
+        Check(saved.savedChalkboard.documentShadeOpen, "The open document panel wasn't saved.");
         var outputSource = Array.Find(UnityEngine.Object.FindObjectsByType<NotebookDraggableBlock>(FindObjectsSortMode.None), b => b.IsSource && (b.Data.itemID ?? "").StartsWith("signal-result/"));
         Check(outputSource != null && !outputSource.transform.IsChildOf(viewport), "Measurement paper was hidden inside the document panel.");
         var experiment = SignalExperiment.Active;
@@ -348,7 +350,7 @@ public static class SignalTrialSetup
         docs.SetDocumentPanelOpen(false, true);
         refreshPaper.Invoke(experiment, null);
         Check(paperInput.alpha == 1 && paperInput.blocksRaycasts, "Closing documents did not restore the measurement paper.");
-        Check(!viewport.gameObject.activeSelf && !target.gameObject.activeInHierarchy && outputSource.gameObject.activeInHierarchy
+        Check(!viewport.gameObject.activeSelf && target.gameObject.activeInHierarchy && outputSource.gameObject.activeInHierarchy
             && toggle.gameObject.activeInHierarchy, "A closed panel still covers the experiment area or hides its handle.");
         var closed = new GameData(); board.SaveData(ref closed);
         Check(!closed.savedChalkboard.documentShadeOpen && closed.savedChalkboard.documents.Count == saved.savedChalkboard.documents.Count,

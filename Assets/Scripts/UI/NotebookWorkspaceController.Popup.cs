@@ -12,7 +12,9 @@ public partial class NotebookWorkspaceController
     private Vector2 notebookOpenPosition;
     private Vector2 workstationNotebookPosition;
     private bool standalonePositioned;
-    private float NotebookScale => notebook != null && notebook.useScreenSpaceNotebook ? .8f : 1f;
+    // Tahtada .68, defteri tahtanın sağındaki boşluğa sığdırır; ölçüm cihazının üstüne binmez.
+    private float NotebookScale => notebook == null || !notebook.useScreenSpaceNotebook ? 1f
+        : ChalkboardManager.Instance != null && ChalkboardManager.Instance.isMachineActive ? .68f : .8f;
 
     private void RestoreWorkstationNotebookPosition()
     {
@@ -55,8 +57,27 @@ public partial class NotebookWorkspaceController
 
     public void BrowseStandaloneNotebook(int sectionDelta, int pageDelta)
     {
-        if (!IsStandaloneOpen || IsPaused || !notebookExpanded || notebook.isOnMachine
+        if (!IsStandaloneOpen || notebook.isOnMachine
             || (GameManager.Instance != null && GameManager.Instance.activeInteraction != null)) return;
+        BrowseNotebook(sectionDelta, pageDelta);
+    }
+
+    private void BrowseNotebookOnBoard()
+    {
+        var board = ChalkboardManager.Instance;
+        // Turing'de Q/E kod yazar; tahtada sürüklerken aynı girdiler parçayı döndürür.
+        if (activeBook != null || board == null || !board.isMachineActive || GameInput.Held("Interact")) return;
+        float scroll = GameInput.Scroll;
+        // Belge kartlarının kendi kaydırma alanları tekerleği kullanır.
+        bool overDocuments = scroll != 0 && board.EnsureDocuments() is ChalkboardDocuments documents
+            && documents.ContainsPointer(Input.mousePosition);
+        BrowseNotebook(GameInput.Pressed("PreviousTab") ? -1 : GameInput.Pressed("NextTab") ? 1 : 0,
+            scroll == 0 || overDocuments ? 0 : scroll > 0 ? -1 : 1);
+    }
+
+    private void BrowseNotebook(int sectionDelta, int pageDelta)
+    {
+        if (IsPaused || !notebookExpanded) return;
         if (sectionDelta != 0)
         {
             var sections = new[] { NotebookView.Notes, NotebookView.Information, NotebookView.Targets, NotebookView.Solutions };

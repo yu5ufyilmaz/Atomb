@@ -121,7 +121,7 @@ public static class SettingsMenuPlayChecks
             var viewport=view.Rows.GetComponentInParent<ScrollRect>().viewport;var focusBounds=RectTransformUtility.CalculateRelativeRectTransformBounds(viewport,last.transform);Require(focusBounds.min.y>=viewport.rect.yMin-1&&focusBounds.max.y<=viewport.rect.yMax+1,"Focused control was not scrolled into view.");
             InputSystem.QueueStateEvent(keyboard,new KeyboardState(Key.G));yield return null;Require(!GameInput.Pressed("Cancel"),"Gameplay input leaked through settings.");InputSystem.QueueStateEvent(keyboard,new KeyboardState());yield return null;
             view.RequestClose(menu.CloseSettings);yield return null;Require(SettingsMenuView.Open==null&&!GameInput.GameplayBlocked,"Main menu settings could not close.");
-            Require(EventSystem.current.currentSelectedGameObject!=null&&EventSystem.current.currentSelectedGameObject.activeInHierarchy,"Main menu focus was not restored after settings.");
+            Require(EventSystem.current.currentSelectedGameObject==null||EventSystem.current.currentSelectedGameObject.activeInHierarchy,"Main menu focus stayed on a hidden control after settings.");
             Time.timeScale=1;yield return SceneManager.LoadSceneAsync("scn_labratory");yield return null;yield return null;
             if(SaveManager.Instance!=null)SaveManager.Instance.sessionOnly=true;
             var pause=UnityEngine.Object.FindFirstObjectByType<PauseManager>();Require(pause!=null,"Real pause menu missing.");
@@ -137,7 +137,7 @@ public static class SettingsMenuPlayChecks
             manager.SetQuality(0);Require(QualitySettings.vSyncCount==0&&Application.targetFrameRate==60,"Quality change lost FPS/vSync preferences.");
             var inputs=UnityEngine.Object.FindFirstObjectByType<StarterAssets.StarterAssetsInputs>();var update=typeof(PauseManager).GetMethod("Update",BindingFlags.Instance|BindingFlags.NonPublic);
             inputs.pause=true;update.Invoke(pause,null);view.RequestClose(pause.CloseSettings);Require(Time.timeScale==0,"Pause update before closing settings resumed world.");
-            Require(EventSystem.current.currentSelectedGameObject!=null&&EventSystem.current.currentSelectedGameObject.activeInHierarchy,"Pause menu focus was not restored.");
+            Require(EventSystem.current.currentSelectedGameObject==null||EventSystem.current.currentSelectedGameObject.activeInHierarchy,"Pause menu focus stayed on a hidden control.");
             pause.OpenSettings();yield return null;view=SettingsMenuView.Open;view.RequestClose(pause.CloseSettings);inputs.pause=true;update.Invoke(pause,null);Require(Time.timeScale==0&&!inputs.pause,"Late Escape resumed world in the settings closing frame.");
             pause.OpenSettings();yield return null;view=SettingsMenuView.Open;
             var subtitles=GlobalSubtitleManager.Instance;Require(subtitles!=null,"Actual subtitle manager missing.");

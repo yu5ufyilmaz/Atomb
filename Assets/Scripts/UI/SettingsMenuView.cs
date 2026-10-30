@@ -101,6 +101,8 @@ public sealed class SettingsMenuView : MonoBehaviour
     {
         if(EventSystem.current==null)return;
         if(returnFocus!=null&&returnFocus.activeInHierarchy){EventSystem.current.SetSelectedGameObject(returnFocus);return;}
+        // Selected durumu Highlighted'ı bastırır; fareyle çıkınca hiçbir buton seçili bırakılmaz, yedek odak yalnızca gamepad içindir.
+        if(Gamepad.current?.wasUpdatedThisFrame!=true){EventSystem.current.SetSelectedGameObject(null);return;}
         var first=panel!=null?panel.GetComponentsInChildren<Selectable>().FirstOrDefault(s=>s.IsInteractable()):null;
         if(first!=null)EventSystem.current.SetSelectedGameObject(first.gameObject);
     }
