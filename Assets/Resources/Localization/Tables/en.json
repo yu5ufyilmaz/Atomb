@@ -3966,44 +3966,9 @@
             "text": "NO TARGET"
         },
         {
-            "key": "notebook.target.no_clue",
-            "source": "BİLGİ YOK",
-            "text": "NO CLUE"
-        },
-        {
-            "key": "notebook.target.no_part",
-            "source": "PARÇA YOK",
-            "text": "NO PART"
-        },
-        {
-            "key": "notebook.target.no_part_info",
-            "source": "PARÇA BİLGİSİ YOK",
-            "text": "NO PART INFO"
-        },
-        {
-            "key": "notebook.target.clues_heading",
-            "source": "HEDEFİN BİLGİLERİ",
-            "text": "TARGET'S CLUES"
-        },
-        {
-            "key": "notebook.target.parts_heading",
-            "source": "HEDEFİN PARÇALARI",
-            "text": "TARGET'S PARTS"
-        },
-        {
             "key": "notebook.target.samples_heading",
             "source": "GEREKLİ NUMUNELER",
             "text": "REQUIRED SAMPLES"
-        },
-        {
-            "key": "notebook.target.samples_hint",
-            "source": "Kitaptaki ekipman notunu deftere al;\nbu deneyin numuneleri burada görünür.",
-            "text": "Take the equipment note from the book;\nthis experiment's samples appear here."
-        },
-        {
-            "key": "notebook.target.samples_count",
-            "source": "Numune: {0}–{1} adet",
-            "text": "Samples: {0}–{1}"
         },
         {
             "key": "notebook.parts.group_source",
@@ -4031,9 +3996,94 @@
             "text": "OTHER"
         },
         {
+            "key": "notebook.target.progress",
+            "source": "Hazırlık {0} / {1}",
+            "text": "Progress {0} / {1}"
+        },
+        {
+            "key": "notebook.target.required",
+            "source": "GEREKENLER",
+            "text": "REQUIRED"
+        },
+        {
+            "key": "notebook.target.hints",
+            "source": "İPUCU",
+            "text": "HINTS"
+        },
+        {
+            "key": "notebook.target.done_row",
+            "source": "✓  {0}",
+            "text": "✓  {0}"
+        },
+        {
+            "key": "notebook.target.missing_row",
+            "source": "○  {0}",
+            "text": "○  {0}"
+        },
+        {
+            "key": "notebook.target.drop_hint",
+            "source": "Kitaptaki hedef notunu deftere bırak.",
+            "text": "Drop the target note from the book here."
+        },
+        {
+            "key": "notebook.parts.not_found",
+            "source": "Henüz bulunmadı",
+            "text": "Not found yet"
+        },
+        {
+            "key": "notebook.info.status",
+            "source": "Her deneyde geçerli kurallar; hedefe özel notlar Hedef sayfasında. Tahtaya raptiyele.",
+            "text": "Rules for every experiment; target-specific notes live on the Target page. Pin to the board."
+        },
+        {
+            "key": "notebook.target.no_clue",
+            "source": "BİLGİ YOK",
+            "text": "NO CLUE"
+        },
+        {
+            "key": "notebook.target.no_part",
+            "source": "PARÇA YOK",
+            "text": "NO PART"
+        },
+        {
+            "key": "notebook.target.no_part_info",
+            "source": "PARÇA BİLGİSİ YOK",
+            "text": "NO PART INFO"
+        },
+        {
+            "key": "notebook.target.clues_heading",
+            "source": "HEDEFİN BİLGİLERİ",
+            "text": "TARGET'S CLUES"
+        },
+        {
+            "key": "notebook.target.parts_heading",
+            "source": "HEDEFİN PARÇALARI",
+            "text": "TARGET'S PARTS"
+        },
+        {
+            "key": "notebook.target.samples_hint",
+            "source": "Kitaptaki ekipman notunu deftere al;\nbu deneyin numuneleri burada görünür.",
+            "text": "Take the equipment note from the book;\nthis experiment's samples appear here."
+        },
+        {
+            "key": "notebook.target.samples_count",
+            "source": "Numune: {0}–{1} adet",
+            "text": "Samples: {0}–{1}"
+        },
+        {
             "key": "notebook.target.sample_count",
             "source": "×{0}–{1}",
             "text": "×{0}–{1}"
+        },
+        {
+            "key": "notebook.target.unknown",
+            "source": "Bilinmiyor",
+            "text": "Unknown"
+        },
+        {
+            "key": "notebook.footer.book_sections",
+            "source": "NOTU SÜRÜKLE  /  Q E: BÖLÜM  /  ASLI DEFTERDE KALIR",
+            "text": "DRAG THE NOTE  /  Q E: SECTION  /  THE ORIGINAL STAYS"
         },
         {
             "key": "subtitle.chemistry_lab_entrance.0",

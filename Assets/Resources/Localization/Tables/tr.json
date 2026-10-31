@@ -3966,44 +3966,9 @@
             "text": "HEDEF YOK"
         },
         {
-            "key": "notebook.target.no_clue",
-            "source": "BİLGİ YOK",
-            "text": "BİLGİ YOK"
-        },
-        {
-            "key": "notebook.target.no_part",
-            "source": "PARÇA YOK",
-            "text": "PARÇA YOK"
-        },
-        {
-            "key": "notebook.target.no_part_info",
-            "source": "PARÇA BİLGİSİ YOK",
-            "text": "PARÇA BİLGİSİ YOK"
-        },
-        {
-            "key": "notebook.target.clues_heading",
-            "source": "HEDEFİN BİLGİLERİ",
-            "text": "HEDEFİN BİLGİLERİ"
-        },
-        {
-            "key": "notebook.target.parts_heading",
-            "source": "HEDEFİN PARÇALARI",
-            "text": "HEDEFİN PARÇALARI"
-        },
-        {
             "key": "notebook.target.samples_heading",
             "source": "GEREKLİ NUMUNELER",
             "text": "GEREKLİ NUMUNELER"
-        },
-        {
-            "key": "notebook.target.samples_hint",
-            "source": "Kitaptaki ekipman notunu deftere al;\nbu deneyin numuneleri burada görünür.",
-            "text": "Kitaptaki ekipman notunu deftere al;\nbu deneyin numuneleri burada görünür."
-        },
-        {
-            "key": "notebook.target.samples_count",
-            "source": "Numune: {0}–{1} adet",
-            "text": "Numune: {0}–{1} adet"
         },
         {
             "key": "notebook.parts.group_source",
@@ -4031,9 +3996,94 @@
             "text": "DİĞER"
         },
         {
+            "key": "notebook.target.progress",
+            "source": "Hazırlık {0} / {1}",
+            "text": "Hazırlık {0} / {1}"
+        },
+        {
+            "key": "notebook.target.required",
+            "source": "GEREKENLER",
+            "text": "GEREKENLER"
+        },
+        {
+            "key": "notebook.target.hints",
+            "source": "İPUCU",
+            "text": "İPUCU"
+        },
+        {
+            "key": "notebook.target.done_row",
+            "source": "✓  {0}",
+            "text": "✓  {0}"
+        },
+        {
+            "key": "notebook.target.missing_row",
+            "source": "○  {0}",
+            "text": "○  {0}"
+        },
+        {
+            "key": "notebook.target.drop_hint",
+            "source": "Kitaptaki hedef notunu deftere bırak.",
+            "text": "Kitaptaki hedef notunu deftere bırak."
+        },
+        {
+            "key": "notebook.parts.not_found",
+            "source": "Henüz bulunmadı",
+            "text": "Henüz bulunmadı"
+        },
+        {
+            "key": "notebook.info.status",
+            "source": "Her deneyde geçerli kurallar; hedefe özel notlar Hedef sayfasında. Tahtaya raptiyele.",
+            "text": "Her deneyde geçerli kurallar; hedefe özel notlar Hedef sayfasında. Tahtaya raptiyele."
+        },
+        {
+            "key": "notebook.target.no_clue",
+            "source": "BİLGİ YOK",
+            "text": "BİLGİ YOK"
+        },
+        {
+            "key": "notebook.target.no_part",
+            "source": "PARÇA YOK",
+            "text": "PARÇA YOK"
+        },
+        {
+            "key": "notebook.target.no_part_info",
+            "source": "PARÇA BİLGİSİ YOK",
+            "text": "PARÇA BİLGİSİ YOK"
+        },
+        {
+            "key": "notebook.target.clues_heading",
+            "source": "HEDEFİN BİLGİLERİ",
+            "text": "HEDEFİN BİLGİLERİ"
+        },
+        {
+            "key": "notebook.target.parts_heading",
+            "source": "HEDEFİN PARÇALARI",
+            "text": "HEDEFİN PARÇALARI"
+        },
+        {
+            "key": "notebook.target.samples_hint",
+            "source": "Kitaptaki ekipman notunu deftere al;\nbu deneyin numuneleri burada görünür.",
+            "text": "Kitaptaki ekipman notunu deftere al;\nbu deneyin numuneleri burada görünür."
+        },
+        {
+            "key": "notebook.target.samples_count",
+            "source": "Numune: {0}–{1} adet",
+            "text": "Numune: {0}–{1} adet"
+        },
+        {
             "key": "notebook.target.sample_count",
             "source": "×{0}–{1}",
             "text": "×{0}–{1}"
+        },
+        {
+            "key": "notebook.target.unknown",
+            "source": "Bilinmiyor",
+            "text": "Bilinmiyor"
+        },
+        {
+            "key": "notebook.footer.book_sections",
+            "source": "NOTU SÜRÜKLE  /  Q E: BÖLÜM  /  ASLI DEFTERDE KALIR",
+            "text": "NOTU SÜRÜKLE  /  Q E: BÖLÜM  /  ASLI DEFTERDE KALIR"
         },
         {
             "key": "subtitle.chemistry_lab_entrance.0",

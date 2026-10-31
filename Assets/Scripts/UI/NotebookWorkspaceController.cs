@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -97,7 +98,7 @@ public partial class NotebookWorkspaceController : MonoBehaviour
         activeBook = book;
         if (archiveFooter != null && IsArchiveNotebook)
             GameLocalization.Set(archiveFooter, book == null && ChalkboardManager.Instance.isMachineActive
-                ? "TAB: KAPAT   /   Q E: BÖLÜM   /   TEKERLEK: SAYFA" : "NOTU SÜRÜKLE  /  ASLI DEFTERDE KALIR");
+                ? "TAB: KAPAT   /   Q E: BÖLÜM   /   TEKERLEK: SAYFA" : "NOTU SÜRÜKLE  /  Q E: BÖLÜM  /  ASLI DEFTERDE KALIR");
         bookWindow.gameObject.SetActive(book != null && !book.usePhysicalPageBlocks
             && book.synthesisPages.Count > 0);
         if (ChalkboardManager.Instance != null)
@@ -169,6 +170,7 @@ public partial class NotebookWorkspaceController : MonoBehaviour
             if (IsArchiveNotebook && !IsStandaloneOpen)
             {
                 if (GameInput.Pressed("ToggleNotebook")) ToggleNotebook();
+                else if (activeBook != null) BrowseNotebook(GameInput.Pressed("PreviousTab") ? -1 : GameInput.Pressed("NextTab") ? 1 : 0, 0); // Kitap okurken de Q/E defter bölümünü değiştirir.
                 else BrowseNotebookOnBoard();
             }
             UpdateNotebookPopup(Time.unscaledDeltaTime);
@@ -345,7 +347,7 @@ public partial class NotebookWorkspaceController : MonoBehaviour
 
     public bool ShowCollectedPart(string itemID)
     {
-        int index = PartsPages().FindIndex(p => p.notes.Exists(n => n.itemID == itemID));
+        int index = PartsPages().FindIndex(p => p.slots.Exists(n => n != null && n.itemID == itemID));
         if (index < 0) return false;
         int previousPage = partsArchivePage;
         bool wasParts = currentNotebookView == NotebookView.Notes;
@@ -401,17 +403,31 @@ public partial class NotebookWorkspaceController : MonoBehaviour
         float top = 8;
         if (!string.IsNullOrEmpty(current.group))
         {
-            var heading = Label(partsContent, current.group, Vector2.zero, new Vector2(440, 22), 13);
-            Top(heading.rectTransform, new Vector2(0, -6)); heading.fontStyle = FontStyles.Bold;
+            // Grup adları yan yana; açık sayfanın grubu kalın ve altı çizili.
+            var groups = pages.Select(p => p.group).Distinct().ToList();
+            float step = Mathf.Min(110, 440f / Mathf.Max(1, groups.Count));
+            for (int i = 0; i < groups.Count; i++)
+            {
+                var label = Label(partsContent, groups[i], Vector2.zero, new Vector2(step - 4, 20), 11);
+                Top(label.rectTransform, new Vector2(-220 + step * (i + .5f), -4));
+                bool selected = groups[i] == current.group;
+                label.fontStyle = selected ? FontStyles.Bold : FontStyles.Normal; label.color = selected ? NotebookInk : new Color(.09f, .11f, .095f, .5f);
+                if (selected)
+                {
+                    var underline = Panel("Seçili Grup", partsContent, new Vector2(step - 24, 1), NotebookInk);
+                    Top(underline, new Vector2(-220 + step * (i + .5f), -24)); underline.GetComponent<Image>().raycastTarget = false;
+                }
+            }
             top = 34;
         }
-        for (int slot = 0; slot < current.notes.Count; slot++)
+        for (int slot = 0; slot < current.slots.Count; slot++)
         {
-            var block = CreateBlock(current.notes[slot], false, partsContent);
-            var rect = (RectTransform)block.transform;
-            rect.sizeDelta = new Vector2(UsesNotebookSkin ? 218 : 234, UsesNotebookSkin ? 176 : 174);
-            Top(rect, new Vector2(slot % 2 == 0 ? -(UsesNotebookSkin ? 116 : 125) : (UsesNotebookSkin ? 116 : 125), -top - slot / 2 * (UsesNotebookSkin ? 186 : 190)));
-            ApplyArchiveNotePose(rect, current.notes[slot]); pageBlocks.Add(block);
+            var position = new Vector2(slot % 2 == 0 ? -(UsesNotebookSkin ? 116 : 125) : (UsesNotebookSkin ? 116 : 125), -top - slot / 2 * (UsesNotebookSkin ? 186 : 190));
+            var size = new Vector2(UsesNotebookSkin ? 218 : 234, UsesNotebookSkin ? 176 : 174);
+            if (current.slots[slot] == null) { Placeholder(partsContent, "Henüz bulunmadı", size, position); continue; }
+            var block = CreateBlock(current.slots[slot], false, partsContent);
+            var rect = (RectTransform)block.transform; rect.sizeDelta = size;
+            Top(rect, position); ApplyArchiveNotePose(rect, current.slots[slot]); pageBlocks.Add(block);
         }
         if (page.gameObject.activeSelf) GameLocalization.SetFormat(pageLabel, UsesNotebookSkin ? "{0} / {1}" : "PARÇALAR  {0} / {1}", partsArchivePage + 1, pageCount);
         if (page.gameObject.activeSelf) UpdateArchivePager(partsArchivePage, pageCount);
