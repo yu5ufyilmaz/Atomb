@@ -3961,6 +3961,81 @@
             "text": "PANOYU TEMİZLE"
         },
         {
+            "key": "notebook.target.none",
+            "source": "HEDEF YOK",
+            "text": "HEDEF YOK"
+        },
+        {
+            "key": "notebook.target.no_clue",
+            "source": "BİLGİ YOK",
+            "text": "BİLGİ YOK"
+        },
+        {
+            "key": "notebook.target.no_part",
+            "source": "PARÇA YOK",
+            "text": "PARÇA YOK"
+        },
+        {
+            "key": "notebook.target.no_part_info",
+            "source": "PARÇA BİLGİSİ YOK",
+            "text": "PARÇA BİLGİSİ YOK"
+        },
+        {
+            "key": "notebook.target.clues_heading",
+            "source": "HEDEFİN BİLGİLERİ",
+            "text": "HEDEFİN BİLGİLERİ"
+        },
+        {
+            "key": "notebook.target.parts_heading",
+            "source": "HEDEFİN PARÇALARI",
+            "text": "HEDEFİN PARÇALARI"
+        },
+        {
+            "key": "notebook.target.samples_heading",
+            "source": "GEREKLİ NUMUNELER",
+            "text": "GEREKLİ NUMUNELER"
+        },
+        {
+            "key": "notebook.target.samples_hint",
+            "source": "Kitaptaki ekipman notunu deftere al;\nbu deneyin numuneleri burada görünür.",
+            "text": "Kitaptaki ekipman notunu deftere al;\nbu deneyin numuneleri burada görünür."
+        },
+        {
+            "key": "notebook.target.samples_count",
+            "source": "Numune: {0}–{1} adet",
+            "text": "Numune: {0}–{1} adet"
+        },
+        {
+            "key": "notebook.parts.group_source",
+            "source": "BAŞLATICI",
+            "text": "BAŞLATICI"
+        },
+        {
+            "key": "notebook.parts.group_sample",
+            "source": "NUMUNE",
+            "text": "NUMUNE"
+        },
+        {
+            "key": "notebook.parts.group_process",
+            "source": "İŞLEM",
+            "text": "İŞLEM"
+        },
+        {
+            "key": "notebook.parts.group_meter",
+            "source": "SONLANDIRICI",
+            "text": "SONLANDIRICI"
+        },
+        {
+            "key": "notebook.parts.group_other",
+            "source": "DİĞER",
+            "text": "DİĞER"
+        },
+        {
+            "key": "notebook.target.sample_count",
+            "source": "×{0}–{1}",
+            "text": "×{0}–{1}"
+        },
+        {
             "key": "subtitle.chemistry_lab_entrance.0",
             "source": "",
             "text": "Beni üniversitede geride bıraktığını mı sandın Arthur?"

@@ -3961,6 +3961,81 @@
             "text": "CLEAR PINBOARD"
         },
         {
+            "key": "notebook.target.none",
+            "source": "HEDEF YOK",
+            "text": "NO TARGET"
+        },
+        {
+            "key": "notebook.target.no_clue",
+            "source": "BİLGİ YOK",
+            "text": "NO CLUE"
+        },
+        {
+            "key": "notebook.target.no_part",
+            "source": "PARÇA YOK",
+            "text": "NO PART"
+        },
+        {
+            "key": "notebook.target.no_part_info",
+            "source": "PARÇA BİLGİSİ YOK",
+            "text": "NO PART INFO"
+        },
+        {
+            "key": "notebook.target.clues_heading",
+            "source": "HEDEFİN BİLGİLERİ",
+            "text": "TARGET'S CLUES"
+        },
+        {
+            "key": "notebook.target.parts_heading",
+            "source": "HEDEFİN PARÇALARI",
+            "text": "TARGET'S PARTS"
+        },
+        {
+            "key": "notebook.target.samples_heading",
+            "source": "GEREKLİ NUMUNELER",
+            "text": "REQUIRED SAMPLES"
+        },
+        {
+            "key": "notebook.target.samples_hint",
+            "source": "Kitaptaki ekipman notunu deftere al;\nbu deneyin numuneleri burada görünür.",
+            "text": "Take the equipment note from the book;\nthis experiment's samples appear here."
+        },
+        {
+            "key": "notebook.target.samples_count",
+            "source": "Numune: {0}–{1} adet",
+            "text": "Samples: {0}–{1}"
+        },
+        {
+            "key": "notebook.parts.group_source",
+            "source": "BAŞLATICI",
+            "text": "STARTER"
+        },
+        {
+            "key": "notebook.parts.group_sample",
+            "source": "NUMUNE",
+            "text": "SAMPLE"
+        },
+        {
+            "key": "notebook.parts.group_process",
+            "source": "İŞLEM",
+            "text": "PROCESS"
+        },
+        {
+            "key": "notebook.parts.group_meter",
+            "source": "SONLANDIRICI",
+            "text": "TERMINATOR"
+        },
+        {
+            "key": "notebook.parts.group_other",
+            "source": "DİĞER",
+            "text": "OTHER"
+        },
+        {
+            "key": "notebook.target.sample_count",
+            "source": "×{0}–{1}",
+            "text": "×{0}–{1}"
+        },
+        {
             "key": "subtitle.chemistry_lab_entrance.0",
             "source": "",
             "text": "Did you think you left me behind at the university, Arthur?"

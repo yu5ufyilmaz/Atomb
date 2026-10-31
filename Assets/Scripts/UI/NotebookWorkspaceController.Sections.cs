@@ -38,8 +38,8 @@ public partial class NotebookWorkspaceController
         targetContent.anchorMin = new Vector2(0, 1);
         targetContent.anchorMax = Vector2.one;
         targetContent.pivot = new Vector2(.5f, 1);
-        if (!IsArchiveNotebook)
         {
+            // Araştırma defterinde hedef sayfası bilgi, parça ve numune kartıyla uzar; tekerlekle kaydırılır.
             var scroll = targetPanel.gameObject.AddComponent<ScrollRect>();
             scroll.horizontal = false; scroll.viewport = targetPanel;
             scroll.movementType = ScrollRect.MovementType.Clamped; scroll.content = targetContent;
@@ -167,18 +167,7 @@ public partial class NotebookWorkspaceController
                 GameLocalization.SetFormat(pageLabel, UsesNotebookSkin ? "{0} / {1}" : "HEDEFLER  {0} / {1}", targetArchivePage + 1, pages);
                 UpdateArchivePager(targetArchivePage, pages);
             }
-            targetContent.sizeDelta = new Vector2(0, targetPanel.rect.height); targetContent.anchoredPosition = Vector2.zero;
-            if (targets.Count == 0)
-            {
-                var empty = Label(targetContent, "Kitaptaki hedef notunu deftere bırak.\nTopladığın hedefler bu sayfalarda saklanır.", Vector2.zero, new Vector2(450, 110), 17);
-                Top(empty.rectTransform, new Vector2(0, -20));
-            }
-            if (targetArchivePage < targets.Count)
-            {
-                var block = CreateBlock(targets[targetArchivePage], false, targetContent);
-                var rect = (RectTransform)block.transform; rect.sizeDelta = new Vector2(440, 400);
-                Top(rect, new Vector2(0, -12)); ApplyArchiveNotePose(rect, targets[targetArchivePage]);
-            }
+            BuildTargetPage(targetArchivePage < targets.Count ? targets[targetArchivePage] : null);
             if (UsesNotebookSkin) ShowEmptyArchivePaper(targetPanel, targets.Count == 0);
             return;
         }

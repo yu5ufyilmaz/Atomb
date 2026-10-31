@@ -50,6 +50,8 @@ public partial class NotebookWorkspaceController
         if (IsArchiveNotebook)
         {
             notes.RemoveAll(n => SignalExperiment.IsMeasurementNote(n) != solutions);
+            // Hedefe özel kayıtlar Hedef sayfasında listelenir; burada yalnız genel kurallar kalır.
+            if (!solutions) notes.RemoveAll(IsTargetNote);
             var unique = new List<NotebookBlockData>();
             foreach (var note in notes) if (!unique.Exists(n => SameInformation(n, note))) unique.Add(note);
             notes = unique;

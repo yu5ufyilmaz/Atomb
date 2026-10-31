@@ -345,11 +345,11 @@ public partial class NotebookWorkspaceController : MonoBehaviour
 
     public bool ShowCollectedPart(string itemID)
     {
-        int index = ArchivedParts().FindIndex(n => n.itemID == itemID);
+        int index = PartsPages().FindIndex(p => p.notes.Exists(n => n.itemID == itemID));
         if (index < 0) return false;
         int previousPage = partsArchivePage;
         bool wasParts = currentNotebookView == NotebookView.Notes;
-        partsArchivePage = index / PartsPerPage;
+        partsArchivePage = index;
         ShowNotebookView(NotebookView.Notes);
         if (wasParts && previousPage != partsArchivePage) BeginNotebookPageTurn(partsArchivePage - previousPage);
         return true;
@@ -363,8 +363,8 @@ public partial class NotebookWorkspaceController : MonoBehaviour
         int previous = information ? showingSolutions ? solutionsArchivePage : informationArchivePage
             : targets ? targetArchivePage : partsArchivePage;
         int count = information ? InformationNotes(showingSolutions).Count
-            : targets ? notebook.EnsureCollectedQuests().Count : ArchivedParts().Count;
-        int perPage = information ? 2 : targets ? 1 : PartsPerPage;
+            : targets ? notebook.EnsureCollectedQuests().Count : PartsPages().Count;
+        int perPage = information ? 2 : 1;
         int pages = Mathf.Max(1, (count + perPage - 1) / perPage);
         int next = Mathf.Clamp(previous + delta, 0, pages - 1);
         if (next == previous) return;
@@ -394,18 +394,24 @@ public partial class NotebookWorkspaceController : MonoBehaviour
         if (partsContent == null) return;
         for (int i = partsContent.childCount - 1; i >= 0; i--) RemoveObject(partsContent.GetChild(i).gameObject);
         pageBlocks.Clear();
-        var notes = ArchivedParts();
-        int pageCount = Mathf.Max(1, (notes.Count + PartsPerPage - 1) / PartsPerPage);
+        var pages = PartsPages(); var notes = ArchivedParts();
+        int pageCount = pages.Count;
         partsArchivePage = Mathf.Clamp(partsArchivePage, 0, pageCount - 1);
-        for (int slot = 0; slot < PartsPerPage; slot++)
+        var current = pages[partsArchivePage];
+        float top = 8;
+        if (!string.IsNullOrEmpty(current.group))
         {
-            int index = partsArchivePage * PartsPerPage + slot;
-            if (index >= notes.Count) break;
-            var block = CreateBlock(notes[index], false, partsContent);
+            var heading = Label(partsContent, current.group, Vector2.zero, new Vector2(440, 22), 13);
+            Top(heading.rectTransform, new Vector2(0, -6)); heading.fontStyle = FontStyles.Bold;
+            top = 34;
+        }
+        for (int slot = 0; slot < current.notes.Count; slot++)
+        {
+            var block = CreateBlock(current.notes[slot], false, partsContent);
             var rect = (RectTransform)block.transform;
-            rect.sizeDelta = new Vector2(UsesNotebookSkin ? 218 : 234, UsesNotebookSkin ? 190 : 174);
-            Top(rect, new Vector2(slot % 2 == 0 ? -(UsesNotebookSkin ? 116 : 125) : (UsesNotebookSkin ? 116 : 125), -8 - slot / 2 * (UsesNotebookSkin ? 204 : 190)));
-            ApplyArchiveNotePose(rect, notes[index]); pageBlocks.Add(block);
+            rect.sizeDelta = new Vector2(UsesNotebookSkin ? 218 : 234, UsesNotebookSkin ? 176 : 174);
+            Top(rect, new Vector2(slot % 2 == 0 ? -(UsesNotebookSkin ? 116 : 125) : (UsesNotebookSkin ? 116 : 125), -top - slot / 2 * (UsesNotebookSkin ? 186 : 190)));
+            ApplyArchiveNotePose(rect, current.notes[slot]); pageBlocks.Add(block);
         }
         if (page.gameObject.activeSelf) GameLocalization.SetFormat(pageLabel, UsesNotebookSkin ? "{0} / {1}" : "PARÇALAR  {0} / {1}", partsArchivePage + 1, pageCount);
         if (page.gameObject.activeSelf) UpdateArchivePager(partsArchivePage, pageCount);
