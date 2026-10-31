@@ -5,7 +5,7 @@
 `scn_LaboratorySynthesis` sahnesinde tutorial varsayılan olarak açıktır; başlık ekranındaki ayardan kapatılabilir.
 
 - Masadaki kitabın ilk iki sayfası **İlk İz** alıştırmasıdır. Hedefi, **Bağlantı Sırası** ipucunu ve üç parçayı deftere sürükle. Yalnız kitabı kapatmak veya Tab'a basmak dersi tamamlamaz.
-- Tahtada **Hedefler** ve **Bilgiler** bölümlerindeki kartları panoya tak. Tahtanın üstündeki **BELGELERİ TOPLA** düğmesi kağıtlarla birlikte fiziksel gövdeyi de kaldırır; **BELGELERİ AÇ** geri getirir. Tutamak tahta sınırları içindedir.
+- Tahtada **Hedefler** ve **Bilgiler** bölümlerindeki kartları panoya tak. Sol üstteki hedef kartı panonun tek düğmesidir: **BELGELERİ AÇ** hedef ayrıntısını ve yanındaki panoyu birlikte açar, **BELGELERİ TOPLA** kağıtlarla birlikte fiziksel gövdeyi de kaldırır. Düğme tahta sınırları içindedir; pano sağ sütundaki ölçüm cihazı ile deftere binmez.
 - **Parçalar** bölümünden **Atım Kaynağı → Numune N-12 → Ölçer** düzenini kur, okları giriş halkalarına bağla ve **DENEYİ ÖLÇ** düğmesine bas. Doğru ölçümü deftere alıp F ile çık.
 - Kapı ve düşman eğitiminden sonra ölçümü Turing okuyucusuna bırakıp Enter ile sına. Hazır tutorial şifresi verilmez. Vana aşaması basıncın 20 veya altına düşmesini, son aşama gerçekten atan şalterin kaldırılmasını bekler.
 - Ekranın sol üstündeki aktif görev işlem tamamlanana kadar kalır. Eğitimde otomatik basınç artışı ve rastgele şalter kesintisi bekler; vana sonrası yazılmış tek kesinti korunur. Eğitim bitince normal sistemler ve serbest etkileşim açılır.

@@ -86,13 +86,14 @@ public partial class NotebookWorkspaceController : MonoBehaviour
         if (root == null) BuildWorkspace();
         root.SetActive(true);
         Canvas.ForceUpdateCanvases();
-        notebookWindow.localScale = Vector3.one * NotebookScale;
         if (notebook != null && notebook.useScreenSpaceNotebook)
         {
-            notebookOpenPosition = new Vector2(-notebookWindow.sizeDelta.x * NotebookScale * .5f - 50,
-                -bounds.rect.height * .5f + notebookWindow.sizeDelta.y * NotebookScale * .5f + 75);
+            if (!TryPlaceAboveMeasurement())
+                notebookOpenPosition = new Vector2(-notebookWindow.sizeDelta.x * NotebookScale * .5f - 50,
+                    -bounds.rect.height * .5f + notebookWindow.sizeDelta.y * NotebookScale * .5f + 75);
             notebookWindow.anchoredPosition = notebookOpenPosition;
         }
+        notebookWindow.localScale = Vector3.one * NotebookScale;
         activeBook = book;
         if (archiveFooter != null && IsArchiveNotebook)
             GameLocalization.Set(archiveFooter, book == null && ChalkboardManager.Instance.isMachineActive

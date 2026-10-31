@@ -18,6 +18,7 @@ public sealed class SignalExperiment : MonoBehaviour
     private RectTransform measureButton;
     public NotebookDraggableBlock OutputCard => output;
     public Vector3 MeasureButton => measureButton.position;
+    public RectTransform Device => (RectTransform)measureButton.parent;
     private CanvasGroup outputInput;
     private TextMeshProUGUI deviceFeedback;
     private readonly Dictionary<string, Reading> readings = new Dictionary<string, Reading>();
@@ -64,10 +65,12 @@ public sealed class SignalExperiment : MonoBehaviour
         var root = new GameObject("İz Ölçüm Çıktısı", typeof(RectTransform), typeof(Canvas), typeof(GraphicRaycaster), typeof(CanvasGroup));
         var rect = (RectTransform)root.transform;
         rect.SetParent(trial.Board.boardTransform, false);
-        // Defter tahtanın sağ altında durur; cihaz ve DENEYİ ÖLÇ düğmesi onun altında kalmasın.
-        rect.localPosition = new Vector3(trial.Board.minBounds.x + .95f, trial.Board.minBounds.y + .42f, .045f);
+        // Çerçevesiyle tahtanın sağ alt köşesine yaslanır (yerel -X oyuncunun sağı); defter üstüne sığsın diye küçüktür.
+        // Tahtadan öndedir: perspektifte kenara kayar, küçük pay vermezsek tahta çerçevesinin altında kalır.
+        float scale = .7f / 300;
+        rect.localPosition = new Vector3(trial.Board.minBounds.x + .05f + 117 * scale, trial.Board.minBounds.y + .02f + 131 * scale, .045f);
         rect.localRotation = Quaternion.Euler(0, 180, 0);
-        rect.localScale = Vector3.one / 300;
+        rect.localScale = Vector3.one * scale;
         rect.sizeDelta = new Vector2(218, 246);
         var canvas = root.GetComponent<Canvas>();
         canvas.renderMode = RenderMode.WorldSpace; canvas.worldCamera = Camera.main; canvas.sortingOrder = 7;
@@ -82,8 +85,8 @@ public sealed class SignalExperiment : MonoBehaviour
             if (trial.Board.isMachineActive && (GameManager.Instance == null || !GameManager.Instance.isGamePaused))
                 trial.Board.AttemptSynthesis();
         });
-        DeviceLabel(measureRect, "DENEYİ ÖLÇ", Vector2.zero, new Vector2(200, 32), 15);
-        deviceFeedback = DeviceLabel(rect, "Ölçüm kağıdını deftere al.", new Vector2(0, 68), new Vector2(206, 24), 10);
+        DeviceLabel(measureRect, "DENEYİ ÖLÇ", Vector2.zero, new Vector2(200, 32), 20);
+        deviceFeedback = DeviceLabel(rect, "Ölçüm kağıdını deftere al.", new Vector2(0, 68), new Vector2(206, 24), 14);
         deviceFeedback.color = new Color(.94f, .90f, .75f);
         var outputSlot = new GameObject("Ölçüm Kağıdı Yuvası", typeof(RectTransform)).GetComponent<RectTransform>();
         outputSlot.SetParent(rect, false); outputSlot.sizeDelta = new Vector2(218, 156); outputSlot.anchoredPosition = new Vector2(0, -28);

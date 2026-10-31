@@ -148,6 +148,11 @@ public class InteractableChalkboard : MonoBehaviour, IInteractable, IForceExitab
 
         yield return new WaitForSeconds(1.0f);
 
+        // Defter ölçüm cihazının ekran konumuna göre yerleşir; kamera oturmadan tahta açılmaz.
+        var brain = Camera.main != null ? Camera.main.GetComponent<CinemachineBrain>() : null;
+        while (brain != null && brain.IsBlending)
+            yield return null;
+
         inMachineMode = true;
 
         if (playerMovementScript != null)

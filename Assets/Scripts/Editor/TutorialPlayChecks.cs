@@ -59,7 +59,7 @@ public static class TutorialPlayChecks
         RequireAllowed(interaction.gameObject);
         interaction.Interact(); yield return WaitFor(() => board.isMachineActive && workspace.IsActive, "Tahtaya giriş"); yield return null;
         var docs = board.EnsureDocuments();
-        var handle = Field<RectTransform>(docs, "shadeToggle");
+        var handle = Field<RectTransform>(docs, "targetArea");
         // Machine mode opens before the Cinemachine blend has necessarily settled.
         yield return WaitFor(() =>
         {

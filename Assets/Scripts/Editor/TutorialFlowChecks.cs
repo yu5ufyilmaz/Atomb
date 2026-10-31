@@ -47,7 +47,7 @@ public static class TutorialFlowChecks
             docs.SetDocumentPanelOpen(true, true);
             var back = board.boardTransform.GetComponentsInChildren<MeshRenderer>(true).First(r => r.name == "Belge Panosu Arkalığı");
             Require(back.gameObject.activeInHierarchy, "Açık panonun gövdesi görünmüyor.");
-            var handle = (RectTransform)typeof(ChalkboardDocuments).GetField("shadeToggle", Private).GetValue(docs);
+            var handle = (RectTransform)typeof(ChalkboardDocuments).GetField("targetArea", Private).GetValue(docs);
             var surface = (RectTransform)handle.parent;
             Require(surface.rect.Contains(handle.anchoredPosition + handle.rect.size / 2), "Kapatma tutamağı tahta sınırlarının dışında.");
             handle.GetComponent<Button>().onClick.Invoke();

@@ -12,9 +12,26 @@ public partial class NotebookWorkspaceController
     private Vector2 notebookOpenPosition;
     private Vector2 workstationNotebookPosition;
     private bool standalonePositioned;
-    // Tahtada .6, defteri tahtanın sağındaki boşluğa sığdırır; ölçüm cihazının üstüne binmez.
+    private float boardNotebookScale = .6f;
     private float NotebookScale => notebook == null || !notebook.useScreenSpaceNotebook ? 1f
-        : ChalkboardManager.Instance != null && ChalkboardManager.Instance.isMachineActive ? .6f : .7f;
+        : ChalkboardManager.Instance != null && ChalkboardManager.Instance.isMachineActive ? boardNotebookScale : .7f;
+
+    // Tahtada defter ölçüm cihazıyla aynı sütunda, hemen üstünde başlar; dar ekranda cihaza binmek yerine küçülür.
+    // shortcut: yalnız tahtaya girişte hesaplanır, tahtadayken çözünürlük değişirse yeniden girişte düzelir.
+    private bool TryPlaceAboveMeasurement()
+    {
+        var board = ChalkboardManager.Instance;
+        if (board == null || !board.isMachineActive || SignalExperiment.Active == null) return false;
+        var corners = new Vector3[4];
+        SignalExperiment.Active.Device.GetWorldCorners(corners);
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(bounds, Camera.main.WorldToScreenPoint(corners[1]), null, out var deviceTopLeft);
+        Vector2 size = notebookWindow.sizeDelta;
+        boardNotebookScale = Mathf.Min(.6f, (bounds.rect.yMax - deviceTopLeft.y - 30) / size.y);
+        float tabRight = (size.x * .5f + 52) * boardNotebookScale;
+        notebookOpenPosition = new Vector2(Mathf.Min(deviceTopLeft.x + size.x * boardNotebookScale * .5f, bounds.rect.xMax - tabRight) - bounds.rect.xMax,
+            deviceTopLeft.y + 14 + size.y * boardNotebookScale * .5f - bounds.rect.center.y);
+        return true;
+    }
 
     private void RestoreWorkstationNotebookPosition()
     {

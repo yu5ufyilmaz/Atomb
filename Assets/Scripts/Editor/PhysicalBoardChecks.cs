@@ -37,7 +37,7 @@ public static class PhysicalBoardChecks
         Require(ChalkboardManager.Instance.isMachineActive, "Tahtaya giriş tamamlanmadı.");
         yield return null;
         var failures = new List<string>();
-        foreach (Action check in new Action[] { NotebookControls, PhysicalControls, CompactGoals })
+        foreach (Action check in new Action[] { NotebookControls, PhysicalControls, CompactGoals, CornerLayout })
             try { check(); } catch (Exception error) { failures.Add(check.Method.Name + ": " + error.GetBaseException().Message); }
 
         var board = ChalkboardManager.Instance;
@@ -84,7 +84,7 @@ public static class PhysicalBoardChecks
         var workspace = NotebookWorkspaceController.Instance;
         var window = Field<RectTransform>(workspace, "notebookWindow");
         var root = Field<GameObject>(workspace, "root");
-        Require(!root.GetComponentsInChildren<TMP_Text>(true).Any(t => t.text.Contains("DEFTERİ AÇ") || t.text.Contains("DEFTERİ KAPAT")),
+        Require(!root.GetComponentsInChildren<TMP_Text>(true).Any(t => t.text != null && (t.text.Contains("DEFTERİ AÇ") || t.text.Contains("DEFTERİ KAPAT"))),
             "Tab ve × yanında gereksiz Defteri Aç/Kapat ekran düğmesi var.");
         Require(root.transform.Find("Araştırma Araçları") == null, "Belge düğmesi hâlâ ekran araç çubuğunda.");
         if (!Field<bool>(workspace, "notebookExpanded")) workspace.ToggleNotebook();
@@ -103,7 +103,7 @@ public static class PhysicalBoardChecks
     {
         var board = ChalkboardManager.Instance;
         var documents = board.EnsureDocuments();
-        var handle = Field<RectTransform>(documents, "shadeToggle");
+        var handle = Field<RectTransform>(documents, "targetArea");
         Require(handle.gameObject.activeInHierarchy && handle.GetComponentInParent<Canvas>().renderMode == RenderMode.WorldSpace,
             "Belgeler gerçek tahtadaki tutamaktan açılmalı.");
         bool open = documents.IsDocumentPanelOpen;
@@ -141,7 +141,6 @@ public static class PhysicalBoardChecks
                 documents.SetDocumentPanelOpen(initiallyOpen, true);
                 Require(board.TryPinQuest(trial.Content.Quests.Find(q => q.questID == puzzle.id).CreateQuest()), "Gerçek hedef sabitlenemedi.");
                 documents.SetDocumentPanelOpen(true, true);
-                documents.SetTargetDetailsOpen(true);
                 Canvas.ForceUpdateCanvases();
                 var card = Field<RectTransform>(documents, "targetArea");
                 Require(card.rect.width <= 290 && card.rect.height <= 270, "Tahta hedefi dev defter kartı boyutunda: " + card.rect.size);
@@ -169,6 +168,33 @@ public static class PhysicalBoardChecks
             if (previous == null) typeof(ChalkboardManager).GetField("<PinnedQuest>k__BackingField", Private).SetValue(board, null);
             board.practiceQuest = previousPractice; documents.LoadLayout(layout); documents.Refresh();
         }
+    }
+
+    private static void CornerLayout()
+    {
+        var board = ChalkboardManager.Instance;
+        var device = SignalExperiment.Active.Device;
+        var workspace = NotebookWorkspaceController.Instance;
+        var window = Field<RectTransform>(workspace, "notebookWindow");
+        Rect ScreenRect(RectTransform rect, Camera camera)
+        {
+            var corners = new Vector3[4]; rect.GetWorldCorners(corners);
+            Vector2 min = RectTransformUtility.WorldToScreenPoint(camera, corners[0]), max = min;
+            foreach (var corner in corners)
+            {
+                Vector2 point = RectTransformUtility.WorldToScreenPoint(camera, corner);
+                min = Vector2.Min(min, point); max = Vector2.Max(max, point);
+            }
+            return Rect.MinMaxRect(min.x, min.y, max.x, max.y);
+        }
+        Rect meter = ScreenRect(device, Camera.main), notebook = ScreenRect(window, null);
+        Vector2 corner = Camera.main.WorldToScreenPoint(board.boardTransform.TransformPoint(board.minBounds));
+        float frame = meter.height * 8 / 246, slack = meter.height * .02f;
+        Require(Mathf.Abs(meter.xMax + frame - corner.x) < slack && Mathf.Abs(meter.yMin - frame - corner.y) < slack,
+            "Ölçüm cihazı tahtanın sağ alt köşesine yaslanmadı: " + meter + " / " + corner);
+        Require(notebook.yMin >= meter.yMax && notebook.yMin - meter.yMax < 40 && notebook.xMin <= meter.xMin + 2 && notebook.xMax >= meter.xMax - 2,
+            "Defter ölçüm cihazının üstünde başlamıyor: " + notebook + " / " + meter);
+        Require(notebook.yMax <= Screen.height && notebook.xMax <= Screen.width, "Defter ekrana sığmıyor: " + notebook);
     }
 
     private static T Field<T>(object target, string name) => (T)target.GetType().GetField(name, Private).GetValue(target);
