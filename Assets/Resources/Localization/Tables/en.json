@@ -816,71 +816,6 @@
             "text": "DRAG NOTE  /  ORIGINAL STAYS IN NOTEBOOK"
         },
         {
-            "key": "notebook.ws.tutorial_drag_hint",
-            "source": "DEFTERE SÜRÜKLE",
-            "text": "DRAG TO NOTEBOOK"
-        },
-        {
-            "key": "notebook.ws.tutorial_exit_locked",
-            "source": "Önce tüm notları deftere sürükle.",
-            "text": "Drag every note into your notebook first."
-        },
-        {
-            "key": "subtitle.thought_close_door_0.0",
-            "source": "",
-            "text": "Wait, let's not leave the door open. If it's shut, at least we'll hear someone coming."
-        },
-        {
-            "key": "notebook.ws.board_drag_connect",
-            "source": "Sürükle / Bağla",
-            "text": "Drag / Connect"
-        },
-        {
-            "key": "notebook.ws.board_erase",
-            "source": "Sil",
-            "text": "Erase"
-        },
-        {
-            "key": "notebook.ws.board_notebook",
-            "source": "Defter",
-            "text": "Notebook"
-        },
-        {
-            "key": "notebook.ws.reader_slot",
-            "source": "ÖLÇÜM KARTI YUVASI\n<size=70%>Kartı defterden buraya sürükle</size>",
-            "text": "MEASUREMENT CARD SLOT\n<size=70%>Drag the card here from your notebook</size>"
-        },
-        {
-            "key": "notebook.ws.door_close",
-            "source": "Kapıyı Kapat",
-            "text": "Close Door"
-        },
-        {
-            "key": "notebook.ws.tutorial_drag_board",
-            "source": "TAHTAYA SÜRÜKLE",
-            "text": "DRAG TO BOARD"
-        },
-        {
-            "key": "notebook.ws.tutorial_open_tab",
-            "source": "BU BÖLÜMÜ AÇ",
-            "text": "OPEN THIS TAB"
-        },
-        {
-            "key": "notebook.ws.tutorial_open_notebook",
-            "source": "[{input:ToggleNotebook}] DEFTERİ AÇ",
-            "text": "[{input:ToggleNotebook}] OPEN NOTEBOOK"
-        },
-        {
-            "key": "notebook.ws.tutorial_connect",
-            "source": "ÇIKIŞI GİRİŞE BAĞLA",
-            "text": "CONNECT OUTPUT TO INPUT"
-        },
-        {
-            "key": "notebook.ws.tutorial_drag_reader",
-            "source": "OKUYUCUYA SÜRÜKLE",
-            "text": "DRAG TO READER"
-        },
-        {
             "key": "notebook.ws.select_goal_hint",
             "source": "Defterden bir hedef seç; mevcut bilgilerinle bir hipotez kur.",
             "text": "Select a target from the notebook; form a hypothesis with your current findings."
@@ -3956,6 +3891,66 @@
             "text": "Depth of field"
         },
         {
+            "key": "notebook.ws.tutorial_drag_hint",
+            "source": "DEFTERE SÜRÜKLE",
+            "text": "DRAG TO NOTEBOOK"
+        },
+        {
+            "key": "notebook.ws.tutorial_exit_locked",
+            "source": "Önce tüm notları deftere sürükle.",
+            "text": "Drag every note into your notebook first."
+        },
+        {
+            "key": "notebook.ws.board_drag_connect",
+            "source": "Sürükle / Bağla",
+            "text": "Drag / Connect"
+        },
+        {
+            "key": "notebook.ws.board_erase",
+            "source": "Sil",
+            "text": "Erase"
+        },
+        {
+            "key": "notebook.ws.board_notebook",
+            "source": "Defter",
+            "text": "Notebook"
+        },
+        {
+            "key": "notebook.ws.reader_slot",
+            "source": "ÖLÇÜM KARTI YUVASI\n<size=70%>Kartı defterden buraya sürükle</size>",
+            "text": "MEASUREMENT CARD SLOT\n<size=70%>Drag the card here from your notebook</size>"
+        },
+        {
+            "key": "notebook.ws.door_close",
+            "source": "Kapıyı Kapat",
+            "text": "Close Door"
+        },
+        {
+            "key": "notebook.ws.tutorial_drag_board",
+            "source": "TAHTAYA SÜRÜKLE",
+            "text": "DRAG TO BOARD"
+        },
+        {
+            "key": "notebook.ws.tutorial_open_tab",
+            "source": "BU BÖLÜMÜ AÇ",
+            "text": "OPEN THIS TAB"
+        },
+        {
+            "key": "notebook.ws.tutorial_open_notebook",
+            "source": "[{input:ToggleNotebook}] DEFTERİ AÇ",
+            "text": "[{input:ToggleNotebook}] OPEN NOTEBOOK"
+        },
+        {
+            "key": "notebook.ws.tutorial_connect",
+            "source": "ÇIKIŞI GİRİŞE BAĞLA",
+            "text": "CONNECT OUTPUT TO INPUT"
+        },
+        {
+            "key": "notebook.ws.tutorial_drag_reader",
+            "source": "OKUYUCUYA SÜRÜKLE",
+            "text": "DRAG TO READER"
+        },
+        {
             "key": "subtitle.chemistry_lab_entrance.0",
             "source": "",
             "text": "Did you think you left me behind at the university, Arthur?"
@@ -4699,6 +4694,11 @@
             "key": "subtitle.thought_retry_measurement_2.0",
             "source": "",
             "text": "Confirming the same record won't change the result. We could try the matching paper under Measurements."
+        },
+        {
+            "key": "subtitle.thought_close_door_0.0",
+            "source": "",
+            "text": "Wait, let's not leave the door open. If it's shut, at least we'll hear someone coming."
         }
     ]
 }

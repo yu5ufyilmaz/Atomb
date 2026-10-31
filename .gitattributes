@@ -1,0 +1,4 @@
+# Unity ve içerik aracı bu dosyaları LF ile yazar; CRLF checkout Content/GameContent.import.json SHA256 damgasını bozup build'i engelliyordu.
+*.json text eol=lf
+*.inputactions text eol=lf
+*.asset text eol=lf
