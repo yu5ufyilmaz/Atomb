@@ -9,6 +9,8 @@ using UnityEngine.Timeline;
 public class GunAimClip : PlayableAsset, ITimelineClipAsset
 {
     public AnimationCurve weight = new AnimationCurve();
+    public AnimationCurve focus = new AnimationCurve();
+    public float crawlStart, shotTime;
 
     public ClipCaps clipCaps => ClipCaps.None;
 
@@ -23,8 +25,8 @@ public class GunAimClip : PlayableAsset, ITimelineClipAsset
         var shooter = animators.FirstOrDefault(animator => animator.isHuman);
         behaviour.Arm = shooter != null ? shooter.GetBoneTransform(HumanBodyBones.RightUpperArm) : null;
         behaviour.Gun = shooter != null ? shooter.GetBoneTransform(HumanBodyBones.RightHand).Find("911pistol") : null;
-        behaviour.Eye = animators.FirstOrDefault(animator => animator.TryGetComponent<CinemachineVirtualCameraBase>(out _))?.transform;
-        if (behaviour.Arm == null || behaviour.Gun == null || behaviour.Eye == null) Debug.LogError("GunAimClip: kol, silah veya kamera bulunamadı.", owner);
+        behaviour.Lens = animators.Select(animator => animator.GetComponent<CinemachineVirtualCamera>()).FirstOrDefault(lens => lens != null);
+        if (behaviour.Arm == null || behaviour.Gun == null || behaviour.Lens == null) Debug.LogError("GunAimClip: kol, silah veya kamera bulunamadı.", owner);
         return playable;
     }
 }
@@ -32,21 +34,28 @@ public class GunAimClip : PlayableAsset, ITimelineClipAsset
 public class GunAimBehaviour : PlayableBehaviour
 {
     public GunAimClip Clip;
-    public Transform Arm, Gun, Eye;
+    public Transform Arm, Gun;
+    public CinemachineVirtualCamera Lens;
     GunAimDriver driver;
 
     public override void OnBehaviourPlay(Playable playable, FrameData info)
     {
-        if (driver != null || Arm == null || Gun == null || Eye == null) return;
+        if (driver != null || Arm == null || Gun == null || Lens == null) return;
         var host = new GameObject("Gun Aim") { hideFlags = HideFlags.HideAndDontSave };
+        host.SetActive(false); // So OnEnable sees the fields.
         driver = host.AddComponent<GunAimDriver>();
-        driver.Arm = Arm; driver.Gun = Gun; driver.Eye = Eye;
+        driver.Arm = Arm; driver.Gun = Gun; driver.Eye = Lens.transform; driver.Lens = Lens;
+        host.SetActive(true);
     }
 
     public override void PrepareFrame(Playable playable, FrameData info)
     {
         if (driver == null) return;
-        driver.Weight = Clip.weight.Evaluate((float)playable.GetTime());
+        float time = (float)playable.GetTime();
+        driver.Weight = Clip.weight.Evaluate(time);
+        driver.Focus = Clip.focus.Evaluate(time);
+        driver.StopAtWalls = time >= Clip.crawlStart;
+        driver.Hunted = driver.StopAtWalls && time < Clip.shotTime;
 #if UNITY_EDITOR
         // Timeline preview never ticks LateUpdate on its own.
         if (!Application.isPlaying) UnityEditor.EditorApplication.QueuePlayerLoopUpdate();

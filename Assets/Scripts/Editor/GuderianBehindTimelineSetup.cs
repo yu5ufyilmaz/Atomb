@@ -33,12 +33,12 @@ public static class GuderianBehindTimelineSetup
     const float PushNod = 4f;
     static readonly Vector3 LandedPosition = new Vector3(-.165f, FloorHeight, .095f);
     static readonly Vector3 PropPosition = new Vector3(-.165f, PropHeight, .095f);
-    static readonly Vector3 ShotPosition = new Vector3(-.02f, -.33f, .56f); // About 1.1 m from the muzzle.
+    static readonly Vector3 ShotPosition = new Vector3(.06f, -.33f, .5f); // About 1.5 m from the muzzle.
     static readonly Vector3 AimFlinch = new Vector3(0, .006f, .012f);
     static readonly Vector3 CameraOrigin = new Vector3(0, .424f, .0587f);
     // Guderian in the same space, from Guderian_behind.fbx: he walks forward until 4.28.
     static readonly Vector3 HeadStart = new Vector3(0, .436f, -.095f), HeadEnd = new Vector3(-.045f, .428f, .158f);
-    static readonly Vector3 MuzzleAimed = new Vector3(.05f, .28f, .37f); // Estimated: the arm is swung down at runtime.
+    static readonly Vector3 MuzzleAimed = new Vector3(.16f, .34f, .24f); // Measured in Play; GunAimDriver locks on from here.
     const float HeadStartTime = 1.88f, HeadEndTime = 4.28f;
     const float ChestDrop = .12f; // Looking at his chest, not up at his head, keeps the floor sliding through frame.
 
@@ -81,7 +81,10 @@ public static class GuderianBehindTimelineSetup
         var aimTrack = timeline.GetOutputTracks().OfType<GunAimTrack>().FirstOrDefault() ?? timeline.CreateTrack<GunAimTrack>(null, "Gun Aim");
         var aim = aimTrack.GetClips().FirstOrDefault() ?? aimTrack.CreateClip<GunAimClip>();
         aim.start = 0; aim.duration = End; aim.displayName = "Gun Aim";
-        ((GunAimClip)aim.asset).weight = Keys(0, 0, AimStart, 0, AimEnd, 1, ShotTime + .05f, 1, ShotTime + .7f, 0, End, 0);
+        var aimAsset = (GunAimClip)aim.asset;
+        aimAsset.crawlStart = CrawlStart; aimAsset.shotTime = ShotTime;
+        aimAsset.weight = Keys(0, 0, AimStart, 0, AimEnd, 1, ShotTime + .05f, 1, ShotTime + .7f, 0, End, 0);
+        aimAsset.focus = Keys(0, 0, AimStart, 0, AimEnd, 1, ShotTime, 1, ImpactFrameEnd, 0, End, 0);
         EditorUtility.SetDirty(aim.asset); EditorUtility.SetDirty(damage.asset); EditorUtility.SetDirty(timeline); EditorUtility.SetDirty(camera); EditorUtility.SetDirty(blackBar);
         AssetDatabase.SaveAssets();
         TimelineEditor.Refresh(RefreshReason.ContentsModified);
