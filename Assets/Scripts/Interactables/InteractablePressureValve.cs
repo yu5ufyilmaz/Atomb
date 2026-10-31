@@ -76,13 +76,12 @@ public class InteractablePressureValve : MonoBehaviour, IInteractable, IForceExi
     private bool inValveMode = false;
     private bool isExiting = false;
     private bool isTurning = false;
-    private Vector2 screenCenter;
+    // Çözünürlük oyun içinde değişebiliyor; merkez her okumada hesaplanır.
+    private static Vector2 ScreenCenter => new Vector2(Screen.width * .5f, Screen.height * .5f);
     private float lastAngle;
 
     private void Start()
     {
-        screenCenter = new Vector2(Screen.width / 2, Screen.height / 2);
-
         // 1. Scriptleri Bul
         if (playerPhysicsController == null)
             playerPhysicsController =
@@ -213,7 +212,7 @@ public class InteractablePressureValve : MonoBehaviour, IInteractable, IForceExi
 
         // Mouse pozisyonu hazırla
         Vector2 mousePos = Input.mousePosition;
-        Vector2 dir = mousePos - screenCenter;
+        Vector2 dir = mousePos - ScreenCenter;
         lastAngle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
 
         // Kontrolleri kapat
@@ -284,7 +283,7 @@ public class InteractablePressureValve : MonoBehaviour, IInteractable, IForceExi
         if (!inValveMode || isExiting)
             return;
 
-        if (GameInput.Pressed("Cancel") || GameInput.Pressed("SecondaryInteract"))
+        if (GameInput.Pressed("Cancel"))
         {
             StartCoroutine(ExitValveMode());
             return;
@@ -325,12 +324,13 @@ public class InteractablePressureValve : MonoBehaviour, IInteractable, IForceExi
     private void HandleCircularMotion()
     {
         Vector2 mousePos = Input.mousePosition;
-        Vector2 dir = mousePos - screenCenter;
+        Vector2 dir = mousePos - ScreenCenter;
         float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
         float delta = Mathf.DeltaAngle(lastAngle, angle);
 
-        if (onlyClockwise && delta > 0)
-            delta = 0;
+        // Oyuncular yönü bilemiyordu: iki yönde de daire çizmek vanayı kapatır.
+        if (onlyClockwise)
+            delta = -Mathf.Abs(delta);
 
         if (Mathf.Abs(delta) > 0.01f)
         {

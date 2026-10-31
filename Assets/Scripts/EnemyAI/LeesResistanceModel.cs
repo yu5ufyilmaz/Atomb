@@ -61,7 +61,8 @@ public sealed class LeesResistanceModel
         float effort = Clamp(opposing / (430 * seconds), 0, 1);
         Strain = Clamp(Strain + seconds * (Settings.strainRate * (.48f * (1 - effort)
             + .2f * Math.Abs(HeadAngle) / Math.Max(10, Settings.failureAngle)) - .24f * effort), .08f, 1);
-        if (Danger >= 1) State = Phase.Caught;
+        // Yakalanma yalnız boyun çubuğu kenara vurunca; baskı (Strain) görsel ve ses geri bildirimi olarak kalır.
+        if (Math.Abs(HeadAngle) >= Math.Max(10, Settings.failureAngle)) State = Phase.Caught;
         else if (Progress >= 1) State = Phase.Survived;
     }
     public void Catch() { if (State == Phase.Approaching || State == Phase.Struggling) State = Phase.Caught; }
