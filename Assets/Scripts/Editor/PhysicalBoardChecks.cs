@@ -84,7 +84,7 @@ public static class PhysicalBoardChecks
         var workspace = NotebookWorkspaceController.Instance;
         var window = Field<RectTransform>(workspace, "notebookWindow");
         var root = Field<GameObject>(workspace, "root");
-        Require(!root.GetComponentsInChildren<TMP_Text>(true).Any(t => t.text.Contains("DEFTERİ AÇ") || t.text.Contains("DEFTERİ KAPAT")),
+        Require(!root.GetComponentsInChildren<TMP_Text>(true).Any(t => t.text != null && (t.text.Contains("DEFTERİ AÇ") || t.text.Contains("DEFTERİ KAPAT"))),
             "Tab ve × yanında gereksiz Defteri Aç/Kapat ekran düğmesi var.");
         Require(root.transform.Find("Araştırma Araçları") == null, "Belge düğmesi hâlâ ekran araç çubuğunda.");
         if (!Field<bool>(workspace, "notebookExpanded")) workspace.ToggleNotebook();
@@ -103,12 +103,12 @@ public static class PhysicalBoardChecks
     {
         var board = ChalkboardManager.Instance;
         var documents = board.EnsureDocuments();
-        var handle = Field<RectTransform>(documents, "shadeToggle");
+        var handle = Field<RectTransform>(documents, "targetArea");
         Require(handle.gameObject.activeInHierarchy && handle.GetComponentInParent<Canvas>().renderMode == RenderMode.WorldSpace,
-            "Belgeler gerçek tahtadaki tutamaktan açılmalı.");
+            "Belgeler gerçek tahtadaki hedef kartından açılmalı.");
         bool open = documents.IsDocumentPanelOpen;
         handle.GetComponent<Button>().onClick.Invoke();
-        Require(documents.IsDocumentPanelOpen != open, "Fiziksel belge tutamağı çalışmıyor.");
+        Require(documents.IsDocumentPanelOpen != open, "Hedef kartı belge panosunu açıp kapatmıyor.");
         documents.SetDocumentPanelOpen(open, true);
         Require(board.boardTransform.GetComponentsInChildren<MeshRenderer>(true).Any(r => r.name == "Belge Panosu Arkalığı"),
             "Belge panosunun fiziksel arkalığı yok.");
@@ -141,10 +141,9 @@ public static class PhysicalBoardChecks
                 documents.SetDocumentPanelOpen(initiallyOpen, true);
                 Require(board.TryPinQuest(trial.Content.Quests.Find(q => q.questID == puzzle.id).CreateQuest()), "Gerçek hedef sabitlenemedi.");
                 documents.SetDocumentPanelOpen(true, true);
-                documents.SetTargetDetailsOpen(true);
                 Canvas.ForceUpdateCanvases();
                 var card = Field<RectTransform>(documents, "targetArea");
-                Require(card.rect.width <= 290 && card.rect.height <= 270, "Tahta hedefi dev defter kartı boyutunda: " + card.rect.size);
+                Require(card.rect.width <= 330 && card.rect.height <= 190, "Tahta hedefi dev defter kartı boyutunda: " + card.rect.size);
                 var bounds = ((RectTransform)card.parent).rect;
                 Require(bounds.Contains(card.anchoredPosition - card.rect.size / 2) && bounds.Contains(card.anchoredPosition + card.rect.size / 2),
                     "Hedef kartı tahtanın dışına taşıyor.");

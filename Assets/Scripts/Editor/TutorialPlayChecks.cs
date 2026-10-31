@@ -59,7 +59,7 @@ public static class TutorialPlayChecks
         RequireAllowed(interaction.gameObject);
         interaction.Interact(); yield return WaitFor(() => board.isMachineActive && workspace.IsActive, "Tahtaya giriş"); yield return null;
         var docs = board.EnsureDocuments();
-        var handle = Field<RectTransform>(docs, "shadeToggle");
+        var handle = Field<RectTransform>(docs, "targetArea");
         // Machine mode opens before the Cinemachine blend has necessarily settled.
         yield return WaitFor(() =>
         {
@@ -68,7 +68,7 @@ public static class TutorialPlayChecks
                 && !Camera.main.GetComponent<Cinemachine.CinemachineBrain>().IsBlending;
         }, "Tahta kamera geçişi");
         Vector2 handlePoint = Camera.main.WorldToScreenPoint(handle.position);
-        Require(handlePoint.x > 0 && handlePoint.x < Screen.width && handlePoint.y > 0 && handlePoint.y < Screen.height, "Pano tutamağı kamerada görünmüyor.");
+        Require(handlePoint.x > 0 && handlePoint.x < Screen.width && handlePoint.y > 0 && handlePoint.y < Screen.height, "Hedef kartı kamerada görünmüyor.");
         Require(Field<RectTransform>(workspace, "ghost") != null, "Tahtada hedef rehberi görünmüyor.");
         workspace.ShowCollectedTargets(); Canvas.ForceUpdateCanvases();
         var target = Object.FindObjectsByType<NotebookDraggableBlock>(FindObjectsSortMode.None)
@@ -88,6 +88,9 @@ public static class TutorialPlayChecks
         handle.GetComponent<Button>().onClick.Invoke(); window.anchoredPosition = oldWindow;
         yield return new WaitForSeconds(.35f);
         Require(!docs.IsDocumentPanelOpen && !Field<RectTransform>(docs, "shadeViewport").gameObject.activeInHierarchy, "Pano kapatılınca gövde/girdi kaldı.");
+        // Pano açıkken de orta alan boştur; ders parçaları toplamadan kurulabilmeli.
+        handle.GetComponent<Button>().onClick.Invoke();
+        yield return new WaitForSeconds(.35f);
         var parts = new List<DraggableFormula>();
         for (int i = 0; i < 3; i++)
         {
@@ -95,7 +98,7 @@ public static class TutorialPlayChecks
             Require(workspace.ShowCollectedPart(id), "Toplanan parça bulunamadı: " + id); Canvas.ForceUpdateCanvases();
             var note = Object.FindObjectsByType<NotebookDraggableBlock>(FindObjectsSortMode.None)
                 .First(n => !n.IsSource && n.isActiveAndEnabled && n.Data.itemID == id);
-            Vector2 local = board.minBounds + Vector2.Scale(board.maxBounds - board.minBounds, new Vector2(.76f - i * .25f, .72f));
+            Vector2 local = board.minBounds + Vector2.Scale(board.maxBounds - board.minBounds, new Vector2(.6f - i * .14f, .72f));
             Vector2 pointer = Camera.main.WorldToScreenPoint(board.boardTransform.TransformPoint(new Vector3(local.x, local.y, .02f)));
             var before = new HashSet<DraggableFormula>(board.boardTransform.GetComponentsInChildren<DraggableFormula>());
             DropAwayFromNotebook(workspace, note, pointer);

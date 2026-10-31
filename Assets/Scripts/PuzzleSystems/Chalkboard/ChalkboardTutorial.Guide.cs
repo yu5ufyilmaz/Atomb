@@ -25,9 +25,8 @@ public sealed partial class ChalkboardTutorial
             workspace.GuideNote(n => n.blockType == NotebookBlockType.Quest && n.questID == QuestID, "Hedefler",
                 NotebookWorkspaceController.ScreenPoint(documents.TargetSlot), ToBoard);
         else if (!HasPinnedCards)
-            workspace.GuideNote(n => n.itemID == "tutorial/ports", "Bilgiler", BoardPoint(.5f, .6f), ToBoard);
-        else if (!panelWasClosed)
-            Mark(workspace, documents.PanelHandle, "BELGELERİ TOPLA");
+            workspace.GuideNote(n => n.itemID == "tutorial/ports", "Bilgiler",
+                NotebookWorkspaceController.ScreenPoint(documents.NotesSlot), ToBoard);
         else if (!HasCorrectReading)
             GuideCircuit(workspace);
         else if (!HasStoredReading)
@@ -45,7 +44,7 @@ public sealed partial class ChalkboardTutorial
             string id = chain[i];
             if (parts.Any(p => p.formulaData?.itemID == id)) continue;
             workspace.GuideNote(n => n.blockType == NotebookBlockType.PartClue && n.itemID == id, "Parçalar",
-                BoardPoint(.76f - i * .25f, .72f), ToBoard);
+                BoardPoint(.6f - i * .14f, .72f), ToBoard);
             return;
         }
         for (int i = 0; i + 1 < chain.Length; i++)

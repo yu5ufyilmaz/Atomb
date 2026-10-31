@@ -13,7 +13,6 @@ public sealed partial class ChalkboardTutorial : MonoBehaviour
     public InteractableDoor officeDoor;
     public EventLogicController doorStep, valveRoomStep, valveStep;
     public SignalCondition doorLocked, valvePracticed, breakerRestored;
-    private bool panelWasClosed;
     private bool sawBreakerTrip;
     private bool valveUsed;
     private string lessonFingerprint;
@@ -50,7 +49,7 @@ public sealed partial class ChalkboardTutorial : MonoBehaviour
                     new NotebookBlockData { blockType = NotebookBlockType.Quest, questID = QuestID,
                         title = puzzle.title, description = puzzle.description, itemID = puzzle.TargetVisual },
                     new NotebookBlockData { blockType = NotebookBlockType.RuleClue, questID = QuestID, itemID = "tutorial/ports",
-                        title = "BAĞLANTI SIRASI", description = "Atım Kaynağı → Numune N-12 → Ölçer. Ok çıkış, halka giriştir. Ölçerin bir girişini kullanman yeterli. Tahtada hedefi ve bu ipucunu panoya tak; BELGELERİ TOPLA ile çalışma alanını aç." }
+                        title = "BAĞLANTI SIRASI", description = "Atım Kaynağı → Numune N-12 → Ölçer. Ok çıkış, halka giriştir. Ölçerin bir girişini kullanman yeterli. Tahtada hedefi ve bu ipucunu panoya tak." }
                 } },
             new BookWorkspacePage { pageIndex = 1, title = "ÜÇ PARÇAYI DA TOPLA",
                 explanation = "Her parçayı deftere sürükle. F ile kitabı bırak; kara tahtaya geç. Defterdeki asıllar korunur.",
@@ -101,7 +100,6 @@ public sealed partial class ChalkboardTutorial : MonoBehaviour
     {
         if (research?.Content == null || preparedSessionID == research.SessionID) return;
         preparedSessionID = research.SessionID;
-        panelWasClosed = false;
         sawBreakerTrip = valveUsed = false;
         var puzzle = CreatePuzzle();
         lessonFingerprint = puzzle.Fingerprint();
@@ -147,9 +145,6 @@ public sealed partial class ChalkboardTutorial : MonoBehaviour
             else if (sawBreakerTrip) breakerRestored.ReceiveSignal();
         }
         if (!collectedStep.HasTriggered || boardStep.HasTriggered) return;
-        // Hedef artık panoyu açmaz; yalnız hedefi takmak "panoyu topla" adımını atlatmamalı.
-        if (!research.Board.EnsureDocuments().IsDocumentPanelOpen && HasPinnedCards)
-            panelWasClosed = true;
         if (HasCorrectReading && GameManager.Instance.activeInteraction == null)
         {
             EnsureStoredReading();
@@ -180,7 +175,6 @@ public sealed partial class ChalkboardTutorial : MonoBehaviour
     }
 
     private void Complete() { TutorialManager.Instance?.CompleteTutorial(); }
-    internal bool PanelWasClosed => panelWasClosed;
     internal bool SawBreakerTrip => sawBreakerTrip;
 
 }

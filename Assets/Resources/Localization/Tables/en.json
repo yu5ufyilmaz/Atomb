@@ -1276,6 +1276,11 @@
             "text": "DROP TARGET HERE"
         },
         {
+            "key": "board.doc.part_on_panel",
+            "source": "Parçayı kara tahtaya bırak. Belge panosunu hedef kartından toplayabilirsin.",
+            "text": "Drop the part on the chalkboard. You can fold the document panel from the target card."
+        },
+        {
             "key": "board.doc.goal_details_open",
             "source": "AÇ",
             "text": "OPEN"
@@ -3442,8 +3447,8 @@
         },
         {
             "key": "tutorial.first_trace.ports.description",
-            "source": "Atım Kaynağı → Numune N-12 → Ölçer. Ok çıkış, halka giriştir. Ölçerin bir girişini kullanman yeterli. Tahtada hedefi ve bu ipucunu panoya tak; BELGELERİ TOPLA ile çalışma alanını aç.",
-            "text": "Pulse Source → Sample N-12 → Meter. An arrow marks an output; a ring marks an input. Using one meter input is enough. Pin the target and this clue on the board; choose COLLECT DOCUMENTS to open the workspace."
+            "source": "Atım Kaynağı → Numune N-12 → Ölçer. Ok çıkış, halka giriştir. Ölçerin bir girişini kullanman yeterli. Tahtada hedefi ve bu ipucunu panoya tak.",
+            "text": "Pulse Source → Sample N-12 → Meter. An arrow marks an output; a ring marks an input. Using one meter input is enough. Pin the target and this clue on the board."
         },
         {
             "key": "tutorial.first_trace.parts.title",

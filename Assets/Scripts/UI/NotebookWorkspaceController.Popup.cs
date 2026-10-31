@@ -12,9 +12,24 @@ public partial class NotebookWorkspaceController
     private Vector2 notebookOpenPosition;
     private Vector2 workstationNotebookPosition;
     private bool standalonePositioned;
-    // Tahtada .6, defteri tahtanın sağındaki boşluğa sığdırır; ölçüm cihazının üstüne binmez.
-    private float NotebookScale => notebook == null || !notebook.useScreenSpaceNotebook ? 1f
-        : ChalkboardManager.Instance != null && ChalkboardManager.Instance.isMachineActive ? .6f : .7f;
+    // Kamera yatay görüşü sabit tutar: tahtanın ekrandaki boyu ekran genişliğine bağlıdır, defter de onunla ölçeklenir.
+    private float NotebookScale => notebook == null ? 1f
+        : IsArchiveNotebook && ChalkboardManager.Instance.isMachineActive ? .5f * bounds.rect.width / 1600
+        : notebook.useScreenSpaceNotebook ? .7f : 1f;
+
+    // shortcut: yalnız tahtaya girişte hesaplanır; tahtadayken çözünürlük değişirse çıkıp girene kadar eski yerde kalır.
+    private Vector2 WorkstationNotebookPosition()
+    {
+        Vector2 half = notebookWindow.sizeDelta * NotebookScale * .5f;
+        var chalkboard = GameManager.Instance != null ? GameManager.Instance.activeInteraction as InteractableChalkboard : null;
+        if (chalkboard == null || SignalExperiment.Active == null)
+            return new Vector2(-half.x - 50, -bounds.rect.height * .5f + half.y + 75);
+        // Defter ölçüm cihazının üstüne oturur; sağ kenarları hizalıdır, ayraçlar sütundan taşmaz.
+        // Çok geniş ekranda başlığı ekranda kalsın: taşınamayan defter cihazla çakışan defterden kötüdür.
+        Vector2 corner = Vector2.Scale(chalkboard.BoardViewPoint(SignalExperiment.Active.DeviceTopRight), bounds.rect.size);
+        return new Vector2(corner.x - bounds.rect.width * .5f - half.x - 31 * NotebookScale,
+            Mathf.Min(corner.y + half.y + 8, bounds.rect.height * .5f - half.y));
+    }
 
     private void RestoreWorkstationNotebookPosition()
     {
@@ -135,7 +150,8 @@ public partial class NotebookWorkspaceController
         notebookReveal = Mathf.MoveTowards(notebookReveal, target, delta / .24f);
         float t = Mathf.SmoothStep(0, 1, notebookReveal);
         // Both positions use the notebook's right/center anchor, including after a resize.
-        Vector2 dock = notebookOpenPosition + Vector2.down * (notebookWindow.sizeDelta.y + 40);
+        // Üstteki defter yukarı, alttaki aşağı çekilir; ölçüm cihazının üstünden geçmez.
+        Vector2 dock = notebookOpenPosition + (notebookOpenPosition.y > 0 ? Vector2.up : Vector2.down) * (notebookWindow.sizeDelta.y + 40);
         if (!standalonePositioned && notebookToggle != null)
         {
             dock = bounds.InverseTransformPoint(notebookToggle.position);

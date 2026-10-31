@@ -296,7 +296,8 @@ public static class SignalTrialSetup
         var docs = board.EnsureDocuments();
         var target = (RectTransform)typeof(ChalkboardDocuments).GetField("targetArea", Private).GetValue(docs);
         var surface = (RectTransform)target.parent;
-        Check(docs.WorkingMaxX == board.maxBounds.x, "The old reserved document column remains.");
+        docs.SetDocumentPanelOpen(false, true);
+        Check(docs.WorkingMaxX == board.maxBounds.x, "The closed panel still reserves its column.");
         Check(docs.TryDropDocument(firstNote, Camera.main.WorldToScreenPoint(board.boardTransform.TransformPoint(new Vector3(.95f, -.15f, .04f)))), "Record cannot be pinned freely.");
         docs.SetDocumentPanelOpen(true, true);
         var noteCards = (Dictionary<string, RectTransform>)typeof(ChalkboardDocuments).GetField("noteCards", Private).GetValue(docs);
@@ -333,7 +334,6 @@ public static class SignalTrialSetup
         Check(Application.isPlaying && board != null && board.isMachineActive && board.PinnedQuest != null, "Open a board with collected documents.");
         var docs = board.EnsureDocuments();
         var viewport = (RectTransform)typeof(ChalkboardDocuments).GetField("shadeViewport", Private).GetValue(docs);
-        var toggle = (RectTransform)typeof(ChalkboardDocuments).GetField("shadeToggle", Private).GetValue(docs);
         var target = (RectTransform)typeof(ChalkboardDocuments).GetField("targetArea", Private).GetValue(docs);
         docs.SetDocumentPanelOpen(true, true);
         var saved = new GameData(); board.SaveData(ref saved);
@@ -346,19 +346,19 @@ public static class SignalTrialSetup
         refreshPaper.Invoke(experiment, null);
         Check(paperInput.alpha == 1 && paperInput.blocksRaycasts, "Opening documents hides or disables the measurement paper.");
         var paperPosition = board.boardTransform.InverseTransformPoint(paperInput.transform.position);
-        Check(paperPosition.x < -.8f && paperPosition.y < -.5f, "Measurement paper is not in the board's lower-right corner.");
+        Check(paperPosition.x < board.minBounds.x + .6f && paperPosition.y < board.minBounds.y + .6f, "Measurement paper is not in the board's lower-right corner.");
         docs.SetDocumentPanelOpen(false, true);
         refreshPaper.Invoke(experiment, null);
         Check(paperInput.alpha == 1 && paperInput.blocksRaycasts, "Closing documents did not restore the measurement paper.");
-        Check(!viewport.gameObject.activeSelf && target.gameObject.activeInHierarchy && outputSource.gameObject.activeInHierarchy
-            && toggle.gameObject.activeInHierarchy, "A closed panel still covers the experiment area or hides its handle.");
+        Check(!viewport.gameObject.activeSelf && target.gameObject.activeInHierarchy && outputSource.gameObject.activeInHierarchy,
+            "A closed panel still covers the experiment area or hides its target button.");
         var closed = new GameData(); board.SaveData(ref closed);
         Check(!closed.savedChalkboard.documentShadeOpen && closed.savedChalkboard.documents.Count == saved.savedChalkboard.documents.Count,
             "Closing the panel lost pinned documents.");
         board.LoadData(JsonUtility.FromJson<GameData>(JsonUtility.ToJson(closed)));
         Check(!docs.IsDocumentPanelOpen && !viewport.gameObject.activeSelf, "Reloading reopened a closed document panel.");
-        toggle.GetComponent<UnityEngine.UI.Button>().onClick.Invoke();
-        Check(docs.IsDocumentPanelOpen && viewport.gameObject.activeSelf, "The actual panel handle does not open it.");
+        target.GetComponent<UnityEngine.UI.Button>().onClick.Invoke();
+        Check(docs.IsDocumentPanelOpen && viewport.gameObject.activeSelf, "The target card does not open the panel.");
         docs.SetDocumentPanelOpen(true, true);
         var again = new GameData(); board.SaveData(ref again);
         foreach (var item in saved.savedChalkboard.documents)

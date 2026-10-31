@@ -24,6 +24,7 @@ public class InteractableChalkboard : MonoBehaviour, IInteractable, IForceExitab
 
     [Header("KAMERA AYARLARI")]
     public Transform fixedCameraTransform;
+    private const float BoardFieldOfView = 105f;
     private CinemachineVirtualCamera interactVCam;
 
     [SerializeField]
@@ -143,7 +144,7 @@ public class InteractableChalkboard : MonoBehaviour, IInteractable, IForceExitab
             interactVCam.Priority = 102;
             interactVCam.transform.localPosition = Vector3.zero;
             interactVCam.transform.localRotation = Quaternion.identity;
-            interactVCam.m_Lens.FieldOfView =105f;
+            interactVCam.m_Lens.FieldOfView = BoardFieldOfView;
         }
 
         yield return new WaitForSeconds(1.0f);
@@ -233,6 +234,20 @@ public class InteractableChalkboard : MonoBehaviour, IInteractable, IForceExitab
         isUsing = false;
         isExiting = false;
         PlayerInteraction.NotifyInteractionExit(gameObject);
+    }
+
+    // Tahta kamerasının görüşünde, ekran merkezinden ekran oranı olarak konum.
+    // Kamera geçişi sürerken de doğru olsun diye Camera.main'in değil varacağı pozun bakışıdır.
+    public Vector2 BoardViewPoint(Vector3 world)
+    {
+        Camera camera = Camera.main;
+        // Test sahnelerinde sabit kamera yok; oyuncu tahtaya geçişi beklemeden yerine gelir.
+        if (fixedCameraTransform == null) return (Vector2)camera.WorldToViewportPoint(world) - Vector2.one * .5f;
+        Vector3 view = Quaternion.Inverse(fixedCameraTransform.rotation) * (world - fixedCameraTransform.position);
+        // Lensin FOV ekseni sahneye bağlıdır; güncel izdüşüm tahtanın son FOV'una ölçeklenir.
+        float zoom = Mathf.Tan(camera.fieldOfView * .5f * Mathf.Deg2Rad) / Mathf.Tan(BoardFieldOfView * .5f * Mathf.Deg2Rad);
+        Matrix4x4 lens = camera.projectionMatrix;
+        return new Vector2(lens[0, 0] * view.x, lens[1, 1] * view.y) * (zoom * .5f / view.z);
     }
 
     public string GetInteractionPrompt() => promptText;

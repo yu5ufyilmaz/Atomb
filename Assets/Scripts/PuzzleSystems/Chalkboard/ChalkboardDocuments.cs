@@ -16,8 +16,9 @@ public sealed partial class ChalkboardDocuments : MonoBehaviour
 
     private void OnEnable() { GameLocalization.LanguageChanged += Refresh; }
     private void OnDisable() { GameLocalization.LanguageChanged -= Refresh; }
-    public float WorkingMaxX => freeLayout ? board.maxBounds.x : surface != null
-        ? surface.localPosition.x - surface.rect.width * surface.localScale.x * .5f - .18f : board.maxBounds.x;
+    // Açık pano çalışırken de durur; parça altına girip kaybolmasın, tahta yerel +X oyuncunun soludur.
+    public float WorkingMaxX => freeLayout ? shadeExpanded ? board.maxBounds.x - (corkBoard.rect.width + 22) / PixelsPerUnit : board.maxBounds.x
+        : surface != null ? surface.localPosition.x - surface.rect.width * surface.localScale.x * .5f - .18f : board.maxBounds.x;
 
     public void Initialize(ChalkboardManager manager)
     {

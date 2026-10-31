@@ -5,6 +5,7 @@ using UnityEngine;
 // Live puzzle state for scene events. Dialogue IDs and event order belong to the scene.
 public class ChalkboardTutorialCondition : MonoBehaviour, ICondition
 {
+    // ClearBoard kalktı ama sahne bağlamları sayı olarak sakladığı için yerinde durur; hiç gerçekleşmez.
     public enum Context { Book, Collect, LeaveBook, Board, Pin, ClearBoard, Build, Store, LeaveBoard,
         Turing, Insert, Reader, Confirm, RetryMeasurement, Valve, LeaveValve, WaitPower, Breaker }
     public ChalkboardTutorial lesson;
@@ -28,10 +29,9 @@ public class ChalkboardTutorialCondition : MonoBehaviour, ICondition
             case Context.LeaveBook: return interaction == lesson.lessonBook;
             case Context.Board: return interaction != lesson.lessonBook && !board.isMachineActive;
             case Context.Pin: return board.isMachineActive && !lesson.HasPinnedCards;
-            case Context.ClearBoard: return board.isMachineActive && lesson.HasPinnedCards && !lesson.PanelWasClosed;
-            case Context.Build: return board.isMachineActive && lesson.HasPinnedCards && lesson.PanelWasClosed && !lesson.HasCorrectReading;
-            case Context.Store: return board.isMachineActive && lesson.HasPinnedCards && lesson.PanelWasClosed && lesson.HasCorrectReading && !lesson.HasStoredReading;
-            case Context.LeaveBoard: return board.isMachineActive && lesson.HasPinnedCards && lesson.PanelWasClosed && lesson.HasCorrectReading && lesson.HasStoredReading;
+            case Context.Build: return board.isMachineActive && lesson.HasPinnedCards && !lesson.HasCorrectReading;
+            case Context.Store: return board.isMachineActive && lesson.HasPinnedCards && lesson.HasCorrectReading && !lesson.HasStoredReading;
+            case Context.LeaveBoard: return board.isMachineActive && lesson.HasPinnedCards && lesson.HasCorrectReading && lesson.HasStoredReading;
             case Context.Turing: return interaction != terminal;
             case Context.Insert: return interaction == terminal && !terminal.IsReadingMeasurement && !terminal.MeasurementRejected && !terminal.HasReadMeasurement;
             case Context.Reader: return interaction == terminal && terminal.IsReadingMeasurement;

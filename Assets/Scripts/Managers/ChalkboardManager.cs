@@ -202,6 +202,16 @@ public class ChalkboardManager : MonoBehaviour, ISaveable
     {
         localPos.x = Mathf.Clamp(localPos.x, minBounds.x, WorkingMaxX);
         localPos.y = Mathf.Clamp(localPos.y, minBounds.y, maxBounds.y);
+        return KeepOffDevice(localPos);
+    }
+
+    // Ölçüm cihazı sağ alt köşede sabittir; altına giren parça bir daha tutulamaz.
+    // Hep orta alana itilir, üstünde defter durur; pay parçanın port ucunu da cihazın dışında bırakır.
+    private Vector3 KeepOffDevice(Vector3 localPos)
+    {
+        if (!IndividualPartMovement || SignalExperiment.Active == null) return localPos;
+        Rect device = SignalExperiment.Active.BoardArea;
+        if (localPos.y < device.yMax + 0.15f) localPos.x = Mathf.Max(localPos.x, device.xMax + 0.2f);
         return localPos;
     }
 
@@ -211,7 +221,7 @@ public class ChalkboardManager : MonoBehaviour, ISaveable
         {
             proposedLocalPos.x = Mathf.Clamp(proposedLocalPos.x, minBounds.x + padding, WorkingMaxX - padding);
             proposedLocalPos.y = Mathf.Clamp(proposedLocalPos.y, minBounds.y + padding, maxBounds.y - padding);
-            return proposedLocalPos;
+            return KeepOffDevice(proposedLocalPos);
         }
         if (root == null || boardTransform == null) return ClampToBoardArea(proposedLocalPos);
         Vector3 delta = proposedLocalPos - boardTransform.InverseTransformPoint(root.transform.position);

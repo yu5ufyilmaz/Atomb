@@ -101,7 +101,7 @@ public partial class NotebookWorkspaceController
 
     private void GuideOpenNotebook()
     {
-        var point = new Vector3(Screen.width * .8f, Screen.height * .25f);
+        var point = new Vector3(Screen.width * .8f, Screen.height * (notebookOpenPosition.y > 0 ? .7f : .25f));
         GuideMark(point, point, "[{input:ToggleNotebook}] DEFTERİ AÇ");
     }
 

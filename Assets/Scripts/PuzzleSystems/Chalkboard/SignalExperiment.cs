@@ -15,9 +15,12 @@ public sealed class SignalExperiment : MonoBehaviour
         && ((note.itemID ?? "").StartsWith("signal-result/") || (note.itemID ?? "").StartsWith("mixture-result/"));
     private ResearchPuzzleTrial trial;
     private NotebookDraggableBlock output;
-    private RectTransform measureButton;
+    private RectTransform device, measureButton;
     public NotebookDraggableBlock OutputCard => output;
     public Vector3 MeasureButton => measureButton.position;
+    public Vector3 DeviceTopRight => device.TransformPoint(device.rect.max);
+    // Cihazın tahta düzleminde kapladığı alan; canvas ters döndüğü için merkezden ölçülür.
+    public Rect BoardArea => new Rect((Vector2)device.localPosition - device.rect.size * device.localScale.x * .5f, device.rect.size * device.localScale.x);
     private CanvasGroup outputInput;
     private TextMeshProUGUI deviceFeedback;
     private readonly Dictionary<string, Reading> readings = new Dictionary<string, Reading>();
@@ -62,20 +65,20 @@ public sealed class SignalExperiment : MonoBehaviour
             return;
         }
         var root = new GameObject("İz Ölçüm Çıktısı", typeof(RectTransform), typeof(Canvas), typeof(GraphicRaycaster), typeof(CanvasGroup));
-        var rect = (RectTransform)root.transform;
+        var rect = device = (RectTransform)root.transform;
         rect.SetParent(trial.Board.boardTransform, false);
-        // Defter tahtanın sağ altında durur; cihaz ve DENEYİ ÖLÇ düğmesi onun altında kalmasın.
-        rect.localPosition = new Vector3(trial.Board.minBounds.x + .95f, trial.Board.minBounds.y + .42f, .045f);
+        // Tahtanın sağ alt köşesi; ölçüm kağıdı panodaki kartlarla aynı ölçektedir, defter hemen üstünde durur.
+        rect.localPosition = new Vector3(trial.Board.minBounds.x + .365f, trial.Board.minBounds.y + .295f, .045f);
         rect.localRotation = Quaternion.Euler(0, 180, 0);
-        rect.localScale = Vector3.one / 300;
-        rect.sizeDelta = new Vector2(218, 246);
+        rect.localScale = Vector3.one * .68f / 300;
+        rect.sizeDelta = new Vector2(218, 226);
         var canvas = root.GetComponent<Canvas>();
         canvas.renderMode = RenderMode.WorldSpace; canvas.worldCamera = Camera.main; canvas.sortingOrder = 7;
         outputInput = root.GetComponent<CanvasGroup>();
         PhysicalBoardFixture.Attach(rect, "Ölçüm Cihazı", Vector2.zero, rect.sizeDelta, new Color(.14f, .18f, .16f));
         var measure = new GameObject("Deneyi Ölç", typeof(RectTransform), typeof(Image), typeof(Button));
         var measureRect = measureButton = (RectTransform)measure.transform;
-        measureRect.SetParent(rect, false); measureRect.sizeDelta = new Vector2(206, 36); measureRect.anchoredPosition = new Vector2(0, 100);
+        measureRect.SetParent(rect, false); measureRect.sizeDelta = new Vector2(206, 36); measureRect.anchoredPosition = new Vector2(0, 94);
         measure.GetComponent<Image>().color = new Color(.65f, .51f, .27f);
         measure.GetComponent<Button>().onClick.AddListener(() =>
         {
@@ -83,10 +86,10 @@ public sealed class SignalExperiment : MonoBehaviour
                 trial.Board.AttemptSynthesis();
         });
         DeviceLabel(measureRect, "DENEYİ ÖLÇ", Vector2.zero, new Vector2(200, 32), 15);
-        deviceFeedback = DeviceLabel(rect, "Ölçüm kağıdını deftere al.", new Vector2(0, 68), new Vector2(206, 24), 10);
+        deviceFeedback = DeviceLabel(rect, "Ölçüm kağıdını deftere al.", new Vector2(0, 62), new Vector2(206, 26), 12);
         deviceFeedback.color = new Color(.94f, .90f, .75f);
         var outputSlot = new GameObject("Ölçüm Kağıdı Yuvası", typeof(RectTransform)).GetComponent<RectTransform>();
-        outputSlot.SetParent(rect, false); outputSlot.sizeDelta = new Vector2(218, 156); outputSlot.anchoredPosition = new Vector2(0, -28);
+        outputSlot.SetParent(rect, false); outputSlot.sizeDelta = new Vector2(218, 156); outputSlot.anchoredPosition = new Vector2(0, -33);
         var paper = new GameObject("Ölçüm Kağıdı", typeof(RectTransform), typeof(CanvasGroup), typeof(NotebookDraggableBlock));
         paper.transform.SetParent(outputSlot, false);
         output = paper.GetComponent<NotebookDraggableBlock>();

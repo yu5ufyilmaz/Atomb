@@ -87,10 +87,9 @@ public partial class NotebookWorkspaceController : MonoBehaviour
         root.SetActive(true);
         Canvas.ForceUpdateCanvases();
         notebookWindow.localScale = Vector3.one * NotebookScale;
-        if (notebook != null && notebook.useScreenSpaceNotebook)
+        if (notebook != null && (notebook.useScreenSpaceNotebook || IsArchiveNotebook))
         {
-            notebookOpenPosition = new Vector2(-notebookWindow.sizeDelta.x * NotebookScale * .5f - 50,
-                -bounds.rect.height * .5f + notebookWindow.sizeDelta.y * NotebookScale * .5f + 75);
+            notebookOpenPosition = WorkstationNotebookPosition();
             notebookWindow.anchoredPosition = notebookOpenPosition;
         }
         activeBook = book;
@@ -580,7 +579,7 @@ public partial class NotebookWorkspaceController : MonoBehaviour
                 var target = FindQuest(block.Data.questID);
                 return target != null && board.TryPinQuest(target);
             }
-            ShowFeedback(IsArchiveNotebook ? "Parçayı kara tahtaya bırak. Belge panosunu tutamaktan toplayabilirsin."
+            ShowFeedback(IsArchiveNotebook ? "Parçayı kara tahtaya bırak. Belge panosunu hedef kartından toplayabilirsin."
                 : "Hedefi GÖREV alanına, ipuçlarını BİLGİLER alanına bırak.", false);
             return false;
         }

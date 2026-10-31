@@ -5,7 +5,7 @@
 `scn_LaboratorySynthesis` sahnesinde tutorial varsayılan olarak açıktır; başlık ekranındaki ayardan kapatılabilir.
 
 - Masadaki kitabın ilk iki sayfası **İlk İz** alıştırmasıdır. Hedefi, **Bağlantı Sırası** ipucunu ve üç parçayı deftere sürükle. Yalnız kitabı kapatmak veya Tab'a basmak dersi tamamlamaz.
-- Tahtada **Hedefler** ve **Bilgiler** bölümlerindeki kartları panoya tak. Tahtanın üstündeki **BELGELERİ TOPLA** düğmesi kağıtlarla birlikte fiziksel gövdeyi de kaldırır; **BELGELERİ AÇ** geri getirir. Tutamak tahta sınırları içindedir.
+- Tahtada **Hedefler** ve **Bilgiler** bölümlerindeki kartları panoya tak. Hedef bırakılınca pano kendiliğinden açılır. Sol üstteki hedef kartı tek düğmedir: **AÇ** hedef ayrıntısını ve mantar panoyu birlikte indirir, **KAPAT** ikisini de toplar. Pano tahtanın üçte biri kadardır; orta alan deneye, sağ sütun üstte defter altta ölçüm cihazına ayrılmıştır.
 - **Parçalar** bölümünden **Atım Kaynağı → Numune N-12 → Ölçer** düzenini kur, okları giriş halkalarına bağla ve **DENEYİ ÖLÇ** düğmesine bas. Doğru ölçümü deftere alıp F ile çık.
 - Kapı ve düşman eğitiminden sonra ölçümü Turing okuyucusuna bırakıp Enter ile sına. Hazır tutorial şifresi verilmez. Vana aşaması basıncın 20 veya altına düşmesini, son aşama gerçekten atan şalterin kaldırılmasını bekler.
 - Ekranın sol üstündeki aktif görev işlem tamamlanana kadar kalır. Eğitimde otomatik basınç artışı ve rastgele şalter kesintisi bekler; vana sonrası yazılmış tek kesinti korunur. Eğitim bitince normal sistemler ve serbest etkileşim açılır.
@@ -17,7 +17,7 @@ Kontroller: **Senzora > Doğrulama > Tutorial ve Kapanan Pano** (Edit), **Tutori
 
 `scn_SynthesisBlockout` sahnesinde **Play** ile dene. **1** kitap, **2** tahta, **F** etkileşimden çıkış.
 
-- Kitabın üst bandını veya defterin **SAHA DEFTERİ / TUTUP TAŞI** başlığını sol tuşla tutup sürükle. Defter konumu kitap ile tahta arasında geçerken korunur; ekran dışına taşmaz.
+- Kitabın üst bandını veya defterin **SAHA DEFTERİ / TUTUP TAŞI** başlığını sol tuşla tutup sürükle. Defter her etkileşimde kendi yerinde açılır (tahtada ölçüm cihazının üstünde); ekran dışına taşmaz.
 - Sağ alttaki **DEFTERİ KAPAT** düğmesi veya defter başlığındaki **×**, defteri düğmeye doğru küçülterek kapatır. **DEFTERİ AÇ** aynı konuma geri getirir. Notlar, seçili sekme ve sayfa korunur; kapalı defter tahtanın girdisini engellemez.
 - Defterdeki **Hedefler** bölümünden bir hedefi tahtanın solundaki **GÖREV** kağıdına bırak. Şema artık tahtanın üzerindedir ve tahta ile birlikte hareket eder.
 - **Bilgiler** sekmesi bütün defter sayfalarındaki kural / ipucu kartlarını bir arada gösterir. Eski notların da burada görünür; asıl sayfaları ve kayıt biçimi korunur. Kitap notlarını bu bölüme veya normal Notlar sayfasına bırakabilirsin.
