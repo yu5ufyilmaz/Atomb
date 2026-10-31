@@ -3951,6 +3951,16 @@
             "text": "OKUYUCUYA SÜRÜKLE"
         },
         {
+            "key": "board.doc.clear_board",
+            "source": "TAHTAYI TEMİZLE",
+            "text": "TAHTAYI TEMİZLE"
+        },
+        {
+            "key": "board.doc.clear_pins",
+            "source": "PANOYU TEMİZLE",
+            "text": "PANOYU TEMİZLE"
+        },
+        {
             "key": "subtitle.chemistry_lab_entrance.0",
             "source": "",
             "text": "Beni üniversitede geride bıraktığını mı sandın Arthur?"

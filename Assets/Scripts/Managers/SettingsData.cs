@@ -12,8 +12,18 @@ public sealed class DisplaySettings
     public double Hz => refreshDenominator == 0 || refreshNumerator == 0 ? 60 : (double)refreshNumerator / refreshDenominator;
     public RefreshRate RefreshRate => refreshNumerator == 0 || refreshDenominator == 0 ? new RefreshRate { numerator = 60, denominator = 1 } : new RefreshRate { numerator = refreshNumerator, denominator = refreshDenominator };
     public bool SameAs(DisplaySettings other) => other != null && width == other.width && height == other.height && mode == other.mode && Math.Abs(Hz - other.Hz) < .1;
-    public static DisplaySettings Current() => new DisplaySettings { width = Screen.width, height = Screen.height, mode = (int)Screen.fullScreenMode,
-        refreshNumerator = Screen.currentResolution.refreshRateRatio.numerator, refreshDenominator = Screen.currentResolution.refreshRateRatio.denominator };
+    // Kayıt yokken varsayılan masaüstü çözünürlüğüdür (Display.main.system*), okunamazsa 1920x1080.
+    // Screen.width/height kullanılmaz: ilk açılışta 0 gelebiliyor ya da kayıt defterindeki bozuk 640x480'i yansıtıyor.
+    public static DisplaySettings Current()
+    {
+        var display = Display.main; var rate = Screen.currentResolution.refreshRateRatio;
+        return new DisplaySettings
+        {
+            width = display != null && display.systemWidth >= 640 ? display.systemWidth : 1920,
+            height = display != null && display.systemHeight >= 480 ? display.systemHeight : 1080,
+            mode = (int)FullScreenMode.FullScreenWindow, refreshNumerator = rate.numerator, refreshDenominator = rate.denominator
+        };
+    }
 }
 
 [Serializable]

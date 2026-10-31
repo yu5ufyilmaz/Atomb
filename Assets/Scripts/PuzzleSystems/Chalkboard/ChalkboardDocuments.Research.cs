@@ -58,6 +58,8 @@ public sealed partial class ChalkboardDocuments
         informationArea = Paper(documentBoard, "Kayıt Bırakma İpucu", new Vector2(documentBoard.rect.xMin + 125, documentBoard.rect.yMax - 200),
             new Vector2(218, 38), new Color(.63f, .45f, .29f, .85f));
         Text(informationArea, "KAYDI BU PANOYA BIRAK", Vector2.zero, new Vector2(208, 32), 12);
+        // Sol alt köşe serbest tebeşir alanıdır; düğmeler oraya, hedef kartıyla aynı sütuna gelir.
+        AddClearButtons(new Vector2(surface.rect.xMin + 149, surface.rect.yMin + 22));
         RefreshResearch();
         SetDocumentPanelOpen(false, true);
     }

@@ -63,7 +63,7 @@ public sealed partial class ChalkboardDocuments : MonoBehaviour
         var heading = Paper(surface, "Bilgi Başlığı", new Vector2(0, 22), new Vector2(276, 30), new Color(.16f, .2f, .16f));
         informationHeading = Text(heading, "BİLGİLER / İPUÇLARI", Vector2.zero, new Vector2(270, 28), 16);
         informationHeading.color = new Color(.94f, .94f, .83f);
-        informationArea = Paper(surface, "Tahta Bilgi Alanı", new Vector2(0, -153), new Vector2(276, 304), new Color(.58f, .4f, .24f, .8f));
+        informationArea = Paper(surface, "Tahta Bilgi Alanı", new Vector2(0, -137), new Vector2(276, 272), new Color(.58f, .4f, .24f, .8f));
         informationArea.gameObject.AddComponent<RectMask2D>();
         var scroll = informationArea.gameObject.AddComponent<ScrollRect>();
         scroll.horizontal = false; scroll.viewport = informationArea;
@@ -73,7 +73,22 @@ public sealed partial class ChalkboardDocuments : MonoBehaviour
         informationContent.anchorMin = new Vector2(0, 1); informationContent.anchorMax = Vector2.one;
         informationContent.pivot = new Vector2(.5f, 1); scroll.content = informationContent;
         Text(surface, "GÖREV", new Vector2(0, 301), new Vector2(270, 28), 16).color = new Color(.94f, .94f, .83f);
+        AddClearButtons(new Vector2(0, -302));
         Refresh();
+    }
+
+    // İki temizleme düğmesi: tahta (parçalar + tebeşir) ve mantar pano (sabitlenen kayıtlar).
+    private void AddClearButtons(Vector2 center)
+    {
+        ClearButton(new Vector2(center.x - 68, center.y), "TAHTAYI TEMİZLE", board.ClearChalkboard);
+        ClearButton(new Vector2(center.x + 68, center.y), "PANOYU TEMİZLE", board.ClearPinnedInformation);
+    }
+
+    private void ClearButton(Vector2 position, string label, UnityEngine.Events.UnityAction action)
+    {
+        var button = Paper(surface, label, position, new Vector2(130, 26), new Color(.63f, .71f, .72f));
+        button.gameObject.AddComponent<Button>().onClick.AddListener(action);
+        Text(button, label, Vector2.zero, new Vector2(124, 24), 12);
     }
 
     public void Refresh()
@@ -132,7 +147,7 @@ public sealed partial class ChalkboardDocuments : MonoBehaviour
             thread.anchoredPosition = new Vector2(-126, 0); thread.GetComponent<Image>().raycastTarget = false;
             thread.SetAsFirstSibling();
         }
-        informationContent.sizeDelta = new Vector2(0, Mathf.Max(304, y));
+        informationContent.sizeDelta = new Vector2(0, Mathf.Max(272, y));
         foreach (var localized in surface.GetComponentsInChildren<LocalizedText>(true)) localized.RefreshBaseline();
     }
 

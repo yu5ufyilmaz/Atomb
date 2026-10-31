@@ -3951,6 +3951,16 @@
             "text": "DRAG TO READER"
         },
         {
+            "key": "board.doc.clear_board",
+            "source": "TAHTAYI TEMİZLE",
+            "text": "CLEAR BOARD"
+        },
+        {
+            "key": "board.doc.clear_pins",
+            "source": "PANOYU TEMİZLE",
+            "text": "CLEAR PINBOARD"
+        },
+        {
             "key": "subtitle.chemistry_lab_entrance.0",
             "source": "",
             "text": "Did you think you left me behind at the university, Arthur?"

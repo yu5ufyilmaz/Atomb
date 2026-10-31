@@ -512,15 +512,27 @@ public class ChalkboardManager : MonoBehaviour, ISaveable
         return null;
     }
 
-    public void ResetBoard()
+    // Tahtadaki parçaları ve tebeşir izlerini siler; hedef ve mantar panodaki kayıtlar kalır.
+    public void ClearChalkboard()
     {
         if (boardTransform != null) DestroyParts(boardTransform.GetComponentsInChildren<DraggableFormula>(true));
         if (freehand != null && freehand.Drawer != null) freehand.Drawer.Clear();
         if (synthesisZone != null) synthesisZone.currentItems.Clear();
-        PinnedQuest = null;
-        LastSynthesisMessage = string.Empty;
+    }
+
+    // Mantar panoya takılı kayıtları siler; hedef kartı ve tahtadaki çalışma kalır.
+    public void ClearPinnedInformation()
+    {
         pinnedInformation.Clear();
         documents?.Refresh();
+    }
+
+    public void ResetBoard()
+    {
+        ClearChalkboard();
+        PinnedQuest = null;
+        LastSynthesisMessage = string.Empty;
+        ClearPinnedInformation();
         QuestPinned?.Invoke(null);
     }
 
