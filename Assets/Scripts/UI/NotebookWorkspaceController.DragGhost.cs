@@ -49,15 +49,38 @@ public partial class NotebookWorkspaceController
         else GuideOpenNotebook();
     }
 
-    // shortcut: kart aynı bölümün başka sayfasındaysa yine sekmeyi gösterir; ders kartları ilk sayfada toplandığı için yeterli.
     internal void GuideNote(System.Predicate<NotebookBlockData> match, string tab, Vector3 to, string label)
     {
         if (!IsActive) return;
         if (!notebookExpanded) { GuideOpenNotebook(); return; }
         foreach (var card in notebookWindow.GetComponentsInChildren<NotebookDraggableBlock>())
             if (match(card.Data)) { GuideCard(card, to, label); return; }
+        // Sekme açık ama kart başka sayfada: ilgili oku göster, yönü yaz.
+        int delta = PageDelta(match, tab);
+        if (delta != 0 && partsPager != null)
+        {
+            Vector3 arrow = partsPager.transform.GetChild(delta > 0 ? 1 : 0).position;
+            GuideMark(arrow, arrow, delta > 0 ? "SONRAKİ SAYFA  ›" : "‹  ÖNCEKİ SAYFA");
+            return;
+        }
         Vector3 point = page.parent.Find(tab).position;
-        GuideMark(point, point, "BU BÖLÜMÜ AÇ");
+        // Açık bölümde "bu bölümü aç" kafa karıştırır; sekmenin adı yazılır.
+        GuideMark(point, point, tab == "Hedefler" ? "HEDEFLER SEKMESİNİ AÇ" : tab == "Parçalar" ? "PARÇALAR SEKMESİNİ AÇ"
+            : tab == "Bilgiler" ? "BİLGİLER SEKMESİNİ AÇ" : tab == "Ölçümler" ? "ÖLÇÜMLER SEKMESİNİ AÇ" : "BU BÖLÜMÜ AÇ");
+    }
+
+    // Açık sekmede aranan kartın sayfası ile görünen sayfa arasındaki fark; sekme kapalıysa veya kart yoksa 0.
+    private int PageDelta(System.Predicate<NotebookBlockData> match, string tab)
+    {
+        if (tab == "Parçalar" && currentNotebookView == NotebookView.Notes)
+            return PartsPages().FindIndex(p => p.slots.Exists(n => n != null && match(n))) is int part && part >= 0 ? part - partsArchivePage : 0;
+        if (tab == "Hedefler" && currentNotebookView == NotebookView.Targets)
+            return notebook.EnsureCollectedQuests().FindIndex(n => match(n)) is int target && target >= 0 ? target - targetArchivePage : 0;
+        if (tab == "Bilgiler" && currentNotebookView == NotebookView.Information)
+            return InformationNotes().FindIndex(n => match(n)) is int info && info >= 0 ? info / 2 - informationArchivePage : 0;
+        if (tab == "Ölçümler" && currentNotebookView == NotebookView.Solutions)
+            return InformationNotes(true).FindIndex(n => match(n)) is int reading && reading >= 0 ? reading / 2 - solutionsArchivePage : 0;
+        return 0;
     }
 
     internal void GuideMark(Vector3 from, Vector3 to, string label, bool line = false)

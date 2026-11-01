@@ -69,7 +69,7 @@ public partial class NotebookWorkspaceController
         guideContent.anchorMin = guideContent.anchorMax = new Vector2(.5f, 1);
         guideContent.pivot = new Vector2(.5f, 1);
         guideScroll.content = guideContent;
-        ShowNotebookView(NotebookView.Notes);
+        ShowNotebookView(IsArchiveNotebook ? NotebookView.Targets : NotebookView.Notes);
     }
 
     public void ShowCollectedTargets() { ShowNotebookView(NotebookView.Targets); }
@@ -119,7 +119,7 @@ public partial class NotebookWorkspaceController
         }
         else GameLocalization.Set(statusLabel, showingSolutions ? "Ölçüm kartını Turing'in sol klavyesindeki yuvaya sürükle."
             : view == NotebookView.Information
-            ? IsArchiveNotebook ? "Her deneyde geçerli kurallar; hedefe özel notlar Hedef sayfasında. Tahtaya raptiyele." : "Tüm sayfalardaki ipuçları. Tahtanın BİLGİLER alanına sürükle."
+            ? IsArchiveNotebook ? "Kitaplardan aldığın kayıtlar. Tahtaya raptiyele." : "Tüm sayfalardaki ipuçları. Tahtanın BİLGİLER alanına sürükle."
             : view == NotebookView.Targets
             ? IsArchiveNotebook ? "Hedefi tahtaya sürükle. Kayıt defterde korunur." : "Hedefi tahtaya sürükle. Tekerlek: hedefleri gez. Sağ tık: kaldır."
             : IsArchiveNotebook ? "Üstteki oklar: sayfa değiştir. Parçayı tahtaya sürükle; aslı kalır." : "Notu tahtaya sürükle. Hedefleri üstteki ayrı alana bırak.");

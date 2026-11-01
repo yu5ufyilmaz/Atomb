@@ -9,14 +9,14 @@ public static class ColorMixtureLibrary
     public const string Red = "mix-red", Green = "mix-green", Blue = "mix-blue", Solvent = "mix-solvent", Concentrator = "mix-concentrator";
     public static readonly IReadOnlyList<SignalPartLibrary.Part> All = Array.AsReadOnly(new[] {
         Part(Source, "Taşıyıcı Kaynağı", "SIVI", 0, 1, false, "1 doz renksiz taşıyıcı sıvı verir. Pigment içermez."),
-        Part(Red, "Kırmızı Pigment", "KIRMIZI", 1, 1, true, "Geçen karışıma 1 doz kırmızı pigment ekler. Miktar da 1 doz artar."),
-        Part(Green, "Yeşil Pigment", "YEŞİL", 1, 1, true, "Geçen karışıma 1 doz yeşil pigment ekler. Miktar da 1 doz artar."),
-        Part(Blue, "Mavi Pigment", "MAVİ", 1, 1, true, "Geçen karışıma 1 doz mavi pigment ekler. Miktar da 1 doz artar."),
-        Part(Solvent, "Çözücü", "SEYRELT", 1, 1, false, "1 doz renksiz taşıyıcı ekler. Pigment oranları korunur; yoğunluk azalır, toplam miktar artar."),
-        Part(Concentrator, "Yoğunlaştırıcı", "YOĞUN", 1, 1, false, "Renksiz taşıyıcının yarısını uzaklaştırır. Pigment miktarı korunur; yoğunluk artar, toplam miktar azalır."),
-        Part(Splitter, "Sıvı Dağıtıcı", "İKİYE BÖL", 1, 2, false, "Karışımı iki eşit kola böler. Her kolda bütün bileşenlerin yarısı bulunur; toplam miktar korunur."),
-        Part(Mixer, "Karıştırma Kabı", "KARIŞTIR", 2, 1, false, "İki girişten gelen sıvıları toplar. Renk pigment miktarlarına göre oluşur; iki giriş de bağlanmalı."),
-        Part(Meter, "Karışım Analizörü", "ANALİZ", 1, 0, false, "Son karışımın rengini, pigment yoğunluğunu ve toplam miktarını ölçer. Çıkışı yoktur.")
+        Part(Red, "Kırmızı Pigment", "KIRMIZI", 1, 1, true, "Karışıma 1 doz kırmızı pigment ekler; miktar 1 doz artar."),
+        Part(Green, "Yeşil Pigment", "YEŞİL", 1, 1, true, "Karışıma 1 doz yeşil pigment ekler; miktar 1 doz artar."),
+        Part(Blue, "Mavi Pigment", "MAVİ", 1, 1, true, "Karışıma 1 doz mavi pigment ekler; miktar 1 doz artar."),
+        Part(Solvent, "Çözücü", "SEYRELT", 1, 1, false, "1 doz renksiz taşıyıcı ekler. Yoğunluk azalır, miktar artar."),
+        Part(Concentrator, "Yoğunlaştırıcı", "YOĞUN", 1, 1, false, "Taşıyıcının yarısını alır. Yoğunluk artar, miktar azalır."),
+        Part(Splitter, "Sıvı Dağıtıcı", "İKİYE BÖL", 1, 2, false, "Karışımı iki eşit kola böler; her kolda her bileşenin yarısı."),
+        Part(Mixer, "Karıştırma Kabı", "KARIŞTIR", 2, 1, false, "İki girişten gelen sıvıları toplar. İki giriş de bağlanmalı."),
+        Part(Meter, "Karışım Analizörü", "ANALİZ", 1, 0, false, "Son karışımın rengini, yoğunluğunu ve miktarını ölçer.")
     });
     private static SignalPartLibrary.Part Part(string id, string title, string symbol, int inputs, int outputs, bool sample, string description)
         => new SignalPartLibrary.Part { id = id, title = title, symbol = symbol, inputs = inputs, outputs = outputs, sample = sample, description = description };

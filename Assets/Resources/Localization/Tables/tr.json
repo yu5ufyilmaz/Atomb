@@ -4086,6 +4086,171 @@
             "text": "NOTU SÜRÜKLE  /  Q E: BÖLÜM  /  ASLI DEFTERDE KALIR"
         },
         {
+            "key": "notebook.target.sample_locations",
+            "source": "NUMUNELERİN YERİ",
+            "text": "NUMUNELERİN YERİ"
+        },
+        {
+            "key": "part.short.pulse-source.description",
+            "source": "0,18 anında tek bir uyarım yollar. Girişi yok, bir çıkışı var.",
+            "text": "0,18 anında tek bir uyarım yollar. Girişi yok, bir çıkışı var."
+        },
+        {
+            "key": "part.short.pulse-n12.description",
+            "source": "Kısa tepki: izi inceltir. Zaman ve yükseklik değişmez.",
+            "text": "Kısa tepki: izi inceltir. Zaman ve yükseklik değişmez."
+        },
+        {
+            "key": "part.short.pulse-meter.description",
+            "source": "Bir veya iki girişten gelen izleri aynı kayda çizer.",
+            "text": "Bir veya iki girişten gelen izleri aynı kayda çizer."
+        },
+        {
+            "key": "part.short.pulse-splitter.description",
+            "source": "Gelen izi iki çıkışa da iletir. Her çıkışa ayrı hat bağla.",
+            "text": "Gelen izi iki çıkışa da iletir. Her çıkışa ayrı hat bağla."
+        },
+        {
+            "key": "part.short.pulse-delay.description",
+            "source": "İzi 0,32 birim geciktirir. Yükseklik ve genişlik değişmez.",
+            "text": "İzi 0,32 birim geciktirir. Yükseklik ve genişlik değişmez."
+        },
+        {
+            "key": "part.short.pulse-attenuator.description",
+            "source": "İzin yüksekliğini yarıya indirir. Zaman ve genişlik değişmez.",
+            "text": "İzin yüksekliğini yarıya indirir. Zaman ve genişlik değişmez."
+        },
+        {
+            "key": "part.short.pulse-n34.description",
+            "source": "Geniş tepki: izi genişletir. Zaman ve yükseklik değişmez.",
+            "text": "Geniş tepki: izi genişletir. Zaman ve yükseklik değişmez."
+        },
+        {
+            "key": "part.short.pulse-n08.description",
+            "source": "Zayıf tepki: izi inceltir ve yüksekliği yarıya indirir.",
+            "text": "Zayıf tepki: izi inceltir ve yüksekliği yarıya indirir."
+        },
+        {
+            "key": "part.short.pulse-n21.description",
+            "source": "Geç tepki: izi inceltir ve 0,16 birim geciktirir.",
+            "text": "Geç tepki: izi inceltir ve 0,16 birim geciktirir."
+        },
+        {
+            "key": "part.short.pulse-n46.description",
+            "source": "Çift tepki: her izi iki kez yollar; ikincisi 0,32 sonra gelir.",
+            "text": "Çift tepki: her izi iki kez yollar; ikincisi 0,32 sonra gelir."
+        },
+        {
+            "key": "part.short.mix-red.description",
+            "source": "Karışıma 1 doz kırmızı pigment ekler; miktar 1 doz artar.",
+            "text": "Karışıma 1 doz kırmızı pigment ekler; miktar 1 doz artar."
+        },
+        {
+            "key": "part.short.mix-green.description",
+            "source": "Karışıma 1 doz yeşil pigment ekler; miktar 1 doz artar.",
+            "text": "Karışıma 1 doz yeşil pigment ekler; miktar 1 doz artar."
+        },
+        {
+            "key": "part.short.mix-blue.description",
+            "source": "Karışıma 1 doz mavi pigment ekler; miktar 1 doz artar.",
+            "text": "Karışıma 1 doz mavi pigment ekler; miktar 1 doz artar."
+        },
+        {
+            "key": "part.short.mix-solvent.description",
+            "source": "1 doz renksiz taşıyıcı ekler. Yoğunluk azalır, miktar artar.",
+            "text": "1 doz renksiz taşıyıcı ekler. Yoğunluk azalır, miktar artar."
+        },
+        {
+            "key": "part.short.mix-concentrator.description",
+            "source": "Taşıyıcının yarısını alır. Yoğunluk artar, miktar azalır.",
+            "text": "Taşıyıcının yarısını alır. Yoğunluk artar, miktar azalır."
+        },
+        {
+            "key": "part.short.mix-splitter.description",
+            "source": "Karışımı iki eşit kola böler; her kolda her bileşenin yarısı.",
+            "text": "Karışımı iki eşit kola böler; her kolda her bileşenin yarısı."
+        },
+        {
+            "key": "part.short.mix-mixer.description",
+            "source": "İki girişten gelen sıvıları toplar. İki giriş de bağlanmalı.",
+            "text": "İki girişten gelen sıvıları toplar. İki giriş de bağlanmalı."
+        },
+        {
+            "key": "part.short.mix-meter.description",
+            "source": "Son karışımın rengini, yoğunluğunu ve miktarını ölçer.",
+            "text": "Son karışımın rengini, yoğunluğunu ve miktarını ölçer."
+        },
+        {
+            "key": "archive.short.pulse-n12.observation",
+            "source": "Tek başına ince ve kısa bir iz bırakır. Zaman ve güç değişmez.",
+            "text": "Tek başına ince ve kısa bir iz bırakır. Zaman ve güç değişmez."
+        },
+        {
+            "key": "archive.short.pulse-delay.observation",
+            "source": "Geçen tepki daha geç görünür; tekrar kullanınca bekleme uzar.",
+            "text": "Geçen tepki daha geç görünür; tekrar kullanınca bekleme uzar."
+        },
+        {
+            "key": "archive.short.pulse-attenuator.observation",
+            "source": "Geçen tepkiyi sönükleştirir; tekrar kullanınca daha da zayıflar.",
+            "text": "Geçen tepkiyi sönükleştirir; tekrar kullanınca daha da zayıflar."
+        },
+        {
+            "key": "archive.short.pulse-n34.observation",
+            "source": "Tepkiyi geniş bir iz yapar. Zaman ve güç değişmez.",
+            "text": "Tepkiyi geniş bir iz yapar. Zaman ve güç değişmez."
+        },
+        {
+            "key": "archive.short.pulse-n08.observation",
+            "source": "Kısa ve sönük bir iz bırakır; N-12'den zayıf görünür.",
+            "text": "Kısa ve sönük bir iz bırakır; N-12'den zayıf görünür."
+        },
+        {
+            "key": "archive.short.pulse-n21.observation",
+            "source": "Kısa bir iz bırakır; normal numuneden biraz sonra gelir.",
+            "text": "Kısa bir iz bırakır; normal numuneden biraz sonra gelir."
+        },
+        {
+            "key": "archive.short.pulse-n46.observation",
+            "source": "Her uyarıya aralıklı iki yanıt verir; tek giriş, tek çıkış.",
+            "text": "Her uyarıya aralıklı iki yanıt verir; tek giriş, tek çıkış."
+        },
+        {
+            "key": "notebook.info.status.collected",
+            "source": "Kitaplardan aldığın kayıtlar. Tahtaya raptiyele.",
+            "text": "Kitaplardan aldığın kayıtlar. Tahtaya raptiyele."
+        },
+        {
+            "key": "notebook.ws.tutorial_open_tab.targets",
+            "source": "HEDEFLER SEKMESİNİ AÇ",
+            "text": "HEDEFLER SEKMESİNİ AÇ"
+        },
+        {
+            "key": "notebook.ws.tutorial_open_tab.parts",
+            "source": "PARÇALAR SEKMESİNİ AÇ",
+            "text": "PARÇALAR SEKMESİNİ AÇ"
+        },
+        {
+            "key": "notebook.ws.tutorial_open_tab.information",
+            "source": "BİLGİLER SEKMESİNİ AÇ",
+            "text": "BİLGİLER SEKMESİNİ AÇ"
+        },
+        {
+            "key": "notebook.ws.tutorial_open_tab.solutions",
+            "source": "ÖLÇÜMLER SEKMESİNİ AÇ",
+            "text": "ÖLÇÜMLER SEKMESİNİ AÇ"
+        },
+        {
+            "key": "notebook.ws.tutorial_next_page",
+            "source": "SONRAKİ SAYFA  ›",
+            "text": "SONRAKİ SAYFA  ›"
+        },
+        {
+            "key": "notebook.ws.tutorial_previous_page",
+            "source": "‹  ÖNCEKİ SAYFA",
+            "text": "‹  ÖNCEKİ SAYFA"
+        },
+        {
             "key": "subtitle.chemistry_lab_entrance.0",
             "source": "",
             "text": "Beni üniversitede geride bıraktığını mı sandın Arthur?"

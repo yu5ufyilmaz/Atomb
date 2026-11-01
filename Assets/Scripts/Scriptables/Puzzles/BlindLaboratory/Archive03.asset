@@ -32,66 +32,60 @@ MonoBehaviour:
         allowed: 1
         minimum: 0
         maximum: 1
-        explanation: "Ba\u015Flang\u0131\xE7: 0,18 an\u0131nda tek uyar\u0131m yollar.
-          Y\xFCkseklik 1; giri\u015F yok, bir \xE7\u0131k\u0131\u015F."
+        explanation: "0,18 an\u0131nda tek bir uyar\u0131m yollar. Giri\u015Fi yok,
+          bir \xE7\u0131k\u0131\u015F\u0131 var."
       - itemID: pulse-n12
         allowed: 1
         minimum: 0
         maximum: 4
-        explanation: "Tek ba\u015F\u0131na denendi\u011Finde ince ve k\u0131sa bir
-          iz b\u0131rak\u0131r. Uyar\u0131n\u0131n geli\u015F an\u0131n\u0131 ve
-          g\xFCc\xFCn\xFC korur."
+        explanation: "Tek ba\u015F\u0131na ince ve k\u0131sa bir iz b\u0131rak\u0131r.
+          Zaman ve g\xFC\xE7 de\u011Fi\u015Fmez."
       - itemID: pulse-meter
         allowed: 1
         minimum: 0
         maximum: 1
-        explanation: "Sonu\xE7: bir veya iki giri\u015Ften gelen izleri ayn\u0131
-          kayda \xE7izer. \xC7\u0131k\u0131\u015F yok."
+        explanation: "Bir veya iki giri\u015Ften gelen izleri ayn\u0131 kayda \xE7izer."
       - itemID: pulse-splitter
         allowed: 0
         minimum: 0
         maximum: 4
-        explanation: "Gelen her izi iki \xE7\u0131k\u0131\u015F\u0131na da iletir.
-          Her \xE7\u0131k\u0131\u015Fa ayr\u0131 bir hat ba\u011Flan\u0131r."
+        explanation: "Gelen izi iki \xE7\u0131k\u0131\u015Fa da iletir. Her \xE7\u0131k\u0131\u015Fa
+          ayr\u0131 hat ba\u011Fla."
       - itemID: pulse-delay
         allowed: 1
         minimum: 0
         maximum: 4
-        explanation: "\u0130\xE7inden ge\xE7en tepki daha sonra g\xF6r\xFCn\xFCr.
-          Geni\u015Flik ve g\xFC\xE7 de\u011Fi\u015Fmez; tekrar kullan\u0131l\u0131rsa
+        explanation: "Ge\xE7en tepki daha ge\xE7 g\xF6r\xFCn\xFCr; tekrar kullan\u0131nca
           bekleme uzar."
       - itemID: pulse-attenuator
         allowed: 1
         minimum: 0
         maximum: 4
-        explanation: "\u0130\xE7inden ge\xE7en tepkiyi s\xF6n\xFCkle\u015Ftirir.
-          \u0130z ayn\u0131 yerde ve ayn\u0131 geni\u015Flikte kal\u0131r; tekrarlamak
-          onu daha da zay\u0131flat\u0131r."
+        explanation: "Ge\xE7en tepkiyi s\xF6n\xFCkle\u015Ftirir; tekrar kullan\u0131nca
+          daha da zay\u0131flar."
       - itemID: pulse-n34
         allowed: 1
         minimum: 0
         maximum: 4
-        explanation: "Tepkiyi geni\u015F bir iz haline getirir. Uyar\u0131n\u0131n
-          geli\u015F an\u0131n\u0131 ve g\xFCc\xFCn\xFC korur."
+        explanation: "Tepkiyi geni\u015F bir iz yapar. Zaman ve g\xFC\xE7 de\u011Fi\u015Fmez."
       - itemID: pulse-n08
         allowed: 0
         minimum: 0
         maximum: 4
-        explanation: "Gelen tepkiyi k\u0131sa ve s\xF6n\xFCk bir iz haline getirir.
-          Tek ba\u015F\u0131na N-12'den daha zay\u0131f g\xF6r\xFCn\xFCr."
+        explanation: "K\u0131sa ve s\xF6n\xFCk bir iz b\u0131rak\u0131r; N-12'den
+          zay\u0131f g\xF6r\xFCn\xFCr."
       - itemID: pulse-n21
         allowed: 1
         minimum: 0
         maximum: 4
-        explanation: "K\u0131sa bir tepki b\u0131rak\u0131r; yan\u0131t\u0131 normal
-          numuneden sonra gelir. Bu bekleme, geciktiricinin beklemesinden daha k\u0131sad\u0131r."
+        explanation: "K\u0131sa bir iz b\u0131rak\u0131r; normal numuneden biraz
+          sonra gelir."
       - itemID: pulse-n46
         allowed: 1
         minimum: 0
         maximum: 4
-        explanation: "Her uyar\u0131ya aral\u0131kl\u0131 iki yan\u0131t verir. Yan\u0131tlar\u0131n
-          bi\xE7imini ve g\xFCc\xFCn\xFC korur; tek giri\u015F ve tek \xE7\u0131k\u0131\u015F\u0131
-          vard\u0131r."
+        explanation: "Her uyar\u0131ya aral\u0131kl\u0131 iki yan\u0131t verir; tek
+          giri\u015F, tek \xE7\u0131k\u0131\u015F."
     solution:
       parts:
       - itemID: pulse-source
@@ -169,6 +163,8 @@ MonoBehaviour:
     notes:
     - pageIndex: 0
       title: "Numune g\xFCnl\xFC\u011F\xFC"
+      bookID: 
+      sourceLocation: 
       explanation: "Numuneler ayn\u0131 \xF6zelli\u011Fi de\u011Fi\u015Ftiriyorsa,
         daha sonra kar\u015F\u0131la\u015F\u0131lan numunenin izi son kay\u0131tta
         belirginle\u015Fir. Her i\u015Flemin zaman, bi\xE7im ve g\xFC\xE7 \xFCzerindeki
@@ -176,6 +172,8 @@ MonoBehaviour:
       blocks: []
     - pageIndex: 0
       title: "Deney masas\u0131 notu"
+      bookID: 
+      sourceLocation: 
       explanation: "Birden fazla tepki \xFCreten numune de normal bir hat \xFCzerinde
         \xE7al\u0131\u015Fabilir. Tepki say\u0131s\u0131yla hat say\u0131s\u0131n\u0131
         ayn\u0131 \u015Fey sanma."

@@ -83,7 +83,7 @@ public partial class NotebookWorkspaceController
 
     private void BuildTargetPage(NotebookBlockData target)
     {
-        float y = 6;
+        float y = 4;
         var puzzle = target != null ? PuzzleOf(target.questID) : null;
         var required = ExpectedItems(puzzle, target, false);
         var hints = ExpectedItems(puzzle, target, true);
@@ -97,40 +97,44 @@ public partial class NotebookWorkspaceController
         if (target != null)
         {
             var block = CreateBlock(target, false, targetContent);
-            var rect = (RectTransform)block.transform; rect.sizeDelta = new Vector2(440, 84);
+            var rect = (RectTransform)block.transform; rect.sizeDelta = new Vector2(440, 70);
             Top(rect, new Vector2(0, -y)); rect.localRotation = Quaternion.identity;
             CompactTargetCard(block, done, total);
         }
         else
         {
-            var empty = Placeholder(targetContent, "HEDEF YOK", new Vector2(440, 84), new Vector2(0, -y));
+            var empty = Placeholder(targetContent, "HEDEF YOK", new Vector2(440, 70), new Vector2(0, -y));
             Label(empty, "Kitaptaki hedef notunu deftere bırak.", new Vector2(0, -16), new Vector2(400, 20), 12).fontStyle = FontStyles.Italic;
         }
-        y += 96;
+        y += 78;
 
-        y += Heading("GEREKENLER", y);
-        if (required.Count == 0) y += PlaceholderRow(null, y);
-        foreach (var item in required) y += item.note != null ? NoteRow(item.note, y) : PlaceholderRow(item.book, y);
-
-        y += 8; y += Heading("İPUCU", y);
-        if (hints.Count == 0) y += PlaceholderRow(null, y);
-        foreach (var item in hints) y += item.note != null ? NoteRow(item.note, y) : PlaceholderRow(item.book, y);
-
-        y += 8; y += Heading("GEREKLİ NUMUNELER", y); y += 4;
+        // GEREKENLER: yalnız "?" kutuları; numune alınınca kutu açılır. Kitap bilgisi burada yazmaz.
+        y += Heading("GEREKENLER", y); y += 4;
         int count = samples.Count == 0 ? 3 : samples.Count;
         int columns = count > 4 ? 5 : 4; float pitch = columns > 4 ? 88 : 112, chipWidth = columns > 4 ? 84 : 100;
         for (int i = 0; i < count; i++)
         {
-            var position = new Vector2(-pitch * (columns - 1) / 2 + i % columns * pitch, -y - i / columns * 64);
+            var position = new Vector2(-pitch * (columns - 1) / 2 + i % columns * pitch, -y - i / columns * 52);
             var note = i < samples.Count ? archived.Find(n => n.itemID == samples[i].id) : null;
-            if (note != null) { SampleChip(note, position, chipWidth); continue; }
-            var box = Placeholder(targetContent, "?", new Vector2(chipWidth, 56), position);
-            string book = i < samples.Count ? BookOf(b => b.blockType == NotebookBlockType.PartClue && b.itemID == samples[i].id) : null;
-            if (book == null) continue;
-            var where = Label(box, book, new Vector2(0, -14), new Vector2(chipWidth - 8, 26), 9);
-            where.enableAutoSizing = true; where.fontSizeMin = 7; where.fontSizeMax = 9; where.color = MissingInk;
+            if (note != null) SampleChip(note, position, chipWidth);
+            else Placeholder(targetContent, "?", new Vector2(chipWidth, 48), position);
         }
-        y += (count + columns - 1) / columns * 64;
+        y += (count + columns - 1) / columns * 52;
+
+        // İPUCU: deney koşulu, ekipman notu ve puzzle'a özel notlar; eksikte kitap · raf.
+        y += Heading("İPUCU", y);
+        var items = required.Concat(hints).ToList();
+        if (items.Count == 0) y += PlaceholderRow(null, y);
+        foreach (var item in items) y += item.note != null ? NoteRow(item.note, y) : PlaceholderRow(item.book, y);
+
+        // NUMUNELERİN YERİ: her numune için kitap · raf; alınınca adı yazılır. Kutular "?" kalır, bilgi burada.
+        y += 2; y += Heading("NUMUNELERİN YERİ", y);
+        if (samples.Count == 0) y += PlaceholderRow(null, y);
+        foreach (var sample in samples)
+        {
+            bool have = archived.Exists(n => n.itemID == sample.id);
+            y += have ? DoneRow(sample.title, y) : PlaceholderRow(BookOf(b => b.blockType == NotebookBlockType.PartClue && b.itemID == sample.id), y);
+        }
         targetContent.sizeDelta = new Vector2(0, Mathf.Max(targetPanel.rect.height, y));
         targetContent.anchoredPosition = Vector2.zero;
     }
@@ -146,11 +150,11 @@ public partial class NotebookWorkspaceController
         if (diagram != null) { diagram.anchorMin = new Vector2(.02f, .12f); diagram.anchorMax = new Vector2(.2f, .88f); diagram.offsetMin = diagram.offsetMax = Vector2.zero; }
         var title = block.transform.Find("Başlık") as RectTransform;
         if (title != null) { title.anchorMin = new Vector2(.22f, .5f); title.anchorMax = new Vector2(1, 1); title.offsetMin = new Vector2(0, 0); title.offsetMax = new Vector2(-8, -6); }
-        var progress = Label(rect, "", new Vector2(50, -14), new Vector2(320, 18), 12);
+        var progress = Label(rect, "", new Vector2(50, -12), new Vector2(320, 18), 12);
         progress.alignment = TextAlignmentOptions.Left; progress.color = done >= total && total > 0 ? DoneInk : ink;
         GameLocalization.SetFormat(progress, "Hazırlık {0} / {1}", done, total);
         var track = Panel("Hazırlık Çubuğu", rect, new Vector2(320, 5), new Color(.09f, .11f, .095f, .15f));
-        track.anchoredPosition = new Vector2(50, -30); track.GetComponent<Image>().raycastTarget = false;
+        track.anchoredPosition = new Vector2(50, -26); track.GetComponent<Image>().raycastTarget = false;
         float ratio = total > 0 ? (float)done / total : 0;
         var fill = Panel("Hazırlık Dolgusu", track, new Vector2(320 * ratio, 5), DoneInk);
         fill.anchorMin = fill.anchorMax = fill.pivot = new Vector2(0, .5f); fill.anchoredPosition = Vector2.zero; fill.GetComponent<Image>().raycastTarget = false;
@@ -160,7 +164,7 @@ public partial class NotebookWorkspaceController
     private float NoteRow(NotebookBlockData note, float y)
     {
         var block = CreateBlock(note, false, targetContent);
-        var rect = (RectTransform)block.transform; rect.sizeDelta = new Vector2(440, 22);
+        var rect = (RectTransform)block.transform; rect.sizeDelta = new Vector2(440, 20);
         Top(rect, new Vector2(0, -y)); rect.localRotation = Quaternion.identity;
         foreach (string child in new[] { "Açıklama", "Bulmaca Etiketi", "Bant" }) { var t = block.transform.Find(child); if (t != null) t.gameObject.SetActive(false); }
         foreach (var border in block.GetComponentsInChildren<NotebookSketchBorder>(true)) border.enabled = false;
@@ -176,27 +180,36 @@ public partial class NotebookWorkspaceController
             title.enableAutoSizing = true; title.fontSizeMin = 10; title.fontSizeMax = 12;
             GameLocalization.Set(title, ShortTitle(note.title));
         }
-        Checkbox(y, true); RowLine(y + 22);
-        return 25;
+        Checkbox(y, true); RowLine(y + 20);
+        return 21;
     }
 
     // Eksik satır: solda "Bilinmiyor", sağda notun bulunduğu kitap ve raf.
     private float PlaceholderRow(string book, float y)
     {
-        var label = Label(targetContent, "Bilinmiyor", Vector2.zero, new Vector2(160, 22), 12);
+        var label = Label(targetContent, "Bilinmiyor", Vector2.zero, new Vector2(160, 20), 12);
         Top(label.rectTransform, new Vector2(-114, -y)); label.alignment = TextAlignmentOptions.Left; label.color = MissingInk;
-        var where = Label(targetContent, book ?? "?", Vector2.zero, new Vector2(250, 22), 11);
+        var where = Label(targetContent, book ?? "?", Vector2.zero, new Vector2(250, 20), 11);
         Top(where.rectTransform, new Vector2(95, -y)); where.alignment = TextAlignmentOptions.Right; where.color = MissingInk;
         where.enableAutoSizing = true; where.fontSizeMin = 8; where.fontSizeMax = 11;
-        Checkbox(y, false); RowLine(y + 22);
-        return 25;
+        Checkbox(y, false); RowLine(y + 20);
+        return 21;
+    }
+
+    // Alınmış numune satırı: yeşil kutu ve adı (sürüklenecek kart Parçalar sekmesinde).
+    private float DoneRow(string text, float y)
+    {
+        var label = Label(targetContent, text, Vector2.zero, new Vector2(410, 20), 12);
+        Top(label.rectTransform, new Vector2(11, -y)); label.alignment = TextAlignmentOptions.Left; label.color = DoneInk;
+        Checkbox(y, true); RowLine(y + 20);
+        return 21;
     }
 
     // Yazı tipleri ✓/○ işaretlerini taşımıyor; onay kutusu çizilir: dolu yeşil = defterde, boş = eksik.
     private void Checkbox(float y, bool done)
     {
         var box = Panel("Onay Kutusu", targetContent, new Vector2(11, 11), done ? DoneInk : PlaceholderFill);
-        Top(box, new Vector2(-212, -y - 5)); box.GetComponent<Image>().raycastTarget = false;
+        Top(box, new Vector2(-212, -y - 4)); box.GetComponent<Image>().raycastTarget = false;
         if (!done) { var outline = box.gameObject.AddComponent<Outline>(); outline.effectColor = MissingInk; outline.effectDistance = new Vector2(1, -1); }
     }
 
@@ -210,7 +223,7 @@ public partial class NotebookWorkspaceController
     private void SampleChip(NotebookBlockData note, Vector2 position, float width)
     {
         var block = CreateBlock(note, false, targetContent);
-        var rect = (RectTransform)block.transform; rect.sizeDelta = new Vector2(width, 56);
+        var rect = (RectTransform)block.transform; rect.sizeDelta = new Vector2(width, 48);
         Top(rect, position); rect.localRotation = Quaternion.identity;
         foreach (string child in new[] { "Başlık", "Açıklama", "Bulmaca Etiketi" }) { var t = block.transform.Find(child); if (t != null) t.gameObject.SetActive(false); }
         var drawing = block.GetComponentInChildren<SignalTrialGraphic>()?.rectTransform ?? block.GetComponentInChildren<MixtureGraphic>()?.rectTransform;
@@ -221,12 +234,12 @@ public partial class NotebookWorkspaceController
 
     private float Heading(string text, float y)
     {
-        var label = Label(targetContent, text, Vector2.zero, new Vector2(440, 20), 12);
+        var label = Label(targetContent, text, Vector2.zero, new Vector2(440, 18), 12);
         Top(label.rectTransform, new Vector2(0, -y));
         label.alignment = TextAlignmentOptions.Left; label.fontStyle = FontStyles.Bold; label.color = new Color(.27f, .27f, .25f);
         var rule = Panel("Başlık Çizgisi", targetContent, new Vector2(440, 1), PlaceholderLine);
-        Top(rule, new Vector2(0, -y - 20)); rule.GetComponent<Image>().raycastTarget = false;
-        return 24;
+        Top(rule, new Vector2(0, -y - 18)); rule.GetComponent<Image>().raycastTarget = false;
+        return 22;
     }
 
     private RectTransform Placeholder(Transform parent, string text, Vector2 size, Vector2 position)

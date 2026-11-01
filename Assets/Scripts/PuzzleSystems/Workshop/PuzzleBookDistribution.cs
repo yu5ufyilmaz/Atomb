@@ -35,8 +35,7 @@ public static partial class PuzzleBookDistribution
             var rule = puzzle.rules.Find(part.id);
             if (puzzle.rules.Allows(part.id))
                 result.Add(new NotebookBlockData { instanceID = "part/" + part.id, blockType = NotebookBlockType.PartClue,
-                    itemID = part.id, title = part.title, description = (string.IsNullOrWhiteSpace(rule.explanation) ? part.description : rule.explanation)
-                        + (part.inputs == 0 || part.outputs == 0 ? " Bu deneyde 1 adet." : $" Bu deneyde {rule.minimum}–{rule.maximum} adet.") });
+                    itemID = part.id, title = part.title, description = string.IsNullOrWhiteSpace(rule.explanation) ? part.description : rule.explanation });
             else result.Add(Note("ban/" + part.id, "KULLANIM YASAĞI", "Bu deneyde " + part.title + " kullanma."));
         }
         if (puzzle.notes != null) for (int i = 0; i < puzzle.notes.Count; i++)

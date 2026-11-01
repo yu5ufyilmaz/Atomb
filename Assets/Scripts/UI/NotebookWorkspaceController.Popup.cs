@@ -97,7 +97,7 @@ public partial class NotebookWorkspaceController
         if (IsPaused || !notebookExpanded) return;
         if (sectionDelta != 0)
         {
-            var sections = new[] { NotebookView.Notes, NotebookView.Information, NotebookView.Targets, NotebookView.Solutions };
+            var sections = new[] { NotebookView.Targets, NotebookView.Notes, NotebookView.Information, NotebookView.Solutions };
             int current = System.Array.IndexOf(sections, currentNotebookView);
             ShowNotebookView(sections[(current + (sectionDelta > 0 ? 1 : 3)) % 4]);
         }

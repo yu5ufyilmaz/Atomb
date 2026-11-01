@@ -48,8 +48,8 @@ public static partial class PuzzleBookDistribution
                 if (note.blockType == NotebookBlockType.PartClue)
                 {
                     var part = PuzzleParts.Find(note.itemID); var rule = puzzle.rules.Find(note.itemID);
-                    note.description = (part.inputs == 0 ? "Akışı buradan başlat. " : part.outputs == 0 ? "Son akışı burada ölç. " : "Gelen akışa uygulanır. ")
-                        + (string.IsNullOrWhiteSpace(rule.explanation) ? part.description : rule.explanation);
+                    // Rol kartın başlık satırında yazar; açıklama 144 piksellik karta sığacak kadar kısa kalır.
+                    note.description = string.IsNullOrWhiteSpace(rule.explanation) ? part.description : rule.explanation;
                 }
                 if (note.instanceID == "rule/constraints") note.description = DescribeRules(puzzle.rules, puzzle.kind);
                 AddEntry(note, puzzle, common, entries, shared);

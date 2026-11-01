@@ -35,7 +35,7 @@ public partial class NotebookWorkspaceController : MonoBehaviour
     private RectTransform partsContent;
     private GameObject partsPager;
     private int partsArchivePage;
-    private const int PartsPerPage = 4;
+    private const int PartsPerPage = 6;
     private string bookmarkState;
     private NotebookFreehandDrawer drawer;
     private TextMeshProUGUI pageLabel, chapterLabel, statusLabel, archiveFooter;
@@ -109,7 +109,7 @@ public partial class NotebookWorkspaceController : MonoBehaviour
             ChalkboardManager.Instance.QuestPinned += OnQuestPinned;
         }
         drawer.Tool = NotebookTool.Pen;
-        ShowNotebookView(NotebookView.Notes);
+        ShowNotebookView(IsArchiveNotebook ? NotebookView.Targets : NotebookView.Notes);
         RefreshPage();
         RefreshBook(book);
         RefreshPinnedQuest();
@@ -422,12 +422,25 @@ public partial class NotebookWorkspaceController : MonoBehaviour
         }
         for (int slot = 0; slot < current.slots.Count; slot++)
         {
-            var position = new Vector2(slot % 2 == 0 ? -(UsesNotebookSkin ? 116 : 125) : (UsesNotebookSkin ? 116 : 125), -top - slot / 2 * (UsesNotebookSkin ? 186 : 190));
-            var size = new Vector2(UsesNotebookSkin ? 218 : 234, UsesNotebookSkin ? 176 : 174);
+            // 3 sütun x 2 sıra küçük kart: sayfa başına 6 parça.
+            var position = new Vector2(-152 + slot % 3 * 152, -top - slot / 3 * 184);
+            var size = new Vector2(144, 176);
             if (current.slots[slot] == null) { Placeholder(partsContent, "Henüz bulunmadı", size, position); continue; }
             var block = CreateBlock(current.slots[slot], false, partsContent);
             var rect = (RectTransform)block.transform; rect.sizeDelta = size;
             Top(rect, position); ApplyArchiveNotePose(rect, current.slots[slot]); pageBlocks.Add(block);
+            var description = block.transform.Find("Açıklama")?.GetComponent<TMP_Text>();
+            if (description != null) { description.enableAutoSizing = true; description.fontSizeMin = 9; description.fontSizeMax = 12; description.overflowMode = TextOverflowModes.Ellipsis; description.GetComponent<LocalizedText>()?.RefreshBaseline(); }
+            var title = block.transform.Find("Başlık")?.GetComponent<TMP_Text>();
+            // LocalizedText kendi referans boyutunu tutar; yeni ölçüyü referans olarak kaydetmezsek geri alır.
+            if (title != null)
+            {
+                // El yazısı fontu küçük puntoda okunmuyor: başlık 14-20 arası sığdırılır, iki satır için 56 piksel yer.
+                title.rectTransform.offsetMin = new Vector2(10, -66);
+                title.enableAutoSizing = true; title.fontSizeMin = 14; title.fontSizeMax = 20; title.GetComponent<LocalizedText>()?.RefreshBaseline();
+                var drawing = block.GetComponentInChildren<SignalTrialGraphic>()?.rectTransform ?? block.GetComponentInChildren<MixtureGraphic>()?.rectTransform;
+                if (drawing != null) { drawing.anchorMin = new Vector2(drawing.anchorMin.x, .40f); drawing.anchorMax = new Vector2(drawing.anchorMax.x, .62f); }
+            }
         }
         if (page.gameObject.activeSelf) GameLocalization.SetFormat(pageLabel, UsesNotebookSkin ? "{0} / {1}" : "PARÇALAR  {0} / {1}", partsArchivePage + 1, pageCount);
         if (page.gameObject.activeSelf) UpdateArchivePager(partsArchivePage, pageCount);

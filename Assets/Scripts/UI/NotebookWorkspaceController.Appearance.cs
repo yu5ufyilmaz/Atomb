@@ -69,7 +69,7 @@ public partial class NotebookWorkspaceController
             var line = Panel("Defter Cetveli", window, new Vector2(450, 1), NotebookRule);
             line.anchoredPosition = rule; line.GetComponent<Image>().raycastTarget = false;
         }
-        foreach (string name in new[] { "Parçalar", "Bilgiler", "Hedefler", "Ölçümler" }) StyleNotebookTab(window.Find(name), name == "Parçalar");
+        foreach (string name in new[] { "Hedefler", "Parçalar", "Bilgiler", "Ölçümler" }) StyleNotebookTab(window.Find(name), name == "Hedefler");
     }
 
     private void LayoutNotebookSkin()
@@ -82,7 +82,7 @@ public partial class NotebookWorkspaceController
         partsPager.GetComponent<RectTransform>().sizeDelta = new Vector2(460, 36);
         partsPager.transform.GetChild(0).GetComponent<RectTransform>().anchoredPosition = new Vector2(-211, 0);
         partsPager.transform.GetChild(1).GetComponent<RectTransform>().anchoredPosition = new Vector2(211, 0);
-        string[] names = { "Parçalar", "Bilgiler", "Hedefler", "Ölçümler" };
+        string[] names = { "Hedefler", "Parçalar", "Bilgiler", "Ölçümler" }; // En üstte Hedefler: oyuncunun ilk bakacağı sayfa.
         for (int i = 0; i < names.Length; i++)
         {
             var tab = (RectTransform)window.Find(names[i]);
