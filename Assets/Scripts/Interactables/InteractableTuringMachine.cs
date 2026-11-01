@@ -616,8 +616,9 @@ public partial class InteractableTuringMachine : MonoBehaviour, IInteractable, I
 
         string pw = $"{wp}_{sp}_{np}";
 
-        // Only the test-scene copy uses an experiment result; production keeps its password flow.
-        if (isTrialTerminal)
+        // Deney terminali ölçüm kodlarını deneye, bulunan şifreleri PasswordManager'a sorar.
+        bool knownPassword = PasswordManager.Instance != null && PasswordManager.Instance.IsKnown(pw);
+        if (isTrialTerminal && !knownPassword)
         {
             bool accepted = experiment.Submit(pw);
             ShowMeasurementResult(accepted, experiment.TerminalMessage);
@@ -632,24 +633,10 @@ public partial class InteractableTuringMachine : MonoBehaviour, IInteractable, I
         // Eski Hatalı Kod: if (PasswordManager.Instance.GetDiscoveredClues().Contains(pw))
 
         // Yeni Doğru Kod: "Bu şifre daha önce ONAYLANDI MI?" diye soruyoruz.
-        if (PasswordManager.Instance.IsPasswordUsed(pw))
-        {
-            Debug.Log("Bu şifre zaten kullanıldı!");
-            PlaySound(failSound); // Hata sesi çal
-            return; // Fonksiyondan çık
-        }
-        // -----------------------
-
-        // Şifre daha önce kullanılmadıysa doğrulamayı dene
-        if (PasswordManager.Instance.ValidatePassword(pw))
-        {
-            PlaySound(successSound);
-            UpdateIndicators(PasswordManager.Instance.GetValidatedPasswordCount());
-        }
-        else
-        {
-            PlaySound(failSound);
-        }
+        bool acceptedPassword = !PasswordManager.Instance.IsPasswordUsed(pw) && PasswordManager.Instance.ValidatePassword(pw);
+        if (isTrialTerminal) ShowMeasurementResult(acceptedPassword, "Şifre yanlış veya zaten kullanıldı.");
+        PlaySound(acceptedPassword ? successSound : failSound);
+        if (acceptedPassword) UpdateIndicators(PasswordManager.Instance.GetValidatedPasswordCount());
     }
 
     private void UpdateIndicators(int c)

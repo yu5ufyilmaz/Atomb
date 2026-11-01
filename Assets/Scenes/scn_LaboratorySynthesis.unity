@@ -6947,7 +6947,6 @@ MonoBehaviour:
     y: 0
     width: 1
     height: 1
-  outlineController: {fileID: 0}
   highlightColor: {r: 1, g: 0.8, b: 0, a: 1}
   emissionIntensity: 10
   isOpen: 0
@@ -10028,7 +10027,6 @@ MonoBehaviour:
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: 2633f89b3a7c9c24d9891c9441650338, type: 2}
   canContainPassword: 0
-  outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
   isOpen: 0
@@ -13130,7 +13128,6 @@ MonoBehaviour:
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: 18f4c2f2e786f504085a2ca1bc9ebfd9, type: 2}
   canContainPassword: 0
-  outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
   isOpen: 0
@@ -14721,7 +14718,6 @@ MonoBehaviour:
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: 2a0f195687fb3034f9280cd43ec4cf0a, type: 2}
   canContainPassword: 0
-  outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
   isOpen: 0
@@ -18340,7 +18336,6 @@ MonoBehaviour:
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
   canContainPassword: 0
-  outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
   isOpen: 0
@@ -24173,7 +24168,6 @@ MonoBehaviour:
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
   canContainPassword: 0
-  outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
   isOpen: 0
@@ -25175,7 +25169,6 @@ MonoBehaviour:
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
   canContainPassword: 0
-  outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
   isOpen: 0
@@ -27958,7 +27951,6 @@ MonoBehaviour:
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
   canContainPassword: 0
-  outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
   isOpen: 0
@@ -33714,7 +33706,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UniversalHighlighter
   mode: 1
-  outlineController: {fileID: 0}
   highlightColor: {r: 1, g: 0.8, b: 0, a: 1}
   emissionIntensity: 0.9
   excludeRenderers:
@@ -34892,7 +34883,6 @@ MonoBehaviour:
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: 07341820b2684904898940bff856a3e3, type: 2}
   canContainPassword: 0
-  outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
   isOpen: 0
@@ -40450,7 +40440,6 @@ MonoBehaviour:
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
   canContainPassword: 0
-  outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
   isOpen: 0
@@ -41367,7 +41356,6 @@ MonoBehaviour:
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
   canContainPassword: 0
-  outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
   isOpen: 0
@@ -46009,7 +45997,6 @@ MonoBehaviour:
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
   canContainPassword: 0
-  outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
   isOpen: 0
@@ -46531,7 +46518,6 @@ MonoBehaviour:
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
   canContainPassword: 0
-  outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
   isOpen: 0
@@ -47224,7 +47210,6 @@ MonoBehaviour:
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: edb514d172dfc2e49acc780fede64633, type: 2}
   canContainPassword: 0
-  outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
   isOpen: 0
@@ -48776,7 +48761,6 @@ MonoBehaviour:
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: 725e301b34f00429ca9064b7d0eaa616, type: 2}
   canContainPassword: 1
-  outlineController: {fileID: 0}
   highlightColor: {r: 0.2, g: 0.2, b: 0.1, a: 1}
   emissionIntensity: 10
   isOpen: 0
@@ -50833,7 +50817,6 @@ MonoBehaviour:
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
   canContainPassword: 0
-  outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
   isOpen: 0
@@ -53511,7 +53494,6 @@ MonoBehaviour:
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
   canContainPassword: 0
-  outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
   isOpen: 0
@@ -66344,7 +66326,6 @@ MonoBehaviour:
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: 725e301b34f00429ca9064b7d0eaa616, type: 2}
   canContainPassword: 1
-  outlineController: {fileID: 0}
   highlightColor: {r: 0.2, g: 0.2, b: 0.1, a: 1}
   emissionIntensity: 10
   isOpen: 0
@@ -74779,7 +74760,6 @@ MonoBehaviour:
   animationDuration: 1
   bookIdentity: {fileID: 0}
   canContainPassword: 0
-  outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
   isOpen: 0
@@ -75470,7 +75450,6 @@ MonoBehaviour:
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: e8e70f6881874c346a915ed2051a4797, type: 2}
   canContainPassword: 0
-  outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
   isOpen: 0
@@ -76582,7 +76561,6 @@ MonoBehaviour:
   animationDuration: 1
   bookIdentity: {fileID: 0}
   canContainPassword: 0
-  outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
   isOpen: 0
@@ -78009,7 +77987,6 @@ MonoBehaviour:
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
   canContainPassword: 0
-  outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
   isOpen: 0
@@ -83066,7 +83043,6 @@ MonoBehaviour:
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
   canContainPassword: 0
-  outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
   isOpen: 0
@@ -83361,7 +83337,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1193203526}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 942e52852a30b8d4981b66bc52f37d43, type: 3}
   m_Name: 
@@ -83943,7 +83919,6 @@ MonoBehaviour:
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
   canContainPassword: 0
-  outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
   isOpen: 0
@@ -85631,7 +85606,6 @@ MonoBehaviour:
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
   canContainPassword: 0
-  outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
   isOpen: 0
@@ -88763,7 +88737,6 @@ MonoBehaviour:
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: 4784611e90dfbfc4c9ca6a2f2d182815, type: 2}
   canContainPassword: 0
-  outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
   isOpen: 0
@@ -89562,7 +89535,6 @@ MonoBehaviour:
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
   canContainPassword: 0
-  outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
   isOpen: 0
@@ -92910,7 +92882,6 @@ MonoBehaviour:
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
   canContainPassword: 0
-  outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
   isOpen: 0
@@ -94755,7 +94726,6 @@ MonoBehaviour:
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: 51515ebaa232ea446892709aafa79e1c, type: 2}
   canContainPassword: 0
-  outlineController: {fileID: 0}
   highlightColor: {r: 0.2, g: 0.2, b: 0.1, a: 0.53333336}
   emissionIntensity: 1
   isOpen: 0
@@ -97148,7 +97118,6 @@ MonoBehaviour:
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
   canContainPassword: 0
-  outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
   isOpen: 0
@@ -99939,7 +99908,6 @@ MonoBehaviour:
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
   canContainPassword: 0
-  outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
   isOpen: 0
@@ -103228,7 +103196,6 @@ MonoBehaviour:
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
   canContainPassword: 0
-  outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
   isOpen: 0
@@ -103507,7 +103474,6 @@ MonoBehaviour:
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
   canContainPassword: 0
-  outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
   isOpen: 0
@@ -105461,7 +105427,6 @@ MonoBehaviour:
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
   canContainPassword: 0
-  outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
   isOpen: 0
@@ -106546,7 +106511,6 @@ MonoBehaviour:
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
   canContainPassword: 0
-  outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
   isOpen: 0
@@ -110936,7 +110900,6 @@ MonoBehaviour:
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
   canContainPassword: 0
-  outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
   isOpen: 0
@@ -118320,7 +118283,6 @@ MonoBehaviour:
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
   canContainPassword: 0
-  outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
   isOpen: 0
@@ -119570,7 +119532,6 @@ MonoBehaviour:
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
   canContainPassword: 0
-  outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
   isOpen: 0
@@ -120253,7 +120214,6 @@ MonoBehaviour:
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
   canContainPassword: 0
-  outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
   isOpen: 0
@@ -122747,7 +122707,6 @@ MonoBehaviour:
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: a7f2861ca145c7e409e842cae9482924, type: 2}
   canContainPassword: 0
-  outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
   isOpen: 0
@@ -124237,7 +124196,6 @@ MonoBehaviour:
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
   canContainPassword: 0
-  outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
   isOpen: 0
@@ -124729,7 +124687,6 @@ MonoBehaviour:
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
   canContainPassword: 0
-  outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
   isOpen: 0
@@ -135567,7 +135524,6 @@ MonoBehaviour:
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
   canContainPassword: 0
-  outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
   isOpen: 0
@@ -137254,7 +137210,6 @@ MonoBehaviour:
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: d8450f206ca080d45a4fee43aaad03ce, type: 2}
   canContainPassword: 0
-  outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
   isOpen: 0
@@ -137751,7 +137706,6 @@ MonoBehaviour:
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
   canContainPassword: 0
-  outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
   isOpen: 0
@@ -138190,7 +138144,6 @@ MonoBehaviour:
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: eb8cfc1405e5cca4399af1013ce54b9c, type: 2}
   canContainPassword: 0
-  outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
   isOpen: 0
@@ -139719,7 +139672,6 @@ MonoBehaviour:
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
   canContainPassword: 0
-  outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
   isOpen: 0
@@ -141068,7 +141020,6 @@ MonoBehaviour:
   animationDuration: 1
   bookIdentity: {fileID: 0}
   canContainPassword: 0
-  outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
   isOpen: 0
@@ -146968,7 +146919,6 @@ MonoBehaviour:
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: a7f2861ca145c7e409e842cae9482924, type: 2}
   canContainPassword: 0
-  outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
   isOpen: 0
@@ -148738,7 +148688,6 @@ MonoBehaviour:
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
   canContainPassword: 0
-  outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
   isOpen: 0
@@ -150761,7 +150710,6 @@ MonoBehaviour:
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
   canContainPassword: 0
-  outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
   isOpen: 0
@@ -151404,7 +151352,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UniversalHighlighter
   mode: 1
-  outlineController: {fileID: 0}
   highlightColor: {r: 1, g: 0.8, b: 0, a: 1}
   emissionIntensity: 0.9
   excludeRenderers: []
@@ -163558,7 +163505,6 @@ MonoBehaviour:
     y: 0
     width: 1
     height: 1
-  outlineController: {fileID: 0}
   highlightColor: {r: 1, g: 0.8, b: 0, a: 1}
   emissionIntensity: 10
   isOpen: 0
@@ -175014,7 +174960,6 @@ MonoBehaviour:
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
   canContainPassword: 0
-  outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
   isOpen: 0
@@ -179810,7 +179755,6 @@ MonoBehaviour:
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
   canContainPassword: 0
-  outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
   isOpen: 0
@@ -210392,7 +210336,6 @@ MonoBehaviour:
   animationDuration: 1
   bookIdentity: {fileID: 11400000, guid: f35b4eeed58c04d578bd4c38ab7e64bb, type: 2}
   canContainPassword: 0
-  outlineController: {fileID: 0}
   highlightColor: {r: 0.32156864, g: 0.26666668, b: 0.26666668, a: 1}
   emissionIntensity: 20
   isOpen: 0

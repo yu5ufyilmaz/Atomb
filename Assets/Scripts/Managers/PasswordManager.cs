@@ -52,6 +52,16 @@ public class PasswordManager : MonoBehaviour, ISaveable
 
     public event Action OnGameReadyToFinish;
 
+    // Bulunan şifre deftere ölçüm kartı gibi düşer: Ölçümler bölümünde durur, Turing okuyucusuna takılır.
+    public const string NotePrefix = "password/";
+    public static bool IsPasswordNote(NotebookBlockData note) => note != null && (note.itemID ?? "").StartsWith(NotePrefix);
+    public static NotebookBlockData CreateNote(string password) => new NotebookBlockData
+    {
+        blockType = NotebookBlockType.RuleClue, itemID = NotePrefix + password, title = password.Replace("_", " "),
+        measurementCode = password, description = "Turing'in sol klavyesindeki yuvaya sürükle."
+    };
+    public bool IsKnown(string password) => password == tutorialPassword || requiredPasswords.Contains(password);
+
     private void Awake()
     {
         if (Instance == null)

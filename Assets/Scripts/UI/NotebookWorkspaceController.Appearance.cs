@@ -160,13 +160,13 @@ public partial class NotebookWorkspaceController
     }
 
     private bool UsesHandwriting(NotebookDraggableBlock block) => !block.IsSource && notebookHandwritingFont != null
-        && !SignalExperiment.IsMeasurementNote(block.Data);
+        && !IsSolutionNote(block.Data);
 
     private void ApplyArchiveNotePose(RectTransform rect, NotebookBlockData note)
     {
         int hash = 17;
         foreach (char c in note.title ?? "") hash = unchecked(hash * 31 + c);
-        float angle = UsesNotebookSkin && notebookHandwritingFont != null && !SignalExperiment.IsMeasurementNote(note)
+        float angle = UsesNotebookSkin && notebookHandwritingFont != null && !IsSolutionNote(note)
             ? ((hash & 255) / 255f - .5f) * 1.4f : 0;
         rect.localRotation = Quaternion.Euler(0, 0, angle);
     }

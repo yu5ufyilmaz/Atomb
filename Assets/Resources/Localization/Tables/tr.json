@@ -4251,6 +4251,16 @@
             "text": "‹  ÖNCEKİ SAYFA"
         },
         {
+            "key": "notebook.block.password_card",
+            "source": "ŞİFRE KARTI  {0}",
+            "text": "ŞİFRE KARTI  {0}"
+        },
+        {
+            "key": "turing.reader.password_rejected",
+            "source": "Şifre yanlış veya zaten kullanıldı.",
+            "text": "Şifre yanlış veya zaten kullanıldı."
+        },
+        {
             "key": "subtitle.chemistry_lab_entrance.0",
             "source": "",
             "text": "Beni üniversitede geride bıraktığını mı sandın Arthur?"

@@ -44,12 +44,15 @@ public partial class NotebookWorkspaceController
         ShowNotebookView(NotebookView.Solutions);
     }
 
+    // Ölçümler bölümü: deney ölçüm kartları ve bulunan şifre kartları; ikisi de Turing okuyucusuna takılır.
+    private static bool IsSolutionNote(NotebookBlockData note) => SignalExperiment.IsMeasurementNote(note) || PasswordManager.IsPasswordNote(note);
+
     private List<NotebookBlockData> InformationNotes(bool solutions = false)
     {
         var notes = PuzzleInformation.NotebookNotes(notebook);
         if (IsArchiveNotebook)
         {
-            notes.RemoveAll(n => SignalExperiment.IsMeasurementNote(n) != solutions);
+            notes.RemoveAll(n => IsSolutionNote(n) != solutions);
             var unique = new List<NotebookBlockData>();
             foreach (var note in notes) if (!unique.Exists(n => SameInformation(n, note))) unique.Add(note);
             notes = unique;

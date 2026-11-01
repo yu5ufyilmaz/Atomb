@@ -424,7 +424,12 @@ public class NotebookUI : MonoBehaviour, ISaveable
 
     public void ShowPasswordNotification(string password)
     {
-        // 0 = Passwords kategorisi
-        OpenNotebookToCategory(0);
+        // Şifre kartı Ölçümler bölümüne bir kez eklenir; kayıttan dönüşte yinelenmez.
+        var page = EnsureWorkspacePage();
+        string id = PasswordManager.NotePrefix + password;
+        foreach (var existing in workspacePages)
+            if (existing?.blocks != null && existing.blocks.Exists(b => b != null && b.itemID == id)) return;
+        page.blocks.Add(PasswordManager.CreateNote(password));
+        if (workspace != null && workspace.IsActive) workspace.RefreshPage();
     }
 }

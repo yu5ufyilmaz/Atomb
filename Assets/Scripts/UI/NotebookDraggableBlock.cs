@@ -170,7 +170,7 @@ public class NotebookDraggableBlock : MonoBehaviour, IBeginDragHandler, IDragHan
         titleText.fontSizeMin = 11f;
         titleText.fontSizeMax = 17f;
         bool measurement = SignalExperiment.IsMeasurementNote(Data);
-        GameLocalization.SetFormat(titleText, quest ? "◆ HEDEF  {0}" : measurement ? "ÖLÇÜM KARTI  {0}"
+        GameLocalization.SetFormat(titleText, quest ? "◆ HEDEF  {0}" : PasswordManager.IsPasswordNote(Data) ? "ŞİFRE KARTI  {0}" : measurement ? "ÖLÇÜM KARTI  {0}"
             : Data.blockType == NotebookBlockType.RuleClue ? researchNote ? "KAYIT  {0}" : "KURAL  {0}" : "PARÇA  {0}",
             measurement ? (Data.title ?? "").Replace("ÖLÇÜM / ", "") : Data.title);
         if (Data.blockType == NotebookBlockType.PartClue && PuzzleParts.Find(Data.itemID) != null)

@@ -4251,6 +4251,16 @@
             "text": "‹  PREVIOUS PAGE"
         },
         {
+            "key": "notebook.block.password_card",
+            "source": "ŞİFRE KARTI  {0}",
+            "text": "PASSWORD CARD  {0}"
+        },
+        {
+            "key": "turing.reader.password_rejected",
+            "source": "Şifre yanlış veya zaten kullanıldı.",
+            "text": "Wrong password or already used."
+        },
+        {
             "key": "subtitle.chemistry_lab_entrance.0",
             "source": "",
             "text": "Did you think you left me behind at the university, Arthur?"

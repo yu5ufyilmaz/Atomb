@@ -526,10 +526,10 @@ public partial class NotebookWorkspaceController : MonoBehaviour
         {
             if (block.IsSource) StoreArchiveNote(block.Data);
             ShowNotebookView(block.Data.blockType == NotebookBlockType.Quest ? NotebookView.Targets
-                : SignalExperiment.IsMeasurementNote(block.Data) ? NotebookView.Solutions
+                : IsSolutionNote(block.Data) ? NotebookView.Solutions
                 : block.Data.blockType == NotebookBlockType.RuleClue ? NotebookView.Information : NotebookView.Notes);
             if (block.Data.blockType == NotebookBlockType.PartClue) ShowCollectedPart(block.Data.itemID);
-            if (SignalExperiment.IsMeasurementNote(block.Data))
+            if (IsSolutionNote(block.Data))
                 solutionsArchivePage = Mathf.Max(0, InformationNotes(true).FindIndex(n => SameInformation(n, block.Data))) / 2;
             else if (block.Data.blockType == NotebookBlockType.RuleClue)
                 informationArchivePage = Mathf.Max(0, InformationNotes().FindIndex(n => SameInformation(n, block.Data))) / 2;

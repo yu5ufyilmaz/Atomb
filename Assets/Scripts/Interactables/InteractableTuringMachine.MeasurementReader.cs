@@ -70,7 +70,9 @@ public partial class InteractableTuringMachine
         if (!IsMeasurementTerminal || !inMachineMode || isExiting || ReaderPaused
             || physicalFeed == null || !physicalFeed.ContainsPointer(screenPosition, Camera.main)) return false;
         if (IsReadingMeasurement) return false;
-        if (!SignalExperiment.Active.TryGetMeasurementCode(note, out string code))
+        string code;
+        if (PasswordManager.IsPasswordNote(note)) code = note.measurementCode;
+        else if (!SignalExperiment.Active.TryGetMeasurementCode(note, out code))
         { SetReaderDisplay("OLCUM KARTI GEREK"); return false; }
         string[] fields = code.Split('_');
         if (fields.Length != 3 || fields[0].Length != wordWheelIndices.Length
