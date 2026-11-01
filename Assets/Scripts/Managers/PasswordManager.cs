@@ -322,4 +322,7 @@ public class PasswordManager : MonoBehaviour, ISaveable
 
     public bool HasFoundAllRequiredPasswords() =>
         validatedPasswords.Count == requiredPasswords.Count;
+
+    // Sahne değişince eski örnek kalmasın; Instance?.X() çağrıları Unity'nin sahte null kontrolünü atlar.
+    private void OnDestroy() { if (Instance == this) Instance = null; }
 }

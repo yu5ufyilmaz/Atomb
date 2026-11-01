@@ -194,7 +194,7 @@ public class LeesEnemyAI : MonoBehaviour
             if (m_Aberration != null)
                 baseAberration = m_Aberration.intensity.value;
         }
-        visionLayerMask = ~LayerMask.GetMask("Player", "UI", "IgnoreRaycast", "TransparentFX");
+        visionLayerMask = ~LayerMask.GetMask("Player", "UI", "Ignore Raycast", "TransparentFX");
 
         DespawnLees();
         InvokeRepeating(nameof(CheckSpawnLogic), 5f, spawnCheckInterval);

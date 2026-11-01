@@ -38,7 +38,12 @@ public static class ContentWorkbookProject
         var info = new FileInfo(path);
         if (hashCache.TryGetValue(path, out var cached) && cached.Item1 == info.Length && cached.Item2 == info.LastWriteTimeUtc.Ticks) return cached.Item3;
         string hash;
-        using (var algorithm = SHA256.Create()) using (var stream = File.OpenRead(path)) hash = BitConverter.ToString(algorithm.ComputeHash(stream)).Replace("-", "");
+        // Metin dosyaları satır sonu ve sondaki boşluktan bağımsız özetlenir; CRLF checkout veya editör yeniden yazımı build'i engellemesin.
+        bool text = !path.EndsWith(".xlsx", StringComparison.OrdinalIgnoreCase);
+        using (var algorithm = SHA256.Create())
+            hash = BitConverter.ToString(text
+                ? algorithm.ComputeHash(System.Text.Encoding.UTF8.GetBytes(File.ReadAllText(path).Replace("\r\n", "\n").TrimEnd()))
+                : algorithm.ComputeHash(File.ReadAllBytes(path))).Replace("-", "");
         hashCache[path] = Tuple.Create(info.Length, info.LastWriteTimeUtc.Ticks, hash); return hash;
     }
     static string ConnectionSignature(IEnumerable<string[]> rows)

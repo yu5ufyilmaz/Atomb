@@ -29,7 +29,6 @@ public class InteractableNote : MonoBehaviour, IInteractable, IForceExitable
     private bool hasPasswordBeenFound = false;
 
     [Header("✨ Vurgu (Highlight) Ayarları")]
-    public HDRPOutlineController outlineController;
     public Color highlightColor = new Color(1f, 0.8f, 0f);
 
     [Range(0f, 100f)]
@@ -59,11 +58,8 @@ public class InteractableNote : MonoBehaviour, IInteractable, IForceExitable
 
     private void Start()
     {
-        if (outlineController == null)
-            outlineController = GetComponentInChildren<HDRPOutlineController>();
-
         // Highlight Hazırlığı
-        if (paperRenderer != null && outlineController == null)
+        if (paperRenderer != null)
         {
             originalMaterial = paperRenderer.material;
             highlightMaterial = new Material(originalMaterial);
@@ -119,9 +115,7 @@ public class InteractableNote : MonoBehaviour, IInteractable, IForceExitable
             return;
         isFocused = true;
 
-        if (outlineController != null)
-            outlineController.ToggleOutline(true);
-        else if (paperRenderer != null)
+        if (paperRenderer != null)
             paperRenderer.material = highlightMaterial;
     }
 
@@ -131,9 +125,7 @@ public class InteractableNote : MonoBehaviour, IInteractable, IForceExitable
             return;
         isFocused = false;
 
-        if (outlineController != null)
-            outlineController.ToggleOutline(false);
-        else if (paperRenderer != null)
+        if (paperRenderer != null)
             paperRenderer.material = originalMaterial;
     }
 

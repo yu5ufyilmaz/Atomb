@@ -107,11 +107,7 @@ public partial class InteractableBook : MonoBehaviour, IInteractable, IForceExit
     public PasswordData bookIdentity;
     public bool canContainPassword = true;
 
-    // --- YENİ: OUTLINE & HIGHLIGHT AYARLARI ---
     [Header("✨ Vurgu (Highlight) Ayarları")]
-    [Tooltip("HDRP Outline Scripti (Varsa Emission yerine bu çalışır)")]
-    public HDRPOutlineController outlineController;
-
     [Tooltip("Vurgu Rengi (Sarı, Beyaz vb.)")]
     public Color highlightColor = new Color(1f, 0.8f, 0f);
 
@@ -284,9 +280,6 @@ public partial class InteractableBook : MonoBehaviour, IInteractable, IForceExit
         originalLocalPosition = transform.localPosition;
         originalLocalRotation = transform.localRotation;
         originalLocalScale = transform.localScale;
-        if (outlineController == null)
-            outlineController = GetComponentInChildren<HDRPOutlineController>();
-
         // --- COLLIDER FIX ---
         if (bookCollider != null)
         {
@@ -510,13 +503,8 @@ public partial class InteractableBook : MonoBehaviour, IInteractable, IForceExit
             return;
         isFocused = true;
 
-        // 1. ÖNCELİK: Outline Scripti (İstersen bunu tamamen silebilirsin)
-        if (outlineController != null)
-        {
-            outlineController.ToggleOutline(true);
-        }
-        // 2. ÖNCELİK: Gelişmiş Emission Sistemi (Tüm parçalar parlar)
-        else if (emissionIntensity > 0)
+        // Emission vurgusu: tüm parçalar parlar.
+        if (emissionIntensity > 0)
         {
             PrepareHighlightMaterials();
             foreach (var data in allRenderersData)
@@ -533,19 +521,10 @@ public partial class InteractableBook : MonoBehaviour, IInteractable, IForceExit
             return;
         isFocused = false;
 
-        // 1. ÖNCELİK: Outline Scripti
-        if (outlineController != null)
+        foreach (var data in allRenderersData)
         {
-            outlineController.ToggleOutline(false);
-        }
-        // 2. ÖNCELİK: Gelişmiş Emission Sistemi
-        else
-        {
-            foreach (var data in allRenderersData)
-            {
-                if (data.renderer != null)
-                    data.renderer.sharedMaterials = data.originalMaterials;
-            }
+            if (data.renderer != null)
+                data.renderer.sharedMaterials = data.originalMaterials;
         }
     }
 

@@ -73,5 +73,5 @@ public static class PuzzleInformation
         if (practice != null) return practice.clueNotes ?? new List<string>();
         return new List<string>();
     }
-    private static string ID(QuestBlueprintSO quest) => string.IsNullOrEmpty(quest.questID) ? quest.name : quest.questID;
+    public static string ID(QuestBlueprintSO quest) => string.IsNullOrEmpty(quest.questID) ? quest.name : quest.questID;
 }

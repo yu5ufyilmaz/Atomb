@@ -5,6 +5,7 @@ using UnityEngine;
 public sealed partial class ChalkboardTutorial
 {
     private const string ToBoard = "TAHTAYA SÜRÜKLE";
+    private float nextGuidePoll;
 
     private void UpdateGuide()
     {

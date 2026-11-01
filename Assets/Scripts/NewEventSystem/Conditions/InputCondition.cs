@@ -49,12 +49,16 @@ public class InputCondition : MonoBehaviour, ICondition
     private bool conditionMet = false;
     private int currentPresses = 0;
 
+    private PrerequisiteCondition[] prerequisites;
+
     public bool IsMet() => conditionMet;
+
+    private void Awake() => prerequisites = GetComponents<PrerequisiteCondition>();
 
     private void Update()
     {
         if (GameManager.Instance != null && (!GameManager.Instance.isGameStarted || GameManager.Instance.isGamePaused)) return;
-        foreach (var prereq in GetComponents<PrerequisiteCondition>()) if (!prereq.IsMet()) return;
+        foreach (var prereq in prerequisites) if (!prereq.IsMet()) return;
         // Şart zaten sağlandıysa sistemi yorma
         if (conditionMet)
             return;

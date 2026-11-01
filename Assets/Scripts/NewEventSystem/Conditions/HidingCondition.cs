@@ -13,11 +13,13 @@ public class HidingCondition : MonoBehaviour, ICondition
 
     private bool conditionMet = false;
     private bool lastOccupiedState = false;
+    private PrerequisiteCondition[] prerequisites;
 
     public bool IsMet() => conditionMet;
 
     private void Start()
     {
+        prerequisites = GetComponents<PrerequisiteCondition>();
         if (targetHidingSpot == null)
         {
             targetHidingSpot = GetComponent<InteractableHidingSpot>();
@@ -35,7 +37,7 @@ public class HidingCondition : MonoBehaviour, ICondition
         if (conditionMet || targetHidingSpot == null) 
             return;
 
-        foreach (var prereq in GetComponents<PrerequisiteCondition>())
+        foreach (var prereq in prerequisites)
             if (!prereq.IsMet()) { lastOccupiedState = targetHidingSpot.IsOccupied; return; }
 
         bool currentState = targetHidingSpot.IsOccupied;

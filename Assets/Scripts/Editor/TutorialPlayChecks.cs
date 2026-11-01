@@ -50,8 +50,7 @@ public static class TutorialPlayChecks
         ResearchTrialBookChecks.CollectVisible();
         yield return WaitFor(() => lesson.collectedStep.HasTriggered, "Gerçek kartların toplanması");
         Require(ChalkboardTutorial.HasCollectedCards(NotebookUI.Instance), "Beş eğitim kartı arşivlenmedi.");
-        yield return null;
-        Require(!lesson.lessonBook.ExitLocked && Field<RectTransform>(workspace, "ghost") == null, "Kartlar toplanınca kitap kilidi veya hayalet kalkmadı.");
+        yield return WaitFor(() => !lesson.lessonBook.ExitLocked && Field<RectTransform>(workspace, "ghost") == null, "Kartlar toplanınca kitap kilidinin ve hayaletin kalkması");
         lesson.lessonBook.ForceExit(); yield return WaitFor(() => game.activeInteraction == null, "Kitaptan çıkış");
         Debug.Log("TUTORIAL PLAY STAGE PASS: book collection");
 
@@ -69,7 +68,7 @@ public static class TutorialPlayChecks
         }, "Tahta kamera geçişi");
         Vector2 handlePoint = Camera.main.WorldToScreenPoint(handle.position);
         Require(handlePoint.x > 0 && handlePoint.x < Screen.width && handlePoint.y > 0 && handlePoint.y < Screen.height, "Pano tutamağı kamerada görünmüyor.");
-        Require(Field<RectTransform>(workspace, "ghost") != null, "Tahtada hedef rehberi görünmüyor.");
+        yield return WaitFor(() => Field<RectTransform>(workspace, "ghost") != null, "Tahtada hedef rehberi");
         workspace.ShowCollectedTargets(); Canvas.ForceUpdateCanvases();
         var target = Object.FindObjectsByType<NotebookDraggableBlock>(FindObjectsSortMode.None)
             .First(n => !n.IsSource && n.isActiveAndEnabled && n.Data.questID == ChalkboardTutorial.QuestID && n.Data.blockType == NotebookBlockType.Quest);
@@ -103,7 +102,7 @@ public static class TutorialPlayChecks
         }
         board.AttemptSynthesis(); Require(!experiment.LastReading.MeetsTarget && !lesson.boardStep.HasTriggered, "Bağlanmamış parçalar doğru ölçüm sayıldı.");
         yield return null;
-        Require(Field<RectTransform>(workspace, "ghostLine") != null, "Parçalar arası bağ rehberi görünmüyor.");
+        yield return WaitFor(() => Field<RectTransform>(workspace, "ghostLine") != null, "Parçalar arası bağ rehberi");
         for (int i = 0; i < 2; i++)
         {
             var output = parts[i].GetOwnNodes().First(n => n.gameObject.activeSelf && n.GetComponent<SignalPort>().output);
@@ -117,7 +116,7 @@ public static class TutorialPlayChecks
         board.RemoveFormula(loose);
         Require(!lesson.boardStep.HasTriggered, "Ölçüm deftere alınmadan tahta dersi geçildi.");
         yield return null;
-        Require(Field<NotebookDraggableBlock>(workspace, "ghostCard") == experiment.OutputCard, "Ölçüm kartı rehberi görünmüyor.");
+        yield return WaitFor(() => Field<NotebookDraggableBlock>(workspace, "ghostCard") == experiment.OutputCard, "Ölçüm kartı rehberi");
         SignalTrialPlayChecks.CollectOutput();
         workspace.ToggleNotebook(); yield return new WaitForSeconds(.35f);
         ScreenCapture.CaptureScreenshot("Temp/tutorial-board.png");

@@ -335,7 +335,6 @@ public static class LaboratoryCleanupChecks
         clone.transform.position += Vector3.up * 1000;
         yield return null;
         var book = clone.GetComponent<InteractableBook>();
-        book.outlineController = null;
         book.emissionIntensity = 10;
         var renderer = book.bookSkinnedMeshRenderer;
         var original = renderer.sharedMaterials;

@@ -465,7 +465,15 @@ public partial class NotebookWorkspaceController : MonoBehaviour
 
     private void ChangePage(int direction)
     {
-        GoToPage(Mathf.Max(0, notebook.currentWorkspacePage + direction));
+        int target = Mathf.Max(0, notebook.currentWorkspacePage + direction);
+        // Son sayfa boşken ileri gitmek yeni sayfa üretmez; boş sayfalar kayıtta birikmesin.
+        var pages = notebook.workspacePages;
+        if (!IsArchiveNotebook && direction > 0 && pages != null && pages.Count > 0 && target >= pages.Count)
+        {
+            var last = pages[pages.Count - 1];
+            if (last == null || ((last.blocks == null || last.blocks.Count == 0) && (last.strokes == null || last.strokes.Count == 0))) return;
+        }
+        GoToPage(target);
     }
 
     public void GoToPage(int index)

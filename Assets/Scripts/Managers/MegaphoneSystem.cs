@@ -173,4 +173,7 @@ public class MegaphoneSystem : MonoBehaviour
     {
         PlayAudio(finalCodeClip, finalCodeSubtitleID);
     }
+
+    // Sahne değişince eski örnek kalmasın; Instance?.X() çağrıları Unity'nin sahte null kontrolünü atlar.
+    private void OnDestroy() { if (Instance == this) Instance = null; }
 }

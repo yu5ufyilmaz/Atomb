@@ -22,7 +22,8 @@ public static class GameInput
     static float gamepadDeadzone = .125f;
     public static bool GameplayBlocked { get; set; }
     // GameplayBlocked statiktir, sahne yüklense de kalır; oyun sonu bu yüzden sahneyle ölen GameManager'da tutulur.
-    public static bool Blocked => GameplayBlocked || (GameManager.Instance != null && GameManager.Instance.IsGameplayOver);
+    // Duraklatma menüsü kendi girdisini (StarterAssetsInputs.pause) okur; oyun eylemleri menüdeyken çalışmaz.
+    public static bool Blocked => GameplayBlocked || (GameManager.Instance != null && (GameManager.Instance.IsGameplayOver || GameManager.Instance.isGamePaused));
     public static string ContextOf(BindingPolicy binding)
     {
         if (!string.IsNullOrWhiteSpace(binding.context) && binding.context != "Player") return binding.context;

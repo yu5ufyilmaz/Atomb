@@ -14,7 +14,6 @@ public class UniversalHighlighter : MonoBehaviour
 
     [Header("Highlight Modu")]
     public HighlightMode mode = HighlightMode.Static;
-    public HDRPOutlineController outlineController;
 
     [Header("Emission (Parlama) Ayarları")]
     public Color highlightColor = new Color(1f, 0.8f, 0f);
@@ -48,9 +47,6 @@ public class UniversalHighlighter : MonoBehaviour
 
     private void Start()
     {
-        if (outlineController == null)
-            outlineController = GetComponentInChildren<HDRPOutlineController>();
-
         Renderer[] renderers = GetComponentsInChildren<Renderer>(true);
         foreach (Renderer r in renderers)
         {
@@ -118,17 +114,10 @@ public class UniversalHighlighter : MonoBehaviour
             return;
         isHighlighted = true;
 
-        if (outlineController != null)
+        foreach (var data in allRenderersData)
         {
-            outlineController.ToggleOutline(true);
-        }
-        else
-        {
-            foreach (var data in allRenderersData)
-            {
-                if (data.renderer != null)
-                    data.renderer.sharedMaterials = data.highlightMaterials;
-            }
+            if (data.renderer != null)
+                data.renderer.sharedMaterials = data.highlightMaterials;
         }
 
         if (mode == HighlightMode.Blinking)
@@ -147,17 +136,10 @@ public class UniversalHighlighter : MonoBehaviour
 
         StopBlinking();
 
-        if (outlineController != null)
+        foreach (var data in allRenderersData)
         {
-            outlineController.ToggleOutline(false);
-        }
-        else
-        {
-            foreach (var data in allRenderersData)
-            {
-                if (data.renderer != null)
-                    data.renderer.sharedMaterials = data.originalMaterials;
-            }
+            if (data.renderer != null)
+                data.renderer.sharedMaterials = data.originalMaterials;
         }
 
         onFocusLost?.Invoke();

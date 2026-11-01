@@ -9,15 +9,18 @@ public class GuderianStateCondition : MonoBehaviour, ICondition
     public GuderianAI.GuderianState targetState = GuderianAI.GuderianState.Hidden;
 
     private bool conditionMet = false;
+    private PrerequisiteCondition[] prerequisites;
 
     public bool IsMet() => conditionMet;
+
+    private void Awake() => prerequisites = GetComponents<PrerequisiteCondition>();
 
     private void Update()
     {
         if (conditionMet || GuderianAI.Instance == null)
             return;
 
-        foreach (var prereq in GetComponents<PrerequisiteCondition>()) if (!prereq.IsMet()) return;
+        foreach (var prereq in prerequisites) if (!prereq.IsMet()) return;
 
         // Guderian beklenen duruma (örneğin Hidden) geçti mi?
         if (GuderianAI.Instance.currentState == targetState)

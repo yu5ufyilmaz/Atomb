@@ -239,6 +239,9 @@ public partial class BookPageBlockSurface : MonoBehaviour
 
     private static float Cross(Vector2 a, Vector2 b) => a.x * b.y - a.y * b.x;
 
+    // Kırpma listeleri yeniden kullanılır; sayfa dönerken her kare çağrılan bu yol çöp üretmesin.
+    private readonly List<Vector2> clipA = new List<Vector2>(8), clipB = new List<Vector2>(8);
+
     // Görünür alan ve dört kenar aynı UV üçgenlerinden kırpılır; sayfanın yüksekliği kaybolmaz.
     internal void PopulateRegion(VertexHelper vh, Rect uv, bool rightPage, Transform target, Color tint, int pageIndex = -1)
     {
@@ -246,11 +249,15 @@ public partial class BookPageBlockSurface : MonoBehaviour
         foreach (var triangle in pageTriangles)
         {
             if (triangle.right != rightPage) continue;
-            var polygon = new List<Vector2> { triangle.a, triangle.b, triangle.c };
-            polygon = Clip(polygon, 0, uv.xMin, true);
-            polygon = Clip(polygon, 0, uv.xMax, false);
-            polygon = Clip(polygon, 1, uv.yMin, true);
-            polygon = Clip(polygon, 1, uv.yMax, false);
+            // Bölgeyle kesişmeyen üçgenler kırpılmadan elenir; bölge sayfanın küçük bir parçasıdır.
+            if (Mathf.Max(triangle.a.x, triangle.b.x, triangle.c.x) < uv.xMin || Mathf.Min(triangle.a.x, triangle.b.x, triangle.c.x) > uv.xMax
+                || Mathf.Max(triangle.a.y, triangle.b.y, triangle.c.y) < uv.yMin || Mathf.Min(triangle.a.y, triangle.b.y, triangle.c.y) > uv.yMax) continue;
+            clipA.Clear(); clipA.Add(triangle.a); clipA.Add(triangle.b); clipA.Add(triangle.c);
+            Clip(clipA, clipB, 0, uv.xMin, true);
+            Clip(clipB, clipA, 0, uv.xMax, false);
+            Clip(clipA, clipB, 1, uv.yMin, true);
+            Clip(clipB, clipA, 1, uv.yMax, false);
+            var polygon = clipA;
             if (polygon.Count < 3) continue;
             Vector2 center = Vector2.zero;
             foreach (var point in polygon) center += point;
@@ -295,10 +302,10 @@ public partial class BookPageBlockSurface : MonoBehaviour
         return hit;
     }
 
-    private static List<Vector2> Clip(List<Vector2> polygon, int axis, float edge, bool keepGreater)
+    private static void Clip(List<Vector2> polygon, List<Vector2> result, int axis, float edge, bool keepGreater)
     {
-        var result = new List<Vector2>();
-        if (polygon.Count == 0) return result;
+        result.Clear();
+        if (polygon.Count == 0) return;
         Vector2 previous = polygon[polygon.Count - 1];
         bool wasInside = keepGreater ? previous[axis] >= edge : previous[axis] <= edge;
         foreach (Vector2 current in polygon)
@@ -309,7 +316,6 @@ public partial class BookPageBlockSurface : MonoBehaviour
             previous = current;
             wasInside = inside;
         }
-        return result;
     }
 
     private void PlaceClueRegion(RectTransform rect, BookClueRegion region, bool rightPage)

@@ -143,8 +143,8 @@ public class ChalkboardManager : MonoBehaviour, ISaveable
 
     public QuestBlueprintSO FindPracticeQuest(string id)
     {
-        if (practiceQuest != null && practiceQuest.CreateQuest().questID == id) return practiceQuest;
-        return practicePuzzles != null ? practicePuzzles.Find(q => q != null && q.CreateQuest().questID == id) : null;
+        if (practiceQuest != null && PuzzleInformation.ID(practiceQuest) == id) return practiceQuest;
+        return practicePuzzles != null ? practicePuzzles.Find(q => q != null && PuzzleInformation.ID(q) == id) : null;
     }
 
     public bool TryGetBoardPoint(Vector2 screenPosition, out Vector3 point)

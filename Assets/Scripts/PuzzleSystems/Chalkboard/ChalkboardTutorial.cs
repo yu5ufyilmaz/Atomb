@@ -133,7 +133,8 @@ public sealed partial class ChalkboardTutorial : MonoBehaviour
             lessonBook.ExitLocked = !collected;
             if (collected) cardsCollected.ReceiveSignal();
         }
-        UpdateGuide();
+        // Rehber defteri ve kitabı tarar; 0,1 sn'de bir yeter, hayalet animasyonu kendi karesinde akar.
+        if (Time.unscaledTime >= nextGuidePoll) { nextGuidePoll = Time.unscaledTime + .1f; UpdateGuide(); }
         if (boardStep.HasTriggered && !doorStep.HasTriggered && officeDoor.IsLocked()) doorLocked.ReceiveSignal();
         if (valveRoomStep.HasTriggered && !valveStep.HasTriggered)
         {

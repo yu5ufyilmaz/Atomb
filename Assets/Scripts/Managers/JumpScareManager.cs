@@ -123,9 +123,8 @@ public class JumpscareManager : MonoBehaviour
         string deathMessage = ""
     )
     {
-        if (GameManager.Instance != null && GameManager.Instance.Ending == GameEnding.Final)
-            return;
-        GameManager.TryBeginDeath();
+        // Bir son başladıysa (ölüm ya da final) ikinci jumpscare kamerayı ve sahneyi iki kez taşımasın.
+        if (!GameManager.TryBeginDeath()) return;
 
         // Eğer profil gönderilmediyse varsayılanı kullan
         JumpscareProfile activeProfile = profile != null ? profile : defaultProfile;
@@ -322,4 +321,7 @@ public class JumpscareManager : MonoBehaviour
         }
         return null;
     }
+
+    // Sahne değişince eski örnek kalmasın; Instance?.X() çağrıları Unity'nin sahte null kontrolünü atlar.
+    private void OnDestroy() { if (Instance == this) Instance = null; }
 }

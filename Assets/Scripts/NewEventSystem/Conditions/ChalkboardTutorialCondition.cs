@@ -12,6 +12,7 @@ public class ChalkboardTutorialCondition : MonoBehaviour, ICondition
     public event Action OnConditionChanged;
     private bool lastMet;
     private int lastProgress;
+    private float nextPoll;
 
     public bool IsMet()
     {
@@ -47,6 +48,9 @@ public class ChalkboardTutorialCondition : MonoBehaviour, ICondition
 
     private void Update()
     {
+        // Sahne ve defter taraması her karede gereksiz; 0,1 sn içinde yakalanan değişiklik ders için yeterince hızlı.
+        if (Time.unscaledTime < nextPoll) return;
+        nextPoll = Time.unscaledTime + .1f;
         bool met = IsMet();
         int progress = met ? Progress() : 0;
         if (met == lastMet && progress == lastProgress) return;
@@ -60,11 +64,21 @@ public class ChalkboardTutorialCondition : MonoBehaviour, ICondition
         if (context == Context.Collect && notebook != null)
         {
             int count = notebook.EnsureCollectedQuests().Exists(n => n.questID == ChalkboardTutorial.QuestID) ? 1 : 0;
-            var notes = notebook.workspacePages.Where(p => p?.blocks != null).SelectMany(p => p.blocks).Where(n => n != null).ToList();
-            if (notes.Exists(n => n.questID == ChalkboardTutorial.QuestID && n.itemID == "tutorial/ports")) count++;
-            foreach (string id in new[] { SignalTrial.Source, SignalTrial.Narrow, SignalTrial.Meter })
-                if (notes.Exists(n => n.blockType == NotebookBlockType.PartClue && n.itemID == id)) count++;
-            return count;
+            bool ports = false, source = false, narrow = false, meter = false;
+            foreach (var page in notebook.workspacePages)
+            {
+                if (page?.blocks == null) continue;
+                foreach (var n in page.blocks)
+                {
+                    if (n == null) continue;
+                    if (n.questID == ChalkboardTutorial.QuestID && n.itemID == "tutorial/ports") ports = true;
+                    if (n.blockType != NotebookBlockType.PartClue) continue;
+                    if (n.itemID == SignalTrial.Source) source = true;
+                    else if (n.itemID == SignalTrial.Narrow) narrow = true;
+                    else if (n.itemID == SignalTrial.Meter) meter = true;
+                }
+            }
+            return count + (ports ? 1 : 0) + (source ? 1 : 0) + (narrow ? 1 : 0) + (meter ? 1 : 0);
         }
         if (context == Context.Pin) return (lesson.research.Board.PinnedQuest?.questID == ChalkboardTutorial.QuestID ? 1 : 0)
             + (lesson.research.Board.pinnedInformation.Exists(n => n.questID == ChalkboardTutorial.QuestID && n.itemID == "tutorial/ports") ? 1 : 0);

@@ -72,49 +72,104 @@ public static class PuzzleSimulation
         return result;
     }
 
+    // Her iki deney türünün ortak hat çözümlemesi: parçalar, kenarlar, sıra, kaynaktan erişim, ölçere erişim ve derinlik.
+    internal sealed class Dag
+    {
+        public SignalPartLibrary.Part[] parts;
+        public int[] incoming, depth;
+        public List<int>[] outgoing;
+        public List<int> order;
+        public bool[] reached, reachesMeter;
+        public int source = -1, meter = -1, samples;
+        public readonly Dictionary<string, int> quantities = new Dictionary<string, int>();
+    }
+
+    // Dönen metin ölçüm kartında gösterilen hata; null ise hat geçerli ve dag dolu.
+    internal static string BuildDag(SynthesisGraphData graph, PuzzleKind kind, out Dag dag)
+    {
+        bool mixture = kind == PuzzleKind.ColorMixture; dag = null;
+        if (graph?.parts == null || graph.bonds == null || graph.parts.Count < 2 || graph.parts.Count > MaxParts)
+            return mixture ? "Kaynak ile analizör arasında bir karışım düzeneği kur." : "Kaynak ile ölçer arasında bir deney düzeni kur (en fazla 64 parça).";
+        int count = graph.parts.Count;
+        var d = new Dag { parts = new SignalPartLibrary.Part[count], incoming = new int[count], depth = new int[count], outgoing = new List<int>[count],
+            reached = new bool[count], reachesMeter = new bool[count], order = new List<int>(count) };
+        var library = PuzzleParts.ForKind(kind); string sourceID = PuzzleParts.Source(kind), meterID = PuzzleParts.Meter(kind);
+        for (int i = 0; i < count; i++)
+        {
+            var part = PuzzleParts.Find(graph.parts[i]?.itemID);
+            if (part == null || !library.Contains(part)) return mixture ? "Bu parça renk ve karışım deneyinde kullanılamaz." : "Ölçümde tanınmayan bir bileşen var.";
+            d.parts[i] = part; d.outgoing[i] = new List<int>();
+            if (part.id == sourceID) { if (d.source >= 0) return mixture ? "Tek taşıyıcı kaynağı kullan." : "Tek atım kaynağı kullan."; d.source = i; }
+            if (part.id == meterID) { if (d.meter >= 0) return mixture ? "Tek analizör kullan." : "Tek ölçer kullan."; d.meter = i; }
+            d.quantities.TryGetValue(part.id, out int quantity); d.quantities[part.id] = quantity + 1;
+            if (part.sample) d.samples++;
+        }
+        if (d.source < 0 || d.meter < 0) return mixture ? "Taşıyıcı kaynağı veya analizör eksik." : "Atım kaynağı veya ölçer eksik.";
+        foreach (var edge in graph.bonds)
+        {
+            if (edge == null || !edge.directed || edge.bondType != BondType.Single || edge.fromIndex < 0 || edge.toIndex < 0
+                || edge.fromIndex >= count || edge.toIndex >= count || edge.fromIndex == edge.toIndex || d.outgoing[edge.fromIndex].Contains(edge.toIndex))
+                return mixture ? "Çıkış okunu başka bir parçanın girişine bağla." : "Hat okunamadı. Çıkış okunu bir giriş halkasına bağla.";
+            d.outgoing[edge.fromIndex].Add(edge.toIndex); d.incoming[edge.toIndex]++;
+        }
+        for (int i = 0; i < count; i++)
+            if (d.incoming[i] > d.parts[i].inputs || d.outgoing[i].Count > d.parts[i].outputs)
+                return mixture ? "Giriş veya çıkış kapasitesi aşıldı." : "Bir bileşenin giriş veya çıkış sayısı aşıldı.";
+        // Kahn sıralaması kullanılmayan bir bileşendeki döngüyü de yakalar.
+        var pending = (int[])d.incoming.Clone(); var queue = new Queue<int>();
+        for (int i = 0; i < count; i++) if (pending[i] == 0) queue.Enqueue(i);
+        while (queue.Count > 0)
+        { int i = queue.Dequeue(); d.order.Add(i); foreach (int next in d.outgoing[i]) if (--pending[next] == 0) queue.Enqueue(next); }
+        if (d.order.Count != count) return mixture ? "Sıvı hattında döngü var." : "Hat kendi üzerine dönüyor; döngüyü kaldır.";
+        d.reached[d.source] = true;
+        foreach (int i in d.order)
+        {
+            if (!d.reached[i]) continue;
+            foreach (int next in d.outgoing[i]) { d.reached[next] = true; d.depth[next] = Mathf.Max(d.depth[next], d.depth[i] + 1); }
+        }
+        d.reachesMeter[d.meter] = true;
+        for (int j = d.order.Count - 1; j >= 0; j--) foreach (int next in d.outgoing[d.order[j]]) d.reachesMeter[d.order[j]] |= d.reachesMeter[next];
+        dag = d; return null;
+    }
+
+    // Deney koşulları: tüm parçalar çalışmalı; adet, numune, derinlik, izin ve parça başına adet sınırları.
+    internal static string CheckRules(Dag dag, PuzzleRules rules, PuzzleKind kind)
+    {
+        bool mixture = kind == PuzzleKind.ColorMixture; int count = dag.parts.Length;
+        for (int i = 0; i < count; i++)
+            if (!dag.reached[i] || !dag.reachesMeter[i] || dag.outgoing[i].Count != dag.parts[i].outputs || (mixture && dag.incoming[i] != dag.parts[i].inputs))
+                return mixture ? "Bütün parçalar çalışmalı. Dağıtıcının iki çıkışını ve karıştırıcının iki girişini de bağla."
+                    : "Bütün parçalar kaynaktan beslenip ölçere ulaşmalı; açık veya kullanılmayan uçları kaldır.";
+        if (rules == null) return null;
+        if (count < rules.minParts || count > rules.maxParts)
+            return mixture ? $"Parça adedi {rules.minParts}–{rules.maxParts} olmalı." : $"Toplam parça koşulu: {rules.minParts}–{rules.maxParts}.";
+        if (dag.samples < rules.minSamples || dag.samples > rules.maxSamples)
+            return mixture ? $"Pigment adedi {rules.minSamples}–{rules.maxSamples} olmalı." : $"Numune adedi koşulu: {rules.minSamples}–{rules.maxSamples}.";
+        if (dag.depth[dag.meter] > rules.maxDepth) return mixture ? "En fazla hat derinliği aşıldı." : "En fazla bağlantı derinliği aşıldı.";
+        foreach (var part in dag.parts) if (!rules.Allows(part.id)) return (mixture ? "Yasak parça: " : "Bu görevde kullanılamaz: ") + part.title;
+        if (rules.parts != null) foreach (var rule in rules.parts)
+        {
+            if (rule == null) continue;
+            dag.quantities.TryGetValue(rule.itemID, out int quantity);
+            if (quantity < rule.minimum || quantity > (rule.allowed ? rule.maximum : 0))
+                return PuzzleParts.Find(rule.itemID)?.title + $": adet koşulu {rule.minimum}–{(rule.allowed ? rule.maximum : 0)}.";
+        }
+        return null;
+    }
+
     public static SignalExperiment.Reading Measure(SynthesisGraphData graph, PuzzleDefinition puzzle)
     {
         if (puzzle?.kind == PuzzleKind.ColorMixture) return ColorMixtureSimulation.Measure(graph, puzzle);
         SignalExperiment.Reading Invalid(string text) => new SignalExperiment.Reading { directedTrial = true, problem = text };
-        if (graph?.parts == null || graph.bonds == null || graph.parts.Count < 2 || graph.parts.Count > MaxParts)
-            return Invalid("Kaynak ile ölçer arasında bir deney düzeni kur (en fazla 64 parça).");
-        int count = graph.parts.Count, source = -1, meter = -1;
-        var incoming = new int[count]; var outgoing = new List<int>[count]; var reverse = new List<int>[count];
-        var parts = new SignalPartLibrary.Part[count]; var quantities = new Dictionary<string, int>();
-        int sampleCount = 0;
-        for (int i = 0; i < count; i++)
-        {
-            var part = SignalPartLibrary.Find(graph.parts[i]?.itemID);
-            if (part == null) return Invalid("Ölçümde tanınmayan bir bileşen var.");
-            parts[i] = part; outgoing[i] = new List<int>(); reverse[i] = new List<int>();
-            if (part.id == SignalTrial.Source) { if (source >= 0) return Invalid("Tek atım kaynağı kullan."); source = i; }
-            if (part.id == SignalTrial.Meter) { if (meter >= 0) return Invalid("Tek ölçer kullan."); meter = i; }
-            quantities.TryGetValue(part.id, out int quantity); quantities[part.id] = quantity + 1;
-            if (part.sample) sampleCount++;
-        }
-        if (source < 0 || meter < 0) return Invalid("Atım kaynağı veya ölçer eksik.");
-        foreach (var edge in graph.bonds)
-        {
-            if (edge == null || !edge.directed || edge.bondType != BondType.Single || edge.fromIndex < 0 || edge.toIndex < 0
-                || edge.fromIndex >= count || edge.toIndex >= count || edge.fromIndex == edge.toIndex || outgoing[edge.fromIndex].Contains(edge.toIndex))
-                return Invalid("Hat okunamadı. Çıkış okunu bir giriş halkasına bağla.");
-            outgoing[edge.fromIndex].Add(edge.toIndex); incoming[edge.toIndex]++; reverse[edge.toIndex].Add(edge.fromIndex);
-        }
-        for (int i = 0; i < count; i++)
-            if (incoming[i] > parts[i].inputs || outgoing[i].Count > parts[i].outputs) return Invalid("Bir bileşenin giriş veya çıkış sayısı aşıldı.");
-
-        // Kahn's ordering detects cycles even in an unused/disconnected component.
-        var pending = (int[])incoming.Clone(); var queue = new Queue<int>(); var order = new List<int>();
-        for (int i = 0; i < count; i++) if (pending[i] == 0) queue.Enqueue(i);
-        while (queue.Count > 0)
-        { int i = queue.Dequeue(); order.Add(i); foreach (int next in outgoing[i]) if (--pending[next] == 0) queue.Enqueue(next); }
-        if (order.Count != count) return Invalid("Hat kendi üzerine dönüyor; döngüyü kaldır.");
-        var signals = new List<SignalTrial.Pulse>[count]; var depth = new int[count];
+        string problem = BuildDag(graph, PuzzleKind.Signal, out var dag);
+        if (problem != null) return Invalid(problem);
+        int count = dag.parts.Length;
+        var signals = new List<SignalTrial.Pulse>[count];
         for (int i = 0; i < count; i++) signals[i] = new List<SignalTrial.Pulse>();
-        signals[source].Add(new SignalTrial.Pulse { time = .18f, height = 1, width = .045f });
-        foreach (int i in order)
+        signals[dag.source].Add(new SignalTrial.Pulse { time = .18f, height = 1, width = .045f });
+        foreach (int i in dag.order)
         {
-            var part = parts[i]; var changed = new List<SignalTrial.Pulse>();
+            var part = dag.parts[i]; var changed = new List<SignalTrial.Pulse>();
             foreach (var incomingPulse in signals[i])
                 for (int r = 0; r < part.repeats; r++)
                 {
@@ -126,35 +181,17 @@ public static class PuzzleSimulation
                     if (changed.Count > MaxPulses) return Invalid("Çok fazla iz oluştu. Çift tepki sayısını azalt.");
                 }
             signals[i] = changed;
-            foreach (int next in outgoing[i])
+            foreach (int next in dag.outgoing[i])
             {
-                signals[next].AddRange(changed); depth[next] = Mathf.Max(depth[next], depth[i] + 1);
+                signals[next].AddRange(changed);
                 if (signals[next].Count > MaxPulses) return Invalid("Ölçüm iz bütçesi aşıldı.");
             }
         }
-        var pulses = Normalize(signals[meter]);
+        var pulses = Normalize(signals[dag.meter]);
         if (pulses.Count == 0) return Invalid("Ölçere ulaşan iz yok. Açık kalan hatları gözlemle.");
-        var reachesMeter = new bool[count]; reachesMeter[meter] = true;
-        for (int j = order.Count - 1; j >= 0; j--) foreach (int next in outgoing[order[j]]) reachesMeter[order[j]] |= reachesMeter[next];
-        string condition = null;
-        for (int i = 0; i < count; i++)
-            if (signals[i].Count == 0 || !reachesMeter[i] || (i != meter && outgoing[i].Count != parts[i].outputs))
-                condition = "Bütün parçalar kaynaktan beslenip ölçere ulaşmalı; açık veya kullanılmayan uçları kaldır.";
-        var rules = puzzle?.rules;
-        if (condition == null && rules != null)
-        {
-            if (count < rules.minParts || count > rules.maxParts) condition = $"Toplam parça koşulu: {rules.minParts}–{rules.maxParts}.";
-            else if (sampleCount < rules.minSamples || sampleCount > rules.maxSamples) condition = $"Numune adedi koşulu: {rules.minSamples}–{rules.maxSamples}.";
-            else if (depth[meter] > rules.maxDepth) condition = "En fazla bağlantı derinliği aşıldı.";
-            else foreach (var part in parts) if (!rules.Allows(part.id)) { condition = "Bu görevde kullanılamaz: " + part.title; break; }
-            if (condition == null && rules.parts != null) foreach (var rule in rules.parts)
-            {
-                if (rule == null) continue;
-                quantities.TryGetValue(rule.itemID, out int quantity);
-                if (quantity < rule.minimum || quantity > (rule.allowed ? rule.maximum : 0))
-                { condition = SignalPartLibrary.Find(rule.itemID)?.title + $": adet koşulu {rule.minimum}–{(rule.allowed ? rule.maximum : 0)}."; break; }
-            }
-        }
+        // Sinyalde "beslenen parça" iz taşıyan parçadır; tekrar sayısı sıfır olan bir parça iz üretmez.
+        for (int i = 0; i < count; i++) dag.reached[i] = signals[i].Count > 0;
+        string condition = CheckRules(dag, puzzle?.rules, PuzzleKind.Signal);
         bool matches = condition == null && puzzle?.target != null;
         var target = Normalize(puzzle?.target);
         matches &= pulses.Count == target.Count;
@@ -165,5 +202,5 @@ public static class PuzzleSimulation
             targetFeedback = condition, main = pulses[0].height, echo = pulses.Count > 1 ? pulses[1].height : 0 };
     }
 
-    private static bool Finite(float value) => !float.IsNaN(value) && !float.IsInfinity(value);
+    internal static bool Finite(float value) => !float.IsNaN(value) && !float.IsInfinity(value);
 }

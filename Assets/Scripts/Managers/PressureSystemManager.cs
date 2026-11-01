@@ -150,13 +150,13 @@ public class PressureSystemManager : MonoBehaviour, ISaveable
         CheckMegaphone();
     }
 
+    private Coroutine smoothing;
     public void ChangePressure(float targetPressure)
     {
-        if (!isGameOver)
-        {
-            // 1.5 saniye içinde yumuşakça uygula (süreyi istediğin gibi değiştirebilirsin)
-            StartCoroutine(SmoothPressureChange(targetPressure, 1.5f));
-        }
+        if (isGameOver) return;
+        // Önceki geçiş durur; iki geçiş aynı anda çalışırsa değer ileri geri zıplar.
+        if (smoothing != null) StopCoroutine(smoothing);
+        smoothing = StartCoroutine(SmoothPressureChange(targetPressure, 1.5f)); // 1,5 saniyede yumuşakça uygula
     }
 
     private IEnumerator SmoothPressureChange(float targetPressure, float duration)
@@ -329,4 +329,7 @@ public class PressureSystemManager : MonoBehaviour, ISaveable
         // Şu anki basınç değerini kaydet
         data.savedPressure = this.currentPressure;
     }
+
+    // Sahne değişince eski örnek kalmasın; Instance?.X() çağrıları Unity'nin sahte null kontrolünü atlar.
+    private void OnDestroy() { if (Instance == this) Instance = null; }
 }
