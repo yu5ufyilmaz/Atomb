@@ -7266,6 +7266,7 @@ GameObject:
   - component: {fileID: 98887102}
   - component: {fileID: 98887104}
   - component: {fileID: 98887103}
+  - component: {fileID: 98887105}
   m_Layer: 5
   m_Name: HandLightBar
   m_TagString: Untagged
@@ -7331,6 +7332,29 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 98887101}
   m_CullTransparentMesh: 1
+--- !u!223 &98887105
+Canvas:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 98887101}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_RenderMode: 2
+  m_Camera: {fileID: 0}
+  m_PlaneDistance: 100
+  m_PixelPerfect: 0
+  m_ReceivesEvents: 1
+  m_OverrideSorting: 0
+  m_OverridePixelPerfect: 0
+  m_SortingBucketNormalizedSize: 0
+  m_VertexColorAlwaysGammaSpace: 0
+  m_AdditionalShaderChannelsFlag: 0
+  m_UpdateRectTransformForStandalone: 0
+  m_SortingLayerID: 0
+  m_SortingOrder: 0
+  m_TargetDisplay: 0
 --- !u!1 &99899291
 GameObject:
   m_ObjectHideFlags: 0
@@ -73746,6 +73770,7 @@ GameObject:
   - component: {fileID: 1052715741}
   - component: {fileID: 1052715743}
   - component: {fileID: 1052715742}
+  - component: {fileID: 1052715744}
   m_Layer: 5
   m_Name: StamineBar
   m_TagString: Untagged
@@ -73811,6 +73836,29 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1052715740}
   m_CullTransparentMesh: 1
+--- !u!223 &1052715744
+Canvas:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1052715740}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_RenderMode: 2
+  m_Camera: {fileID: 0}
+  m_PlaneDistance: 100
+  m_PixelPerfect: 0
+  m_ReceivesEvents: 1
+  m_OverrideSorting: 0
+  m_OverridePixelPerfect: 0
+  m_SortingBucketNormalizedSize: 0
+  m_VertexColorAlwaysGammaSpace: 0
+  m_AdditionalShaderChannelsFlag: 0
+  m_UpdateRectTransformForStandalone: 0
+  m_SortingLayerID: 0
+  m_SortingOrder: 0
+  m_TargetDisplay: 0
 --- !u!1 &1052832213
 GameObject:
   m_ObjectHideFlags: 0
@@ -100651,6 +100699,7 @@ GameObject:
   - component: {fileID: 1427074879}
   - component: {fileID: 1427074881}
   - component: {fileID: 1427074880}
+  - component: {fileID: 1427074882}
   m_Layer: 5
   m_Name: PressureBar
   m_TagString: Untagged
@@ -100716,6 +100765,29 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1427074878}
   m_CullTransparentMesh: 1
+--- !u!223 &1427074882
+Canvas:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1427074878}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_RenderMode: 2
+  m_Camera: {fileID: 0}
+  m_PlaneDistance: 100
+  m_PixelPerfect: 0
+  m_ReceivesEvents: 1
+  m_OverrideSorting: 0
+  m_OverridePixelPerfect: 0
+  m_SortingBucketNormalizedSize: 0
+  m_VertexColorAlwaysGammaSpace: 0
+  m_AdditionalShaderChannelsFlag: 0
+  m_UpdateRectTransformForStandalone: 0
+  m_SortingLayerID: 0
+  m_SortingOrder: 0
+  m_TargetDisplay: 0
 --- !u!1 &1427350269
 GameObject:
   m_ObjectHideFlags: 0

@@ -1,0 +1,385 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!200 &20000000
+ShaderVariantCollection:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: SenzoraShaderVariants
+  m_Shaders:
+  - first: {fileID: 10770, guid: 0000000000000000f000000000000000, type: 0}
+    second:
+      variants:
+      - keywords: 
+        passType: 0
+  - first: {fileID: 66, guid: 0000000000000000f000000000000000, type: 0}
+    second:
+      variants:
+      - keywords: 
+        passType: 0
+  - first: {fileID: 9000, guid: 0000000000000000f000000000000000, type: 0}
+    second:
+      variants:
+      - keywords: 
+        passType: 0
+  - first: {fileID: 9001, guid: 0000000000000000f000000000000000, type: 0}
+    second:
+      variants:
+      - keywords: 
+        passType: 0
+  - first: {fileID: 9002, guid: 0000000000000000f000000000000000, type: 0}
+    second:
+      variants:
+      - keywords: 
+        passType: 0
+  - first: {fileID: 9003, guid: 0000000000000000f000000000000000, type: 0}
+    second:
+      variants:
+      - keywords: 
+        passType: 0
+  - first: {fileID: 9004, guid: 0000000000000000f000000000000000, type: 0}
+    second:
+      variants:
+      - keywords: 
+        passType: 0
+  - first: {fileID: 9007, guid: 0000000000000000f000000000000000, type: 0}
+    second:
+      variants:
+      - keywords: 
+        passType: 0
+  - first: {fileID: 9100, guid: 0000000000000000f000000000000000, type: 0}
+    second:
+      variants:
+      - keywords: _UIE_FORCE_GAMMA
+        passType: 0
+  - first: {fileID: 9101, guid: 0000000000000000f000000000000000, type: 0}
+    second:
+      variants:
+      - keywords: 
+        passType: 0
+  - first: {fileID: 19011, guid: 0000000000000000f000000000000000, type: 0}
+    second:
+      variants:
+      - keywords: 
+        passType: 0
+  - first: {fileID: 4800000, guid: 6e4ae4064600d784cac1e41a9e6f2e59, type: 3}
+    second:
+      variants:
+      - keywords: 
+        passType: 8
+      - keywords: _ALPHATEST_ON
+        passType: 8
+      - keywords: _ALPHATEST_ON _DOUBLESIDED_ON
+        passType: 8
+      - keywords: _DOUBLESIDED_ON
+        passType: 8
+      - keywords: 
+        passType: 12
+      - keywords: _MASKMAP
+        passType: 12
+      - keywords: 
+        passType: 13
+      - keywords: AREA_SHADOW_HIGH DECALS_4RT DIRECTIONAL_SHADOW_HIGH DIRLIGHTMAP_COMBINED
+          LIGHTMAP_ON PUNCTUAL_SHADOW_HIGH SCREEN_SPACE_SHADOWS_OFF USE_CLUSTERED_LIGHTLIST
+          _DISABLE_SSR_TRANSPARENT _ENABLE_FOG_ON_TRANSPARENT _MASKMAP _NORMALMAP
+          _NORMALMAP_TANGENT_SPACE _SURFACE_TYPE_TRANSPARENT
+        passType: 13
+      - keywords: AREA_SHADOW_HIGH DECALS_4RT DIRECTIONAL_SHADOW_HIGH PUNCTUAL_SHADOW_HIGH
+          SCREEN_SPACE_SHADOWS_OFF USE_CLUSTERED_LIGHTLIST _DISABLE_SSR_TRANSPARENT
+          _DOUBLESIDED_ON _ENABLE_FOG_ON_TRANSPARENT _MASKMAP _NORMALMAP _NORMALMAP_TANGENT_SPACE
+          _SURFACE_TYPE_TRANSPARENT
+        passType: 13
+      - keywords: AREA_SHADOW_HIGH DECALS_4RT DIRECTIONAL_SHADOW_HIGH PUNCTUAL_SHADOW_HIGH
+          SCREEN_SPACE_SHADOWS_OFF USE_CLUSTERED_LIGHTLIST _DISABLE_SSR_TRANSPARENT
+          _ENABLE_FOG_ON_TRANSPARENT _MASKMAP _NORMALMAP _NORMALMAP_TANGENT_SPACE
+          _SURFACE_TYPE_TRANSPARENT
+        passType: 13
+      - keywords: AREA_SHADOW_HIGH DECALS_4RT DIRECTIONAL_SHADOW_HIGH PUNCTUAL_SHADOW_HIGH
+          SCREEN_SPACE_SHADOWS_OFF USE_CLUSTERED_LIGHTLIST _DISABLE_SSR_TRANSPARENT
+          _MASKMAP _NORMALMAP _NORMALMAP_TANGENT_SPACE _SURFACE_TYPE_TRANSPARENT
+        passType: 13
+      - keywords: AREA_SHADOW_MEDIUM DECALS_4RT DIRECTIONAL_SHADOW_MEDIUM DIRLIGHTMAP_COMBINED
+          LIGHTMAP_ON PUNCTUAL_SHADOW_MEDIUM SCREEN_SPACE_SHADOWS_OFF USE_CLUSTERED_LIGHTLIST
+          _ALPHATEST_ON _DISABLE_SSR_TRANSPARENT _MASKMAP _MATERIAL_FEATURE_CLEAR_COAT
+          _NORMALMAP _NORMALMAP_TANGENT_SPACE _SURFACE_TYPE_TRANSPARENT
+        passType: 13
+      - keywords: AREA_SHADOW_MEDIUM DECALS_4RT DIRECTIONAL_SHADOW_MEDIUM DIRLIGHTMAP_COMBINED
+          LIGHTMAP_ON PUNCTUAL_SHADOW_MEDIUM SCREEN_SPACE_SHADOWS_OFF USE_CLUSTERED_LIGHTLIST
+          _DISABLE_SSR_TRANSPARENT _ENABLE_FOG_ON_TRANSPARENT _MASKMAP _NORMALMAP
+          _NORMALMAP_TANGENT_SPACE _SURFACE_TYPE_TRANSPARENT
+        passType: 13
+      - keywords: AREA_SHADOW_MEDIUM DECALS_4RT DIRECTIONAL_SHADOW_MEDIUM DIRLIGHTMAP_COMBINED
+          LIGHTMAP_ON PUNCTUAL_SHADOW_MEDIUM SCREEN_SPACE_SHADOWS_OFF USE_CLUSTERED_LIGHTLIST
+          _DISABLE_SSR_TRANSPARENT _MASKMAP _NORMALMAP _NORMALMAP_TANGENT_SPACE _SURFACE_TYPE_TRANSPARENT
+        passType: 13
+      - keywords: AREA_SHADOW_MEDIUM DECALS_4RT DIRECTIONAL_SHADOW_MEDIUM PUNCTUAL_SHADOW_MEDIUM
+          SCREEN_SPACE_SHADOWS_OFF USE_CLUSTERED_LIGHTLIST _DISABLE_SSR_TRANSPARENT
+          _DOUBLESIDED_ON _EMISSIVE_COLOR_MAP _ENABLE_FOG_ON_TRANSPARENT _MASKMAP
+          _NORMALMAP _NORMALMAP_TANGENT_SPACE _SURFACE_TYPE_TRANSPARENT
+        passType: 13
+      - keywords: AREA_SHADOW_MEDIUM DECALS_4RT DIRECTIONAL_SHADOW_MEDIUM PUNCTUAL_SHADOW_MEDIUM
+          SCREEN_SPACE_SHADOWS_OFF USE_CLUSTERED_LIGHTLIST _DISABLE_SSR_TRANSPARENT
+          _DOUBLESIDED_ON _ENABLE_FOG_ON_TRANSPARENT _MASKMAP _NORMALMAP _NORMALMAP_TANGENT_SPACE
+          _SURFACE_TYPE_TRANSPARENT
+        passType: 13
+      - keywords: AREA_SHADOW_MEDIUM DECALS_4RT DIRECTIONAL_SHADOW_MEDIUM PUNCTUAL_SHADOW_MEDIUM
+          SCREEN_SPACE_SHADOWS_OFF USE_CLUSTERED_LIGHTLIST _DISABLE_SSR_TRANSPARENT
+          _ENABLE_FOG_ON_TRANSPARENT _MASKMAP _NORMALMAP _NORMALMAP_TANGENT_SPACE
+          _SURFACE_TYPE_TRANSPARENT
+        passType: 13
+      - keywords: AREA_SHADOW_MEDIUM DECALS_4RT DIRECTIONAL_SHADOW_MEDIUM PUNCTUAL_SHADOW_MEDIUM
+          SCREEN_SPACE_SHADOWS_OFF USE_CLUSTERED_LIGHTLIST _DISABLE_SSR_TRANSPARENT
+          _MASKMAP _NORMALMAP _NORMALMAP_TANGENT_SPACE _SURFACE_TYPE_TRANSPARENT
+        passType: 13
+      - keywords: DECALS_4RT DIRLIGHTMAP_COMBINED LIGHTMAP_ON RENDERING_LAYERS _DOUBLESIDED_ON
+          _MASKMAP _NORMALMAP _NORMALMAP_TANGENT_SPACE
+        passType: 13
+      - keywords: DECALS_4RT DIRLIGHTMAP_COMBINED LIGHTMAP_ON RENDERING_LAYERS _MASKMAP
+          _NORMALMAP _NORMALMAP_TANGENT_SPACE
+        passType: 13
+      - keywords: DECALS_4RT DIRLIGHTMAP_COMBINED LIGHTMAP_ON RENDERING_LAYERS _NORMALMAP
+          _NORMALMAP_TANGENT_SPACE
+        passType: 13
+      - keywords: DECALS_4RT DIRLIGHTMAP_COMBINED LIGHTMAP_ON RENDERING_LAYERS _NORMALMAP_TANGENT_SPACE
+        passType: 13
+      - keywords: DECALS_4RT RENDERING_LAYERS _DOUBLESIDED_ON _MASKMAP _NORMALMAP
+          _NORMALMAP_TANGENT_SPACE
+        passType: 13
+      - keywords: DECALS_4RT RENDERING_LAYERS _DOUBLESIDED_ON _NORMALMAP_TANGENT_SPACE
+        passType: 13
+      - keywords: DECALS_4RT RENDERING_LAYERS _EMISSIVE_COLOR_MAP _MASKMAP _MATERIAL_FEATURE_SPECULAR_COLOR
+          _NORMALMAP _NORMALMAP_TANGENT_SPACE _SPECULARCOLORMAP
+        passType: 13
+      - keywords: DECALS_4RT RENDERING_LAYERS _EMISSIVE_COLOR_MAP _MASKMAP _NORMALMAP
+          _NORMALMAP_TANGENT_SPACE
+        passType: 13
+      - keywords: DECALS_4RT RENDERING_LAYERS _EMISSIVE_COLOR_MAP _NORMALMAP_TANGENT_SPACE
+        passType: 13
+      - keywords: DECALS_4RT RENDERING_LAYERS _MASKMAP _NORMALMAP _NORMALMAP_TANGENT_SPACE
+        passType: 13
+      - keywords: DECALS_4RT RENDERING_LAYERS _NORMALMAP _NORMALMAP_TANGENT_SPACE
+        passType: 13
+      - keywords: DECALS_4RT RENDERING_LAYERS _NORMALMAP_TANGENT_SPACE
+        passType: 13
+      - keywords: DIRLIGHTMAP_COMBINED LIGHTMAP_ON
+        passType: 13
+      - keywords: DIRLIGHTMAP_COMBINED LIGHTMAP_ON _ALPHATEST_ON _DISABLE_SSR_TRANSPARENT
+          _NORMALMAP _SURFACE_TYPE_TRANSPARENT
+        passType: 13
+      - keywords: DIRLIGHTMAP_COMBINED LIGHTMAP_ON _DISABLE_SSR_TRANSPARENT _NORMALMAP
+          _SURFACE_TYPE_TRANSPARENT
+        passType: 13
+      - keywords: DIRLIGHTMAP_COMBINED LIGHTMAP_ON _DOUBLESIDED_ON _NORMALMAP
+        passType: 13
+      - keywords: DIRLIGHTMAP_COMBINED LIGHTMAP_ON _NORMALMAP
+        passType: 13
+      - keywords: _ALPHATEST_ON
+        passType: 13
+      - keywords: _ALPHATEST_ON _DOUBLESIDED_ON _MASKMAP _NORMALMAP _NORMALMAP_TANGENT_SPACE
+        passType: 13
+      - keywords: _ALPHATEST_ON _DOUBLESIDED_ON _NORMALMAP
+        passType: 13
+      - keywords: _ALPHATEST_ON _NORMALMAP_TANGENT_SPACE
+        passType: 13
+      - keywords: _DISABLE_SSR_TRANSPARENT _DOUBLESIDED_ON _NORMALMAP _SURFACE_TYPE_TRANSPARENT
+        passType: 13
+      - keywords: _DISABLE_SSR_TRANSPARENT _NORMALMAP _SURFACE_TYPE_TRANSPARENT
+        passType: 13
+      - keywords: _DOUBLESIDED_ON
+        passType: 13
+      - keywords: _DOUBLESIDED_ON _MASKMAP _NORMALMAP _NORMALMAP_TANGENT_SPACE
+        passType: 13
+      - keywords: _DOUBLESIDED_ON _NORMALMAP
+        passType: 13
+      - keywords: _DOUBLESIDED_ON _NORMALMAP_TANGENT_SPACE
+        passType: 13
+      - keywords: _MASKMAP _NORMALMAP _NORMALMAP_TANGENT_SPACE
+        passType: 13
+      - keywords: _NORMALMAP
+        passType: 13
+      - keywords: _NORMALMAP _NORMALMAP_TANGENT_SPACE
+        passType: 13
+      - keywords: _NORMALMAP_TANGENT_SPACE
+        passType: 13
+  - first: {fileID: 4800000, guid: 035941b63024d1943af48811c1db20d9, type: 3}
+    second:
+      variants:
+      - keywords: 
+        passType: 0
+  - first: {fileID: 4800000, guid: 02ae56f4306413c4a96dcf005cde1971, type: 3}
+    second:
+      variants:
+      - keywords: 
+        passType: 0
+  - first: {fileID: 4800000, guid: 8ea49ef16606acd489439e676ab84040, type: 3}
+    second:
+      variants:
+      - keywords: 
+        passType: 0
+  - first: {fileID: 4800000, guid: 42dfcc8fe803ece4096c58630689982f, type: 3}
+    second:
+      variants:
+      - keywords: 
+        passType: 0
+  - first: {fileID: 4800000, guid: e22fc1942c664490980b8793dd4a163d, type: 3}
+    second:
+      variants:
+      - keywords: 
+        passType: 0
+      - keywords: DISABLE_TEXTURE2D_X_ARRAY
+        passType: 0
+  - first: {fileID: 4800000, guid: 67d6171b0acc6554aad48c845ec7e67f, type: 3}
+    second:
+      variants:
+      - keywords: 
+        passType: 0
+  - first: {fileID: 4800000, guid: 2ad7ce40f0dbaf64dadef1f58d8524d3, type: 3}
+    second:
+      variants:
+      - keywords: 
+        passType: 0
+      - keywords: NEAREST_DEPTH
+        passType: 0
+  - first: {fileID: 4800000, guid: 2e37131331fbdca449b1a2bc47a639ca, type: 3}
+    second:
+      variants:
+      - keywords: 
+        passType: 0
+  - first: {fileID: 4800000, guid: 32f724728cf19904291226f239ec16f0, type: 3}
+    second:
+      variants:
+      - keywords: 
+        passType: 0
+  - first: {fileID: 4800000, guid: 2b5d4f1b26f03dc4a873b093e0c4adb1, type: 3}
+    second:
+      variants:
+      - keywords: 
+        passType: 0
+  - first: {fileID: 4800000, guid: 123f13d52852ef547b2962de4bd9eaad, type: 3}
+    second:
+      variants:
+      - keywords: 
+        passType: 0
+  - first: {fileID: 4800000, guid: 3b3bf235775cf8b4baae7f3306787ab0, type: 3}
+    second:
+      variants:
+      - keywords: 
+        passType: 0
+  - first: {fileID: 4800000, guid: d279c46a545b0af4f9f0c4fa82cd489e, type: 3}
+    second:
+      variants:
+      - keywords: 
+        passType: 0
+  - first: {fileID: 4800000, guid: a6402c19b020b4a4fb7073aaa2e26aba, type: 3}
+    second:
+      variants:
+      - keywords: 
+        passType: 0
+  - first: {fileID: 4800000, guid: 123ed592ad5c2494b8aed301fd609e7b, type: 3}
+    second:
+      variants:
+      - keywords: 
+        passType: 0
+  - first: {fileID: 4800000, guid: d850d0a2481878d4bbf17e5126b04163, type: 3}
+    second:
+      variants:
+      - keywords: 
+        passType: 0
+  - first: {fileID: 4800000, guid: e3cab24f27741f44d8af1e94d006267c, type: 3}
+    second:
+      variants:
+      - keywords: 
+        passType: 0
+  - first: {fileID: 4800000, guid: fd532bf1795188c4daaa66ea798b8b0a, type: 3}
+    second:
+      variants:
+      - keywords: 
+        passType: 0
+  - first: {fileID: 4800000, guid: 5ac9ef0c50282754b93c7692488e7ee7, type: 3}
+    second:
+      variants:
+      - keywords: APPLY_AFTER_POST GRAIN
+        passType: 0
+  - first: {fileID: 4800000, guid: c4edd00ff2db5b24391a4fcb1762e459, type: 3}
+    second:
+      variants:
+      - keywords: 
+        passType: 8
+      - keywords: 
+        passType: 12
+      - keywords: 
+        passType: 13
+  - first: {fileID: 4800000, guid: fe393ace9b354375a9cb14cdbbc28be4, type: 3}
+    second:
+      variants:
+      - keywords: 
+        passType: 0
+  - first: {fileID: -6465566751694194690, guid: e2e70770c73439e4081a6455ddea233d, type: 3}
+    second:
+      variants:
+      - keywords: 
+        passType: 8
+      - keywords: _DOUBLESIDED_ON
+        passType: 13
+  - first: {fileID: -6465566751694194690, guid: ced5b39064e78194189d05cac8264230, type: 3}
+    second:
+      variants:
+      - keywords: 
+        passType: 8
+      - keywords: _DOUBLESIDED_ON
+        passType: 8
+      - keywords: _DOUBLESIDED_ON
+        passType: 12
+      - keywords: DECALS_4RT RENDERING_LAYERS _DOUBLESIDED_ON
+        passType: 13
+      - keywords: _DOUBLESIDED_ON
+        passType: 13
+  - first: {fileID: 4800000, guid: e6e9a19c3678ded42a3bc431ebef7dbd, type: 3}
+    second:
+      variants:
+      - keywords: 
+        passType: 0
+  - first: {fileID: -6465566751694194690, guid: c28bb37ced75c094faa86ea19e772801, type: 3}
+    second:
+      variants:
+      - keywords: 
+        passType: 8
+      - keywords: 
+        passType: 13
+      - keywords: AREA_SHADOW_HIGH DECALS_4RT DIRECTIONAL_SHADOW_HIGH PUNCTUAL_SHADOW_HIGH
+          SCREEN_SPACE_SHADOWS_OFF USE_FPTL_LIGHTLIST _DISABLE_SSR_TRANSPARENT
+        passType: 13
+      - keywords: AREA_SHADOW_MEDIUM DECALS_4RT DIRECTIONAL_SHADOW_MEDIUM PUNCTUAL_SHADOW_MEDIUM
+          SCREEN_SPACE_SHADOWS_OFF USE_FPTL_LIGHTLIST _DISABLE_SSR_TRANSPARENT
+        passType: 13
+  - first: {fileID: 4800000, guid: 36e335017ad71d54fbb10842863188ae, type: 3}
+    second:
+      variants:
+      - keywords: 
+        passType: 0
+  - first: {fileID: -6465566751694194690, guid: 384d88ff5b296a44b89f1fb2d4442c01, type: 3}
+    second:
+      variants:
+      - keywords: _ALPHATEST_ON _DOUBLESIDED_ON
+        passType: 8
+      - keywords: AREA_SHADOW_MEDIUM DECALS_4RT DIRECTIONAL_SHADOW_MEDIUM PUNCTUAL_SHADOW_MEDIUM
+          SCREEN_SPACE_SHADOWS_OFF USE_CLUSTERED_LIGHTLIST _ALPHATEST_ON _DISABLE_SSR_TRANSPARENT
+          _DOUBLESIDED_ON _ENABLE_FOG_ON_TRANSPARENT _SURFACE_TYPE_TRANSPARENT
+        passType: 13
+      - keywords: AREA_SHADOW_MEDIUM DECALS_4RT DIRECTIONAL_SHADOW_MEDIUM PUNCTUAL_SHADOW_MEDIUM
+          SCREEN_SPACE_SHADOWS_OFF _ALPHATEST_ON _DISABLE_SSR_TRANSPARENT _DOUBLESIDED_ON
+          _ENABLE_FOG_ON_TRANSPARENT _SURFACE_TYPE_TRANSPARENT
+        passType: 13
+      - keywords: _ALPHATEST_ON _DOUBLESIDED_ON
+        passType: 13
+  - first: {fileID: 4800000, guid: 68e6db2ebdc24f95958faec2be5558d6, type: 3}
+    second:
+      variants:
+      - keywords: 
+        passType: 0
+  - first: {fileID: 4800000, guid: 88fe1de0ca01077408f120f7f8887b0b, type: 3}
+    second:
+      variants:
+      - keywords: 
+        passType: 0

@@ -39,6 +39,7 @@ public class WaveformGenerator : MonoBehaviour
 
     void Update()
     {
+        if (!lineRenderer.isVisible) return; // başka odadayken 100 noktayı her kare yeniden hesaplama
         DrawWave();
         SimulatePhosphorFade();
     }

@@ -46,7 +46,7 @@ public static class GameInput
         GameplayBlocked = false;
         gamepadDeadzone = .125f;
         if (actions != null) { actions.Disable(); if (Application.isPlaying) UnityEngine.Object.Destroy(actions); else UnityEngine.Object.DestroyImmediate(actions); }
-        actions = null; policy = null; BindingsChanged = null;
+        actions = null; policy = null; BindingsChanged = null; byCode.Clear();
     }
     static void Ensure()
     {
@@ -69,7 +69,15 @@ public static class GameInput
     {
         Ensure(); if (player != null) LoadOverrides(player.actions);
     }
-    public static InputAction Action(string code) { Ensure(); return actions != null ? actions.FindAction("Player/" + code) : null; }
+    // Pressed/Held kare başına onlarca kez çağrılıyor; FindAction her seferinde string birleştirip ad tarıyordu.
+    static readonly Dictionary<string, InputAction> byCode = new Dictionary<string, InputAction>();
+    public static InputAction Action(string code)
+    {
+        Ensure();
+        if (actions == null) return null;
+        if (!byCode.TryGetValue(code, out var action)) byCode[code] = action = actions.FindAction("Player/" + code);
+        return action;
+    }
     public static bool Pressed(string code) => !Blocked && (Action(code)?.WasPressedThisFrame() ?? false);
     public static bool Released(string code) => !Blocked && (Action(code)?.WasReleasedThisFrame() ?? false);
     public static bool Held(string code) => !Blocked && (Action(code)?.IsPressed() ?? false);
