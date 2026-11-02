@@ -81,8 +81,6 @@ public static class LaboratorySynthesisSetup
         if (EditorApplication.isPlayingOrWillChangePlaymode || scene.path != ScenePath) return;
         var trial = Find<ResearchPuzzleTrial>(scene);
         if (trial == null) throw new InvalidOperationException("Research content missing from the copy.");
-        var save = Find<SaveManager>(scene);
-        if (save != null) save.sessionOnly = true;
         foreach (var book in trial.books)
             if (book.GetComponent<BookPageBlockSurface>() == null) book.gameObject.AddComponent<BookPageBlockSurface>();
         foreach (var formula in All<DraggableFormula>(scene)) formula.gameObject.SetActive(false);

@@ -85,9 +85,6 @@ public class GuderianAI : MonoBehaviour
     [SerializeField]
     private AudioClip searchHumSound;
 
-    [SerializeField]
-    private AudioClip[] rummageSounds;
-
     [Header("DEBUG BİLGİLERİ (Canlı Veriler)")]
     public string debugStatus;
     public float debugSearchProgress;
@@ -462,19 +459,8 @@ public class GuderianAI : MonoBehaviour
                 // 2. Hedefe ulaştı, durup etrafı karıştıracak
                 if (currentState == GuderianState.Searching)
                 {
-                    float searchWaitTime = Random.Range(2.0f, 4.0f); // Ses yoksa varsayılan 2-4 sn bekle
-
-                    // Eğer karıştırma (çekmece) sesleri atandıysa birini seçip çal
-                    if (rummageSounds != null && rummageSounds.Length > 0 && audioSource != null)
-                    {
-                        audioSource.PlayOneShot(searchHumSound); // Arama uğultusu devam ederken karıştırma sesi çal
-
-                        // Bekleme süresini tam olarak sesin uzunluğuna eşitle!
-                        // Böylece ses bitmeden yürümeye başlamaz.
-                    }
-
-                    // Karıştırma işlemi boyunca o noktada bekle
-                    yield return new WaitForSeconds(searchWaitTime);
+                    // Uğultu döngüsü zaten çalıyor; 47 sn'lik klibi her noktada PlayOneShot ile üst üste bindirme.
+                    yield return new WaitForSeconds(Random.Range(2.0f, 4.0f));
                 }
             }
             else

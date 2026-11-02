@@ -114,6 +114,8 @@ public class JumpscareManager : MonoBehaviour
         }
     }
 
+    private bool jumpscareRunning;
+
     // ARTIK BURASI SENİN İSTEDİĞİN GİBİ PROFİL ALIYOR
     public void StartJumpscare(
         Transform enemy,
@@ -123,8 +125,10 @@ public class JumpscareManager : MonoBehaviour
         string deathMessage = ""
     )
     {
-        // Bir son başladıysa (ölüm ya da final) ikinci jumpscare kamerayı ve sahneyi iki kez taşımasın.
-        if (!GameManager.TryBeginDeath()) return;
+        // Çağıranlar ölümü zaten başlatıyor; burada yalnız finali ve ikinci jumpscare'i engelle.
+        if (jumpscareRunning || (GameManager.Instance != null && GameManager.Instance.Ending == GameEnding.Final)) return;
+        GameManager.TryBeginDeath();
+        jumpscareRunning = true;
 
         // Eğer profil gönderilmediyse varsayılanı kullan
         JumpscareProfile activeProfile = profile != null ? profile : defaultProfile;

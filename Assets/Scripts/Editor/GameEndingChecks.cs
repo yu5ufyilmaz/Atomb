@@ -34,5 +34,28 @@ public static class GameEndingChecks
         Debug.Log("GAME ENDING PASS: first ending wins; input, world interaction, pause, enemies, pressure and breaker stay closed.");
     }
 
+    // Düşman önce ölümü başlatır, sonra JumpscareManager'a gelir; ikinci kapı jumpscare'i ve ölüm ekranını yutmamalı.
+    [MenuItem("Senzora/Doğrulama/Düşman Ölümü Jumpscare")]
+    public static void EnemyDeath()
+    {
+        Require(Application.isPlaying && GameManager.Instance != null && SaveManager.Instance != null, "Laboratuvarda Play gerekli.");
+        SaveManager.Instance.sessionOnly = true; // gerçek Yeni Oyun yolu kayıt dosyasını silmesin
+        GameManager.Instance.StartCoroutine(EnemyDeathFlow());
+    }
+
+    private static IEnumerator EnemyDeathFlow()
+    {
+        yield return ResearchGuidanceChecks.EnterNormalGame();
+        var adam = Object.FindFirstObjectByType<AdamAI>(FindObjectsInactive.Include);
+        Require(adam != null && JumpscareManager.Instance != null && DeathUIManager.Instance != null, "Adam, JumpscareManager veya DeathUI yok.");
+        if (GlobalEnemyManager.Instance != null) GlobalEnemyManager.Instance.stopAllEnemies = false;
+        adam.KillPlayer();
+        Require(GameManager.Instance.Ending == GameEnding.Death, "Adam ölümü başlatmadı.");
+        float end = Time.realtimeSinceStartup + 15;
+        while (Time.timeScale != 0 && Time.realtimeSinceStartup < end) yield return null;
+        Require(Time.timeScale == 0, "Jumpscare bitti ama ölüm ekranı açılmadı (oyuncu kilitli kaldı).");
+        Debug.Log("ENEMY DEATH PASS: Adam KillPlayer -> jumpscare -> death screen.");
+    }
+
     private static void Require(bool condition, string message) { if (!condition) throw new InvalidOperationException(message); }
 }

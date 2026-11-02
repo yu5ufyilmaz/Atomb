@@ -377,9 +377,10 @@ public static class LaboratorySynthesisChecks
         var notebook = LaboratorySynthesisSetup.Find<NotebookUI>(scene);
         Check(notebook != null && notebook.useScreenSpaceNotebook && notebook.GetComponent<NotebookWorkspaceController>() != null,
             "Screen notebook is missing.");
-        Check(LaboratorySynthesisSetup.Find<SaveManager>(scene).sessionOnly, "Research scene can modify the normal save.");
+        // Build'deki tek oyun sahnesi; Play testleri sessionOnly'yi çalışma anında açar.
+        Check(!LaboratorySynthesisSetup.Find<SaveManager>(scene).sessionOnly, "Build scene has persistent saving disabled.");
         Check(LaboratorySynthesisSetup.All<FormulaCatalog>(scene).Count() == 1, "Expected one formula catalog.");
-        Debug.Log($"LAB CURRENT SCENE PASS: {trial.books.Length} unique research books, {goals.Count} goals, player/board/Turing bindings and protected save.");
+        Debug.Log($"LAB CURRENT SCENE PASS: {trial.books.Length} unique research books, {goals.Count} goals, player/board/Turing bindings and persistent save.");
     }
 
     [MenuItem("Senzora/Lab Migration/Legacy Four-Book Copy/Validate Original Poses")]
@@ -442,7 +443,6 @@ public static class LaboratorySynthesisChecks
             Check(notebook.useScreenSpaceNotebook && !notebook.notebookPanel.activeSelf, "Hand notebook is still enabled.");
             var workspace = notebook.GetComponent<NotebookWorkspaceController>();
             Check(workspace != null && !workspace.standaloneUnlocksCursor, "Notebook input settings invalid.");
-            Check(LaboratorySynthesisSetup.Find<SaveManager>(scene).sessionOnly, "Migration copy can modify the original save.");
             Check(LaboratorySynthesisSetup.Find<SynthesisBlockoutPlayer>(scene) == null
                 && LaboratorySynthesisSetup.Find<SynthesisBlockoutScene>(scene) == null, "Blockout player/bootstrap leaked into Lab.");
             Debug.Log("LAB SCENE PASS: original player/machine transforms, child poses and references unchanged; four research books, UI notebook, no blockout bootstrap.");

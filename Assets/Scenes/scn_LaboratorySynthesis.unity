@@ -84865,7 +84865,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f53c5a4e4f0e5456db0d882442bb79b2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SaveManager
-  sessionOnly: 1
+  sessionOnly: 0
   isolatedSavePath: 
 --- !u!1 &1215328483
 GameObject:
@@ -151200,7 +151200,7 @@ MonoBehaviour:
   playerMovementScript: {fileID: 919132148867769544}
   playerLookScript: {fileID: 919132148867769544}
   finalTimeline: {fileID: 2008901976}
-  creditsSceneName: scn_PressAnyKeyMenu
+  creditsSceneName: scn_CreditsMenu
 --- !u!1 &2118506176
 GameObject:
   m_ObjectHideFlags: 0

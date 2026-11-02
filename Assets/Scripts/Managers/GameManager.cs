@@ -25,15 +25,10 @@ public class GameManager : MonoBehaviour
     public List<RoomManager> allRooms = new List<RoomManager>();
     public IForceExitable activeInteraction;
 
-    [Header("Geliştirici Ayarları")]
-    public string secretEndGameCode = "osm"; // Yazılması gereken şifre (Küçük harf olmalı)
-    private string inputBuffer = "";
-
     [Header("Oyun Durumu")]
     public bool isGamePaused = false;
     public GameEnding Ending { get; private set; }
     public bool IsGameplayOver => Ending != GameEnding.None;
-    private Queue<char> inputQueue = new Queue<char>();
 
     // Ölüm ve final buradan geçer: ilk gelen kazanır, oynanış sahne yeniden yüklenene dek açılmaz.
     public bool BeginEnding(GameEnding ending)
@@ -94,45 +89,6 @@ public class GameManager : MonoBehaviour
         {
             // freeze = false, lockCameraInput = false, restrictRotation = false
             player.SetFrozen(false, false, false);
-        }
-    }
-
-    // --- YENİ EKLENEN UPDATE METODU ---
-    // Her saniye klavyeye basılan tuşları dinler
-    private void Update()
-    {
-        HandleCheatCode();
-    }
-
-    private void HandleCheatCode()
-    {
-        if (!isGameStarted || string.IsNullOrEmpty(Input.inputString))
-            return;
-
-        foreach (char c in Input.inputString)
-        {
-            // Karakteri küçük harfe çevirip kuyruğa ekle
-            inputQueue.Enqueue(char.ToLower(c));
-
-            // Kuyruk boyutu şifremizi ("osm") geçerse en eskisini at
-            if (inputQueue.Count > secretEndGameCode.Length)
-            {
-                inputQueue.Dequeue();
-            }
-
-            // Boyut tam eşleşiyorsa kontrol et
-            if (inputQueue.Count == secretEndGameCode.Length)
-            {
-                string currentInput = new string(inputQueue.ToArray());
-                if (currentInput == secretEndGameCode)
-                {
-                    Debug.Log(
-                        $"GİZLİ KOD GİRİLDİ ({secretEndGameCode.ToUpper()}) - FİNAL SİNEMATİĞİ BAŞLATILIYOR!"
-                    );
-                    TriggerFinalEnding();
-                    inputQueue.Clear(); // Şifre tekrar tetiklenmesin diye temizle
-                }
-            }
         }
     }
 
