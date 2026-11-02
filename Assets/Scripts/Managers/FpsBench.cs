@@ -25,7 +25,8 @@ public class FpsBench : MonoBehaviour
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
     static void Boot()
     {
-        if (Application.isEditor || !System.Environment.GetCommandLineArgs().Contains("-fpsbench")) return;
+        var args = System.Environment.GetCommandLineArgs();
+        if (Application.isEditor || !(args.Contains("-fpsbench") || args.Contains("-chalkboardloop"))) return;
         var host = new GameObject("FpsBench").AddComponent<FpsBench>();
         DontDestroyOnLoad(host.gameObject);
     }
@@ -46,7 +47,9 @@ public class FpsBench : MonoBehaviour
         if (SaveManager.Instance != null) SaveManager.Instance.sessionOnly = true; // Yeni Oyun yolu oyuncunun kaydını silmesin
         var menu = FindFirstObjectByType<MainMenuManager>();
         var sequence = FindFirstObjectByType<InGameMenuController>();
-        if (menu != null) { menu.PlayGame(); yield return null; if (menu.IsTutorialChoiceOpen) menu.ChooseTutorial(true); }
+        int loops = LoopCount();
+        // Tahta döngüsünde tutorial tahtayı kilitlemesin.
+        if (menu != null) { menu.PlayGame(); yield return null; if (menu.IsTutorialChoiceOpen) menu.ChooseTutorial(loops == 0); }
         float end = Time.realtimeSinceStartup + 120;
         while ((game == null || !game.isGameStarted || sequence != null && sequence.enabled) && Time.realtimeSinceStartup < end) yield return null;
         lines.Add($"Game start after menu: {Time.realtimeSinceStartup - loadStart:0.0}s, started={game != null && game.isGameStarted}");
@@ -54,6 +57,7 @@ public class FpsBench : MonoBehaviour
         if (PressureSystemManager.Instance != null) PressureSystemManager.Instance.isSystemActive = false;
         QualitySettings.vSyncCount = 0; Application.targetFrameRate = -1;
         lines.Add($"Resolution {Screen.width}x{Screen.height} {Screen.fullScreenMode}, quality {QualitySettings.names[QualitySettings.GetQualityLevel()]}, GPU {SystemInfo.graphicsDeviceName} {SystemInfo.graphicsMemorySize} MB, CPU {SystemInfo.processorType}");
+        if (loops > 0) { yield return ChalkboardLoop(loops, lines); Application.Quit(); yield break; }
 
         var handles = new List<ProfilerRecorderHandle>(); ProfilerRecorderHandle.GetAvailable(handles);
         var recorders = new Dictionary<string, ProfilerRecorder>();
@@ -115,6 +119,42 @@ public class FpsBench : MonoBehaviour
         foreach (var r in recorders.Values) r.Dispose();
         File.WriteAllLines(output, lines);
         Application.Quit();
+    }
+
+    static int LoopCount()
+    {
+        var args = System.Environment.GetCommandLineArgs();
+        int i = System.Array.IndexOf(args, "-chalkboardloop");
+        return i >= 0 && i + 1 < args.Length && int.TryParse(args[i + 1], out int n) ? n : 0;
+    }
+
+    // Oyuncuların tahtadan çıkışta gördüğü çökmeyi tekrar üretmek için: gir, bekle, çık; her turu hemen diske yaz.
+    static IEnumerator ChalkboardLoop(int count, List<string> header)
+    {
+        string path = Path.Combine(Application.persistentDataPath, "chalkboard-loop.txt");
+        File.WriteAllLines(path, header);
+        var board = FindFirstObjectByType<InteractableChalkboard>();
+        var manager = ChalkboardManager.Instance;
+        if (board == null || manager == null) { File.AppendAllText(path, "Tahta veya ChalkboardManager yok\n"); yield break; }
+        int stuck = 0;
+        for (int i = 1; i <= count; i++)
+        {
+            board.Interact();
+            float end = Time.realtimeSinceStartup + 20;
+            while (!manager.isMachineActive && Time.realtimeSinceStartup < end) yield return null;
+            bool entered = manager.isMachineActive;
+            float stay = 0.3f + (i % 5) * 0.4f; // farklı bekleme süreleri: geçiş ortasında çıkış dahil
+            end = Time.realtimeSinceStartup + stay;
+            while (Time.realtimeSinceStartup < end) yield return null;
+            board.ForceExit();
+            end = Time.realtimeSinceStartup + 20;
+            while ((manager.isMachineActive || GameManager.Instance.activeInteraction != null) && Time.realtimeSinceStartup < end) yield return null;
+            bool exited = !manager.isMachineActive && GameManager.Instance.activeInteraction == null;
+            if (!entered || !exited) stuck++;
+            File.AppendAllText(path, $"cycle {i} entered={entered} exited={exited} t={Time.realtimeSinceStartup:0.0}s mem={System.GC.GetTotalMemory(false) / 1048576}MB\n");
+            yield return null; yield return null;
+        }
+        File.AppendAllText(path, $"DONE {count} cycles, stuck {stuck}\n");
     }
 
     static float Median(List<float> v) { var s = v.OrderBy(x => x).ToList(); return s.Count == 0 ? 0 : s[s.Count / 2]; }
