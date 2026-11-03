@@ -44,8 +44,9 @@ public sealed class LeesResistanceHands : MonoBehaviour
         Vector3 offset = new Vector3(side * ((1 - reveal) * .2f - pressure * .018f),
             (1 - reveal) * .04f + pulse * .002f, -pressure * .012f);
         hand.position = point + viewCamera.transform.rotation * offset;
+        // Baked palms face local +Z (left) / -Z (right); the trailing 180° turns both palms toward the face.
         hand.rotation = viewCamera.transform.rotation * Quaternion.Euler(side * (20 + pressure * 9),
-            side > 0 ? 180 : 0, -(78 + pressure * 5 + pulse));
+            side > 0 ? 180 : 0, -(78 + pressure * 5 + pulse)) * Quaternion.Euler(0, 180, 0);
         // Read the actual projection: the main camera uses physical lens / gate-fit settings.
         float viewHeight = Vector3.Distance(viewCamera.ViewportToWorldPoint(new Vector3(.5f, 0, depth)),
             viewCamera.ViewportToWorldPoint(new Vector3(.5f, 1, depth)));

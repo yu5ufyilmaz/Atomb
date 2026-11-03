@@ -1,0 +1,15 @@
+RUNNING 2026-11-03T00:07:31.9865486Z
+PlayButton hover thin=0.00 bold=1.00
+PlayButton pressed thin=0.00 bold=1.00
+PlayButton exit thin=1.00 bold=0.00
+Settings hover thin=0.00 bold=1.00
+Settings pressed thin=0.00 bold=1.00
+Settings exit thin=1.00 bold=0.00
+QuitButton hover thin=0.00 bold=1.00
+QuitButton pressed thin=0.00 bold=1.00
+QuitButton exit thin=1.00 bold=0.00
+turing look old: target y=1.24 camera pitch=14.5 (positive = down)
+turing look new: target y=1.70 camera pitch=7.7 (positive = down)
+guderian before: longest idle/walk blend=1.03s, body yaw vs root while walking -5.6..0.0 deg, turn speed=120
+guderian after: longest idle/walk blend=0.20s, body yaw vs root while walking -1.8..3.5 deg, turn speed=360
+PASS 31 assertions 2026-11-03T00:08:13.9437030Z
