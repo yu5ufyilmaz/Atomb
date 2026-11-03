@@ -258,6 +258,36 @@ public class InteractableHidingSpot : MonoBehaviour, IInteractable, IForceExitab
         StartCoroutine(EnterSequence());
     }
 
+    // Tutorial death rewind: the end state of EnterSequence without the walk-in, from any prior state.
+    public void PlaceInside()
+    {
+        StopAllCoroutines();
+        if (playerMoveScript == null && playerController != null)
+            playerMoveScript = playerController.GetComponent<StarterAssets.CharacterController>();
+        ToggleControls(false);
+        if (GameManager.Instance != null)
+            GameManager.Instance.activeInteraction = this;
+        if (playerController != null)
+            playerController.transform.SetPositionAndRotation(insidePosition.position,
+                Quaternion.LookRotation(insidePosition.position - exitPosition.position));
+        if (cinemachineBrain)
+            cinemachineBrain.enabled = false;
+        mainCamera.SetParent(null);
+        if (hideCameraPosition)
+            mainCamera.SetPositionAndRotation(hideCameraPosition.position, hideCameraPosition.rotation);
+        TogglePlayerModel(false);
+        if (propAnimator)
+        {
+            propAnimator.SetBool(propPeekBool, false);
+            propAnimator.SetTrigger(propCloseTrigger);
+        }
+        isOccupied = true;
+        isPeeking = isMarkedForDeath = inTransition = false;
+        currentPeekYaw = currentPeekPitch = currentPeekTimer = 0f;
+        if (ControlsUIManager.Instance != null)
+            ControlsUIManager.Instance.ShowMachineUI(ControlsUIManager.MachineType.HidingSpot, "[Sol Tık / W] Gözetle\n[F] Çık");
+    }
+
     private void AttemptExit()
     {
         // 1. BUG FIX: Çıkış yaparken kapak açık kalmasın diye Peek durumunu zorla kapatıyoruz.

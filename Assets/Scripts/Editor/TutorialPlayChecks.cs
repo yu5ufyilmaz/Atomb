@@ -15,10 +15,19 @@ public static class TutorialPlayChecks
 {
     private const BindingFlags Private = BindingFlags.Instance | BindingFlags.NonPublic;
 
+    private static bool caughtAtHiding;
+
     [MenuItem("Senzora/Doğrulama/Tutorial Gerçek Oyun Akışı")]
-    public static void Run()
+    public static void Run() => Start(false);
+
+    // Same flow, but the player stays out at the wardrobe lesson and is caught by Guderian.
+    [MenuItem("Senzora/Doğrulama/Tutorial Gerçek Oyun Akışı - Guderian'a Yakalan")]
+    public static void RunCaught() => Start(true);
+
+    private static void Start(bool caught)
     {
         Require(Application.isPlaying && ResearchPuzzleTrial.Active != null, "Laboratuvarda Play gerekli.");
+        caughtAtHiding = caught;
         ResearchPuzzleTrial.Active.StartCoroutine(Flow());
     }
 
@@ -37,8 +46,13 @@ public static class TutorialPlayChecks
         yield return new WaitForSeconds(.5f);
         Require(Mathf.Approximately(pressure, PressureSystemManager.Instance.GetPressure()), "Eğitimde otomatik basınç artıyor.");
         RequireAllowed(lesson.lessonBook.gameObject);
-        yield return WaitFor(() => PlayerInteraction.Instance.CanInteractWithWorld, "Başlangıç kamera odağının bitmesi");
-        lesson.lessonBook.Interact(); BroadcastInteraction(lesson.lessonBook.gameObject);
+        // 3 Nov playtest: the camera turns to the book, and a click while it holds there opens it at once.
+        yield return WaitFor(() => PlayerInteraction.Instance.IsInteractionBlocked, "Kameranın kitaba dönmeye başlaması");
+        yield return new WaitForSeconds(1.7f);
+        Require(PlayerInteraction.Instance.IsInteractionBlocked, "Kamera kitaba varmadan bıraktı; bekleme evresi test edilemedi.");
+        yield return ClickLeftMouse();
+        Require(game.activeInteraction == lesson.lessonBook, "Kamera kitaba bakarken tıklama kitabı açmadı.");
+        Debug.Log("TUTORIAL PLAY STAGE PASS: a click during the camera hold opens the book");
         yield return WaitFor(() => lesson.lessonBook.isOpen && !lesson.lessonBook.isAnimating && workspace.IsActive, "Eğitim kitabı");
         yield return null;
         Require(lesson.lessonBook.ExitLocked, "Kartlar toplanmadan kitaptan çıkılabiliyor.");
@@ -129,9 +143,36 @@ public static class TutorialPlayChecks
         yield return WaitFor(() => lesson.doorStep.HasTriggered, "Gerçek kapı kilidi");
         var spot = manager.tutorialEventsParent.GetComponentsInChildren<HidingSpotControlAction>().First().hidingSpot;
         yield return WaitFor(() => PlayerInteraction.Instance.CanInteractWithWorld, "Saklanmadan önce kamera odağı");
-        RequireAllowed(spot.gameObject);
-        spot.Interact(); BroadcastInteraction(spot.gameObject);
-        yield return WaitFor(() => spot.IsOccupied, "Gerçek dolaba giriş");
+        if (caughtAtHiding)
+        {
+            // 3 Nov playtest: the jumpscare still plays, then the lesson resumes inside the wardrobe.
+            var volume = Object.FindFirstObjectByType<UnityEngine.Rendering.Volume>();
+            volume.profile.TryGet(out UnityEngine.Rendering.HighDefinition.Vignette vignette);
+            float vignetteBefore = vignette != null ? vignette.intensity.value : 0;
+            // Facing the door makes him wait behind it; turned away, he comes in and catches the player from behind.
+            var mover = Object.FindFirstObjectByType<StarterAssets.CharacterController>();
+            Vector3 away = mover.transform.position - lesson.officeDoor.transform.position; away.y = 0;
+            float awayYaw = Quaternion.LookRotation(away).eulerAngles.y;
+            yield return WaitFor(() => { if (!game.IsGameplayOver) mover.ForceCameraRotation(awayYaw, 0); return game.IsGameplayOver; }, "Guderian'ın yakalaması", 100);
+            yield return WaitFor(() => !game.IsGameplayOver && spot.IsOccupied, "Ölümden sonra dolapta devam", 30);
+            yield return new WaitForSeconds(.5f);
+            Require(Time.timeScale == 1 && !Field<GameObject>(DeathUIManager.Instance, "deathScreenPanel").activeSelf, "Eğitim ölümü ölüm ekranını açtı.");
+            Require(vignette == null || Mathf.Approximately(vignette.intensity.value, vignetteBefore), "Jumpscare efektleri geri alınmadı.");
+            var guderianState = GuderianAI.Instance.currentState;
+            Require(game.activeInteraction == spot && (guderianState == GuderianAI.GuderianState.Exiting || guderianState == GuderianAI.GuderianState.Hidden),
+                "Geri sarma dolabı veya Guderian'ın gidişini kurmadı.");
+            yield return new WaitForSeconds(1f);
+            ScreenCapture.CaptureScreenshot("outputs/playtest-stage3-death-rewind.png");
+            Debug.Log("TUTORIAL PLAY STAGE PASS: Guderian's catch rewinds into the wardrobe");
+        }
+        else
+        {
+            RequireAllowed(spot.gameObject);
+            spot.Interact(); BroadcastInteraction(spot.gameObject);
+            yield return WaitFor(() => spot.IsOccupied, "Gerçek dolaba giriş");
+            yield return new WaitForSeconds(1.5f);
+            ScreenCapture.CaptureScreenshot("outputs/playtest-stage3-hidden-normal.png");
+        }
         Require(!spot.canExit, "Düşman eğitimi sırasında dolaptan erken çıkılabiliyor.");
         yield return WaitFor(() => spot.canExit, "Guderian'ın gitmesi ve güvenli çıkış", 100);
         spot.ForceExit(); yield return WaitFor(() => game.activeInteraction == null, "Dolaptan çıkış");

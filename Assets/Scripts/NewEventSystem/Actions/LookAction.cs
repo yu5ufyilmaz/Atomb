@@ -65,25 +65,35 @@ public class LookAction : ActionBase
     private StarterAssetsInputs playerInputs;
     private Camera mainCam;
     private PlayerInteraction interaction;
-    private bool scheduled, ownsFocus, capturedInput, previousLookInput, previouslyFrozen;
+    private bool scheduled, ownsFocus, capturedInput, previousLookInput, previouslyFrozen, targetFound;
     private int previousCameraPriority;
 
     public override void Execute()
     {
         if (!isActiveAndEnabled || scheduled) return;
         scheduled = true;
+        targetFound = false;
         interaction = PlayerInteraction.Instance;
-        if (interaction != null && !interaction.TryBlockInteraction(this))
-        { StartCoroutine(WaitForFocus()); return; }
-        ownsFocus = true;
-        base.Execute();
+        PlayerInteraction.OnPlayerInteracted += NoteInteraction;
+        StartCoroutine(AcquireFocus());
     }
 
-    private IEnumerator WaitForFocus()
+    // The world stays usable through the delay; the lock starts when the camera is about to move.
+    private IEnumerator AcquireFocus()
     {
-        while (interaction != null && !interaction.TryBlockInteraction(this)) yield return null;
+        if (delay > 0) yield return new WaitForSeconds(delay);
+        while (!targetFound && interaction != null && !interaction.TryBlockInteraction(this)) yield return null;
+        PlayerInteraction.OnPlayerInteracted -= NoteInteraction;
+        // The player already found what the camera would point at.
+        if (targetFound) { scheduled = false; yield break; }
         ownsFocus = true;
-        base.Execute();
+        PerformAction();
+    }
+
+    private void NoteInteraction(GameObject used)
+    {
+        if (lookTarget != null && used != null && (lookTarget.IsChildOf(used.transform) || used.transform.IsChildOf(lookTarget)))
+            targetFound = true;
     }
 
     private void Awake() { ResolveReferences(); }
@@ -143,6 +153,7 @@ public class LookAction : ActionBase
         previousLookInput = playerInputs == null || playerInputs.cursorInputForLook;
         previouslyFrozen = playerMoveScript.IsFrozen;
         if (targetVirtualCamera != null) previousCameraPriority = targetVirtualCamera.Priority;
+        bool interactNow = false;
         try
         {
             // 1. OYUNCU GİRDİSİNİ VE HAREKETİNİ KES
@@ -188,12 +199,15 @@ public class LookAction : ActionBase
             }
 
             // 3. BEKLEME EVRESİ
+            // The camera is on the target: Interact ends the hold and is passed on below.
             if (focusMode == FocusMode.RotatePlayerHead && lookTarget != null)
             {
                 if (waitUntilInput)
                 {
                     while (lookTarget != null && !GameInput.Pressed("Cancel"))
                     {
+                        interactNow = GameInput.Pressed("Interact");
+                        if (interactNow) break;
                         TrackTarget();
                         yield return null;
                     }
@@ -203,6 +217,8 @@ public class LookAction : ActionBase
                     float holdTimer = 0f;
                     while (lookTarget != null && holdTimer < autoReleaseTime)
                     {
+                        interactNow = GameInput.Pressed("Interact");
+                        if (interactNow) break;
                         holdTimer += Time.deltaTime;
                         TrackTarget();
                         yield return null;
@@ -231,6 +247,8 @@ public class LookAction : ActionBase
 
         }
         finally { ReleaseFocus(); }
+        // Input and the world are handed back first, so the interaction records the player's real state.
+        if (interactNow) interaction?.InteractNow();
     }
 
     private void OnDisable()
@@ -251,6 +269,7 @@ public class LookAction : ActionBase
             }
         }
         if (ownsFocus) interaction?.ReleaseInteractionBlock(this);
+        PlayerInteraction.OnPlayerInteracted -= NoteInteraction;
         scheduled = ownsFocus = capturedInput = false;
     }
 

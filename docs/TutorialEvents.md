@@ -13,7 +13,9 @@ Her konuşma düğümünde:
 
 Her aksiyon kendi konuşma geçmişini tutar. Kitabı kapatıp açmak veya aynı tutorial oturumunu kapatıp açmak giriş repliğini tekrar oynatmaz. Yeni araştırma oturumu geçmişi sıfırlar. Koşulun kaybolması yalnızca o aksiyona ait konuşmayı durdurur; başka konuşmalar ve duraklama sırasında hatırlatma sayacı işlemez. İlerleme, hatırlatma beklemesini yeniler. Eski, çakışan tutorial `DialogAction` bileşenleri sahnede kapalı tutulur; diğer aksiyonlar korunur.
 
-`LookAction`, gecikmesi dahil kamera odağı boyunca dünya etkileşimini kilitler. Peş peşe gelen kamera aksiyonları sırayla çalışır. Aksiyon kapatılırsa veya hedefi yok olursa kilit bırakılır. Açılış sekansı ve duraklama sırasında kitap alınamaz.
+`LookAction` dünya etkileşimini kamera dönmeye başladığında kilitler; gecikme süresince dünya kullanılabilir kalır. Oyuncu bu sürede hedefi kullanırsa kamera hiç dönmez. Kamera hedefe vardıktan sonraki bekleme evresinde Etkileşim tuşu beklemeyi bitirir ve basış hedefe iletilir (3 Kasım 2026 oyun testi: kitap/vana/dolap geç açılıyordu). Peş peşe gelen kamera aksiyonları sırayla çalışır. Aksiyon kapatılırsa veya hedefi yok olursa kilit bırakılır. Açılış sekansı ve duraklama sırasında kitap alınamaz.
+
+Eğitim sırasında Guderian oyuncuyu yakalarsa jumpscare oynar, ardından ölüm ekranı yerine `TutorialManager.deathRespawnSpot` dolabının içinde devam edilir (`TutorialManager.TryRewindDeath`): ölüm geri alınır, jumpscare efektleri ve timeline objeleri eski hâline döner, Guderian `Exiting` durumundan geçerek gider ve "saklandı" adımı tetiklenir. Diğer ölümler (Lees) normal ölüm ekranını açar. Doğrulama: `Senzora > Doğrulama > Tutorial Gerçek Oyun Akışı - Guderian'a Yakalan`.
 
 `Tutorial_CloseDoor_014` tetikleyicisi ofis kapısının dışındadır. Oyuncu kilit dersinden sonra kapıdan ilk çıktığında `ChalkboardTutorial.DoorLesson` onu kapı kanadının alanı dışında durdurur, kamerayı kapıya çevirir ve kapıyı kapatana kadar bırakmaz.
 

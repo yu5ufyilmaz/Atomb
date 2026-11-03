@@ -63,6 +63,7 @@ public class DeathUIManager : MonoBehaviour
     {
         // Final başladıysa geciken bir saldırı veya patlama ölüm ekranı açamaz.
         if (GameManager.Instance != null && GameManager.Instance.Ending == GameEnding.Final) return;
+        if (TutorialManager.Instance != null && TutorialManager.Instance.TryRewindDeath()) return;
         GameManager.TryBeginDeath();
         Debug.Log("Ölüm Ekranı Açılıyor...");
 

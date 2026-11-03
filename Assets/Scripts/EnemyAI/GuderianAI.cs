@@ -663,6 +663,7 @@ public class GuderianAI : MonoBehaviour
             if (brain != null)
             {
                 brain.enabled = true;
+                if (savedBlend == null) savedBlend = brain.m_DefaultBlend;
                 // Kameranın yavaşça dönmesini engelle, anında Timeline kamerasına geç (Cut)!
                 brain.m_DefaultBlend.m_Style = Cinemachine.CinemachineBlendDefinition.Style.Cut;
                 brain.m_DefaultBlend.m_Time = 0f;
@@ -670,6 +671,11 @@ public class GuderianAI : MonoBehaviour
         }
 
         // 3. TIMELINE'I BAŞLAT
+        // Its activation tracks end on black bars / hidden player for the death screen; remember them for a rewind.
+        timelineObjects.Clear();
+        foreach (var output in director.playableAsset.outputs)
+            if (director.GetGenericBinding(output.sourceObject) is GameObject bound)
+                timelineObjects.Add((bound, bound.activeSelf));
         director.Play();
         // 4. BİTMESİNİ BEKLE VE ÖLÜM EKRANINA GEÇ
         yield return new WaitForSeconds((float)director.duration);
@@ -971,6 +977,40 @@ public class GuderianAI : MonoBehaviour
     }
 
     public void TriggerJumpscare() => TriggerPositionedJumpscare(JumpscareType.InFrontOfPlayer);
+
+    private Cinemachine.CinemachineBlendDefinition? savedBlend;
+    private readonly List<(GameObject go, bool active)> timelineObjects = new List<(GameObject, bool)>();
+
+    // Tutorial death rewind: end the attack as if he had left, and hand the camera back.
+    public void ResetAfterRewind()
+    {
+        StopAllCoroutines();
+        foreach (var director in new[] { timelineAtDoor, timelineBehindPlayer, timelineInFront, timelineLocker })
+            if (director != null) director.Stop();
+        foreach (var (go, active) in timelineObjects)
+            if (go != null) go.SetActive(active);
+        timelineObjects.Clear();
+        var brain = Camera.main != null ? Camera.main.GetComponent<Cinemachine.CinemachineBrain>() : null;
+        if (brain != null && savedBlend != null) brain.m_DefaultBlend = savedBlend.Value;
+        savedBlend = null;
+        if (audioSource) audioSource.Stop();
+        if (guderianModel != null) guderianModel.SetActive(false);
+        if (agent != null) agent.enabled = false;
+        // Pass through Exiting like a real departure: lesson steps wait for that state, not Hidden.
+        currentState = GuderianState.Exiting;
+        debugStatus = "Çıkıyor...";
+        StartCoroutine(FinishLeavingAfterRewind());
+    }
+
+    private IEnumerator FinishLeavingAfterRewind()
+    {
+        yield return new WaitForSeconds(1f);
+        currentState = GuderianState.Hidden;
+        debugStatus = "Gitti.";
+        if (GlobalEnemyManager.Instance != null)
+            GlobalEnemyManager.Instance.RegisterAttackEnd();
+        cooldownTimer = minTimeBetweenAttacks;
+    }
 
     public void ForceLeave()
     {

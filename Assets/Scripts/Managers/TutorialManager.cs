@@ -16,6 +16,24 @@ public class TutorialManager : MonoBehaviour
     [Tooltip("Eğitim modunun şu anki durumu")]
     public bool isTutorialEnabled = true;
 
+    [Tooltip("Eğitimde ölen oyuncu, ölüm animasyonundan sonra bu dolabın içinde devam eder (boşsa normal ölüm ekranı).")]
+    public InteractableHidingSpot deathRespawnSpot;
+
+    // 3 Nov playtest: a tutorial death keeps its jumpscare, then the lesson resumes inside the wardrobe.
+    public bool TryRewindDeath()
+    {
+        // Only Guderian's catch: the wardrobe is his lesson, and other deaths leave their own enemy state behind.
+        if (!IsRunning || deathRespawnSpot == null || GameManager.Instance == null || GuderianAI.Instance == null
+            || GuderianAI.Instance.currentState != GuderianAI.GuderianState.Jumpscare) return false;
+        if (JumpscareManager.Instance != null) JumpscareManager.Instance.ResetAfterRewind();
+        GuderianAI.Instance.ResetAfterRewind();
+        GameManager.Instance.CancelDeath();
+        deathRespawnSpot.PlaceInside();
+        // The lesson's "hide" step listens for the wardrobe interaction.
+        PlayerInteraction.NotifyInteracted(deathRespawnSpot.gameObject);
+        return true;
+    }
+
     public void Start()
     {
         SetupTutorialMode();

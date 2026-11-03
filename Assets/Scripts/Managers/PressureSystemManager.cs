@@ -312,6 +312,12 @@ public class PressureSystemManager : MonoBehaviour, ISaveable
         overridePostProcessing = true;
     }
 
+    // A tutorial death rewinds instead of reloading the scene, so the effects must come back.
+    public void ResumeEffectsAfterJumpscare()
+    {
+        overridePostProcessing = false;
+    }
+
     public void LoadData(GameData data)
     {
         // Kaydedilmiş basınç değerini çek

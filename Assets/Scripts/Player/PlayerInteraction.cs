@@ -83,6 +83,14 @@ public class PlayerInteraction : MonoBehaviour
         if (interactionBlockOwner == owner) interactionBlockOwner = null;
     }
 
+    // A camera focus that ended on this frame's Interact press passes the press on.
+    public void InteractNow()
+    {
+        if (!CanInteractWithWorld) return;
+        CheckForInteractable();
+        HandleInteractionInput();
+    }
+
     // Oyuncu notu/kitabı kapattığında fırlatılacak statik event
 
     // Performans: Collider -> IInteractable önbelleği
@@ -345,5 +353,11 @@ public void UpdateTutorialWhitelist(List<GameObject> newObjects)
     public static void NotifyInteractionExit(GameObject exitedObj)
     {
         OnPlayerInteractionExited?.Invoke(exitedObj);
+    }
+
+    // For systems that put the player into an interaction without a click (tutorial death rewind).
+    public static void NotifyInteracted(GameObject interactedObj)
+    {
+        OnPlayerInteracted?.Invoke(interactedObj);
     }
 }

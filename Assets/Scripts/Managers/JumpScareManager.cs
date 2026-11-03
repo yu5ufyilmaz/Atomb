@@ -154,6 +154,7 @@ public class JumpscareManager : MonoBehaviour
         string deathMessage
     )
     {
+        RememberEffects();
         // --- BU SATIRI EN BAŞA EKLE ---
         // Pressure System'e "Efektlere dokunma, bende" diyoruz.
         if (NotebookUI.Instance != null)
@@ -291,6 +292,35 @@ public class JumpscareManager : MonoBehaviour
             return player.position + (-player.right * distance);
         else
             return player.position + (-player.forward * distance);
+    }
+
+    private readonly System.Collections.Generic.List<System.Action> restoreEffects = new System.Collections.Generic.List<System.Action>();
+
+    // The death screen keeps the full distortion; a tutorial rewind needs the pre-jumpscare look back.
+    private void RememberEffects()
+    {
+        restoreEffects.Clear();
+        void Remember(VolumeParameter<float> parameter)
+        {
+            if (parameter == null) return;
+            bool state = parameter.overrideState; float value = parameter.value;
+            restoreEffects.Add(() => { parameter.overrideState = state; parameter.value = value; });
+        }
+        Remember(m_Vignette?.intensity); Remember(m_Vignette?.smoothness);
+        Remember(m_Aberration?.intensity);
+        Remember(m_LensDistortion?.intensity); Remember(m_LensDistortion?.scale);
+        Remember(m_FilmGrain?.intensity);
+        Remember(m_ColorAdjustments?.saturation);
+    }
+
+    // Tutorial death rewind: undo what JumpscareRoutine leaves behind for the death screen.
+    public void ResetAfterRewind()
+    {
+        StopAllCoroutines();
+        jumpscareRunning = false;
+        foreach (var restore in restoreEffects) restore();
+        restoreEffects.Clear();
+        if (PressureSystemManager.Instance != null) PressureSystemManager.Instance.ResumeEffectsAfterJumpscare();
     }
 
     private void ApplyJumpscareEffects(float progress)

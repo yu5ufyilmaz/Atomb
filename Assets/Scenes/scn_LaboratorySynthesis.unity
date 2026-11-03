@@ -18054,6 +18054,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::TutorialManager
   tutorialEventsParent: {fileID: 1006456095}
   isTutorialEnabled: 1
+  deathRespawnSpot: {fileID: 454887305}
 --- !u!1 &248875050
 GameObject:
   m_ObjectHideFlags: 0

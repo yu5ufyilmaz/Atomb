@@ -53,13 +53,16 @@ public static class TutorialRegressionChecks
         yield return null;
         try
         {
+            // 3 Nov playtest: the world stays usable until the camera moves; a busy player delays the turn.
             focus.Execute();
             book.Interact();
-            Require(game.activeInteraction == null && !book.IsOpening, "The book opened during the focus action delay.");
-            yield return new WaitForSeconds(.4f);
+            Require(game.activeInteraction == book, "The book must open during the focus action delay.");
+            book.ForceExit();
+            // The focus takes the camera as soon as the book lets go, while its close animation may still run.
+            yield return Until(() => PlayerInteraction.Instance.IsInteractionBlocked, "Delayed focus taking the camera after the book closed", 4);
             book.Interact();
             Require(game.activeInteraction == null && !book.IsOpening, "The book opened during camera rotation.");
-            yield return new WaitForSeconds(.7f);
+            yield return Until(() => PlayerInteraction.Instance.CanInteractWithWorld && !book.isAnimating, "Focus release", 4);
             book.Interact();
             Require(game.activeInteraction == book, "The book stayed blocked after focus finished.");
             book.ForceExit();

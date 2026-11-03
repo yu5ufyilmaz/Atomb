@@ -35,6 +35,9 @@ public class GameManager : MonoBehaviour
     {
         if (IsGameplayOver) return false;
         Ending = ending;
+        enemiesWereStopped = GlobalEnemyManager.Instance != null && GlobalEnemyManager.Instance.stopAllEnemies;
+        pressureWasActive = PressureSystemManager.Instance != null && PressureSystemManager.Instance.isSystemActive;
+        breakerWasActive = BreakerBox.Instance != null && BreakerBox.Instance.isSystemActive;
         if (GlobalEnemyManager.Instance != null) GlobalEnemyManager.Instance.stopAllEnemies = true;
         if (PressureSystemManager.Instance != null) PressureSystemManager.Instance.isSystemActive = false;
         if (BreakerBox.Instance != null) BreakerBox.Instance.isSystemActive = false;
@@ -52,6 +55,24 @@ public class GameManager : MonoBehaviour
     }
 
     public static bool TryBeginDeath() => Instance == null || Instance.BeginEnding(GameEnding.Death);
+
+    private bool enemiesWereStopped, pressureWasActive, breakerWasActive;
+
+    // Tutorial deaths rewind instead of ending the run: undo BeginEnding(Death).
+    public void CancelDeath()
+    {
+        if (Ending != GameEnding.Death) return;
+        Ending = GameEnding.None;
+        if (GlobalEnemyManager.Instance != null) GlobalEnemyManager.Instance.stopAllEnemies = enemiesWereStopped;
+        if (PressureSystemManager.Instance != null) PressureSystemManager.Instance.isSystemActive = pressureWasActive;
+        if (BreakerBox.Instance != null) BreakerBox.Instance.isSystemActive = breakerWasActive;
+        var inputs = Object.FindFirstObjectByType<StarterAssets.StarterAssetsInputs>();
+        if (inputs != null) { inputs.enabled = true; inputs.cursorInputForLook = true; }
+        var player = Object.FindFirstObjectByType<StarterAssets.CharacterController>();
+        if (player != null) { player.enabled = true; player.SetFrozen(false, false, false); }
+        var physics = Object.FindFirstObjectByType<CharacterController>();
+        if (physics != null) physics.enabled = true;
+    }
 
     private void Awake()
     {
