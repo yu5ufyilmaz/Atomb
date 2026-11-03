@@ -1,0 +1,38 @@
+TOUR AFTER DONE: 36 views, frame median 18.81 ms (53 fps), p95 21.71 ms
+quality High Fidelity, screen 1920x1080
+Spawn/0: frame median 19.76 ms, gpu median 2.17 ms
+Spawn/90: frame median 18.28 ms, gpu median 4.77 ms
+Spawn/180: frame median 18.74 ms, gpu median 4.16 ms
+Spawn/270: frame median 20.00 ms, gpu median 1.48 ms
+Room_Area/0: frame median 19.11 ms, gpu median 4.16 ms
+Room_Area/90: frame median 18.28 ms, gpu median 3.74 ms
+Room_Area/180: frame median 18.35 ms, gpu median 3.41 ms
+Room_Area/270: frame median 18.27 ms, gpu median 4.04 ms
+Room_Area/0: frame median 18.13 ms, gpu median 3.08 ms
+Room_Area/90: frame median 18.22 ms, gpu median 2.64 ms
+Room_Area/180: frame median 18.53 ms, gpu median 3.13 ms
+Room_Area/270: frame median 18.10 ms, gpu median 3.92 ms
+Office_Room_Area/0: frame median 18.61 ms, gpu median 1.08 ms
+Office_Room_Area/90: frame median 19.07 ms, gpu median 1.14 ms
+Office_Room_Area/180: frame median 19.46 ms, gpu median 1.19 ms
+Office_Room_Area/270: frame median 18.85 ms, gpu median 2.25 ms
+Room_Area/0: frame median 18.47 ms, gpu median 4.38 ms
+Room_Area/90: frame median 19.58 ms, gpu median 4.99 ms
+Room_Area/180: frame median 19.32 ms, gpu median 4.84 ms
+Room_Area/270: frame median 20.28 ms, gpu median 4.61 ms
+Room_Area (1)/0: frame median 19.04 ms, gpu median 1.63 ms
+Room_Area (1)/90: frame median 18.45 ms, gpu median 1.00 ms
+Room_Area (1)/180: frame median 18.86 ms, gpu median 1.07 ms
+Room_Area (1)/270: frame median 18.28 ms, gpu median 2.05 ms
+Corridor_SafeZone/0: frame median 17.83 ms, gpu median 1.73 ms
+Corridor_SafeZone/90: frame median 19.49 ms, gpu median 1.61 ms
+Corridor_SafeZone/180: frame median 19.30 ms, gpu median 1.60 ms
+Corridor_SafeZone/270: frame median 18.19 ms, gpu median 1.68 ms
+Room_Area/0: frame median 18.55 ms, gpu median 4.27 ms
+Room_Area/90: frame median 18.96 ms, gpu median 3.84 ms
+Room_Area/180: frame median 18.23 ms, gpu median 3.99 ms
+Room_Area/270: frame median 18.04 ms, gpu median 4.55 ms
+Corridor_SafeZone (1)/0: frame median 19.59 ms, gpu median 2.00 ms
+Corridor_SafeZone (1)/90: frame median 20.69 ms, gpu median 1.43 ms
+Corridor_SafeZone (1)/180: frame median 21.04 ms, gpu median 3.90 ms
+Corridor_SafeZone (1)/270: frame median 19.71 ms, gpu median 3.89 ms

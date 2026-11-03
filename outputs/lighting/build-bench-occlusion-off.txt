@@ -1,0 +1,63 @@
+FPS BENCH (build): 36 views, frame median 7.93 ms (126 fps), p95 11.83 ms, p99 11.96 ms, worst 24.1 ms, frames>33ms 0/4320
+Game start after menu: 20.4s, started=True
+Resolution 1920x1080 ExclusiveFullScreen, quality High Fidelity, GPU NVIDIA GeForce RTX 3060 Laptop GPU 5994 MB, CPU 11th Gen Intel(R) Core(TM) i7-11800H @ 2.30GHz
+Occlusion culling off
+Markers found: Gfx.WaitForRenderThread, Gfx.WaitForPresentOnGfxThread, GC.Collect, Main Thread, LateBehaviourUpdate, FixedBehaviourUpdate, BehaviourUpdate, System Used Memory, Audio Used Memory, GC Allocated In Frame, Gfx Used Memory, Texture Memory, Mesh Memory, FixedUpdate.PhysicsFixedUpdate, PreLateUpdate.DirectorUpdateAnimationBegin, PreLateUpdate.DirectorUpdateAnimationEnd, PostLateUpdate.PlayerUpdateCanvases, PostLateUpdate.UpdateAllRenderers, PostLateUpdate.UpdateAllSkinnedMeshes, PostLateUpdate.FinishFrameRendering
+FrameTiming median: cpu main 7.90 ms, cpu render 1.24 ms, gpu 7.83 ms
+  Gfx.WaitForRenderThread: median 0.000 ms, p95 0.000 ms
+  Gfx.WaitForPresentOnGfxThread: median 0.012 ms, p95 0.018 ms
+  GC.Collect: median 0.000 ms, p95 0.000 ms
+  Main Thread: median 7.924 ms, p95 11.816 ms
+  LateBehaviourUpdate: median 0.083 ms, p95 0.114 ms
+  FixedBehaviourUpdate: median 0.000 ms, p95 0.001 ms
+  BehaviourUpdate: median 0.246 ms, p95 0.307 ms
+  System Used Memory: median 908.6 MB, max 973.6 MB
+  Audio Used Memory: median 4.9 MB, max 4.9 MB
+  GC Allocated In Frame: median 0.0 MB, max 1.4 MB
+  Gfx Used Memory: median 2604.3 MB, max 2630.3 MB
+  Texture Memory: median 2491.7 MB, max 2517.5 MB
+  Mesh Memory: median 121.0 MB, max 121.0 MB
+  FixedUpdate.PhysicsFixedUpdate: median 0.000 ms, p95 0.321 ms
+  PreLateUpdate.DirectorUpdateAnimationBegin: median 0.180 ms, p95 0.235 ms
+  PreLateUpdate.DirectorUpdateAnimationEnd: median 0.192 ms, p95 0.251 ms
+  PostLateUpdate.PlayerUpdateCanvases: median 0.087 ms, p95 0.124 ms
+  PostLateUpdate.UpdateAllRenderers: median 0.098 ms, p95 0.134 ms
+  PostLateUpdate.UpdateAllSkinnedMeshes: median 0.073 ms, p95 0.132 ms
+  PostLateUpdate.FinishFrameRendering: median 3.225 ms, p95 3.909 ms
+Spikes: 
+Spawn/0: frame 7.19 ms, p95 7.39, gpu 7.12
+Spawn/90: frame 7.19 ms, p95 7.58, gpu 7.12
+Spawn/180: frame 7.22 ms, p95 7.60, gpu 7.15
+Spawn/270: frame 8.33 ms, p95 8.74, gpu 8.23
+Room_Area/0: frame 7.69 ms, p95 8.19, gpu 7.58
+Room_Area/90: frame 7.59 ms, p95 7.97, gpu 7.50
+Room_Area/180: frame 7.68 ms, p95 8.97, gpu 7.58
+Room_Area/270: frame 7.65 ms, p95 8.19, gpu 7.56
+Room_Area/0: frame 7.84 ms, p95 8.43, gpu 7.77
+Room_Area/90: frame 7.86 ms, p95 7.93, gpu 7.78
+Room_Area/180: frame 7.87 ms, p95 7.99, gpu 7.80
+Room_Area/270: frame 7.87 ms, p95 7.98, gpu 7.79
+Office_Room_Area/0: frame 10.66 ms, p95 10.99, gpu 10.58
+Office_Room_Area/90: frame 10.65 ms, p95 10.82, gpu 10.55
+Office_Room_Area/180: frame 10.69 ms, p95 10.89, gpu 10.60
+Office_Room_Area/270: frame 10.71 ms, p95 10.97, gpu 10.63
+Room_Area/0: frame 6.79 ms, p95 6.99, gpu 6.71
+Room_Area/90: frame 6.80 ms, p95 6.97, gpu 6.71
+Room_Area/180: frame 6.81 ms, p95 6.91, gpu 6.72
+Room_Area/270: frame 6.83 ms, p95 6.99, gpu 6.73
+Room_Area (1)/0: frame 11.53 ms, p95 11.66, gpu 11.44
+Room_Area (1)/90: frame 11.57 ms, p95 11.74, gpu 11.49
+Room_Area (1)/180: frame 11.61 ms, p95 11.77, gpu 11.52
+Room_Area (1)/270: frame 11.53 ms, p95 11.69, gpu 11.46
+Corridor_SafeZone/0: frame 10.06 ms, p95 10.22, gpu 9.97
+Corridor_SafeZone/90: frame 10.07 ms, p95 10.29, gpu 9.99
+Corridor_SafeZone/180: frame 10.06 ms, p95 10.26, gpu 9.97
+Corridor_SafeZone/270: frame 10.07 ms, p95 10.22, gpu 9.99
+Room_Area/0: frame 7.48 ms, p95 7.82, gpu 7.38
+Room_Area/90: frame 7.47 ms, p95 7.93, gpu 7.37
+Room_Area/180: frame 7.54 ms, p95 8.32, gpu 7.43
+Room_Area/270: frame 7.52 ms, p95 8.12, gpu 7.41
+Corridor_SafeZone (1)/0: frame 11.81 ms, p95 12.01, gpu 11.71
+Corridor_SafeZone (1)/90: frame 11.74 ms, p95 11.88, gpu 11.63
+Corridor_SafeZone (1)/180: frame 11.88 ms, p95 12.03, gpu 11.77
+Corridor_SafeZone (1)/270: frame 11.84 ms, p95 11.99, gpu 11.73

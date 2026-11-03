@@ -142,6 +142,8 @@ public class PlayerInteraction : MonoBehaviour
     }
 public void UpdateTutorialWhitelist(List<GameObject> newObjects)
 {
+    BenchTrace.Log($"PlayerInteraction.UpdateTutorialWhitelist count={newObjects?.Count}"); // fence:
+    if (BenchTrace.Skip("-skipwhitelist")) return; // bisect:
     allowedTutorialObjects = newObjects;
     allowedTutorialSet = new HashSet<GameObject>(newObjects);
 }

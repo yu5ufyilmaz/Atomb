@@ -89,9 +89,11 @@ public class InteractableChalkboard : MonoBehaviour, IInteractable, IForceExitab
         if (playerMovementScript != null)
             playerMovementScript.SetFrozen(true, lockCameraInput: true, restrictRotation: false);
 
-        if (playerLookScript)
+        BenchTrace.Log("InteractableChalkboard.MoveToInteractionPoint"); // fence:
+        bool keepCC = BenchTrace.Skip("-boardkeepcc"); // bisect:
+        if (playerLookScript && !keepCC && !BenchTrace.Skip("-boardkeepinputs")) // bisect:
             playerLookScript.enabled = false;
-        if (playerPhysicsController != null)
+        if (playerPhysicsController != null && !keepCC && !BenchTrace.Skip("-boardkeepcconly")) // bisect:
             playerPhysicsController.enabled = false;
 
         if (interactionStandPoint != null)

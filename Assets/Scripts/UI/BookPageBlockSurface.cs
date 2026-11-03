@@ -93,14 +93,14 @@ public partial class BookPageBlockSurface : MonoBehaviour
         input.blocksRaycasts = input.interactable = !book.isAnimating && !GameManager.Instance.isGamePaused;
         if (refresh)
         {
-            if (bakedPages != null) book.bookSkinnedMeshRenderer.BakeMesh(bakedPages, true);
+            if (bakedPages != null && !BenchTrace.Skip("-skipbake")) book.bookSkinnedMeshRenderer.BakeMesh(bakedPages, true); // bisect:
             BuildPageMaps(book.bookSkinnedMeshRenderer, (RectTransform)surface.transform);
             RefreshPages();
         }
         if (GameManager.Instance.isGamePaused) return;
-        if (book.IsOpening || book.IsClosing)
+        if ((book.IsOpening || book.IsClosing) && !(book.IsClosing && BenchTrace.Skip("-skipclosemaps"))) // bisect:
         {
-            book.bookSkinnedMeshRenderer.BakeMesh(bakedPages, true);
+            if (!BenchTrace.Skip("-skipbake")) book.bookSkinnedMeshRenderer.BakeMesh(bakedPages, true); // bisect:
             BuildPageMaps(book.bookSkinnedMeshRenderer, (RectTransform)surface.transform);
             RefreshInkGeometry();
         }
@@ -161,6 +161,7 @@ public partial class BookPageBlockSurface : MonoBehaviour
         Camera camera = surface != null ? surface.worldCamera : Camera.main;
         mapToWorld = rect.localToWorldMatrix;
         mapHasCamera = camera != null;
+        if (BenchTrace.On) BenchTrace.Log($"BuildPageMaps cam={(camera ? camera.GetInstanceID() : 0)} isMain={camera == Camera.main} closing={book.IsClosing}"); // fence:
         if (mapHasCamera) mapCameraPosition = camera.transform.position;
         bool selectFaces = exposedFaces == null || exposedFaces.Length != indices.Count / 3
             || pageMapSource != mesh.sharedMesh || pageMapVertexCount != vertices.Count || pageMapMaterial != submesh;

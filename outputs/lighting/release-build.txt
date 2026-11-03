@@ -1,0 +1,16 @@
+Succeeded 00:02:24.2884667 errors=0 warnings=15 size=1803 MB
+Warning: Assets\Scripts\NewEventSystem\Conditions\ChalkboardTutorialCondition.cs(27,39): warning CS0252: Possible unintended reference comparison; to get a value comparison, cast the left hand side to type 'Object'
+Warning: Assets\Scripts\NewEventSystem\Conditions\ChalkboardTutorialCondition.cs(28,42): warning CS0252: Possible unintended reference comparison; to get a value comparison, cast the left hand side to type 'Object'
+Warning: Assets\Scripts\NewEventSystem\Conditions\ChalkboardTutorialCondition.cs(29,44): warning CS0252: Possible unintended reference comparison; to get a value comparison, cast the left hand side to type 'Object'
+Warning: Assets\Scripts\NewEventSystem\Conditions\ChalkboardTutorialCondition.cs(30,40): warning CS0252: Possible unintended reference comparison; to get a value comparison, cast the left hand side to type 'Object'
+Warning: Assets\Scripts\NewEventSystem\Conditions\ChalkboardTutorialCondition.cs(36,41): warning CS0252: Possible unintended reference comparison; to get a value comparison, cast the left hand side to type 'Object'
+Warning: Assets\Scripts\NewEventSystem\Conditions\ChalkboardTutorialCondition.cs(37,41): warning CS0252: Possible unintended reference comparison; to get a value comparison, cast the left hand side to type 'Object'
+Warning: Assets\Scripts\NewEventSystem\Conditions\ChalkboardTutorialCondition.cs(38,41): warning CS0252: Possible unintended reference comparison; to get a value comparison, cast the left hand side to type 'Object'
+Warning: Assets\Scripts\NewEventSystem\Conditions\ChalkboardTutorialCondition.cs(39,42): warning CS0252: Possible unintended reference comparison; to get a value comparison, cast the left hand side to type 'Object'
+Warning: Assets\Scripts\NewEventSystem\Conditions\ChalkboardTutorialCondition.cs(40,51): warning CS0252: Possible unintended reference comparison; to get a value comparison, cast the left hand side to type 'Object'
+Warning: Assets\Scripts\Player\SynthesisBlockoutPlayer.cs(80,76): warning CS0252: Possible unintended reference comparison; to get a value comparison, cast the left hand side to type 'Object'
+Warning: Assets\Scripts\UI\NotebookWorkspaceController.cs(605,48): warning CS0252: Possible unintended reference comparison; to get a value comparison, cast the left hand side to type 'Object'
+Warning: Assets\Scripts\Interactables\InteractableOscilloscope.cs(100,17): warning CS0414: The field 'InteractableOscilloscope.currentScore' is assigned but its value is never used
+Warning: Assets\Scripts\Interactables\InteractableBook.cs(104,19): warning CS0414: The field 'InteractableBook.animationDuration' is assigned but its value is never used
+Warning: Assets\Scripts\UI\NotebookUI.cs(45,19): warning CS0414: The field 'NotebookUI.dofTransitionDuration' is assigned but its value is never used
+Warning: Shader warning in 'HDRP/3DSMaxPhysicalMaterial/PhysicalMaterial3DsMax': array reference cannot be used as an l-value; not natively addressable, forcing loop to unroll at /Documents/UnityProjects/Atomb/Atomb/Library/PackageCache/com.unity.render-pipelines.high-definition@7f3ce09990d6/Runtime/Material/StackLit/StackLit.hlsl(4112) (on d3d11)

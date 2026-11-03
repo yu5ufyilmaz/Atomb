@@ -71,6 +71,8 @@ public class LookAction : ActionBase
     public override void Execute()
     {
         if (!isActiveAndEnabled || scheduled) return;
+        BenchTrace.Log($"LookAction.Execute {name} mode={focusMode} target={(lookTarget ? lookTarget.name : "none")} wait={waitUntilInput}"); // fence:
+        if (BenchTrace.Skip("-skiplook")) return; // bisect:
         scheduled = true;
         targetFound = false;
         interaction = PlayerInteraction.Instance;
@@ -111,6 +113,7 @@ public class LookAction : ActionBase
 
     protected override void PerformAction()
     {
+        BenchTrace.Probe($"LookAction.PerformAction {name}"); // fence:
         ResolveReferences();
         if (playerMoveScript == null || (focusMode == FocusMode.RotatePlayerHead && (lookTarget == null || mainCam == null))
             || (focusMode == FocusMode.ActivateVirtualCamera && targetVirtualCamera == null))
@@ -163,7 +166,7 @@ public class LookAction : ActionBase
                 playerInputs.look = Vector2.zero; // <-- BURASI KRİTİK: Freeze kapalı olsa bile ivmeyi sıfırlar!
             }
 
-            if (freezePlayer)
+            if (freezePlayer && !BenchTrace.Skip("-skiplookfreeze")) // bisect:
             {
                 playerMoveScript.SetFrozen(true, lockCameraInput: true, restrictRotation: false);
                 if (playerInputs != null)
@@ -188,8 +191,11 @@ public class LookAction : ActionBase
                     // Yaw and pitch ease separately: a quaternion slerp adds roll the yaw/pitch camera drops.
                     Vector3 target = GetTargetRotation().eulerAngles;
                     float turn = yawTurn + Mathf.DeltaAngle(firstTargetYaw, target.y);
+                    BenchTrace.Probe($"LookAction turn pre-force t={t:0.000}"); // fence:
+                    if (!BenchTrace.Skip("-skiplookturn")) // bisect:
                     playerMoveScript.ForceCameraRotation(startYaw + turn * smoothT,
                         Mathf.LerpAngle(startPitch, target.x, smoothT));
+                    BenchTrace.Probe($"LookAction turn post-force t={t:0.000}"); // fence:
                     yield return null;
                 }
             }
@@ -276,6 +282,7 @@ public class LookAction : ActionBase
     private void TrackTarget()
     {
         Vector3 target = GetTargetRotation().eulerAngles;
+        if (BenchTrace.Skip("-skiplookturn")) return; // bisect:
         playerMoveScript.ForceCameraRotation(target.y, target.x);
     }
 }

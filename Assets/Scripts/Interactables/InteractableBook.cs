@@ -583,7 +583,7 @@ public partial class InteractableBook : MonoBehaviour, IInteractable, IForceExit
         if (playerAnimator != null)
         {
             previousAnimatorSpeed = playerAnimator.speed;
-            playerAnimator.speed = 0;
+            if (!BenchTrace.Skip("-keepanimspeed")) playerAnimator.speed = 0; // bisect:
         }
         if (playerLookScript is StarterAssetsInputs inputs)
         {
@@ -606,7 +606,8 @@ public partial class InteractableBook : MonoBehaviour, IInteractable, IForceExit
             IsShelfPulling = true;
             yield return SlideShelf(transform.position, exit, transform.rotation);
         }
-        transform.SetParent(cameraTransform, true);
+        if (!BenchTrace.Skip("-noparentopen")) transform.SetParent(cameraTransform, true); // bisect:
+        BenchTrace.Log($"OpenBook parent={(transform.parent ? transform.parent.name : "none")}"); // fence:
 
         pageIndexL = (startPageIndex % 2 == 0) ? startPageIndex : startPageIndex - 1;
         pageIndexR = pageIndexL + 1;
@@ -662,7 +663,7 @@ public partial class InteractableBook : MonoBehaviour, IInteractable, IForceExit
         }
 
         // --- COLLIDER FIX: Mesh'i Bake Et ve Engelleyenleri Kapat ---
-        if (bookSkinnedMeshRenderer != null && bookCollider is MeshCollider mc)
+        if (bookSkinnedMeshRenderer != null && bookCollider is MeshCollider mc && !BenchTrace.Skip("-skipcolliderbake")) // bisect:
         {
             if (bakedMesh == null)
             {
@@ -691,10 +692,10 @@ public partial class InteractableBook : MonoBehaviour, IInteractable, IForceExit
     private IEnumerator CloseBook()
     {
         IsClosing = true;
-        if (NotebookUI.Instance != null) NotebookUI.Instance.SetWorkspaceMode(false);
+        if (NotebookUI.Instance != null && !BenchTrace.Skip("-skipworkspaceclose")) NotebookUI.Instance.SetWorkspaceMode(false); // bisect:
         // --- COLLIDER FIX: Mesh'i Geri Al ve Colliderları Aç ---
         // Kitap kapanırken eski (kapalı) mesh'e dön
-        if (bookCollider is MeshCollider mc && originalMesh != null)
+        if (bookCollider is MeshCollider mc && originalMesh != null && !BenchTrace.Skip("-skipcolliderswap")) // bisect:
         {
             mc.sharedMesh = originalMesh;
         }
@@ -711,11 +712,11 @@ public partial class InteractableBook : MonoBehaviour, IInteractable, IForceExit
         isAnimating = true;
         isOpen = false;
 
-        if (ControlsUIManager.Instance != null)
+        if (ControlsUIManager.Instance != null && !BenchTrace.Skip("-skiphidecontrols")) // bisect:
             ControlsUIManager.Instance.HideControls();
         if (GameManager.Instance != null)
             GameManager.Instance.activeInteraction = null;
-        if (bookUI != null)
+        if (bookUI != null && !BenchTrace.Skip("-skipbookui")) // bisect:
             bookUI.SetActive(false);
 
         // Release the player as soon as closing starts; the returning book can finish independently.
@@ -725,11 +726,12 @@ public partial class InteractableBook : MonoBehaviour, IInteractable, IForceExit
             inputs.cursorInputForLook = previousLookInput;
         }
         if (playerAnimator != null) playerAnimator.speed = previousAnimatorSpeed;
-        if (playerGameScript != null) playerGameScript.SetFrozen(false, false, false);
+        if (playerGameScript != null && !BenchTrace.Skip("-skipunfreeze")) playerGameScript.SetFrozen(false, false, false); // bisect:
         GameManager.Instance.UpdateCursorState();
 
-        BeginCoverMotion(false, false);
-        transform.SetParent(originalParent, true);
+        BeginCoverMotion(false, BenchTrace.Skip("-skipcover")); // bisect: skip=true leaves the animator as is
+        if (!BenchTrace.Skip("-noreparent")) transform.SetParent(originalParent, true); // bisect:
+        BenchTrace.Probe("CloseBook reparent done"); // fence:
 
         Vector3 targetWorldPosition;
         Quaternion targetWorldRotation;
@@ -757,7 +759,9 @@ public partial class InteractableBook : MonoBehaviour, IInteractable, IForceExit
             transform.position = Vector3.Lerp(startWorldPos, targetWorldPosition, smoothT) + Vector3.up * (.025f * arc);
             transform.rotation = Quaternion.Slerp(startWorldRot, targetWorldRotation,
                 Mathf.SmoothStep(0, 1, Mathf.InverseLerp(.04f, 1, t)));
-            UpdateCoverMotion(Mathf.InverseLerp(0, .8f, t));
+            BenchTrace.Probe($"CloseBook pre-cover t={t:0.000}"); // fence:
+            if (!BenchTrace.Skip("-skipcover")) UpdateCoverMotion(Mathf.InverseLerp(0, .8f, t)); // bisect:
+            BenchTrace.Probe($"CloseBook post-cover t={t:0.000}"); // fence:
             if (!coverSoundPlayed && t >= .72f) { PlaySound(bookCloseSound); coverSoundPlayed = true; }
             yield return null;
         }
@@ -1142,6 +1146,7 @@ public partial class InteractableBook : MonoBehaviour, IInteractable, IForceExit
 
     public void ForceExit()
     {
+        BenchTrace.Log($"InteractableBook.ForceExit {name} open={isOpen} anim={isAnimating}"); // fence:
         if (isOpen && isAnimating) { closeRequested = true; return; }
         if (isOpen && !isAnimating)
         {

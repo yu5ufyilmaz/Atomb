@@ -1,0 +1,8 @@
+UV GENERATE DONE: 7 models
+UV2 on: Assets/Models/SciencInstute.fbx (21 s)
+UV2 on: Assets/Models/Revisyons/scienceınstuterevize.fbx (13 s)
+UV2 on: Assets/Models/Revisyons/newdoor (1).fbx (1 s)
+UV2 on: Assets/Models/lambdeneme.fbx (2 s)
+UV2 on: Assets/Models/Revisyons/furkanrevizemodel.fbx (15 s)
+UV2 on: Assets/Models/Revisyons/revizemodeller.fbx (3 s)
+UV2 on: Assets/Models/building.fbx (2 s)

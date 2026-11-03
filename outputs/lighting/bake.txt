@@ -1,0 +1,2 @@
+BAKE DONE in 1.4 min: 4 lightmaps, data Assets/Scenes/scn_LaboratorySynthesis/LightingData.asset, probes 56
+Warning: Some meshes have invalid vertices and will be ignored by the Global Illumination system. (x3)

@@ -130,8 +130,10 @@ public sealed partial class ChalkboardTutorial : MonoBehaviour
         if (!collectedStep.HasTriggered)
         {
             bool collected = HasCollectedCards(NotebookUI.Instance) || HasCorrectReading;
+            if (lessonBook.ExitLocked != !collected) BenchTrace.Log($"ChalkboardTutorial ExitLocked -> {!collected}"); // fence:
             lessonBook.ExitLocked = !collected;
-            if (collected) cardsCollected.ReceiveSignal();
+            if (collected && BenchTrace.Skip("-skipsignal")) collected = false; // bisect:
+            if (collected) { BenchTrace.Log("ChalkboardTutorial cardsCollected.ReceiveSignal"); cardsCollected.ReceiveSignal(); } // fence:
         }
         // Rehber defteri ve kitabı tarar; 0,1 sn'de bir yeter, hayalet animasyonu kendi karesinde akar.
         if (Time.unscaledTime >= nextGuidePoll) { nextGuidePoll = Time.unscaledTime + .1f; UpdateGuide(); }

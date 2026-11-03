@@ -26,6 +26,8 @@ public class PlayerControlAction : ActionBase
 
     protected override void PerformAction()
     {
+        BenchTrace.Log($"PlayerControlAction.PerformAction {name} move={modifyMovement} look={modifyLook} rules={modifyInteractionRules}"); // fence:
+        if (BenchTrace.Skip("-skipcontrolaction")) return; // bisect:
         // 1. OYUNCU HAREKET VE KAMERA AYARLARI
         if (modifyMovement || modifyLook)
         {

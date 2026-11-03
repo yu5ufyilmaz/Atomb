@@ -217,23 +217,31 @@ public static class FpsPass
 
     // Builds/ .gitignore'da. Frame Timing Stats yalnız bu build için açılır, sonra eski haline döner.
     [MenuItem("Senzora/FPS/Build Dev Bench")]
-    private static void BuildDevBench()
+    private static void BuildDevBench() => BuildDevBench("Builds/DevBench/Senzora.exe", true);
+
+    // Çökme deneyi: aynı bench, incremental GC kapalı (ProjectSettings build sonrası eski haline döner).
+    [MenuItem("Senzora/FPS/Build Dev Bench (GC Incremental Off)")]
+    private static void BuildDevBenchGcOff() => BuildDevBench("Builds/DevBench-GCOff/Senzora.exe", false);
+
+    private static void BuildDevBench(string location, bool incrementalGc)
     {
         bool timing = PlayerSettings.enableFrameTimingStats;
+        bool gc = PlayerSettings.gcIncremental;
         try
         {
             PlayerSettings.enableFrameTimingStats = true;
+            PlayerSettings.gcIncremental = incrementalGc;
             var report = BuildPipeline.BuildPlayer(new BuildPlayerOptions
             {
                 scenes = EditorBuildSettings.scenes.Where(s => s.enabled).Select(s => s.path).ToArray(),
-                locationPathName = "Builds/DevBench/Senzora.exe",
+                locationPathName = location,
                 target = BuildTarget.StandaloneWindows64,
                 options = BuildOptions.Development,
             });
-            File.WriteAllText("Temp/devbench-build.txt", $"{report.summary.result} {report.summary.totalTime} errors={report.summary.totalErrors} size={report.summary.totalSize / 1048576} MB");
+            File.WriteAllText("Temp/devbench-build.txt", $"{location} gcIncremental={incrementalGc} {report.summary.result} {report.summary.totalTime} errors={report.summary.totalErrors} size={report.summary.totalSize / 1048576} MB");
             Debug.Log($"DEV BENCH BUILD: {report.summary.result} in {report.summary.totalTime}");
         }
-        finally { PlayerSettings.enableFrameTimingStats = timing; }
+        finally { PlayerSettings.enableFrameTimingStats = timing; PlayerSettings.gcIncremental = gc; AssetDatabase.SaveAssets(); } // build kaydettiği geçici değerleri diske geri yaz
     }
 
     [MenuItem("Senzora/FPS/Apply Pass 2")]

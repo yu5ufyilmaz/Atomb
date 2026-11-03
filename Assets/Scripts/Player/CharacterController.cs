@@ -383,6 +383,7 @@ namespace StarterAssets
         // The camera sits on the head bone: past 60° it would see into the neck and shoulders.
         private void KeepBodyNearView(float viewYaw)
         {
+            if (BenchTrace.Skip("-skipkeepbody")) return; // bisect:
             float yawDifference = Mathf.DeltaAngle(transform.eulerAngles.y, viewYaw);
             if (Mathf.Abs(yawDifference) > 60f)
                 transform.rotation = Quaternion.Euler(0f,

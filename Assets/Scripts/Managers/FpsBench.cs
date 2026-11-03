@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using Unity.Profiling;
 using Unity.Profiling.LowLevel.Unsafe;
 using UnityEngine;
@@ -31,8 +32,12 @@ public class FpsBench : MonoBehaviour
         DontDestroyOnLoad(host.gameObject);
     }
 
+    static FpsBench host; // fence: bench coroutine host
+
     IEnumerator Start()
     {
+        host = this;
+        if (BenchTrace.On) Application.SetStackTraceLogType(LogType.Log, StackTraceLogType.None); // fence: per-frame log stays cheap
         var lines = new List<string>();
         string output = Path.Combine(Application.persistentDataPath, "fps-bench.txt");
         if (SceneManager.GetActiveScene().name != GameScene)
@@ -43,21 +48,25 @@ public class FpsBench : MonoBehaviour
         }
         float loadStart = Time.realtimeSinceStartup;
         yield return null; yield return null;
-        var game = GameManager.Instance;
-        if (SaveManager.Instance != null) SaveManager.Instance.sessionOnly = true; // Yeni Oyun yolu oyuncunun kaydını silmesin
-        var menu = FindFirstObjectByType<MainMenuManager>();
-        var sequence = FindFirstObjectByType<InGameMenuController>();
         int loops = LoopCount();
-        // Tahta döngüsünde tutorial tahtayı kilitlemesin.
-        if (menu != null) { menu.PlayGame(); yield return null; if (menu.IsTutorialChoiceOpen) menu.ChooseTutorial(loops == 0); }
-        float end = Time.realtimeSinceStartup + 120;
-        while ((game == null || !game.isGameStarted || sequence != null && sequence.enabled) && Time.realtimeSinceStartup < end) yield return null;
+        bool tutorial = System.Environment.GetCommandLineArgs().Contains("-tutorial");
+        // Tahta döngüsünde tutorial tahtayı kilitlemesin; "-tutorial" ile oyuncunun çöktüğü tutorial yolu denenir.
+        yield return NewGame(loops == 0 || tutorial);
+        var game = GameManager.Instance;
         lines.Add($"Game start after menu: {Time.realtimeSinceStartup - loadStart:0.0}s, started={game != null && game.isGameStarted}");
         if (GlobalEnemyManager.Instance != null) GlobalEnemyManager.Instance.stopAllEnemies = true;
         if (PressureSystemManager.Instance != null) PressureSystemManager.Instance.isSystemActive = false;
         QualitySettings.vSyncCount = 0; Application.targetFrameRate = -1;
         lines.Add($"Resolution {Screen.width}x{Screen.height} {Screen.fullScreenMode}, quality {QualitySettings.names[QualitySettings.GetQualityLevel()]}, GPU {SystemInfo.graphicsDeviceName} {SystemInfo.graphicsMemorySize} MB, CPU {SystemInfo.processorType}");
-        if (loops > 0) { yield return ChalkboardLoop(loops, lines); Application.Quit(); yield break; }
+        if (loops > 0 && BenchTrace.Skip("-bookloop")) { yield return BookLoop(loops); Application.Quit(); yield break; } // bisect:
+        if (loops > 0) { yield return tutorial ? TutorialLoop(loops, lines) : ChalkboardLoop(loops, lines); Application.Quit(); yield break; }
+        // Aynı build'de occlusion culling kazancını ölçmek için "-noocclusion"; "-benchshots" her görüntüyü diske yazar.
+        var cliArgs = System.Environment.GetCommandLineArgs();
+        bool occlusion = !cliArgs.Contains("-noocclusion");
+        foreach (var cam in Camera.allCameras) cam.useOcclusionCulling = occlusion;
+        string shotDir = cliArgs.Contains("-benchshots") ? Path.Combine(Application.persistentDataPath, "bench-shots") : null;
+        if (shotDir != null) Directory.CreateDirectory(shotDir);
+        lines.Add($"Occlusion culling {(occlusion ? "on" : "off")}");
 
         var handles = new List<ProfilerRecorderHandle>(); ProfilerRecorderHandle.GetAvailable(handles);
         var recorders = new Dictionary<string, ProfilerRecorder>();
@@ -102,6 +111,7 @@ public class FpsBench : MonoBehaviour
                         if (timings[0].gpuFrameTime > 0) { gpu.Add(timings[0].gpuFrameTime); viewGpu.Add(timings[0].gpuFrameTime); }
                     }
                 }
+                if (shotDir != null) { ScreenCapture.CaptureScreenshot(Path.Combine(shotDir, $"{views.Count:00}-{spot.name}-{yaw}.png")); yield return null; yield return null; }
                 frames.AddRange(viewFrames);
                 views.Add($"{spot.name}/{yaw}: frame {Median(viewFrames):0.00} ms, p95 {P(viewFrames, .95):0.00}, gpu {(viewGpu.Count > 0 ? Median(viewGpu).ToString("0.00") : "n/a")}");
             }
@@ -119,6 +129,132 @@ public class FpsBench : MonoBehaviour
         foreach (var r in recorders.Values) r.Dispose();
         File.WriteAllLines(output, lines);
         Application.Quit();
+    }
+
+    static IEnumerator NewGame(bool tutorial)
+    {
+        if (SaveManager.Instance != null) SaveManager.Instance.sessionOnly = true; // Yeni Oyun yolu oyuncunun kaydını silmesin
+        var game = GameManager.Instance;
+        var menu = FindFirstObjectByType<MainMenuManager>();
+        var sequence = FindFirstObjectByType<InGameMenuController>();
+        if (menu != null) { menu.PlayGame(); yield return null; if (menu.IsTutorialChoiceOpen) menu.ChooseTutorial(tutorial); }
+        float end = Time.realtimeSinceStartup + 120;
+        while ((game == null || !game.isGameStarted || sequence != null && sequence.enabled) && Time.realtimeSinceStartup < end) yield return null;
+    }
+
+    // Tutorial açık çökme yolu (TutorialPlayChecks'in kitap adımı): kitabı aç, kartları gerçek bırakma yoluyla topla,
+    // cardsCollected sinyalini bekle, kitaptan çık, tahtaya 3 kez gir/çık; her tur ana menüye dönüş gibi sahneyi yeniden yükler.
+    static IEnumerator TutorialLoop(int count, List<string> header)
+    {
+        const BindingFlags Private = BindingFlags.Instance | BindingFlags.NonPublic;
+        for (int i = 1; i <= count; i++)
+        {
+            if (i > 1)
+            {
+                Time.timeScale = 1;
+                SceneManager.LoadScene(GameScene); // PauseManager.LoadMainMenu ile aynı yol
+                yield return null; yield return null; yield return null;
+                yield return NewGame(true);
+            }
+            var game = GameManager.Instance;
+            var lesson = TutorialManager.Instance != null ? TutorialManager.Instance.tutorialEventsParent.GetComponent<ChalkboardTutorial>() : null;
+            if (lesson == null || !TutorialManager.Instance.IsRunning) { Debug.Log($"[Bench] tutorial loop {i} FAIL tutorial not running"); yield break; }
+            yield return Wait(() => lesson.firstStep.HasTriggered, 30);
+            yield return Wait(() => PlayerInteraction.Instance.CanInteractWithWorld, 30); // kameranın kitaba dönüşü bitsin
+            var book = lesson.lessonBook;
+            if (BenchTrace.Skip("-nopagesurface")) book.usePhysicalPageBlocks = false; // bisect: no world-space page canvas
+            book.Interact();
+            yield return Wait(() => book.isOpen && !book.isAnimating && NotebookWorkspaceController.Instance.IsActive, 25);
+            fenceRunning = true; var fence = host.StartCoroutine(Fence(lesson, book)); // fence: until iteration end
+            yield return null;
+            var workspace = NotebookWorkspaceController.Instance; var notebook = NotebookUI.Instance;
+            var page = (RectTransform)typeof(NotebookWorkspaceController).GetField("page", Private).GetValue(workspace);
+            var targetArea = (RectTransform)typeof(NotebookWorkspaceController).GetField("targetDropZone", Private).GetValue(workspace);
+            if (!BenchTrace.Skip("-skipdrop") && book.usePhysicalPageBlocks) // bisect:
+            foreach (var source in FindObjectsByType<NotebookDraggableBlock>(FindObjectsSortMode.None)
+                .Where(n => n.IsSource && n.isActiveAndEnabled && n.GetComponentInParent<InteractableBook>() == book
+                    && n.GetComponentsInParent<CanvasGroup>().All(g => g.alpha > 0)).ToList())
+            {
+                workspace.GoToPage(notebook.workspacePages.Count); Canvas.ForceUpdateCanvases();
+                workspace.TryDropBlock(source, RectTransformUtility.WorldToScreenPoint(null,
+                    source.Data.blockType == NotebookBlockType.Quest ? targetArea.position : page.position));
+            }
+            workspace.GoToPage(0);
+            yield return Wait(() => lesson.collectedStep.HasTriggered, 25);
+            bool collected = lesson.collectedStep.HasTriggered;
+            yield return Wait(() => !book.ExitLocked, 10);
+            if (BenchTrace.Skip("-delayexit2s")) yield return new WaitForSecondsRealtime(2); // bisect:
+            BenchTrace.Log("bench ForceExit call");
+            book.ForceExit();
+            yield return Wait(() => game.activeInteraction == null, 20);
+            if (BenchTrace.Skip("-boarddelay-mid")) yield return new WaitForSecondsRealtime(.5f); // bisect: board mid close
+            if (BenchTrace.Skip("-boarddelay-end") || BenchTrace.Skip("-bookloop-tutorial")) // bisect: board after close ends
+            {
+                yield return Wait(() => !book.isAnimating && !book.IsClosing, 20);
+                for (int f = 0; f < 60; f++) yield return null;
+                BenchTrace.Log("bench book close finished");
+            }
+            if (BenchTrace.Skip("-bookloop-tutorial")) for (int f = 0; f < 120; f++) yield return null; // bisect: no board at all
+            else
+            {
+                BenchTrace.Log("bench ChalkboardLoop start"); // fence:
+                yield return ChalkboardLoop(3, header);
+            }
+            fenceRunning = false; host.StopCoroutine(fence); // fence:
+            Debug.Log($"[Bench] tutorial loop {i} {(collected ? "ok" : "FAIL cards not collected")} t={Time.realtimeSinceStartup:0.0}s mem={System.GC.GetTotalMemory(false) / 1048576}MB");
+        }
+        Debug.Log($"[Bench] tutorial loop done {count}");
+    }
+
+    // bisect: the lesson book opened and force-closed with the tutorial OFF; same reload per iteration as TutorialLoop.
+    static IEnumerator BookLoop(int count)
+    {
+        for (int i = 1; i <= count; i++)
+        {
+            if (i > 1)
+            {
+                SceneManager.LoadScene(GameScene);
+                yield return null; yield return null; yield return null;
+                yield return NewGame(false);
+            }
+            var book = FindObjectsByType<InteractableBook>(FindObjectsInactive.Exclude, FindObjectsSortMode.None).FirstOrDefault(b => b.name == "P_Book_Puzzle_symbol_01");
+            if (book == null) { Debug.Log("[Bench] book loop FAIL no lesson book"); yield break; }
+            yield return Wait(() => PlayerInteraction.Instance.CanInteractWithWorld, 30);
+            book.Interact();
+            yield return Wait(() => book.isOpen && !book.isAnimating, 25);
+            fenceRunning = true; var fence = host.StartCoroutine(Fence(null, book));
+            yield return new WaitForSecondsRealtime(1);
+            BenchTrace.Log("bench ForceExit call");
+            book.ForceExit();
+            yield return Wait(() => !book.isAnimating && GameManager.Instance.activeInteraction == null, 20);
+            for (int f = 0; f < 120; f++) yield return null;
+            fenceRunning = false; host.StopCoroutine(fence);
+            Debug.Log($"[Bench] tutorial loop {i} ok (book only, opened={book.transform.parent?.name}) t={Time.realtimeSinceStartup:0.0}s");
+        }
+    }
+
+    // fence: every frame, after Update and before LateUpdate, prove the Main Camera wrapper still resolves.
+    static bool fenceRunning;
+    static IEnumerator Fence(ChalkboardTutorial lesson, InteractableBook book)
+    {
+        while (fenceRunning)
+        {
+            string cam = "?", tr = "?", pos = "?";
+            try
+            {
+                var main = Camera.main; cam = main ? main.GetInstanceID().ToString() : "0";
+                if (main) { var t = main.transform; tr = t.GetInstanceID().ToString(); pos = t.position.ToString("F3"); }
+            }
+            catch (System.Exception e) { pos = "EXC " + e.GetType().Name; }
+            Debug.Log($"[Fence] f={Time.frameCount} cam={cam} tr={tr} pos={pos} step={(lesson != null && lesson.collectedStep.HasTriggered)} lock={book.ExitLocked} open={book.isOpen} anim={book.isAnimating} closing={book.IsClosing} active={(GameManager.Instance.activeInteraction as Object)?.name}");
+            yield return null;
+        }
+    }
+
+    static IEnumerator Wait(System.Func<bool> condition, float seconds)
+    {
+        float end = Time.realtimeSinceStartup + seconds;
+        while (!condition() && Time.realtimeSinceStartup < end) yield return null;
     }
 
     static int LoopCount()
@@ -163,3 +299,19 @@ public class FpsBench : MonoBehaviour
     static float P(List<float> v, double q) { var s = v.OrderBy(x => x).ToList(); return s.Count == 0 ? 0 : s[System.Math.Min(s.Count - 1, (int)(s.Count * q))]; }
 }
 #endif
+
+// fence/bisect: tutorial chalkboard crash diagnostics; active only with "-chalkboardloop". Remove after the fix.
+public static class BenchTrace
+{
+    public static readonly bool On = System.Array.IndexOf(System.Environment.GetCommandLineArgs(), "-chalkboardloop") >= 0;
+    public static bool Skip(string flag) => On && System.Array.IndexOf(System.Environment.GetCommandLineArgs(), flag) >= 0;
+    public static void Log(string message) { if (On) UnityEngine.Debug.Log($"[Fence] f={UnityEngine.Time.frameCount} {message}"); }
+    // Touches the Main Camera transform natively; a crash right after a Probe line names the step that broke it.
+    public static void Probe(string message)
+    {
+        if (!On) return;
+        Log(message + " probing");
+        var cam = UnityEngine.Camera.main;
+        Log($"{message} cam ok pos={(cam ? cam.transform.position.ToString("F3") : "none")}");
+    }
+}
