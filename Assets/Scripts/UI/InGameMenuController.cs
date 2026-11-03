@@ -128,9 +128,11 @@ public class InGameMenuController : MonoBehaviour
             float timelineTimer = 0f;
             float skipTimer = 0f;
             float skipHoldTime = 1.5f; // Atlamak için E'ye basılı tutulacak süre (saniye)
+            var skipHint = IntroSkipHint.Create(); // sağ altta "[E] Geçmek için basılı tut"
             while (timelineTimer < (float)introTimeline.duration)
             {
                 timelineTimer += Time.deltaTime;
+                skipHint.SetProgress(skipTimer / skipHoldTime);
                 if (GameInput.Held("SkipIntro"))
                 {
                     skipTimer += Time.deltaTime;
@@ -161,6 +163,7 @@ public class InGameMenuController : MonoBehaviour
 
             // Timeline bittiğinde Root objesi tam olarak son kameranın (yüz kamerasının) olduğu yerde kalır!
             isCameraLocked = true;
+            skipHint.SetProgress(wasSkipped ? 1 : 0); skipHint.Close();
         }
 
         // =================================================================

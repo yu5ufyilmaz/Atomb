@@ -4401,6 +4401,11 @@
             "text": "Altyazının arkasındaki koyu bandın yoğunluğu. Aydınlık sahnelerde okumayı kolaylaştırır."
         },
         {
+            "key": "ui.intro.skip_hold",
+            "source": "Hold to skip",
+            "text": "Geçmek için basılı tut"
+        },
+        {
             "key": "subtitle.chemistry_lab_entrance.0",
             "source": "",
             "text": "Beni üniversitede geride bıraktığını mı sandın Arthur?"

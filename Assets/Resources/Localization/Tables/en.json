@@ -4401,6 +4401,11 @@
             "text": "Opacity of the dark band behind subtitles. It helps reading in bright scenes."
         },
         {
+            "key": "ui.intro.skip_hold",
+            "source": "Hold to skip",
+            "text": "Hold to skip"
+        },
+        {
             "key": "subtitle.chemistry_lab_entrance.0",
             "source": "",
             "text": "Did you think you left me behind at the university, Arthur?"
