@@ -4261,6 +4261,146 @@
             "text": "Şifre yanlış veya zaten kullanıldı."
         },
         {
+            "key": "settings.on",
+            "source": "On",
+            "text": "Açık"
+        },
+        {
+            "key": "settings.off",
+            "source": "Off",
+            "text": "Kapalı"
+        },
+        {
+            "key": "settings.master.help",
+            "source": "Overall level of every sound in the game.",
+            "text": "Oyundaki bütün seslerin toplam seviyesi."
+        },
+        {
+            "key": "settings.music.help",
+            "source": "Level of the music and tension themes.",
+            "text": "Müziğin ve gerilim temalarının seviyesi."
+        },
+        {
+            "key": "settings.sfx.help",
+            "source": "Footsteps, doors, machines and ambient sounds.",
+            "text": "Adımlar, kapılar, makineler ve ortam sesleri."
+        },
+        {
+            "key": "settings.voice.help",
+            "source": "Character dialogue and the inner voice.",
+            "text": "Karakter konuşmaları ve iç ses."
+        },
+        {
+            "key": "settings.mode.help",
+            "source": "Choose windowed or fullscreen. Confirm the change within 15 seconds after applying.",
+            "text": "Pencereli veya tam ekran seç. Uyguladıktan sonra değişikliği 15 saniye içinde onayla."
+        },
+        {
+            "key": "settings.resolution.help",
+            "source": "Number of pixels the game renders. Higher is sharper but heavier.",
+            "text": "Oyunun çizdiği piksel sayısı. Yüksek değer daha net ama daha ağır."
+        },
+        {
+            "key": "settings.refresh.help",
+            "source": "How many times per second the screen refreshes. Match your monitor.",
+            "text": "Ekranın saniyede kaç kez yenilendiği. Monitörünün değerini seç."
+        },
+        {
+            "key": "settings.quality.help",
+            "source": "Shadow, lighting and effect quality. Try Balanced or Performant if the game stutters.",
+            "text": "Gölge, ışık ve efekt kalitesi. Oyun takılırsa Dengeli veya Performans dene."
+        },
+        {
+            "key": "settings.vsync.help",
+            "source": "Prevents screen tearing. It can add a little input delay.",
+            "text": "Görüntü yırtılmasını önler. Kontrollere biraz gecikme ekleyebilir."
+        },
+        {
+            "key": "settings.fps.help",
+            "source": "Upper limit for frames per second. A lower limit reduces heat and fan noise.",
+            "text": "Saniyedeki kare sayısının üst sınırı. Düşük sınır ısınmayı ve fan sesini azaltır."
+        },
+        {
+            "key": "settings.brightness.help",
+            "source": "Detail in dark scenes. Raise it until shapes in the shadows are barely visible.",
+            "text": "Karanlık sahnelerdeki ayrıntı. Gölgedeki şekiller zar zor seçilene kadar artır."
+        },
+        {
+            "key": "settings.blur.help",
+            "source": "Blurs the image during fast turns. Turn it off if you feel motion sick.",
+            "text": "Hızlı dönüşlerde görüntüyü bulanıklaştırır. Baş dönmesi yaşarsan kapat."
+        },
+        {
+            "key": "settings.dof.help",
+            "source": "Blurs objects outside the point you focus on.",
+            "text": "Odaklandığın noktanın dışındaki nesneleri bulanıklaştırır."
+        },
+        {
+            "key": "settings.grain.help",
+            "source": "Adds a fine film texture to the image.",
+            "text": "Görüntüye ince bir film dokusu ekler."
+        },
+        {
+            "key": "settings.bob.help",
+            "source": "How much the camera sways while you walk. Lower it if you feel motion sick.",
+            "text": "Yürürken kameranın ne kadar sallandığı. Baş dönmesi yaşarsan azalt."
+        },
+        {
+            "key": "settings.mouse.help",
+            "source": "Camera turn speed when you look with the mouse.",
+            "text": "Fareyle bakarken kameranın dönüş hızı."
+        },
+        {
+            "key": "settings.invert.mouse.help",
+            "source": "Moving the mouse up makes you look down.",
+            "text": "Fareyi yukarı itince aşağı bakarsın."
+        },
+        {
+            "key": "settings.pad.help",
+            "source": "Camera turn speed with the right stick.",
+            "text": "Sağ analogla bakarken kameranın dönüş hızı."
+        },
+        {
+            "key": "settings.invert.pad.help",
+            "source": "Pushing the right stick up makes you look down.",
+            "text": "Sağ analogu yukarı itince aşağı bakarsın."
+        },
+        {
+            "key": "settings.deadzone.help",
+            "source": "How far the stick moves before it responds. Raise it if the view drifts on its own.",
+            "text": "Analogun tepki vermeden önce ne kadar hareket ettiği. Görüş kendi kendine kayıyorsa artır."
+        },
+        {
+            "key": "settings.device.help",
+            "source": "Shows the keyboard and mouse or the gamepad bindings below.",
+            "text": "Aşağıda klavye-fare veya gamepad tuş atamalarını gösterir."
+        },
+        {
+            "key": "settings.binding.help",
+            "source": "Select it, then press a new key. You're asked first if another action already uses that key.",
+            "text": "Seç, sonra yeni tuşa bas. Aynı tuşu başka bir eylem kullanıyorsa önce sorulur."
+        },
+        {
+            "key": "settings.language.choice.help",
+            "source": "Language of the menus, texts and subtitles.",
+            "text": "Menülerin, yazıların ve altyazıların dili."
+        },
+        {
+            "key": "settings.subtitles.help",
+            "source": "Shows subtitles for spoken dialogue.",
+            "text": "Konuşmaların altyazısını gösterir."
+        },
+        {
+            "key": "settings.subtitle.size.help",
+            "source": "Size of the subtitle text. The sample below updates as you change it.",
+            "text": "Altyazı yazısının boyutu. Değiştirdikçe aşağıdaki örnek güncellenir."
+        },
+        {
+            "key": "settings.subtitle.background.help",
+            "source": "Opacity of the dark band behind subtitles. It helps reading in bright scenes.",
+            "text": "Altyazının arkasındaki koyu bandın yoğunluğu. Aydınlık sahnelerde okumayı kolaylaştırır."
+        },
+        {
             "key": "subtitle.chemistry_lab_entrance.0",
             "source": "",
             "text": "Beni üniversitede geride bıraktığını mı sandın Arthur?"

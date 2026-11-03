@@ -8,6 +8,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.UI;
 using UnityEngine.UI;
+using static SettingsMenuStyle;
 
 public sealed class SettingsMenuView : MonoBehaviour
 {
@@ -22,23 +23,27 @@ public sealed class SettingsMenuView : MonoBehaviour
     SettingsManager manager;
     readonly SettingsData editorData = new SettingsData();
     SettingsData Data => manager != null ? manager.currentSettings : SettingsManager.Current ?? editorData;
-    RectTransform stage, modal, viewport;
+    RectTransform stage, modal, viewport, tabLine, focusMark, activeRow, hoveredRow;
     ScrollRect scroll;
-    TMP_Text title, sectionTitle, status, modalTitle, modalBody, intro, sample;
+    TMP_Text title, status, modalTitle, modalBody, detailTitle, detailBody, sample;
     Button back, reset, apply;
     readonly List<Button> tabs = new List<Button>();
     readonly List<Action> refresh = new List<Action>();
     readonly List<Action> modalRefresh = new List<Action>();
     readonly List<InputAction> disabledUIActions = new List<InputAction>();
+    readonly List<(GameObject chip, TMP_Text label)> hints = new List<(GameObject, TMP_Text)>();
+    readonly Dictionary<RectTransform, string> rowKeys = new Dictionary<RectTransform, string>();
     readonly string[] sections = { "audio", "video", "controls", "language" };
     DisplaySettings draft;
     Action closeAction, modalCancel;
     InputActionRebindingExtensions.RebindingOperation capture;
     InputAction captureAction;
     bool built, gamepad, rebuilding, captureWaiting;
+    bool? hintsShown;
     float captureDeadline;
     float ignoreCancelUntil;
-    GameObject returnFocus;
+    GameObject returnFocus, lastSelected, lbHint, rbHint;
+    const float RowWidth = 996, RowInset = 28, ListWidth = 1040, ListHeight = 750;
     public static string Text(string key) => GameLocalization.Get("settings." + key, key);
     void Awake() { EnsureBuilt(); }
     void OnEnable()
@@ -71,31 +76,62 @@ public sealed class SettingsMenuView : MonoBehaviour
         if (style == null) style = Resources.Load<SettingsMenuStyle>("Settings/SettingsMenuStyle");
         if (style == null) return;
         built = true;
-        var shade = style.Image(transform, "Shade", 0, 0, 1920, 1080, null, new Color(.012f,.018f,.014f,.92f)); SettingsMenuStyle.Stretch(shade.rectTransform); shade.raycastTarget = true;
+        // Dark minimal layout (3 Nov redesign): tabs in the header, settings list left, help for the focused setting right.
+        var shade = style.Image(transform, "Shade", 0, 0, 1920, 1080, null, new Color(.035f,.035f,.032f,.96f)); Stretch(shade.rectTransform); shade.raycastTarget = true;
         stage = SettingsMenuStyle.Rect(transform, "SettingsStage", 0, 0, 1920, 1080); stage.anchorMin = stage.anchorMax = stage.pivot = new Vector2(.5f,.5f); stage.anchoredPosition = Vector2.zero;
-        title = style.Label(stage, "Title", 130, 90, 1500, 90, Text("title"), 64); if (style.headingFont != null) title.font = style.headingFont;
-        style.Image(stage, "Divider", 130, 200, 1660, 1, null, new Color(1,1,1,.35f));
-        for (int i=0;i<sections.Length;i++) { string id=sections[i]; var b=style.Button(stage,"Tab_"+id,130,250+i*90,320,76,Text(id),()=>ChangeSection(id),29); tabs.Add(b); }
-        sectionTitle = style.Label(stage,"SectionTitle",520,250,1100,60,"",38); intro=style.Label(stage,"Description",520,315,1150,55,"",21); intro.color=new Color(.6f,.64f,.58f);
-        viewport=SettingsMenuStyle.Rect(stage,"Viewport",520,390,1150,490); var mask=viewport.gameObject.AddComponent<RectMask2D>();
+        title = style.Label(stage, "Title", 130, 62, 440, 80, Text("title"), 50); if (style.headingFont != null) title.font = style.headingFont; title.characterSpacing = 12; title.color = Ink; title.textWrappingMode = TextWrappingModes.NoWrap;
+        for (int i=0;i<sections.Length;i++) { string id=sections[i]; var b=style.Button(stage,"Tab_"+id,0,78,200,64,Text(id),()=>ChangeSection(id),25); Ghost(b); tabs.Add(b); }
+        lbHint = Chip(stage, "LB", 0, 95, 52); rbHint = Chip(stage, "RB", 1738, 95, 52);
+        tabLine = style.Image(stage, "TabUnderline", 0, 147, 200, 3, null, Ink).rectTransform;
+        style.Image(stage,"HeaderLine",130,150,1660,1,null,Hairline);
+        viewport=SettingsMenuStyle.Rect(stage,"Viewport",130,180,ListWidth,ListHeight); var mask=viewport.gameObject.AddComponent<RectMask2D>();
         var target=viewport.gameObject.AddComponent<Image>(); target.color=Color.clear;
-        Rows=SettingsMenuStyle.Rect(viewport,"Rows",0,0,1120,490); scroll=viewport.gameObject.AddComponent<ScrollRect>(); scroll.viewport=viewport; scroll.content=Rows; scroll.horizontal=false; scroll.movementType=ScrollRect.MovementType.Clamped; scroll.scrollSensitivity=40;
-        var track=style.Image(stage,"ScrollTrack",1660,390,10,490,null,new Color(1,1,1,.08f));track.raycastTarget=true;
-        var thumb=style.Image(track.transform,"Thumb",0,0,10,0,null,new Color(.8f,.82f,.74f,.65f));SettingsMenuStyle.Stretch(thumb.rectTransform);thumb.raycastTarget=true;
+        Rows=SettingsMenuStyle.Rect(viewport,"Rows",0,0,ListWidth,ListHeight); scroll=viewport.gameObject.AddComponent<ScrollRect>(); scroll.viewport=viewport; scroll.content=Rows; scroll.horizontal=false; scroll.movementType=ScrollRect.MovementType.Clamped; scroll.scrollSensitivity=40;
+        var track=style.Image(stage,"ScrollTrack",1184,180,4,ListHeight,null,SettingsMenuStyle.Surface);track.raycastTarget=true;
+        var thumb=style.Image(track.transform,"Thumb",0,0,4,0,null,new Color(.36f,.35f,.33f));Stretch(thumb.rectTransform);thumb.raycastTarget=true;
         var scrollbar=track.gameObject.AddComponent<Scrollbar>();scrollbar.handleRect=thumb.rectTransform;scrollbar.targetGraphic=thumb;scrollbar.direction=Scrollbar.Direction.BottomToTop;
         scroll.verticalScrollbar=scrollbar;scroll.verticalScrollbarVisibility=ScrollRect.ScrollbarVisibility.AutoHide;
-        style.Image(stage,"FooterLine",130,945,1660,1,null,new Color(1,1,1,.2f));
-        back=style.Button(stage,"Back",130,970,260,65,Text("back"),()=>RequestClose(closeAction));
-        reset=style.Button(stage,"Reset",480,970,550,65,Text("reset"),AskReset,24);
-        apply=style.Button(stage,"Apply",1280,970,510,65,Text("apply"),ApplyDisplay,26);
-        status=style.Label(stage,"Status",130,1030,1650,40,"",20); status.color=new Color(.68f,.75f,.58f);
-        modal=SettingsMenuStyle.Rect(stage,"Modal",0,0,1920,1080); var blocker=modal.gameObject.AddComponent<Image>(); blocker.color=new Color(0,0,0,.94f); blocker.raycastTarget=true;
-        style.Image(modal,"DialogLine",480,300,960,1,null,new Color(1,1,1,.5f));
-        modalTitle=style.Label(modal,"DialogTitle",500,340,920,100,"",42); modalBody=style.Label(modal,"DialogBody",500,460,920,210,"",28);
-        modal.gameObject.SetActive(false); ScaleStage();
+        style.Image(stage,"PanelLine",1220,180,1,ListHeight,null,Hairline);
+        detailTitle=style.Label(stage,"DetailTitle",1262,190,528,110,"",36); detailTitle.color=Ink; detailTitle.alignment=TextAlignmentOptions.TopLeft;
+        detailBody=style.Label(stage,"DetailBody",1262,306,528,420,"",24); detailBody.color=Muted; detailBody.alignment=TextAlignmentOptions.TopLeft; detailBody.lineSpacing=12;
+        style.Image(stage,"FooterLine",130,950,1660,1,null,Hairline);
+        back=style.Button(stage,"Back",130,968,240,60,Text("back"),()=>RequestClose(closeAction),24); Surface(back); Hint(back,"B");
+        reset=style.Button(stage,"Reset",386,968,380,60,Text("reset"),AskReset,24); Surface(reset); Hint(reset,"Y");
+        apply=style.Button(stage,"Apply",1430,968,360,60,Text("apply"),ApplyDisplay,24); Surface(apply); Hint(apply,"X");
+        status=style.Label(stage,"Status",790,968,620,60,"",20); status.color=new Color(.68f,.75f,.58f); status.alignment=TextAlignmentOptions.MidlineRight;
+        modal=SettingsMenuStyle.Rect(stage,"Modal",0,0,1920,1080); var blocker=modal.gameObject.AddComponent<Image>(); blocker.color=new Color(0,0,0,.82f); blocker.raycastTarget=true;
+        style.Image(modal,"DialogCard",440,310,1040,460,null,new Color(.075f,.075f,.07f,1));
+        style.Image(modal,"DialogLine",440,310,1040,3,null,Accent);
+        modalTitle=style.Label(modal,"DialogTitle",500,350,920,90,"",40); modalTitle.color=Ink; modalBody=style.Label(modal,"DialogBody",500,450,920,200,"",26); modalBody.color=Muted; modalBody.alignment=TextAlignmentOptions.TopLeft;
+        modal.gameObject.SetActive(false);
+        // One accent bar marks the selected tab, footer or dialog button; rows show focus with their own highlight.
+        focusMark=style.Image(stage,"FocusMark",0,0,4,60,null,Accent).rectTransform; focusMark.anchorMin=focusMark.anchorMax=focusMark.pivot=new Vector2(.5f,.5f); focusMark.gameObject.SetActive(false);
+        // Edit-mode instances are the check renders: show the gamepad hints there so they get reviewed too.
+        ShowHints(!Application.isPlaying || Gamepad.current != null); ScaleStage();
     }
     void OnRectTransformDimensionsChange() { ScaleStage(); }
     void ScaleStage() { if(stage!=null && transform is RectTransform root) stage.localScale=Vector3.one*Mathf.Min(root.rect.width/1920,root.rect.height/1080); }
+    static void Ghost(Button button)
+    {
+        button.GetComponent<Image>().color=SettingsMenuStyle.Surface; SurfaceColors(button,true);
+        var label=button.GetComponentInChildren<TMP_Text>(); label.alignment=TextAlignmentOptions.Center; label.textWrappingMode=TextWrappingModes.NoWrap;
+    }
+    static void Surface(Button button)
+    {
+        button.GetComponent<Image>().color=SettingsMenuStyle.Surface; SurfaceColors(button);
+        var label=button.GetComponentInChildren<TMP_Text>(); label.alignment=TextAlignmentOptions.Center; label.color=Ink;
+    }
+    GameObject Chip(Transform parent,string glyph,float x,float y,float w)
+    {
+        var chip=style.Image(parent,"Hint_"+glyph,x,y,w,30,null,Raised);
+        var label=style.Label(chip.transform,"Glyph",0,0,w,30,glyph,17); label.alignment=TextAlignmentOptions.Center; label.color=Ink; label.textWrappingMode=TextWrappingModes.NoWrap; return chip.gameObject;
+    }
+    void Hint(Button button,string glyph){var rect=(RectTransform)button.transform;hints.Add((Chip(rect,glyph,14,(rect.sizeDelta.y-30)/2,34),button.GetComponentInChildren<TMP_Text>()));}
+    void ShowHints(bool on)
+    {
+        if(hintsShown==on)return; hintsShown=on; lbHint.SetActive(on); rbHint.SetActive(on);
+        foreach(var (chip,label) in hints){chip.SetActive(on);var rect=label.rectTransform;float width=((RectTransform)rect.parent).sizeDelta.x;rect.anchoredPosition=new Vector2(on?52:12,0);rect.sizeDelta=new Vector2(width-(on?64:24),rect.sizeDelta.y);}
+    }
     public void SetCloseAction(Action callback) { closeAction=callback; }
     public void RestoreFocusTo(GameObject panel)
     {
@@ -120,29 +156,44 @@ public sealed class SettingsMenuView : MonoBehaviour
     }
     public void ShowSection(string next)
     {
-        EnsureBuilt(); if(!built)return; Section=next; rebuilding=true;
+        EnsureBuilt(); if(!built)return; Section=next; rebuilding=true; activeRow=hoveredRow=null; rowKeys.Clear();
         for(int i=Rows.childCount-1;i>=0;i--) { var child=Rows.GetChild(i).gameObject; child.SetActive(false); if(Application.isPlaying)Destroy(child);else DestroyImmediate(child); }
-        refresh.Clear(); rowY=0; title.text=Text("title"); sectionTitle.text=Text(Section); intro.text=Text(Section+".intro");
+        refresh.Clear(); rowY=0; title.text=Text("title");
         back.GetComponentInChildren<TMP_Text>().text=Text("back"); reset.GetComponentInChildren<TMP_Text>().text=Text("reset"); apply.GetComponentInChildren<TMP_Text>().text=Text("apply"); apply.gameObject.SetActive(Section=="video");
-        for(int i=0;i<tabs.Count;i++){tabs[i].GetComponentInChildren<TMP_Text>().text=Text(sections[i]);tabs[i].GetComponent<Image>().color=sections[i]==Section?new Color(1,1,1,.1f):new Color(1,1,1,.015f);}
+        LayoutTabs();
         switch(Section){case "audio": AudioRows();break;case "video":VideoRows();break;case "controls":ControlRows();break;case "language":LanguageRows();break;}
-        Rows.sizeDelta=new Vector2(1120,Mathf.Max(490,rowY)); Rows.anchoredPosition=Vector2.zero; scroll.verticalNormalizedPosition=1; rebuilding=false; RefreshValues();
-        WireFocus(); if(Application.isPlaying && !HasModal)SelectFirst();
+        Rows.sizeDelta=new Vector2(ListWidth,Mathf.Max(ListHeight,rowY)); Rows.anchoredPosition=Vector2.zero; scroll.verticalNormalizedPosition=1; rebuilding=false; RefreshValues();
+        WireFocus(); SetActiveRow(Application.isPlaying?null:rowKeys.Keys.FirstOrDefault()); if(Application.isPlaying && !HasModal)SelectFirst();
+    }
+    // Tabs size to their (localized) text and sit right-aligned between the LB and RB hints.
+    void LayoutTabs()
+    {
+        float right=1726;
+        for(int i=tabs.Count-1;i>=0;i--)
+        {
+            var label=tabs[i].GetComponentInChildren<TMP_Text>(); label.text=Text(sections[i]); bool active=sections[i]==Section; label.color=active?Ink:Faint;
+            float width=Mathf.Ceil(label.GetPreferredValues(label.text,Mathf.Infinity,64).x)+48; right-=width;
+            var rect=(RectTransform)tabs[i].transform; rect.anchoredPosition=new Vector2(right,-78); rect.sizeDelta=new Vector2(width,64); label.rectTransform.sizeDelta=new Vector2(width-24,64);
+            if(active){tabLine.anchoredPosition=new Vector2(right,-147);tabLine.sizeDelta=new Vector2(width,3);}
+            right-=8;
+        }
+        ((RectTransform)lbHint.transform).anchoredPosition=new Vector2(right-56,-95);
     }
     float rowY;
     RectTransform Row(string key,string detail=null)
     {
-        var rect=SettingsMenuStyle.Rect(Rows,"Row_"+key,0,rowY,1120,82);rowY+=82;
-        var label=style.Label(rect,"SettingLabel",0,0,600,detail==null?76:44,Text(key),29);
-        if(detail!=null){var sub=style.Label(rect,"Detail",0,40,620,35,Text(detail),20);sub.color=new Color(.6f,.65f,.57f);}
-        style.Image(rect,"Line",0,80,1090,1,null,new Color(1,1,1,.06f));return rect;
+        var rect=SettingsMenuStyle.Rect(Rows,"Row_"+key,RowInset,rowY,RowWidth,76);rowY+=76;
+        var focus=style.Image(rect,"Focus",-RowInset,0,ListWidth,76,null,Color.clear);focus.raycastTarget=true;style.Image(focus.transform,"Bar",0,0,4,76,null,Accent).gameObject.SetActive(false);
+        var label=style.Label(rect,"SettingLabel",0,0,540,detail==null?76:44,Text(key),27);label.color=Muted;
+        if(detail!=null){var sub=style.Label(rect,"Detail",0,42,540,30,Text(detail),19);sub.color=Faint;}
+        style.Image(rect,"Line",-RowInset,75,ListWidth,1,null,new Color(.13f,.13f,.125f));rect.gameObject.AddComponent<SettingsMenuRow>().view=this;rowKeys[rect]=key;return rect;
     }
     void Slider(string key,Func<float> get,Action<float> set,float min,float max,Func<float,string> format)
     {
-        var row=Row(key);var output=style.Label(row,"Value",1055,0,65,76,"",23);output.alignment=TextAlignmentOptions.MidlineRight;output.textWrappingMode=TextWrappingModes.NoWrap;
+        var row=Row(key);var output=style.Label(row,"Value",916,0,80,76,"",23);output.color=Muted;output.alignment=TextAlignmentOptions.MidlineRight;output.textWrappingMode=TextWrappingModes.NoWrap;
         var slider=style.Slider(row,"Control",get(),min,max,v=>{set(v);output.text=format(v);}); refresh.Add(()=>{slider.SetValueWithoutNotify(get());output.text=format(get());});
     }
-    void Toggle(string key,Func<bool> get,Action<bool> set){var control=style.Toggle(Row(key),"Control",get(),v=>{if(!rebuilding&&v!=get())set(v);});refresh.Add(()=>control.SetIsOnWithoutNotify(get()));}
+    void Toggle(string key,Func<bool> get,Action<bool> set){var control=style.Toggle(Row(key),"Control",get(),v=>{if(!rebuilding&&v!=get())set(v);},Text("off"),Text("on"));refresh.Add(()=>{control.SetIsOnWithoutNotify(get());SyncToggle(control);});}
     TMP_Dropdown Dropdown(string key,string[] options,int selected,Action<int> set,string detail=null)=>style.Dropdown(Row(key,detail),"Control",options,selected,set);
     void Change(Action<SettingsData> set){if(manager==null)return;set(Data);manager.ChangedAndSave();}
     void AudioRows()
@@ -159,10 +210,10 @@ public sealed class SettingsMenuView : MonoBehaviour
         var resolutions=Screen.resolutions.Select(r=>new Vector2Int(r.width,r.height)).Distinct().ToList();if(resolutions.Count==0)resolutions.Add(new Vector2Int(draft.width,draft.height));
         Dropdown("resolution",resolutions.Select(r=>r.x+" × "+r.y).ToArray(),Math.Max(0,resolutions.FindIndex(r=>r.x==draft.width&&r.y==draft.height)),i=>{draft.width=resolutions[i].x;draft.height=resolutions[i].y;ShowSection("video");});
         var rates=Screen.resolutions.Where(r=>r.width==draft.width&&r.height==draft.height).Select(r=>r.refreshRateRatio).Where(r=>r.denominator>0&&r.numerator>0&&r.value>=20&&r.value<=1000).GroupBy(r=>Math.Round(r.value,2)).Select(g=>g.First()).ToList();if(rates.Count==0)rates.Add(draft.RefreshRate);
-        var rate=Dropdown("refresh",rates.Select(r=>r.value.ToString("0.##")+" Hz").ToArray(),Math.Max(0,rates.FindIndex(r=>Math.Abs(r.value-draft.Hz)<.1)),i=>{draft.refreshNumerator=rates[i].numerator;draft.refreshDenominator=rates[i].denominator;},draft.mode==(int)FullScreenMode.FullScreenWindow?"desktop.refresh":null);rate.interactable=draft.mode!=(int)FullScreenMode.FullScreenWindow;
+        var rate=Dropdown("refresh",rates.Select(r=>r.value.ToString("0.##")+" Hz").ToArray(),Math.Max(0,rates.FindIndex(r=>Math.Abs(r.value-draft.Hz)<.1)),i=>{draft.refreshNumerator=rates[i].numerator;draft.refreshDenominator=rates[i].denominator;},draft.mode==(int)FullScreenMode.FullScreenWindow?"desktop.refresh":null);rate.interactable=draft.mode!=(int)FullScreenMode.FullScreenWindow;if(!rate.interactable)rate.captionText.color=Faint;
         var quality=Dropdown("quality",QualitySettings.names.Select(n=>Text(n=="High Fidelity"?"high":n=="Balanced"?"balanced":n=="Performant"?"performance":n)).ToArray(),Data.qualityIndex,i=>manager?.SetQuality(i));
         Toggle("vsync",()=>Data.vSync,v=>{Change(d=>d.vSync=v);ShowSection("video");});
-        int[] limits={30,60,90,120,144,165,240,-1};var fps=Dropdown("fps",limits.Select(i=>i<0?Text("unlimited"):i.ToString()).ToArray(),Array.IndexOf(limits,Data.frameRateLimit),i=>Change(d=>d.frameRateLimit=limits[i]),Data.vSync?"vsync.note":null);fps.interactable=!Data.vSync;
+        int[] limits={30,60,90,120,144,165,240,-1};var fps=Dropdown("fps",limits.Select(i=>i<0?Text("unlimited"):i.ToString()).ToArray(),Array.IndexOf(limits,Data.frameRateLimit),i=>Change(d=>d.frameRateLimit=limits[i]),Data.vSync?"vsync.note":null);fps.interactable=!Data.vSync;if(!fps.interactable)fps.captionText.color=Faint;
         Slider("brightness",()=>Data.brightness,v=>manager?.SetBrightness(v),-2,2,v=>v.ToString("0.0"));Toggle("blur",()=>Data.motionBlur,v=>Change(d=>d.motionBlur=v));Toggle("dof",()=>Data.depthOfField,v=>Change(d=>d.depthOfField=v));Toggle("grain",()=>Data.filmGrain,v=>Change(d=>d.filmGrain=v));Slider("bob",()=>Data.headBob,v=>Change(d=>d.headBob=v),0,1,Percent);
     }
     void ControlRows()
@@ -170,15 +221,15 @@ public sealed class SettingsMenuView : MonoBehaviour
         Slider("mouse",()=>Data.mouseSensitivity,v=>manager?.SetMouseSensitivity(v),.1f,5,v=>v.ToString("0.0")+"×");Toggle("invert.mouse",()=>Data.invertMouseY,v=>Change(d=>d.invertMouseY=v));
         Slider("pad",()=>Data.gamepadSensitivity,v=>Change(d=>d.gamepadSensitivity=v),.1f,5,v=>v.ToString("0.0")+"×");Toggle("invert.pad",()=>Data.invertGamepadY,v=>Change(d=>d.invertGamepadY=v));Slider("deadzone",()=>Data.gamepadDeadzone,v=>Change(d=>d.gamepadDeadzone=v),.05f,.4f,Percent);
         Dropdown("device",new[]{Text("keyboard"),Text("gamepad")},gamepad?1:0,i=>{gamepad=i==1;ShowSection("controls");});
-        if(gamepad){style.Label(Rows,"DeviceStatus",0,rowY,1100,55,Text(Gamepad.current!=null?"pad.connected":"pad.disconnected"),22);rowY+=60;}
+        if(gamepad){var note=style.Label(Rows,"DeviceStatus",RowInset,rowY,RowWidth,55,Text(Gamepad.current!=null?"pad.connected":"pad.disconnected"),22);note.color=Faint;rowY+=60;}
         foreach(var policy in GameInput.BindingPolicies)
         {
             var action=GameInput.Action(policy.action);if(action==null)continue;int index=-1;for(int i=0;i<action.bindings.Count;i++)if(action.bindings[i].id.ToString()==policy.id){index=i;break;}if(index<0)continue;
             var binding=action.bindings[index];bool isPad=(binding.path??"").Contains("Gamepad");if(binding.isComposite||gamepad!=isPad)continue;
             string name=GameLocalization.CurrentCode=="tr"?policy.textTR:policy.textEN;if(string.IsNullOrWhiteSpace(name))name=policy.action;
             var row=Row("binding","context."+GameInput.ContextOf(policy));row.name="Binding_"+policy.id;row.Find("SettingLabel").GetComponent<TMP_Text>().text=name+(binding.isPartOfComposite?" · "+Text("part."+binding.name):"");
-            var button=style.Button(row,"Binding",650,10,350,58,GameInput.PathDisplayName(binding.effectivePath),()=>BeginCapture(policy.id),24);button.interactable=policy.rebindable;
-            if(policy.rebindable)style.Button(row,"BindingReset",1010,10,100,58,Text("reset.short"),()=>{GameInput.ResetBinding(policy.id);ShowSection("controls");},20);
+            var button=style.Button(row,"Binding",560,10,320,56,GameInput.PathDisplayName(binding.effectivePath),()=>BeginCapture(policy.id),23);Surface(button);button.interactable=policy.rebindable;
+            if(policy.rebindable){var undo=style.Button(row,"BindingReset",892,10,104,56,Text("reset.short"),()=>{GameInput.ResetBinding(policy.id);ShowSection("controls");},19);Surface(undo);undo.GetComponentInChildren<TMP_Text>().color=Muted;}
         }
     }
     void LanguageRows()
@@ -186,8 +237,8 @@ public sealed class SettingsMenuView : MonoBehaviour
         var languages=GameLocalization.Languages;Dropdown("language.choice",languages.Select(l=>l.nativeName).ToArray(),Math.Max(0,languages.ToList().FindIndex(l=>l.code==GameLocalization.CurrentCode)),i=>manager?.SetLanguage(languages[i].code));
         Toggle("subtitles",()=>Data.subtitlesEnabled,v=>{manager?.SetSubtitlesEnabled(v);UpdateSample();});Dropdown("subtitle.size",new[]{Text("small"),Text("normal"),Text("large")},Data.subtitleSize,i=>{Change(d=>d.subtitleSize=i);UpdateSample();});
         Slider("subtitle.background",()=>Data.subtitleBackground,v=>{Change(d=>d.subtitleBackground=v);UpdateSample();},0,1,Percent);
-        var bg=style.Image(Rows,"SubtitlePreviewBackground",0,rowY+25,1100,150,null,Color.black);sample=style.Label(bg.transform,"Preview",25,10,1050,130,Text("subtitle.sample"),36);sample.alignment=TextAlignmentOptions.Center;
-        rowY+=200;style.Label(Rows,"RequiredSubtitleNote",0,rowY,1100,65,Text("subtitle.required"),22);rowY+=75;UpdateSample();
+        var bg=style.Image(Rows,"SubtitlePreviewBackground",RowInset,rowY+25,RowWidth,150,null,Color.black);sample=style.Label(bg.transform,"Preview",25,10,RowWidth-50,130,Text("subtitle.sample"),36);sample.alignment=TextAlignmentOptions.Center;
+        rowY+=200;var note=style.Label(Rows,"RequiredSubtitleNote",RowInset,rowY,RowWidth,65,Text("subtitle.required"),21);note.color=Faint;rowY+=75;UpdateSample();
     }
     void UpdateSample(){if(sample==null)return;sample.fontSize=36*(Data.subtitleSize==0?.85f:Data.subtitleSize==2?1.25f:1);sample.color=new Color(.9f,.9f,.86f,Data.subtitlesEnabled?1:.35f);sample.transform.parent.GetComponent<Image>().color=new Color(0,0,0,Data.subtitleBackground);}
     void RefreshValues(){if(!built||rebuilding)return;foreach(var callback in refresh)callback();UpdateSample();}
@@ -201,7 +252,8 @@ public sealed class SettingsMenuView : MonoBehaviour
     {
         modalRefresh.Clear();for(int i=modal.childCount-1;i>=0;i--){var child=modal.GetChild(i);if(child.name.StartsWith("Action_")){child.gameObject.SetActive(false);if(Application.isPlaying)Destroy(child.gameObject);else DestroyImmediate(child.gameObject);}}
         modalCancel=cancel;modalRefresh.Add(()=>{modalTitle.text=Text(heading);modalBody.text=Text(body);});
-        for(int i=0;i<actions.Length;i++){var pair=actions[i];var button=style.Button(modal,"Action_"+i,500+i*310,730,290,70,Text(pair.Item1),pair.Item2,26);modalRefresh.Add(()=>button.GetComponentInChildren<TMP_Text>().text=Text(pair.Item1));}
+        // Buttons right-aligned on the card, first action leftmost so it keeps the first focus.
+        for(int i=0;i<actions.Length;i++){var pair=actions[i];var button=style.Button(modal,"Action_"+i,1420-(actions.Length-i)*296+16,680,280,64,Text(pair.Item1),pair.Item2,24);Surface(button);button.GetComponent<Image>().color=new Color(.15f,.15f,.145f);modalRefresh.Add(()=>button.GetComponentInChildren<TMP_Text>().text=Text(pair.Item1));}
         foreach(var callback in modalRefresh)callback();modal.gameObject.SetActive(true);if(EventSystem.current!=null){var first=modal.GetComponentsInChildren<Button>().FirstOrDefault();if(first!=null)EventSystem.current.SetSelectedGameObject(first.gameObject);}
         SetUnderlyingInteractable(false);
     }
@@ -210,6 +262,7 @@ public sealed class SettingsMenuView : MonoBehaviour
     void Update()
     {
         if(!Application.isPlaying||!built||Open!=this)return;
+        ShowHints(Gamepad.current!=null);UpdateFocus();
         if(manager!=null&&manager.IsTestingDisplay&&HasModal)modalBody.text=Text("display.body")+"\n"+Mathf.CeilToInt(manager.DisplayTestRemaining)+" "+Text("seconds");
         else if(manager!=null&&!manager.IsTestingDisplay&&HasModal&&modalTitle.text==Text("display.title")){draft=Data.display.Copy();CloseModal();ShowSection(Section);}
         if(captureWaiting&&HasModal)modalBody.text=Text("capture.body")+"\n"+Mathf.Max(0,Mathf.CeilToInt(captureDeadline-Time.unscaledTime))+" "+Text("seconds");
@@ -221,7 +274,39 @@ public sealed class SettingsMenuView : MonoBehaviour
             if(dropdown!=null){dropdown.Hide();ignoreCancelUntil=Time.unscaledTime+.2f;return;}
             if(HasModal)modalCancel?.Invoke();else RequestClose(closeAction);
         }
-        if(!HasModal&&Gamepad.current!=null){if(Gamepad.current.leftShoulder.wasPressedThisFrame)ChangeSection(sections[(Array.IndexOf(sections,Section)+3)%4]);if(Gamepad.current.rightShoulder.wasPressedThisFrame)ChangeSection(sections[(Array.IndexOf(sections,Section)+1)%4]);}
+        if(!HasModal&&Gamepad.current!=null)
+        {
+            if(Gamepad.current.leftShoulder.wasPressedThisFrame)ChangeSection(sections[(Array.IndexOf(sections,Section)+3)%4]);if(Gamepad.current.rightShoulder.wasPressedThisFrame)ChangeSection(sections[(Array.IndexOf(sections,Section)+1)%4]);
+            bool resetPressed=Gamepad.current.buttonNorth.wasPressedThisFrame,applyPressed=Section=="video"&&Gamepad.current.buttonWest.wasPressedThisFrame;
+            if((resetPressed||applyPressed)&&!stage.GetComponentsInChildren<TMP_Dropdown>().Any(d=>d.IsExpanded)){if(resetPressed)AskReset();else ApplyDisplay();}
+        }
+    }
+    // The highlighted row follows the pointer while it hovers and the selection once it moves.
+    void UpdateFocus()
+    {
+        var selected=EventSystem.current!=null?EventSystem.current.currentSelectedGameObject:null;
+        if(selected!=lastSelected){lastSelected=selected;hoveredRow=null;}
+        var row=hoveredRow!=null?hoveredRow:RowOf(selected);if(row!=activeRow)SetActiveRow(row);
+        bool mark=selected!=null&&selected.activeInHierarchy&&RowOf(selected)==null&&selected.transform.IsChildOf(stage)&&selected.GetComponent<Button>()!=null;
+        focusMark.gameObject.SetActive(mark);if(!mark)return;
+        var bounds=RectTransformUtility.CalculateRelativeRectTransformBounds(stage,selected.transform);focusMark.anchoredPosition=new Vector2(bounds.min.x+2,bounds.center.y);focusMark.sizeDelta=new Vector2(4,bounds.size.y);
+    }
+    RectTransform RowOf(GameObject target){if(target==null)return null;var current=target.transform;while(current!=null&&current.parent!=Rows)current=current.parent;return current is RectTransform rect&&rowKeys.ContainsKey(rect)?rect:null;}
+    public void Hover(RectTransform row,bool inside){if(inside)hoveredRow=row;else if(hoveredRow==row)hoveredRow=null;}
+    void SetActiveRow(RectTransform row)
+    {
+        if(activeRow!=null)SetRowState(activeRow,false);activeRow=row;if(row!=null)SetRowState(row,true);
+        detailTitle.text=row!=null?row.Find("SettingLabel").GetComponent<TMP_Text>().text:Text(Section);
+        detailBody.text=row!=null?Text(rowKeys[row]+".help"):Text(Section+".intro");
+        // The help text follows the title, which wraps to two lines for long binding names.
+        detailBody.rectTransform.anchoredPosition=new Vector2(1262,-(190+Mathf.Max(48,detailTitle.GetPreferredValues(detailTitle.text,528,0).y)+22));
+    }
+    static void SetRowState(RectTransform row,bool on)
+    {
+        var focus=row.Find("Focus");focus.GetComponent<Image>().color=on?RowFocus:Color.clear;focus.Find("Bar").gameObject.SetActive(on);
+        row.Find("SettingLabel").GetComponent<TMP_Text>().color=on?Ink:Muted;
+        var value=row.Find("Value");if(value!=null)value.GetComponent<TMP_Text>().color=on?Ink:Muted;
+        var fill=row.Find("Control/FillArea/Fill");if(fill!=null)fill.GetComponent<Image>().color=on?Ink:FillDim;
     }
     public void BeginCapture(string id){if(!Application.isPlaying)return;StartCoroutine(CaptureAfterClick(id));}
     IEnumerator CaptureAfterClick(string id)
@@ -269,4 +354,12 @@ public sealed class SettingsMenuFocus:MonoBehaviour,ISelectHandler
 {
     public SettingsMenuView view;
     public void OnSelect(BaseEventData data){if(view!=null)view.ScrollTo((RectTransform)transform);}
+}
+
+// Pointer enter/exit bubble up from the row's controls and its full-width hit area.
+public sealed class SettingsMenuRow:MonoBehaviour,IPointerEnterHandler,IPointerExitHandler
+{
+    public SettingsMenuView view;
+    public void OnPointerEnter(PointerEventData data){if(view!=null)view.Hover((RectTransform)transform,true);}
+    public void OnPointerExit(PointerEventData data){if(view!=null)view.Hover((RectTransform)transform,false);}
 }

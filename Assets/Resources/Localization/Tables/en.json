@@ -4261,6 +4261,146 @@
             "text": "Wrong password or already used."
         },
         {
+            "key": "settings.on",
+            "source": "On",
+            "text": "On"
+        },
+        {
+            "key": "settings.off",
+            "source": "Off",
+            "text": "Off"
+        },
+        {
+            "key": "settings.master.help",
+            "source": "Overall level of every sound in the game.",
+            "text": "Overall level of every sound in the game."
+        },
+        {
+            "key": "settings.music.help",
+            "source": "Level of the music and tension themes.",
+            "text": "Level of the music and tension themes."
+        },
+        {
+            "key": "settings.sfx.help",
+            "source": "Footsteps, doors, machines and ambient sounds.",
+            "text": "Footsteps, doors, machines and ambient sounds."
+        },
+        {
+            "key": "settings.voice.help",
+            "source": "Character dialogue and the inner voice.",
+            "text": "Character dialogue and the inner voice."
+        },
+        {
+            "key": "settings.mode.help",
+            "source": "Choose windowed or fullscreen. Confirm the change within 15 seconds after applying.",
+            "text": "Choose windowed or fullscreen. Confirm the change within 15 seconds after applying."
+        },
+        {
+            "key": "settings.resolution.help",
+            "source": "Number of pixels the game renders. Higher is sharper but heavier.",
+            "text": "Number of pixels the game renders. Higher is sharper but heavier."
+        },
+        {
+            "key": "settings.refresh.help",
+            "source": "How many times per second the screen refreshes. Match your monitor.",
+            "text": "How many times per second the screen refreshes. Match your monitor."
+        },
+        {
+            "key": "settings.quality.help",
+            "source": "Shadow, lighting and effect quality. Try Balanced or Performant if the game stutters.",
+            "text": "Shadow, lighting and effect quality. Try Balanced or Performant if the game stutters."
+        },
+        {
+            "key": "settings.vsync.help",
+            "source": "Prevents screen tearing. It can add a little input delay.",
+            "text": "Prevents screen tearing. It can add a little input delay."
+        },
+        {
+            "key": "settings.fps.help",
+            "source": "Upper limit for frames per second. A lower limit reduces heat and fan noise.",
+            "text": "Upper limit for frames per second. A lower limit reduces heat and fan noise."
+        },
+        {
+            "key": "settings.brightness.help",
+            "source": "Detail in dark scenes. Raise it until shapes in the shadows are barely visible.",
+            "text": "Detail in dark scenes. Raise it until shapes in the shadows are barely visible."
+        },
+        {
+            "key": "settings.blur.help",
+            "source": "Blurs the image during fast turns. Turn it off if you feel motion sick.",
+            "text": "Blurs the image during fast turns. Turn it off if you feel motion sick."
+        },
+        {
+            "key": "settings.dof.help",
+            "source": "Blurs objects outside the point you focus on.",
+            "text": "Blurs objects outside the point you focus on."
+        },
+        {
+            "key": "settings.grain.help",
+            "source": "Adds a fine film texture to the image.",
+            "text": "Adds a fine film texture to the image."
+        },
+        {
+            "key": "settings.bob.help",
+            "source": "How much the camera sways while you walk. Lower it if you feel motion sick.",
+            "text": "How much the camera sways while you walk. Lower it if you feel motion sick."
+        },
+        {
+            "key": "settings.mouse.help",
+            "source": "Camera turn speed when you look with the mouse.",
+            "text": "Camera turn speed when you look with the mouse."
+        },
+        {
+            "key": "settings.invert.mouse.help",
+            "source": "Moving the mouse up makes you look down.",
+            "text": "Moving the mouse up makes you look down."
+        },
+        {
+            "key": "settings.pad.help",
+            "source": "Camera turn speed with the right stick.",
+            "text": "Camera turn speed with the right stick."
+        },
+        {
+            "key": "settings.invert.pad.help",
+            "source": "Pushing the right stick up makes you look down.",
+            "text": "Pushing the right stick up makes you look down."
+        },
+        {
+            "key": "settings.deadzone.help",
+            "source": "How far the stick moves before it responds. Raise it if the view drifts on its own.",
+            "text": "How far the stick moves before it responds. Raise it if the view drifts on its own."
+        },
+        {
+            "key": "settings.device.help",
+            "source": "Shows the keyboard and mouse or the gamepad bindings below.",
+            "text": "Shows the keyboard and mouse or the gamepad bindings below."
+        },
+        {
+            "key": "settings.binding.help",
+            "source": "Select it, then press a new key. You're asked first if another action already uses that key.",
+            "text": "Select it, then press a new key. You're asked first if another action already uses that key."
+        },
+        {
+            "key": "settings.language.choice.help",
+            "source": "Language of the menus, texts and subtitles.",
+            "text": "Language of the menus, texts and subtitles."
+        },
+        {
+            "key": "settings.subtitles.help",
+            "source": "Shows subtitles for spoken dialogue.",
+            "text": "Shows subtitles for spoken dialogue."
+        },
+        {
+            "key": "settings.subtitle.size.help",
+            "source": "Size of the subtitle text. The sample below updates as you change it.",
+            "text": "Size of the subtitle text. The sample below updates as you change it."
+        },
+        {
+            "key": "settings.subtitle.background.help",
+            "source": "Opacity of the dark band behind subtitles. It helps reading in bright scenes.",
+            "text": "Opacity of the dark band behind subtitles. It helps reading in bright scenes."
+        },
+        {
             "key": "subtitle.chemistry_lab_entrance.0",
             "source": "",
             "text": "Did you think you left me behind at the university, Arthur?"
