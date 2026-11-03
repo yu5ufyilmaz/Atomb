@@ -154,6 +154,7 @@ public class ControlsUIManager : MonoBehaviour
         // 4. Seçilen paneli aktif et ve Fade In başlat
         if (currentActivePanel != null)
             currentActivePanel.SetActive(true);
+        LayoutHints(currentActivePanel);
 
         mainCanvasObj.SetActive(true);
         StopAllCoroutines();
@@ -167,7 +168,7 @@ public class ControlsUIManager : MonoBehaviour
         chalkboardPanel = Instantiate(bookPanel, bookPanel.transform.parent);
         chalkboardPanel.name = "Chalkboard";
         var panel = chalkboardPanel.transform;
-        Destroy(panel.Find("Icon (5)").gameObject);
+        RemoveRow(panel.Find("Icon (5)"));
         var leftClick = panel.Find("Icon (3)");
         SetControlRow(leftClick, -820, "Sürükle / Bağla");
         var rightClick = panel.Find("Icon (4)");
@@ -188,9 +189,68 @@ public class ControlsUIManager : MonoBehaviour
         doorLessonPanel.name = "DoorLesson";
         var panel = doorLessonPanel.transform;
         foreach (string row in new[] { "Icon", "Icon (1)", "Icon (4)", "Icon (5)" })
-            Destroy(panel.Find(row).gameObject);
+            RemoveRow(panel.Find(row));
         SetControlRow(panel.Find("Icon (3)"), -60, "Kapıyı Kapat");
         return doorLessonPanel;
+    }
+
+    // Each hint's words sit 10 px right of its key picture and hints never run into each other, whatever the language:
+    // the authored rows were spaced for the English words (3 Nov). Authored x positions stay the starting point.
+    private const float HintGap = 44, LabelGap = 10, BarInset = 8, CentreZone = 300;
+    private readonly Dictionary<RectTransform, float> hintHome = new Dictionary<RectTransform, float>();
+
+    private void OnEnable() { GameLocalization.LanguageChanged += RelayoutHints; }
+    private void OnDisable() { GameLocalization.LanguageChanged -= RelayoutHints; }
+    private void RelayoutHints() { if (currentActivePanel != null && currentActivePanel.activeInHierarchy) LayoutHints(currentActivePanel); }
+
+    private void LayoutHints(GameObject panel)
+    {
+        if (panel == null || panel == genericTextPanel) return;
+        var parent = (RectTransform)panel.transform;
+        var rows = new List<(RectTransform rect, float left, float right, bool slash)>();
+        foreach (Transform child in parent)
+        {
+            if (!child.gameObject.activeSelf || child.GetComponent<Image>() == null) continue;
+            var rect = (RectTransform)child; var label = child.GetComponentInChildren<TMP_Text>(true);
+            if (!hintHome.TryGetValue(rect, out float home)) hintHome[rect] = home = rect.anchoredPosition.x;
+            rect.anchoredPosition = new Vector2(home, rect.anchoredPosition.y);
+            bool slash = label != null && label.text.Trim() == "/";
+            float iconHalf = rect.rect.width * .5f, reach = iconHalf;
+            if (label != null && !slash)
+            {
+                label.textWrappingMode = TextWrappingModes.NoWrap; label.horizontalAlignment = HorizontalAlignmentOptions.Left;
+                float words = Mathf.Ceil(label.GetPreferredValues(label.text).x);
+                var t = label.rectTransform; t.sizeDelta = new Vector2(words + 4, t.sizeDelta.y);
+                t.anchoredPosition = new Vector2(iconHalf + LabelGap + t.sizeDelta.x * .5f, t.anchoredPosition.y);
+                reach = iconHalf + LabelGap + words;
+            }
+            else if (slash) reach = label.rectTransform.anchoredPosition.x + label.GetPreferredValues("/").x * .5f;
+            float center = parent.InverseTransformPoint(rect.TransformPoint(rect.rect.center)).x;
+            rows.Add((rect, center - iconHalf, center + reach, slash));
+        }
+        // One rhythm for every machine: left-hand hints start at the bar's left end and follow each other at a fixed gap,
+        // right-hand hints (exit, confirm) close up to the right end, a lone centred hint stays where it was authored.
+        var left = rows.Where(r => (r.left + r.right) * .5f < -CentreZone).OrderBy(r => r.left).ToList();
+        float edge = parent.rect.xMin + BarInset; bool first = true, joined = false;
+        foreach (var row in left)
+        {
+            float shift = edge + (first ? 0 : joined ? 6 : HintGap) - row.left;
+            row.rect.anchoredPosition += new Vector2(shift, 0); edge = row.right + shift; first = false; joined = row.slash;
+        }
+        var right = rows.Where(r => (r.left + r.right) * .5f > CentreZone).OrderByDescending(r => r.right).ToList();
+        edge = parent.rect.xMax - BarInset; first = true;
+        foreach (var row in right)
+        {
+            float shift = row.right - (edge - (first ? 0 : HintGap));
+            row.rect.anchoredPosition -= new Vector2(shift, 0); edge = row.left - shift; first = false;
+        }
+    }
+
+    // Destroy waits for the frame end; hidden first so the same frame's hint layout doesn't count the removed row.
+    private static void RemoveRow(Transform row)
+    {
+        row.gameObject.SetActive(false);
+        Destroy(row.gameObject);
     }
 
     private static void SetControlRow(Transform row, float x, string label)
