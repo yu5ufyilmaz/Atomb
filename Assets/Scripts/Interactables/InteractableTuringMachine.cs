@@ -459,6 +459,10 @@ public partial class InteractableTuringMachine : MonoBehaviour, IInteractable, I
             return;
         }
 
+        // Elektrik yok: ekran sönük (PoweredDevice), kontroller cevap vermez; çıkış serbest.
+        if (PoweredDevice.PowerOut)
+            return;
+
         if (IsReadingMeasurement)
         {
             return;

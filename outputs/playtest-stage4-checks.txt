@@ -1,0 +1,14 @@
+RUNNING 2026-11-03T02:08:28.5896139Z
+  board veil alpha in on: 0.00
+on: tripped=False blackout weight=0.00 dark bulbs=0/35
+  board veil alpha in off: 1.00
+off: tripped=True blackout weight=1.00 dark bulbs=35/35
+  light still on: ENVIRONMENT/FinalRoom/SM_FinalroomCamera (1)/Spot Light (Spot, 485.2, 29.7 m from start)
+  light still on: ENVIRONMENT/FinalRoom/NewProbs/Area Light (Point, 164, 32.5 m from start)
+  board veil alpha in flashlight: 0.10
+flashlight: tripped=True blackout weight=1.00 dark bulbs=35/35
+  board veil alpha in restored: 0.00
+restored: tripped=False blackout weight=0.00 dark bulbs=0/35
+office switch off: dark bulbs=5
+turing inside, power off: still in machine=True, darkened parts=7
+PASS 13 assertions 2026-11-03T02:09:10.1742514Z

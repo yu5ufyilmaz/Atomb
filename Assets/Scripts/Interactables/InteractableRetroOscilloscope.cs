@@ -291,6 +291,10 @@ public class InteractableRetroOscilloscope : MonoBehaviour, IInteractable, IForc
             return;
         }
 
+        // Elektrik yok: ekran sönük (PoweredDevice), oyun donar; çıkış serbest.
+        if (PoweredDevice.PowerOut)
+            return;
+
         if (IsSolved)
             return;
 

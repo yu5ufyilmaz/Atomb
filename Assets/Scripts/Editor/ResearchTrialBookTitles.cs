@@ -105,7 +105,7 @@ public static class ResearchTrialBookTitles
     {
         if (EditorApplication.isPlayingOrWillChangePlaymode || trial == null
             || (trial.gameObject.scene.path != ScenePath && !trial.allowGameplayScene) || trial.books == null) return false;
-        var material = AssetDatabase.LoadAssetAtPath<Material>("Assets/Materials/SynthesisBlockout/Blockout_Tahta.mat");
+        var material = BookTitleLighting.PlateMaterial(); // lit: unlit plates glowed in the dark
         var font = AssetDatabase.LoadAssetAtPath<TMP_FontAsset>("Assets/TextMesh Pro/Fonts/SpecialElite-Regular SDF.asset");
         if (material == null || font == null) { Debug.LogError("Kitap etiketi için mevcut materyal veya yazı tipi bulunamadı."); return false; }
         for (int i = 0; i < trial.books.Length; i++)
@@ -198,7 +198,7 @@ public static class ResearchTrialBookTitles
             var textHolder = Child(holder, "Başlık");
             var text = textHolder.GetComponent<TextMeshPro>() ?? textHolder.gameObject.AddComponent<TextMeshPro>();
             text.transform.localPosition = new Vector3(0, 0, -.008f); text.transform.localRotation = Quaternion.identity; text.transform.localScale = Vector3.one * .001f;
-            text.rectTransform.sizeDelta = new Vector2(600, 140); text.font = font; text.fontSharedMaterial = font.material;
+            text.rectTransform.sizeDelta = new Vector2(600, 140); text.font = font; text.fontSharedMaterial = BookTitleLighting.FontMaterial(font);
             text.fontSize = text.fontSizeMax = 1000; text.fontSizeMin = 600; text.enableAutoSizing = true;
             text.fontStyle = FontStyles.Normal; text.characterSpacing = 2; text.extraPadding = true;
             text.textWrappingMode = TextWrappingModes.NoWrap;
@@ -269,7 +269,7 @@ public static class ResearchTrialBookTitles
         text.rectTransform.sizeDelta = size * (0.87f * textUnits);
         Undo.RecordObject(text, "Kitap Başlığını Yaz");
         text.font = font;
-        text.fontSharedMaterial = font.material;
+        text.fontSharedMaterial = BookTitleLighting.FontMaterial(font);
         text.fontStyle = FontStyles.Normal;
         text.characterSpacing = 1.5f;
         text.lineSpacing = 4;

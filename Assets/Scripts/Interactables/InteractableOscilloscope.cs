@@ -353,6 +353,10 @@ public class InteractableOscilloscope : MonoBehaviour, IInteractable, IForceExit
             return;
         }
 
+        // Elektrik yok: ekran sönük (PoweredDevice), kontroller cevap vermez; çıkış serbest.
+        if (PoweredDevice.PowerOut)
+            return;
+
         if (isSolved)
         {
             if (waveformScript)

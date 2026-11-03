@@ -60,6 +60,7 @@ public partial class InteractableTuringMachine
         Vector3 right = Vector3.Cross(feed, normal).normalized;
         Vector3 mouth = body.TransformPoint(localMouth) + normal * .006f;
         physicalFeed = TuringPaperFeed.Create(transform, mouth, right, feed, normal);
+        GetComponent<PoweredDevice>()?.Include(physicalFeed.Root); // dark with the machine in a blackout
         measurementReader = physicalFeed.Root;
         screenInk = TuringCrtInk.Create(transform);
         SetReaderDisplay("OLCUM KARTI BEKLE");

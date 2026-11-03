@@ -162,6 +162,51 @@ public class ControllableLight : MonoBehaviour, IInteractable, ISaveable
         {
             switchModel.localEulerAngles = desiredStateIsOn ? onRotation : offRotation;
         }
+
+        // 4. AMPUL PARLAMASI
+        // Bulbs glow by emission and stayed lit in the dark (3 Nov playtest).
+        bulbs ??= FindBulbs();
+        foreach (Renderer bulb in bulbs)
+        {
+            if (bulb != null)
+                bulb.SetPropertyBlock(isLightActive ? null : DarkBulb);
+        }
+    }
+
+    private Renderer[] bulbs;
+    private static MaterialPropertyBlock darkBulb;
+    private static MaterialPropertyBlock DarkBulb
+    {
+        get
+        {
+            if (darkBulb == null)
+            {
+                darkBulb = new MaterialPropertyBlock();
+                darkBulb.SetColor("_EmissiveColor", Color.black);
+            }
+            return darkBulb;
+        }
+    }
+
+    // Emissive meshes right at a controlled light are its bulb; lamps aren't wired to switches any other way.
+    private Renderer[] FindBulbs()
+    {
+        var found = new System.Collections.Generic.List<Renderer>();
+        if (targetLight == null)
+            return found.ToArray();
+        foreach (Light item in targetLight)
+        {
+            if (item == null || item.transform.parent == null)
+                continue;
+            foreach (Renderer r in item.transform.parent.GetComponentsInChildren<Renderer>(true))
+            {
+                Material m = r.sharedMaterial;
+                bool emissive = m != null && m.HasProperty("_EmissiveColor") && m.GetColor("_EmissiveColor").maxColorComponent > 0f;
+                if (emissive && !found.Contains(r) && r.bounds.SqrDistance(item.transform.position) < .75f * .75f)
+                    found.Add(r);
+            }
+        }
+        return found.ToArray();
     }
 
     private void PlaySound(AudioClip clip)
