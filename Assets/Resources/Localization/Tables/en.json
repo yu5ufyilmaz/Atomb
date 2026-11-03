@@ -4406,6 +4406,11 @@
             "text": "Hold to skip"
         },
         {
+            "key": "ui.hud.notebook",
+            "source": "Notebook",
+            "text": "Notebook"
+        },
+        {
             "key": "subtitle.chemistry_lab_entrance.0",
             "source": "",
             "text": "Did you think you left me behind at the university, Arthur?"

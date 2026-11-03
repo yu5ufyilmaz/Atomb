@@ -4406,6 +4406,11 @@
             "text": "Geçmek için basılı tut"
         },
         {
+            "key": "ui.hud.notebook",
+            "source": "Notebook",
+            "text": "Defter"
+        },
+        {
             "key": "subtitle.chemistry_lab_entrance.0",
             "source": "",
             "text": "Beni üniversitede geride bıraktığını mı sandın Arthur?"
