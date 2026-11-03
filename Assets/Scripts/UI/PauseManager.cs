@@ -84,6 +84,8 @@ public class PauseManager : MonoBehaviour
         // 4. Paneli Aç
         if (pauseMenuPanel != null)
             pauseMenuPanel.SetActive(true);
+        if (ControlsUIManager.Instance != null)
+            ControlsUIManager.Instance.SetPausedHud(true); // köşe HUD'u menünün altında kalmasın
 
         GameManager.Instance.UpdateCursorState();
         // 6. Karakterin Kamera Dönüşünü Kilitle (StarterAssets için)
@@ -115,6 +117,8 @@ public class PauseManager : MonoBehaviour
             pauseMenuPanel.SetActive(false);
         if (settingsPanel != null)
             settingsPanel.SetActive(false); // <--- YENİ: Garantilemek için
+        if (ControlsUIManager.Instance != null)
+            ControlsUIManager.Instance.SetPausedHud(false);
         // 5. Inputları geri aç
         if (playerInputs != null)
             playerInputs.cursorInputForLook = true;

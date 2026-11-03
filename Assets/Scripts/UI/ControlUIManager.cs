@@ -264,6 +264,29 @@ public class ControlsUIManager : MonoBehaviour
         }
     }
 
+    // The ESC menu hides the HUD without touching ToggleHUD's state: each alpha is remembered and restored.
+    private readonly Dictionary<CanvasGroup, float> pausedHud = new Dictionary<CanvasGroup, float>();
+
+    public void SetPausedHud(bool paused)
+    {
+        if (hudElementsToHide == null) return;
+        if (paused && pausedHud.Count == 0)
+        {
+            foreach (var obj in hudElementsToHide)
+            {
+                if (obj == null) continue;
+                CanvasGroup group = obj.GetComponent<CanvasGroup>();
+                if (group == null) group = obj.AddComponent<CanvasGroup>();
+                pausedHud[group] = group.alpha; group.alpha = 0f;
+            }
+        }
+        else if (!paused)
+        {
+            foreach (var pair in pausedHud) if (pair.Key != null) pair.Key.alpha = pair.Value;
+            pausedHud.Clear();
+        }
+    }
+
     private void HideAllSubPanels()
     {
         // Hata almamak için null kontrolü yaparak kapatıyoruz
