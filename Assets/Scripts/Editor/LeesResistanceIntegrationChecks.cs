@@ -107,7 +107,9 @@ public static class LeesResistanceIntegrationChecks
             Debug.Log($"LEES HAND FRAMING {camera.gameObject.scene.path}: camera scale={camera.transform.lossyScale:F4}, {hand.name} world size={hand.GetComponent<Renderer>().bounds.size:F4}, viewport={bounds.min:F4}..{bounds.max:F4}");
             Require(bounds.size.x > .05f && bounds.size.y > .1f, "Hands must occupy visible screen area with the actual gameplay camera scale.");
             // A hand at the temple reads large (3 Nov playtest), but the centre must stay visible.
-            Require(bounds.size.x < .42f && bounds.size.y < .75f, "Hands should frame the edges without filling the view.");
+            // Only the on-screen part counts: the wrist is deliberately pushed past the edge so shaking never shows it.
+            float shownWidth = Mathf.Min(bounds.max.x, 1) - Mathf.Max(bounds.min.x, 0), shownHeight = Mathf.Min(bounds.max.y, 1) - Mathf.Max(bounds.min.y, 0);
+            Require(shownWidth < .42f && shownHeight < .75f, "Hands should frame the edges without filling the view.");
             Require(bounds.min.x < 1 && bounds.max.x > 0 && bounds.min.y < 1 && bounds.max.y > 0, "Each hand must overlap the screen.");
             Require(bounds.min.z > camera.nearClipPlane && bounds.max.z < camera.farClipPlane, "Hands must fit between the gameplay camera clipping planes.");
         }

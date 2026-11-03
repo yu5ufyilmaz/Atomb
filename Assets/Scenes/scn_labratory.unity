@@ -65091,9 +65091,9 @@ MonoBehaviour:
   viewCamera: {fileID: 326973883}
   fillLight: {fileID: 1066140105}
   depth: 0.38
-  size: 1.5
-  leftAnchor: {x: 0.03, y: 0.55}
-  rightAnchor: {x: 0.97, y: 0.55}
+  size: 2
+  leftAnchor: {x: -0.13, y: 0.55}
+  rightAnchor: {x: 1.13, y: 0.55}
 --- !u!1 &1026055271
 GameObject:
   m_ObjectHideFlags: 0

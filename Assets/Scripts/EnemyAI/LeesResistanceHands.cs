@@ -8,9 +8,9 @@ public sealed class LeesResistanceHands : MonoBehaviour
     public Camera viewCamera;
     public Light fillLight;
     [Range(.2f, .8f)] public float depth = .38f;
-    [Range(.5f, 2f)] public float size = 1.5f;
-    public Vector2 leftAnchor = new Vector2(.03f, .55f);
-    public Vector2 rightAnchor = new Vector2(.97f, .55f);
+    [Range(.5f, 2f)] public float size = 2f;
+    public Vector2 leftAnchor = new Vector2(-.13f, .55f); // wrist past the edge: pressure and tremble never show it
+    public Vector2 rightAnchor = new Vector2(1.13f, .55f);
     HDAdditionalCameraData focusCamera;
     bool ownsFocus, previousCustomSettings, previousFocusEnabled;
     FrameSettingsOverrideMask previousFocusMask;
@@ -40,13 +40,18 @@ public sealed class LeesResistanceHands : MonoBehaviour
         float pressure = model.State == LeesResistanceModel.Phase.Struggling && model.PullDirection == side
             ? model.PullStrength / Mathf.Max(1, model.Settings.pullDegreesPerSecond) : .1f;
         float pulse = Mathf.Sin(model.Elapsed * 18) * pressure;
+        // Pressure used to move the hands by millimetres (3 Nov playtest): the pulling hand now digs in, both tremble.
+        float struggle = model.State == LeesResistanceModel.Phase.Struggling ? 1 : 0;
+        float tremble = struggle * (.003f + Mathf.Clamp01(model.Danger) * .007f);
+        float seed = side * 13.7f;
+        Vector2 shake = new Vector2(Mathf.PerlinNoise(model.Elapsed * 11, seed) - .5f, Mathf.PerlinNoise(seed, model.Elapsed * 13) - .5f) * 2 * tremble;
         Vector3 point = viewCamera.ViewportToWorldPoint(new Vector3(anchor.x, anchor.y, depth));
-        Vector3 offset = new Vector3(side * ((1 - reveal) * .2f - pressure * .018f),
-            (1 - reveal) * .04f + pulse * .002f, -pressure * .012f);
+        Vector3 offset = new Vector3(side * ((1 - reveal) * .2f - pressure * .06f) + shake.x,
+            (1 - reveal) * .04f + pulse * .006f + shake.y, -pressure * .035f);
         hand.position = point + viewCamera.transform.rotation * offset;
         // Baked palms face local +Z (left) / -Z (right); the trailing 180° turns both palms toward the face.
-        hand.rotation = viewCamera.transform.rotation * Quaternion.Euler(side * (20 + pressure * 9),
-            side > 0 ? 180 : 0, -(78 + pressure * 5 + pulse)) * Quaternion.Euler(0, 180, 0);
+        hand.rotation = viewCamera.transform.rotation * Quaternion.Euler(side * (20 + pressure * 18),
+            side > 0 ? 180 : 0, -(78 + pressure * 8 + pulse * 3 + shake.x * 400)) * Quaternion.Euler(0, 180, 0);
         // Read the actual projection: the main camera uses physical lens / gate-fit settings.
         float viewHeight = Vector3.Distance(viewCamera.ViewportToWorldPoint(new Vector3(.5f, 0, depth)),
             viewCamera.ViewportToWorldPoint(new Vector3(.5f, 1, depth)));

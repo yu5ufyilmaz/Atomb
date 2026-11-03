@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -18,23 +19,23 @@ public sealed class LeesResistanceGraphic : MaskableGraphic
         for (int side = 0; side < 2; side++)
         {
             bool pressured = active && (side == 1 ? direction > 0 : direction < 0);
-            Color edge = pressured ? new Color(.45f, .025f, .018f, .2f + danger * .5f) : new Color(0, 0, 0, .65f);
+            Color edge = pressured ? new Color(.45f, .025f, .018f, .15f + danger * .35f) : new Color(0, 0, 0, .65f); // lighter: the veins carry the pull
             if (side == 0) Quad(mesh, P(0, 0), P(.21f, 0), P(.21f, 1), P(0, 1), edge, Color.clear, Color.clear, edge);
             else Quad(mesh, P(.79f, 0), P(1, 0), P(1, 1), P(.79f, 1), Color.clear, edge, edge, Color.clear);
         }
         Quad(mesh, P(0, 0), P(1, 0), P(1, .3f), P(0, .3f), new Color(0, 0, 0, .85f), new Color(0, 0, 0, .85f), Color.clear, Color.clear);
         Quad(mesh, P(0, .82f), P(1, .82f), P(1, 1), P(0, 1), Color.clear, Color.clear, new Color(0, 0, 0, .65f), new Color(0, 0, 0, .65f));
         if (!active) return;
-        float pulse = .7f + .3f * Mathf.Sin(clock * 8);
-        Color stress = new Color(red.r, red.g, red.b, (.3f + .5f * danger) * pulse);
-        for (int i = 0; i < 14; i++)
+        // Veins under the skin instead of straight strokes (3 Nov playtest): they creep in with danger
+        // and swell on a lub-dub heartbeat that quickens; the pulled side is strong, the other faint.
+        float rate = 1.1f + danger * 1.4f, phase = Mathf.Repeat(clock * rate, 1);
+        float beat = Mathf.Exp(-Mathf.Pow(phase / .06f, 2)) + .55f * Mathf.Exp(-Mathf.Pow((phase - .22f) / .07f, 2));
+        float growth = .35f + .65f * danger;
+        for (int side = 0; side < 2; side++)
         {
-            float y = .1f + i * .061f;
-            float reach = .022f + .035f * Mathf.Abs(Mathf.Sin(i * 4.31f)) + danger * .045f;
-            float x = direction < 0 ? .008f : .992f;
-            float inward = direction < 0 ? 1 : -1;
-            Line(mesh, P(x, y), P(x + inward * reach, y + .014f), 1.5f, stress);
-            Line(mesh, P(x + inward * reach, y + .014f), P(x + inward * (reach + .02f), y - .009f), 1, stress * new Color(1, 1, 1, .5f));
+            bool pulled = side == 1 ? direction > 0 : direction < 0;
+            float strength = pulled ? 1 : .35f * danger;
+            if (strength > .01f) Veins(mesh, side, growth * (pulled ? 1 : .6f), strength * (.55f + .3f * danger) * (.8f + .35f * beat), beat);
         }
         // Neck axis: middle is the original direction, red ends are the failure limits.
         Line(mesh, P(.34f, .17f), P(.66f, .17f), 1, bone * new Color(1, 1, 1, .45f));
@@ -69,6 +70,80 @@ public sealed class LeesResistanceGraphic : MaskableGraphic
         Line(mesh, center + nose * radius, center + nose * radius * 1.65f, 2, bone);
         Line(mesh, P(.478f, .432f), P(.522f, .432f), 1.4f, bone);
     }
+    // One branching network per side, grown once in height units (x inward from the edge, y up) with a fixed seed.
+    sealed class Vein { public readonly List<Vector2> points = new List<Vector2>(); public readonly List<float> reach = new List<float>(), width = new List<float>(); }
+    static readonly List<Vein>[] networks = new List<Vein>[2];
+    const float FullReach = .5f;
+
+    static List<Vein> Network(int side)
+    {
+        if (networks[side] != null) return networks[side];
+        var veins = new List<Vein>(); var rng = new System.Random(side == 0 ? 7193 : 4261);
+        foreach (float y in new[] { .16f, .3f, .43f, .56f, .7f, .84f })
+            Grow(veins, rng, new Vector2(0, y + (float)(rng.NextDouble() - .5) * .06f), (float)(rng.NextDouble() - .5) * .9f, .01f, 0, 0);
+        return networks[side] = veins;
+    }
+
+    static void Grow(List<Vein> veins, System.Random rng, Vector2 at, float heading, float width, float reach, int depth)
+    {
+        var vein = new Vein(); veins.Add(vein);
+        vein.points.Add(at); vein.reach.Add(reach); vein.width.Add(width);
+        int steps = depth == 0 ? 15 : 10 - depth * 2;
+        for (int i = 0; i < steps; i++)
+        {
+            // Wander, but keep heading inward (0 rad = straight in).
+            heading = Mathf.Clamp(heading + (float)(rng.NextDouble() - .5) * .55f, -1.2f, 1.2f);
+            float length = (.022f + (float)rng.NextDouble() * .018f) * (1 - depth * .12f);
+            at += new Vector2(Mathf.Cos(heading), Mathf.Sin(heading)) * length; reach += length; width *= .9f;
+            vein.points.Add(at); vein.reach.Add(reach); vein.width.Add(width);
+            if (depth < 3 && rng.NextDouble() < .3f)
+                Grow(veins, rng, at, heading + (rng.NextDouble() < .5 ? -1 : 1) * (.45f + (float)rng.NextDouble() * .5f), width * .62f, reach, depth + 1);
+        }
+    }
+
+    static readonly List<Vector2> points = new List<Vector2>();
+    static readonly List<float> widths = new List<float>(), fades = new List<float>();
+
+    void Veins(VertexHelper mesh, int side, float growth, float alpha, float beat)
+    {
+        Rect r = rectTransform.rect; float h = r.height;
+        float limit = growth * FullReach;
+        foreach (var vein in Network(side))
+        {
+            if (vein.reach[0] >= limit) continue;
+            points.Clear(); widths.Clear(); fades.Clear();
+            for (int i = 0; i < vein.points.Count; i++)
+            {
+                Vector2 v = vein.points[i]; float width = vein.width[i], fade = 1 - vein.reach[i] / limit;
+                bool tip = vein.reach[i] > limit;
+                // The growing tip: cut the last segment where the growth front is.
+                if (tip) { v = Vector2.Lerp(vein.points[i - 1], v, Mathf.InverseLerp(vein.reach[i - 1], vein.reach[i], limit)); width = fade = 0; }
+                points.Add(new Vector2(side == 0 ? r.xMin + v.x * h : r.xMax - v.x * h, r.yMin + v.y * h));
+                widths.Add(width * h); fades.Add(fade);
+                if (tip) break;
+            }
+            if (points.Count < 2) continue;
+            float swell = 1 + .3f * beat;
+            // A soft halo under the skin, then the dark core.
+            Strip(mesh, 2.8f * swell, new Color(.38f, .03f, .04f, alpha * .13f));
+            Strip(mesh, swell, new Color(.28f, .015f, .04f, alpha * .95f)); // venous: dark, slightly blue-red
+        }
+    }
+
+    static void Strip(VertexHelper mesh, float scale, Color color)
+    {
+        int start = mesh.currentVertCount;
+        for (int i = 0; i < points.Count; i++)
+        {
+            Vector2 a = points[Mathf.Max(0, i - 1)], b = points[Mathf.Min(points.Count - 1, i + 1)];
+            Vector2 normal = new Vector2(-(b - a).y, (b - a).x).normalized * widths[i] * scale * .5f;
+            Vector2 p = points[i];
+            Color c = color; c.a *= Mathf.Clamp01(fades[i] * 1.6f);
+            mesh.AddVert(p - normal, c, Vector2.zero); mesh.AddVert(p + normal, c, Vector2.zero);
+            if (i > 0) { int k = start + i * 2; mesh.AddTriangle(k - 2, k - 1, k + 1); mesh.AddTriangle(k - 2, k + 1, k); }
+        }
+    }
+
     static void Line(VertexHelper mesh, Vector2 a, Vector2 b, float width, Color c)
     {
         Vector2 n = new Vector2(-(b - a).y, (b - a).x).normalized * width * .5f;

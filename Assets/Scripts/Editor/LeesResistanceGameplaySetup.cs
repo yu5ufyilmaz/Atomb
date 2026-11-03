@@ -118,8 +118,8 @@ public static class LeesResistanceGameplaySetup
             control.hands = root.AddComponent<LeesResistanceHands>();
         }
         var hands = control.hands; hands.viewCamera = control.viewCamera;
-        hands.depth = .38f; hands.size = 1.5f;
-        hands.leftAnchor = new Vector2(.03f, .55f); hands.rightAnchor = new Vector2(.97f, .55f);
+        hands.depth = .38f; hands.size = 2f;
+        hands.leftAnchor = new Vector2(-.13f, .55f); hands.rightAnchor = new Vector2(1.13f, .55f);
         Transform Make(string name, string path)
         {
             var child = hands.transform.Find(name);

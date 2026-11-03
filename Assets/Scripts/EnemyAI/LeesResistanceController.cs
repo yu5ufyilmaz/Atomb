@@ -1,6 +1,8 @@
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.InputSystem;
+using UnityEngine.Rendering;
+using UnityEngine.Rendering.HighDefinition;
 
 /// <summary>Attach to a dedicated camera pivot. Call BeginResistance after the player turns away.</summary>
 public sealed class LeesResistanceController : MonoBehaviour
@@ -22,6 +24,17 @@ public sealed class LeesResistanceController : MonoBehaviour
     [Tooltip("Assign the components which normally move the player / rotate this camera.")]
     public Behaviour[] suspendDuringResistance = new Behaviour[0];
     public AudioSource heartbeatAudio;
+    [Header("Hissiyat (3 Kasım oyun testi)")]
+    [Tooltip("Kavrama anında bir kez çalar (boşsa LEES'in şok sesi atanır).")]
+    public AudioClip grabSound;
+    [Tooltip("Kavrama anındaki kamera darbesi (derece).")]
+    public float grabKickDegrees = 4.5f;
+    [Tooltip("Çekiş yön değiştirince başın savrulması (derece).")]
+    public float flipJoltDegrees = 3.5f;
+    [Tooltip("Sarsıntı çarpanı; eski his 1'di.")]
+    public float shakeScale = 3.5f;
+    [Tooltip("Tehlike arttıkça vinyet, renk sapması ve renk kaybı.")]
+    [Range(0, 1)] public float dangerEffects = 1f;
     public UnityEvent onEscaped = new UnityEvent();
     public UnityEvent onCaught = new UnityEvent();
 
@@ -37,8 +50,25 @@ public sealed class LeesResistanceController : MonoBehaviour
     float originalFov, endingTime, audioLevel;
     CursorLockMode previousLock;
     bool previousCursor;
+    // Grab hit and pull-flip jolts decay from 1 to 0; the volume is this struggle's own, never the shared profile.
+    float grabHit, flipJolt;
+    int lastPullDirection;
+    LeesResistanceModel.Phase lastPhase;
+    Volume strainVolume;
 
-    void Awake() { Model = new LeesResistanceModel(tuning); if (hud != null) hud.gameObject.SetActive(false); hands?.Hide(); }
+    void Awake()
+    {
+        Model = new LeesResistanceModel(tuning); if (hud != null) hud.gameObject.SetActive(false); hands?.Hide();
+        var profile = ScriptableObject.CreateInstance<VolumeProfile>();
+        var vignette = profile.Add<Vignette>();
+        vignette.intensity.Override(.5f); vignette.smoothness.Override(.45f); vignette.color.Override(new Color(.18f, 0, 0));
+        profile.Add<ChromaticAberration>().intensity.Override(.75f);
+        profile.Add<ColorAdjustments>().saturation.Override(-45f);
+        strainVolume = gameObject.AddComponent<Volume>();
+        strainVolume.isGlobal = true; strainVolume.priority = 900; strainVolume.weight = 0; strainVolume.sharedProfile = profile;
+    }
+
+    void OnDestroy() { if (strainVolume != null) Destroy(strainVolume.sharedProfile); }
 
     public void BeginResistance() { BeginResistance(false); }
 
@@ -66,6 +96,7 @@ public sealed class LeesResistanceController : MonoBehaviour
                 suspendDuringResistance[i].enabled = false;
         if (hud != null) hud.gameObject.SetActive(true);
         ownsCamera = true; endingTime = 0; audioLevel = 0;
+        grabHit = flipJolt = 0; lastPhase = Model.State; lastPullDirection = 0;
         locallyPaused = false; CaptureCursor(); hands?.Hide();
         PlayLoop(heartbeatAudio);
         if (playerMovement == null) TakeHeadControl();
@@ -99,7 +130,25 @@ public sealed class LeesResistanceController : MonoBehaviour
                 return;
             }
         }
-        UpdateAudio(); hud?.Present(Model, false, !useGamePause);
+        UpdateFeel(); UpdateAudio(); hud?.Present(Model, false, !useGamePause);
+    }
+
+    // The grab used to be silent and flat, and pull flips barely moved the view (3 Nov playtest).
+    void UpdateFeel()
+    {
+        bool struggling = Model.State == LeesResistanceModel.Phase.Struggling;
+        if (struggling && lastPhase == LeesResistanceModel.Phase.Approaching)
+        {
+            grabHit = 1;
+            if (grabSound != null && heartbeatAudio != null) heartbeatAudio.PlayOneShot(grabSound);
+        }
+        if (struggling && lastPullDirection != 0 && Model.PullDirection != lastPullDirection) flipJolt = 1;
+        lastPhase = Model.State; lastPullDirection = struggling ? Model.PullDirection : 0;
+        grabHit = Mathf.MoveTowards(grabHit, 0, Time.deltaTime / .35f);
+        flipJolt = Mathf.MoveTowards(flipJolt, 0, Time.deltaTime / .3f);
+        float strain = struggling ? Mathf.SmoothStep(0, 1, Mathf.Clamp01(Model.Danger)) : 0;
+        if (strainVolume != null)
+            strainVolume.weight = Mathf.Clamp01(Mathf.Max(strain, grabHit) * dangerEffects * motionIntensity);
     }
 
     void LateUpdate()
@@ -112,16 +161,20 @@ public sealed class LeesResistanceController : MonoBehaviour
         float t = Model.Elapsed;
         float danger = Mathf.Clamp01(Model.Danger);
         bool struggling = Model.State == LeesResistanceModel.Phase.Struggling;
-        float shake = struggling ? motionIntensity * (.08f + danger * .32f) : 0;
+        float shake = struggling ? motionIntensity * shakeScale * (.08f + danger * .32f) : 0;
         float angle = Model.HeadAngle;
         if (Model.State == LeesResistanceModel.Phase.Survived) angle *= 1 - Mathf.SmoothStep(0, 1, endingTime / .65f);
         if (Model.State == LeesResistanceModel.Phase.Caught) angle = Mathf.Lerp(angle, Model.PullDirection * Model.Settings.failureAngle, endingTime / .3f);
         float roll = -Model.PullDirection * Model.PullStrength * .14f * motionIntensity;
-        var offset = Quaternion.Euler(Mathf.Sin(t * 21) * shake, angle, roll + Mathf.Sin(t * 27) * shake);
+        // Irregular struggle shake instead of a smooth sine; the grab snaps the head down, a flip yanks it sideways.
+        float kick = grabHit * grabHit * grabKickDegrees * motionIntensity;
+        float jolt = flipJolt * flipJolt * flipJoltDegrees * motionIntensity * Model.PullDirection;
+        var offset = Quaternion.Euler((Mathf.PerlinNoise(t * 7, 0) - .5f) * 2 * shake + kick,
+            angle + jolt, roll + (Mathf.PerlinNoise(0, t * 9) - .5f) * 2 * shake - kick * .5f * Model.PullDirection);
         if (playerMovement != null) headPivot.rotation = originalWorldRotation * offset;
         else headPivot.localRotation = originalRotation * offset;
         headPivot.localPosition = originalPosition + Vector3.up * Mathf.Sin(t * 12) * shake * .007f;
-        viewCamera.fieldOfView = originalFov - danger * 6 * motionIntensity;
+        viewCamera.fieldOfView = originalFov - (danger * 6 + grabHit * 5) * motionIntensity;
         hands?.Present(Model, endingTime);
     }
 
@@ -162,6 +215,7 @@ public sealed class LeesResistanceController : MonoBehaviour
             if (suspendDuringResistance[i] != null && suspendDuringResistance[i] != this)
                 suspendDuringResistance[i].enabled = previousEnabled[i];
         heartbeatAudio?.Stop(); hands?.Hide();
+        if (strainVolume != null) strainVolume.weight = 0;
         if (hud != null) hud.gameObject.SetActive(false);
         Cursor.lockState = previousLock; Cursor.visible = previousCursor;
     }

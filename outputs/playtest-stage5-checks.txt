@@ -1,0 +1,10 @@
+RUNNING 2026-11-03T03:28:15.1824875Z
+paintings: sizes (0.05, 0.94, 0.79) (0.05, 0.94, 0.79) (0.05, 0.94, 0.79) (0.05, 0.94, 0.79) (0.05, 0.94, 0.79), closest pair 0.96 m
+  stand (1.00, 0.00, 0.00) at (11.59, 0.10, -1.04): sight blocked by SM_ScienceInstitute
+  stand (1.00, 0.00, 0.00) at (10.99, 0.10, -1.04): sight blocked by SM_ScienceInstitute
+  stand (1.00, 0.00, 0.00) at (10.49, 0.10, -1.04): sight blocked by SM_ScienceInstitute
+  stand (-1.00, 0.00, 0.00) at (7.19, 0.10, -1.04): sight clear
+lees old: struggle 1.2s, grab swing 5.3°, median turn 1.20°/frame, 90th 1.47°/frame, strain effect peak 0.00
+lees new vs old, same pulls: extra motion median 5.0°, peak 16.9°
+lees new: struggle 1.2s, grab swing 4.6°, median turn 1.12°/frame, 90th 1.52°/frame, strain effect peak 0.90
+PASS 10 assertions 2026-11-03T03:28:46.3846696Z

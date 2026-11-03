@@ -173,6 +173,8 @@ public class LeesEnemyAI : MonoBehaviour
             // A gameplay enemy must never inherit the standalone workshop's retry/pause settings.
             resistance.keepResultVisible = false; resistance.useGamePause = true;
             resistance.playerMovement = playerTransform.GetComponent<StarterAssets.CharacterController>();
+            // The grip skips this encounter's shock; let the grab itself hit with the same sound.
+            if (resistance.grabSound == null) resistance.grabSound = shockSound;
         }
 
         if (audioSource != null)
