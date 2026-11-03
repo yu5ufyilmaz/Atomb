@@ -8,9 +8,9 @@ public sealed class LeesResistanceHands : MonoBehaviour
     public Camera viewCamera;
     public Light fillLight;
     [Range(.2f, .8f)] public float depth = .38f;
-    [Range(.5f, 2f)] public float size = .9f;
-    public Vector2 leftAnchor = new Vector2(-.025f, .57f);
-    public Vector2 rightAnchor = new Vector2(1.025f, .57f);
+    [Range(.5f, 2f)] public float size = 1.5f;
+    public Vector2 leftAnchor = new Vector2(.03f, .55f);
+    public Vector2 rightAnchor = new Vector2(.97f, .55f);
     HDAdditionalCameraData focusCamera;
     bool ownsFocus, previousCustomSettings, previousFocusEnabled;
     FrameSettingsOverrideMask previousFocusMask;

@@ -1,0 +1,7 @@
+RUNNING 2026-11-03T00:38:15.5044481Z
+intro handoff: 189 frames (~38 fps); worst turn 1.5° at -1.99s, worst move 2.5 cm at -1.58s
+look behind: max body/view gap 60.1°, hold wobble 0.00°/frame
+look behind: 142 frames (~35 fps); worst turn 8.5° at +0.86s, worst move 2.8 cm at +0.60s
+hiding exit (Hiding_Interaction): finished at +6.20s, pitch after -0.8°
+hiding exit: 266 frames (~35 fps); worst turn 11.1° at +5.12s, worst move 5.8 cm at +6.20s
+PASS 12 assertions 2026-11-03T00:38:57.7008460Z

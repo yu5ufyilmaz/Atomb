@@ -161,7 +161,11 @@ public class LookAction : ActionBase
             // 2. KAMERA ODAKLANMASI
             if (focusMode == FocusMode.RotatePlayerHead && lookTarget != null && mainCam != null)
             {
-                Quaternion startRot = mainCam.transform.rotation;
+                // Start from the controller's own angles; the brain's camera may still be damping.
+                float startYaw = playerMoveScript.IntendedLookYaw, startPitch = playerMoveScript.IntendedLookPitch;
+                // Pick the turn direction once: for a target ~180° behind, re-picking it each frame flips sides.
+                float firstTargetYaw = GetTargetRotation().eulerAngles.y;
+                float yawTurn = Mathf.DeltaAngle(startYaw, firstTargetYaw);
                 float t = 0f;
 
                 while (t < 1f)
@@ -170,10 +174,11 @@ public class LookAction : ActionBase
                     t += Time.deltaTime / Mathf.Max(.01f, headTurnDuration);
                     float smoothT = Mathf.SmoothStep(0f, 1f, t);
 
-                    Quaternion targetLookRot = GetTargetRotation();
-                    Quaternion currentRot = Quaternion.Slerp(startRot, targetLookRot, smoothT);
-
-                    ApplyRotationToPlayer(currentRot);
+                    // Yaw and pitch ease separately: a quaternion slerp adds roll the yaw/pitch camera drops.
+                    Vector3 target = GetTargetRotation().eulerAngles;
+                    float turn = yawTurn + Mathf.DeltaAngle(firstTargetYaw, target.y);
+                    playerMoveScript.ForceCameraRotation(startYaw + turn * smoothT,
+                        Mathf.LerpAngle(startPitch, target.x, smoothT));
                     yield return null;
                 }
             }
@@ -251,18 +256,7 @@ public class LookAction : ActionBase
 
     private void TrackTarget()
     {
-        Quaternion targetLookRot = GetTargetRotation();
-        ApplyRotationToPlayer(targetLookRot);
-    }
-
-    private void ApplyRotationToPlayer(Quaternion rot)
-    {
-        float currentYaw = rot.eulerAngles.y;
-        float currentPitch = rot.eulerAngles.x;
-        if (currentPitch > 180f)
-            currentPitch -= 360f;
-
-        playerMoveScript.ForceCameraRotation(currentYaw, currentPitch);
-
+        Vector3 target = GetTargetRotation().eulerAngles;
+        playerMoveScript.ForceCameraRotation(target.y, target.x);
     }
 }

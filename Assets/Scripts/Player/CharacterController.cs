@@ -377,18 +377,22 @@ namespace StarterAssets
             // Catch the body up before movement and foot IK, without slowing the camera.
             // Footwork's locomotion gate leaves authored interaction poses untouched.
             if (_footwork != null && _footwork.CanApply)
-            {
-                float viewYaw = _cinemachineTargetYaw + addedYaw;
-                float yawDifference = Mathf.DeltaAngle(transform.eulerAngles.y, viewYaw);
-                if (Mathf.Abs(yawDifference) > 60f)
-                    transform.rotation = Quaternion.Euler(0f,
-                        viewYaw - Mathf.Clamp(yawDifference, -60f, 60f), 0f);
-            }
+                KeepBodyNearView(_cinemachineTargetYaw + addedYaw);
+        }
+
+        // The camera sits on the head bone: past 60° it would see into the neck and shoulders.
+        private void KeepBodyNearView(float viewYaw)
+        {
+            float yawDifference = Mathf.DeltaAngle(transform.eulerAngles.y, viewYaw);
+            if (Mathf.Abs(yawDifference) > 60f)
+                transform.rotation = Quaternion.Euler(0f,
+                    viewYaw - Mathf.Clamp(yawDifference, -60f, 60f), 0f);
         }
 
         private void ApplyCameraRotation()
         {
-            if (_lockCamera || ExternalCameraControl)
+            // A forced look is re-applied after animation even with input locked, or the head bone wobbles it.
+            if (ExternalCameraControl || (_lockCamera && _forcedLookFrame != Time.frameCount))
                 return;
 
             // Restore world rotation after the body and animated parent bones have moved.
@@ -716,6 +720,8 @@ namespace StarterAssets
         private bool _restrictRotation = false; // Kısıtlı görüş açık mı?
         public bool IsFrozen => _isFrozen;
         public float IntendedLookYaw => _cinemachineTargetYaw;
+        public float IntendedLookPitch => _cinemachineTargetPitch;
+        private int _forcedLookFrame = -1;
         private float _centerYaw; // Kilitlendiğimizde baktığımız merkez açı
         private float _yawLimit = 50f; // Sağa/Sola kaç derece dönebiliriz?
 
@@ -752,7 +758,9 @@ namespace StarterAssets
 
         private void HandleHeadBob()
         {
-            if (ExternalCameraControl) return;
+            // While locked (intro, machines) the camera root may be detached from the head; recentring its
+            // localPosition would then drag it toward the world origin (the intro's 2 m cut).
+            if (ExternalCameraControl || _lockCamera) return;
             if (!Grounded)
                 return;
 
@@ -877,9 +885,13 @@ namespace StarterAssets
         // --- BU FONKSİYONU EKLE ---
         public void ForceCameraRotation(float yaw, float pitch)
         {
+            // Callers pass eulerAngles.x (0..360): 355° is "slightly up", not a 70° look down after the clamp.
+            pitch = Mathf.Clamp(Mathf.DeltaAngle(0f, pitch), BottomClamp, TopClamp);
             // Scriptin hafızasındaki açıları şu anki gerçek açılara eşitliyoruz
             _cinemachineTargetYaw = yaw;
             _cinemachineTargetPitch = pitch;
+            _forcedLookFrame = Time.frameCount;
+            KeepBodyNearView(yaw);
 
             // Cinemachine objesini de hemen güncelliyoruz ki "kayma" olmasın
             if (CinemachineCameraTarget != null)

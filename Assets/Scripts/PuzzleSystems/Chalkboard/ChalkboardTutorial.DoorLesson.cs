@@ -24,7 +24,7 @@ public sealed partial class ChalkboardTutorial
         doorLookPoint.position = officeDoor.GetComponentInChildren<Renderer>().bounds.center;
         doorFocus = gameObject.AddComponent<LookAction>();
         doorFocus.lookTarget = doorLookPoint;
-        doorFocus.headTurnDuration = .8f;
+        doorFocus.headTurnDuration = 1.4f; // Up to ~180° behind the player; .8 s read as a snap.
         doorFocus.waitUntilInput = false;
         doorFocus.autoReleaseTime = float.MaxValue;
         doorFocus.Execute();

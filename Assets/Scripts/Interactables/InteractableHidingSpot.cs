@@ -446,18 +446,25 @@ public class InteractableHidingSpot : MonoBehaviour, IInteractable, IForceExitab
 
         TogglePlayerModel(true);
 
-        // 2. KAMERAYI KAFAYA AL
-        if (headBone != null)
+        // 2. KAMERAYI OYUNCU KAMERASINA AL
+        // Dock onto the gameplay camera root, where the brain takes over at the end; the head bone + offset
+        // left a ~0.5 m jump at hand-off. Face the way out first so the walk doesn't look back in.
+        Transform dock = playerMoveScript != null && playerMoveScript.CinemachineCameraTarget != null
+            ? playerMoveScript.CinemachineCameraTarget.transform : headBone;
+        if (dock != null)
         {
-            mainCamera.SetParent(headBone);
+            if (playerMoveScript != null)
+                playerMoveScript.ForceCameraRotation(exitPosition.eulerAngles.y, 0f);
+            mainCamera.SetParent(dock);
+            Vector3 dockOffset = dock == headBone ? headOffset : Vector3.zero;
             Vector3 startLocalPos = mainCamera.localPosition;
             Quaternion startLocalRot = mainCamera.localRotation;
             float t = 0f;
-            while (t < 0.2f)
+            while (t < 0.5f)
             {
                 t += Time.deltaTime;
-                float smoothT = Mathf.SmoothStep(0f, 1f, t / 0.2f);
-                mainCamera.localPosition = Vector3.Lerp(startLocalPos, headOffset, smoothT);
+                float smoothT = Mathf.SmoothStep(0f, 1f, t / 0.5f);
+                mainCamera.localPosition = Vector3.Lerp(startLocalPos, dockOffset, smoothT);
                 mainCamera.localRotation = Quaternion.Slerp(
                     startLocalRot,
                     Quaternion.identity,
@@ -465,7 +472,7 @@ public class InteractableHidingSpot : MonoBehaviour, IInteractable, IForceExitab
                 );
                 yield return null;
             }
-            mainCamera.localPosition = headOffset;
+            mainCamera.localPosition = dockOffset;
             mainCamera.localRotation = Quaternion.identity;
         }
 
