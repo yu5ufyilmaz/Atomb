@@ -3862,8 +3862,8 @@
         },
         {
             "key": "ui.tutorial_choice.question",
-            "source": "Would you like to play the tutorial?",
-            "text": "Would you like to play the tutorial?"
+            "source": "First time in the laboratory?",
+            "text": "First time in the laboratory?"
         },
         {
             "key": "ui.tutorial_choice.body",
@@ -3872,18 +3872,18 @@
         },
         {
             "key": "ui.tutorial_choice.yes",
-            "source": "YES, START THE TUTORIAL",
-            "text": "YES, START THE TUTORIAL"
+            "source": "START WITH GUIDANCE",
+            "text": "START WITH GUIDANCE"
         },
         {
             "key": "ui.tutorial_choice.no",
-            "source": "NO, PLAY DIRECTLY",
-            "text": "NO, PLAY DIRECTLY"
+            "source": "START DIRECTLY",
+            "text": "START DIRECTLY"
         },
         {
             "key": "ui.tutorial_choice.back",
-            "source": "BACK TO MENU",
-            "text": "BACK TO MENU"
+            "source": "BACK",
+            "text": "BACK"
         },
         {
             "key": "settings.dof",

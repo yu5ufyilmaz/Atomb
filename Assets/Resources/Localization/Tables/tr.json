@@ -3862,8 +3862,8 @@
         },
         {
             "key": "ui.tutorial_choice.question",
-            "source": "Would you like to play the tutorial?",
-            "text": "Öğreticiyi oynamak ister misin?"
+            "source": "First time in the laboratory?",
+            "text": "Laboratuvara ilk gelişin mi?"
         },
         {
             "key": "ui.tutorial_choice.body",
@@ -3872,18 +3872,18 @@
         },
         {
             "key": "ui.tutorial_choice.yes",
-            "source": "YES, START THE TUTORIAL",
-            "text": "EVET, ÖĞRETİCİYİ BAŞLAT"
+            "source": "START WITH GUIDANCE",
+            "text": "REHBERLE BAŞLA"
         },
         {
             "key": "ui.tutorial_choice.no",
-            "source": "NO, PLAY DIRECTLY",
-            "text": "HAYIR, DOĞRUDAN OYNA"
+            "source": "START DIRECTLY",
+            "text": "DOĞRUDAN BAŞLA"
         },
         {
             "key": "ui.tutorial_choice.back",
-            "source": "BACK TO MENU",
-            "text": "MENÜYE DÖN"
+            "source": "BACK",
+            "text": "GERİ"
         },
         {
             "key": "settings.dof",

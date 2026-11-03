@@ -123,18 +123,18 @@ public class MainMenuManager : MonoBehaviour
         awaitingTutorialChoice = true;
         if (tutorialChoice == null)
         {
+            // The choice lives in the menu column itself, so it fades out with the menu when the game starts.
             var prompt = new GameObject("Tutorial Choice", typeof(RectTransform), typeof(TutorialChoicePrompt));
-            UnityEngine.SceneManagement.SceneManager.MoveGameObjectToScene(prompt, gameObject.scene);
+            prompt.transform.SetParent(mainMenuPanel.transform, false);
             tutorialChoice = prompt.GetComponent<TutorialChoicePrompt>();
         }
-        if (_menuCanvasGroup != null) { _menuCanvasGroup.interactable = false; _menuCanvasGroup.blocksRaycasts = false; }
         tutorialChoice.Show(ChooseTutorial, CancelTutorialChoice);
     }
 
     public void ChooseTutorial(bool enabled)
     {
         if (!awaitingTutorialChoice) return;
-        awaitingTutorialChoice = false; tutorialChoice.Hide();
+        awaitingTutorialChoice = false; tutorialChoice.Hide(false);
         BeginNewGame(enabled);
     }
 
@@ -333,6 +333,7 @@ public class MainMenuManager : MonoBehaviour
     {
         startingGame = false;
         if (mainMenuPanel != null) mainMenuPanel.SetActive(true);
+        if (tutorialChoice != null) tutorialChoice.Hide();
         if (_menuCanvasGroup != null) { _menuCanvasGroup.alpha = 1; _menuCanvasGroup.interactable = true; _menuCanvasGroup.blocksRaycasts = true; }
         Cursor.lockState = CursorLockMode.None; Cursor.visible = true;
         if (loadError == null && mainMenuPanel != null)

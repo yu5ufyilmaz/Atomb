@@ -1,84 +1,98 @@
 using System;
+using System.Linq;
 using TMPro;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
-/// <summary>A modal choice before the new-game transition starts.</summary>
-public sealed class TutorialChoicePrompt : MonoBehaviour, ICancelHandler
+/// <summary>New Game asks in the title menu's own column: the menu words step aside and the choice takes their rows,
+/// so the room behind the menu stays in view (3 Nov). Lives under the menu panel and copies its buttons.</summary>
+public sealed class TutorialChoicePrompt : MonoBehaviour
 {
+    const float Slide = 36, Duration = .45f;
     Action<bool> choose;
     Action cancel;
-    GameObject previousSelection;
-    Button yes;
+    CanvasGroup choice;
+    CanvasGroup[] menuGroups;
+    RectTransform[] menuRows;
+    float[] menuX;
+    float shown;
+    bool open, returnToMenu = true;
 
     public void Show(Action<bool> onChoose, Action onCancel)
     {
-        if (yes == null) Build();
-        choose = onChoose; cancel = onCancel;
-        previousSelection = EventSystem.current != null ? EventSystem.current.currentSelectedGameObject : null;
-        gameObject.SetActive(true);
+        if (choice == null) Build();
+        choose = onChoose; cancel = onCancel; open = true; returnToMenu = true;
         Cursor.lockState = CursorLockMode.None; Cursor.visible = true;
-        EventSystem.current?.SetSelectedGameObject(yes.gameObject);
+        Apply();
     }
-    public void Hide()
+    // After an answer the choice stays on screen and fades out with the whole menu.
+    public void Hide(bool backToMenu = true)
     {
-        choose = null; cancel = null; gameObject.SetActive(false);
-        EventSystem.current?.SetSelectedGameObject(previousSelection != null && previousSelection.activeInHierarchy ? previousSelection : null);
+        choose = null; cancel = null; open = false; returnToMenu = backToMenu;
+        if (choice != null) Apply();
     }
     void Select(bool tutorial) { var callback = choose; callback?.Invoke(tutorial); }
     void Cancel() { var callback = cancel; callback?.Invoke(); }
-    public void OnCancel(BaseEventData eventData) => Cancel();
+
     void Update()
     {
-        if ((Keyboard.current != null && Keyboard.current.escapeKey.wasPressedThisFrame)
-            || (Gamepad.current != null && Gamepad.current.buttonEast.wasPressedThisFrame)) Cancel();
+        if (open && ((Keyboard.current != null && Keyboard.current.escapeKey.wasPressedThisFrame)
+            || (Gamepad.current != null && Gamepad.current.buttonEast.wasPressedThisFrame))) Cancel();
+        float target = open ? 1 : returnToMenu ? 0 : shown;
+        if (choice == null || shown == target) return;
+        shown = Mathf.MoveTowards(shown, target, Time.unscaledDeltaTime / Duration); Apply();
     }
+
+    // Sequential, not a crossfade: both columns share rows, so overlapping words would smear into each other.
+    void Apply()
+    {
+        float menuOut = Smooth(Mathf.Clamp01(shown * 2)), choiceIn = Smooth(Mathf.Clamp01(shown * 2 - 1));
+        bool menuReady = !open && shown <= 0;
+        for (int i = 0; i < menuRows.Length; i++)
+        {
+            menuGroups[i].alpha = 1 - menuOut; menuGroups[i].interactable = menuGroups[i].blocksRaycasts = menuReady;
+            menuRows[i].anchoredPosition = new Vector2(menuX[i] - Slide * menuOut, menuRows[i].anchoredPosition.y);
+        }
+        choice.alpha = choiceIn; choice.interactable = choice.blocksRaycasts = open;
+        ((RectTransform)transform).anchoredPosition = new Vector2(Slide * (1 - choiceIn), 0);
+    }
+    static float Smooth(float t) => t * t * (3 - 2 * t);
 
     void Build()
     {
-        var style = Resources.Load<SettingsMenuStyle>("Settings/SettingsMenuStyle");
-        var canvas = gameObject.AddComponent<Canvas>(); canvas.renderMode = RenderMode.ScreenSpaceOverlay; canvas.sortingOrder = 3000;
-        var scaler = gameObject.AddComponent<CanvasScaler>(); scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
-        scaler.referenceResolution = new Vector2(1920, 1080); scaler.matchWidthOrHeight = 1;
-        gameObject.AddComponent<GraphicRaycaster>();
-        var shade = style.Image(transform, "Backdrop", 0, 0, 1920, 1080, null, new Color(0, 0, 0, .78f));
-        SettingsMenuStyle.Stretch(shade.rectTransform); shade.raycastTarget = true;
-        var card = SettingsMenuStyle.Rect(transform, "Question", 0, 0, 840, 408);
-        card.anchorMin = card.anchorMax = card.pivot = new Vector2(.5f, .5f); card.anchoredPosition = Vector2.zero;
-        card.gameObject.AddComponent<Image>().color = new Color(.035f, .043f, .036f, 1);
-        var outline = card.gameObject.AddComponent<Outline>(); outline.effectColor = new Color(.35f, .37f, .3f, .8f); outline.effectDistance = Vector2.one;
-        TMP_Text Label(string name, string text, float y, float height, float size)
+        var rect = (RectTransform)transform; SettingsMenuStyle.Stretch(rect);
+        choice = gameObject.AddComponent<CanvasGroup>();
+        var buttons = transform.parent.GetComponentsInChildren<MainMenuButtonMotion>(true).Where(b => !b.transform.IsChildOf(transform))
+            .OrderByDescending(b => ((RectTransform)b.transform).anchoredPosition.y).ToArray();
+        menuRows = buttons.Select(b => (RectTransform)b.transform).ToArray(); menuX = menuRows.Select(r => r.anchoredPosition.x).ToArray();
+        menuGroups = buttons.Select(b => b.TryGetComponent(out CanvasGroup group) ? group : b.gameObject.AddComponent<CanvasGroup>()).ToArray();
+        float x = menuX[0];
+        float Row(int i) => menuRows[Mathf.Min(i, menuRows.Length - 1)].anchoredPosition.y;
+
+        // The question is the menu's thin word, smaller and quieter, on the first row.
+        var question = Instantiate(buttons[0].thin, transform); question.name = "Question";
+        if (question.TryGetComponent(out LocalizedText copied)) DestroyImmediate(copied);
+        var q = question.rectTransform; q.anchorMin = q.anchorMax = new Vector2(.5f, .5f); q.pivot = new Vector2(0, .5f); q.anchoredPosition = new Vector2(x, Row(0));
+        question.fontSize = question.fontSizeMax = 30; question.fontSizeMin = 22; question.alpha = 1; question.color = new Color(.72f, .69f, .64f);
+        GameLocalization.Set(question, "First time in the laboratory?");
+
+        Answer("Yes", "START WITH GUIDANCE", Row(1), () => Select(true));
+        Answer("No", "START DIRECTLY", Row(2), () => Select(false));
+        Answer("Back", "BACK", Row(menuRows.Length - 1), Cancel);
+
+        void Answer(string name, string text, float y, Action clicked)
         {
-            var label = style.Label(card, name, 48, y, 744, height, text, size);
-            label.alignment = TextAlignmentOptions.Center; GameLocalization.Set(label, text); return label;
+            var copy = Instantiate(buttons[0].gameObject, transform); copy.name = name;
+            var row = (RectTransform)copy.transform; row.anchoredPosition = new Vector2(x, y);
+            var button = copy.GetComponent<Button>(); button.interactable = true;
+            button.onClick = new Button.ButtonClickedEvent(); button.onClick.AddListener(() => clicked());
+            var motion = copy.GetComponent<MainMenuButtonMotion>();
+            foreach (var label in new[] { motion.thin, motion.bold })
+            {
+                if (label.TryGetComponent(out LocalizedText binding)) binding.key = null; // the copy must not keep "New Game"
+                GameLocalization.Set(label, text);
+            }
         }
-        var eyebrow = Label("Eyebrow", "BEFORE YOU BEGIN", 36, 28, 18); eyebrow.color = new Color(.59f, .61f, .51f);
-        var title = Label("Title", "Would you like to play the tutorial?", 83, 90, 34);
-        title.font = style.headingFont != null ? style.headingFont : style.font;
-        Label("Description", "Learn the controls and survival rules step by step.", 178, 46, 22);
-        style.Image(card, "Divider", 48, 244, 744, 1, null, new Color(.32f, .34f, .28f));
-        Button Answer(string name, string text, float x, Action clicked)
-        {
-            var button = style.Button(card, name, x, 268, 360, 64, text, clicked, 21);
-            button.image.color = Color.white;
-            var colors = button.colors;
-            colors.normalColor = new Color(.14f, .17f, .13f, 1);
-            colors.highlightedColor = new Color(.24f, .28f, .20f, 1);
-            colors.selectedColor = new Color(.27f, .31f, .22f, 1);
-            colors.pressedColor = new Color(.10f, .12f, .09f, 1);
-            button.colors = colors;
-            button.GetComponentInChildren<TMP_Text>().alignment = TextAlignmentOptions.Center;
-            GameLocalization.Set(button.GetComponentInChildren<TMP_Text>(), text);
-            return button;
-        }
-        yes = Answer("Yes", "YES, START THE TUTORIAL", 48, () => Select(true));
-        var no = Answer("No", "NO, PLAY DIRECTLY", 432, () => Select(false));
-        var back = style.Button(card, "Back", 270, 352, 300, 36, "BACK TO MENU", Cancel, 18);
-        var backText = back.GetComponentInChildren<TMP_Text>(); backText.alignment = TextAlignmentOptions.Center; GameLocalization.Set(backText, "BACK TO MENU");
-        var yesNav = yes.navigation; yesNav.mode = Navigation.Mode.Explicit; yesNav.selectOnRight = no; yesNav.selectOnDown = back; yes.navigation = yesNav;
-        var noNav = no.navigation; noNav.mode = Navigation.Mode.Explicit; noNav.selectOnLeft = yes; noNav.selectOnDown = back; no.navigation = noNav;
-        var backNav = back.navigation; backNav.mode = Navigation.Mode.Explicit; backNav.selectOnUp = yes; back.navigation = backNav;
     }
 }
