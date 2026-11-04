@@ -1,0 +1,24 @@
+UV2TEST manualMargin4 DM_Ossiloscope verts=0 uv2=False
+UV2TEST manualMargin4 DM_Ossiloscope.001 verts=680 uv2=True
+UV2TEST manualMargin4 DM_Ossiloscope1 verts=0 uv2=False
+UV2TEST manualMargin4 DM_Ossiloscope1.001 verts=666 uv2=True
+UV2TEST manualMargin4 SM_Ossiloscope.001 verts=289 uv2=True
+UV2TEST manualMargin4 SM_Ossiloscope.002 verts=4788 uv2=True
+UV2TEST manualMargin4 SM_Ossiloscope.003 verts=3713 uv2=True
+UV2TEST manualMargin4 SM_OssiloscopeBase verts=466 uv2=True
+UV2TEST manualMargin4 SM_OssiloscopePanel1 verts=12483 uv2=True
+UV2TEST manualMargin4 SM_OssiloscopePanel2 verts=20283 uv2=True
+UV2TEST manualMargin4 SM_OssiloscopePanel3 verts=25355 uv2=True
+UV2TEST manualMargin4 emptyMeshes=2/25
+UV2TEST calc_minObjScale100 DM_Ossiloscope verts=0 uv2=False
+UV2TEST calc_minObjScale100 DM_Ossiloscope.001 verts=680 uv2=True
+UV2TEST calc_minObjScale100 DM_Ossiloscope1 verts=0 uv2=False
+UV2TEST calc_minObjScale100 DM_Ossiloscope1.001 verts=666 uv2=True
+UV2TEST calc_minObjScale100 SM_Ossiloscope.001 verts=289 uv2=True
+UV2TEST calc_minObjScale100 SM_Ossiloscope.002 verts=4788 uv2=True
+UV2TEST calc_minObjScale100 SM_Ossiloscope.003 verts=3713 uv2=True
+UV2TEST calc_minObjScale100 SM_OssiloscopeBase verts=466 uv2=True
+UV2TEST calc_minObjScale100 SM_OssiloscopePanel1 verts=12483 uv2=True
+UV2TEST calc_minObjScale100 SM_OssiloscopePanel2 verts=20283 uv2=True
+UV2TEST calc_minObjScale100 SM_OssiloscopePanel3 verts=25355 uv2=True
+UV2TEST calc_minObjScale100 emptyMeshes=2/25

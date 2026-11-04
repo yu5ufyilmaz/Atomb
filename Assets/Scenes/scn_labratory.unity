@@ -80314,8 +80314,8 @@ MonoBehaviour:
   maxEnergy: 100
   currentEnergy: 0
   chargePerClick: 15
-  drainRate: 20
-  maxIntensity: 350
+  drainRate: 3
+  maxIntensity: 800
   minIntensity: 0
 --- !u!82 &1236259380
 AudioSource:
@@ -97790,7 +97790,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1517654571
 RectTransform:
   m_ObjectHideFlags: 0
@@ -115585,7 +115585,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 942e52852a30b8d4981b66bc52f37d43, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DialogAction
-  delay: 4
+  delay: 1
   subtitleID: tut_005
   dialogClip: {fileID: 0}
   audioSource: {fileID: 0}
@@ -115634,7 +115634,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a81b630e5ead75c469f36f11a915862f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GuderianStateCondition
-  targetState: 6
+  targetState: 0
 --- !u!114 &1827608721
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -115647,7 +115647,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 94c302089fc46c14da95ce9bbb054fa3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::HidingSpotControlAction
-  delay: 5
+  delay: 1
   hidingSpot: {fileID: 454887305}
   lockExit: 0
 --- !u!1 &1829193186

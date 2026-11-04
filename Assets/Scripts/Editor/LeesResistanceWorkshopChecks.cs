@@ -125,7 +125,7 @@ public static class LeesResistanceWorkshopChecks
             control.keepResultVisible = true; control.BeginResistance(); control.CatchForMovement();
             ending.SetValue(control, .65f); update.Invoke(control, null); update.Invoke(control, null);
             Require(escaped == 1 && caught == 1 && !control.IsRunning, "Movement failure emits once.");
-            Require(control.hud.gameObject.activeSelf && control.hud.title.text == "YAKALANDIN", "Workshop keeps outcome visible.");
+            Require(control.hud.gameObject.activeSelf && control.hud.title.text == GameLocalization.Translate("YAKALANDIN"), "Workshop keeps outcome visible.");
             control.CancelResistance(); Require(!control.hud.gameObject.activeSelf, "Cancel after result clears UI.");
         }
         finally

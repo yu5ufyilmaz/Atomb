@@ -1,0 +1,29 @@
+sessionOnly=True
+[17.83] Log: CLAUDE GUARD outputs/final-verification-2026-11-04\play-log-033430.txt
+[17.87] WATCH guderian=Hidden subtitle= occupiedCanExit=
+[39.64] Warning: The character used for Ellipsis is not available in font asset [DMSans-Medium SDF] or any potential fallbacks. Switching Text Overflow mode to Truncate.
+[59.53] WATCH guderian=Hidden subtitle=thought_book_0 occupiedCanExit=
+[63.54] WATCH guderian=Hidden subtitle= occupiedCanExit=
+[64.35] Log: TUTORIAL PLAY STAGE PASS: a click during the camera hold opens the book
+[64.55] WATCH guderian=Hidden subtitle=thought_collect_0 occupiedCanExit=
+[65.13] Log: RESEARCH BOOK READABILITY PASS: 5 visible source blocks fit their text regions.
+[65.33] Log: RESEARCH BOOK COLLECT PASS: 5 physical page blocks passed through the real notebook drop path. Targets: 1
+[65.70] WATCH guderian=Hidden subtitle=thought_leave_book_0 occupiedCanExit=
+[65.77] Log: TUTORIAL PLAY STAGE PASS: book collection
+[65.80] WATCH guderian=Hidden subtitle= occupiedCanExit=
+[66.04] WATCH guderian=Hidden subtitle=thought_board_0 occupiedCanExit=
+[66.25] Warning: Parameter 'InteractIdle' does not exist.
+[68.38] WATCH guderian=Hidden subtitle= occupiedCanExit=
+[68.82] WATCH guderian=Hidden subtitle=thought_build_0 occupiedCanExit=
+[68.84] Exception: InvalidOperationException: Gerçek kart sürükleme reddedildi: Atım Kaynağı
+TutorialPlayChecks.DropAwayFromNotebook (NotebookWorkspaceController workspace, NotebookDraggableBlock note, UnityEngine.Vector2 point) (at Assets/Scripts/Editor/TutorialPlayChecks.cs:326)
+TutorialPlayChecks+<Flow>d__5.MoveNext () (at Assets/Scripts/Editor/TutorialPlayChecks.cs:114)
+UnityEngine.SetupCoroutine.InvokeMoveNext (System.Collections.IEnumerator enumerator, System.IntPtr returnValueAddress) (at <de88af24691e4d5d8139304fcf46f698>:0)
+
+[74.83] WATCH guderian=Hidden subtitle= occupiedCanExit=
+[104.84] WATCH guderian=Hidden subtitle=thought_build_1 occupiedCanExit=
+[110.85] WATCH guderian=Hidden subtitle= occupiedCanExit=
+[155.92] WATCH guderian=Hidden subtitle=thought_build_2 occupiedCanExit=
+[162.88] WATCH guderian=Hidden subtitle= occupiedCanExit=
+[192.90] WATCH guderian=Hidden subtitle=thought_build_1 occupiedCanExit=
+[198.91] WATCH guderian=Hidden subtitle= occupiedCanExit=

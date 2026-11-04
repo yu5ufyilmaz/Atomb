@@ -46,7 +46,8 @@ public sealed partial class ChalkboardTutorial
             string id = chain[i];
             if (parts.Any(p => p.formulaData?.itemID == id)) continue;
             workspace.GuideNote(n => n.blockType == NotebookBlockType.PartClue && n.itemID == id, "Parçalar",
-                BoardPoint(.76f - i * .25f, .72f), ToBoard);
+                // .62: kapalı hedef kartı 120 px uzadı; .72'de ilk yuva kartın alt kenarına düşüp bırakmayı reddettiriyordu.
+                BoardPoint(.76f - i * .25f, .62f), ToBoard);
             return;
         }
         for (int i = 0; i + 1 < chain.Length; i++)

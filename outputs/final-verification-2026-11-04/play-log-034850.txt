@@ -1,0 +1,6 @@
+sessionOnly=True
+[16.42] Log: CLAUDE GUARD outputs/final-verification-2026-11-04\play-log-034850.txt
+[16.46] WATCH guderian=Hidden subtitle= occupiedCanExit=
+[16.88] Warning: The character used for Ellipsis is not available in font asset [DMSans-Medium SDF] or any potential fallbacks. Switching Text Overflow mode to Truncate.
+[39.07] Warning: Parameter 'InteractIdle' does not exist.
+[48.56] Log: PLAYTEST NOTEBOOK BOARD PASS: outputs/playtest-notebook-board-2026-11-04/result.txt

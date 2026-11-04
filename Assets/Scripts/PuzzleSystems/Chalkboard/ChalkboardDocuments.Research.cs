@@ -40,8 +40,9 @@ public sealed partial class ChalkboardDocuments
         targetArea.gameObject.AddComponent<Outline>().effectColor = new Color(.94f, .9f, .75f, .8f);
         targetArea.gameObject.AddComponent<Button>().onClick.AddListener(() => SetDocumentPanelOpen(!shadeExpanded));
         title = Text(targetArea, "", new Vector2(2, 49), new Vector2(184, 30), 14);
-        title.fontStyle = FontStyles.Bold;
-        shadeToggleLabel = Text(targetArea, "BELGELERİ AÇ", Vector2.zero, new Vector2(76, 36), 12);
+        title.fontStyle = FontStyles.Bold; title.fontSizeMin = 9; title.overflowMode = TextOverflowModes.Ellipsis;
+        // En uzun kelimeye ("DOCUMENTS") yetecek genişlik: iki satıra yalnız boşluktan bölünür.
+        shadeToggleLabel = Text(targetArea, "BELGELERİ AÇ", Vector2.zero, new Vector2(90, 36), 12);
         shadeToggleLabel.fontStyle = FontStyles.Bold;
         diagram = new GameObject("Tahtadaki Hedef Şema", typeof(RectTransform), typeof(QuestDiagramGraphic)).GetComponent<QuestDiagramGraphic>();
         diagram.transform.SetParent(targetArea, false);
@@ -188,7 +189,9 @@ public sealed partial class ChalkboardDocuments
     {
         var quest = board.PinnedQuest;
         bool details = quest != null && shadeExpanded;
-        targetArea.sizeDelta = new Vector2(270, details ? 246 : 42);
+        // Kapalıyken de hedefin şekli/rengi küçük bir özet olarak görünür; ipucu metni yalnız açıkken.
+        targetArea.sizeDelta = new Vector2(270, details ? 246 : quest != null ? 120 : 42);
+        float top = targetArea.sizeDelta.y / 2 - 23;
         // Açılan ayrıntı aşağı doğru büyür; kartın sol üst köşesi yuvada sabit kalır.
         targetArea.anchoredPosition = new Vector2(surface.rect.xMin + 149, surface.rect.yMax - 6 - targetArea.sizeDelta.y / 2);
         targetArea.GetComponent<Image>().color = quest != null ? new Color(.93f, .85f, .62f) : new Color(.2f, .23f, .19f, .7f);
@@ -199,10 +202,14 @@ public sealed partial class ChalkboardDocuments
         if (quest != null) GameLocalization.SetFormat(title, "HEDEF / {0}", quest.title);
         else GameLocalization.Set(title, "HEDEFİ BURAYA BIRAK");
         title.color = hint.color = shadeToggleLabel.color = quest != null ? new Color(.12f, .15f, .13f) : new Color(.94f, .9f, .75f);
-        title.rectTransform.anchoredPosition = quest == null ? new Vector2(-38, 8) : new Vector2(-30, details ? 100 : 0);
-        title.rectTransform.sizeDelta = quest == null ? new Vector2(172, 22) : new Vector2(160, 34);
+        title.rectTransform.anchoredPosition = quest == null ? new Vector2(-38, 8) : new Vector2(-37, top);
+        title.rectTransform.sizeDelta = quest == null ? new Vector2(172, 22) : new Vector2(146, 34);
+        // Başlık 11 puntoda tek satıra sığıyorsa tek satır kalır; uzun başlık iki satıra kırılır (en küçük 9, en son üç nokta).
+        title.fontSize = title.fontSizeMax; // ölçü önceki otomatik küçültmeden değil, tam boydan alınır
+        title.textWrappingMode = title.GetPreferredValues(title.text).x * 11 / title.fontSizeMax <= title.rectTransform.rect.width
+            ? TextWrappingModes.NoWrap : TextWrappingModes.Normal;
         GameLocalization.Set(shadeToggleLabel, shadeExpanded ? "BELGELERİ TOPLA" : "BELGELERİ AÇ");
-        shadeToggleLabel.rectTransform.anchoredPosition = new Vector2(92, details ? 100 : 0);
+        shadeToggleLabel.rectTransform.anchoredPosition = new Vector2(85, quest != null ? top : 0);
         GameLocalization.Set(hint, quest != null ? board.practiceQuest?.clueSummary ?? "Kayıtları karşılaştır." : "Defter > Hedefler");
         goalDirectionsViewport.gameObject.SetActive(true);
         goalDirectionsViewport.anchoredPosition = quest != null ? new Vector2(0, -60) : new Vector2(-38, -10);
@@ -216,9 +223,12 @@ public sealed partial class ChalkboardDocuments
         hint.alignment = quest != null ? TextAlignmentOptions.TopLeft : TextAlignmentOptions.Center;
         goalDirectionsViewport.gameObject.SetActive(quest == null || details);
         diagram.rectTransform.sizeDelta = new Vector2(246, 66);
-        diagram.rectTransform.anchoredPosition = new Vector2(0, 47);
-        diagram.gameObject.SetActive(details);
-        if (details) diagram.SetQuest(quest);
+        diagram.rectTransform.anchoredPosition = new Vector2(0, details ? 47 : -20);
+        diagram.gameObject.SetActive(quest != null);
+        if (quest != null) diagram.SetQuest(quest);
+        // Karışım değerleri iki sabit satır (yoğunluk + miktar / pigment): satır içinde kırılmaz, sığmazsa küçülür.
+        foreach (var values in diagram.GetComponentsInChildren<TextMeshProUGUI>(true))
+            if (values.name == "Karışım Değerleri") { values.textWrappingMode = TextWrappingModes.NoWrap; values.rectTransform.anchorMin = new Vector2(.31f, .06f); }
     }
 
     private void UpdateResearchThreads()

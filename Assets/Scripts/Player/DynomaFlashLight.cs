@@ -34,7 +34,7 @@ public class DynomaFlashLight : MonoBehaviour
 
     [Tooltip("Saniyede ne kadar enerji azalsın?")]
     [SerializeField]
-    private float drainRate = 10f;
+    private float drainRate = 3f; // Bir şarj (15) yaklaşık 5 sn yeter
 
     [Header("Işık Ayarları")]
     [SerializeField]
@@ -116,7 +116,8 @@ public class DynomaFlashLight : MonoBehaviour
 
         // Işık şiddetini enerjiye göre ayarla
         // Enerji azaldıkça ışık kısılacak
-        targetLight.intensity = Mathf.Lerp(minIntensity, maxIntensity, percentage);
+        // Son %2'ye kadar tam parlak kalır, yalnızca orada söner (drainRate 3 ile ~0.67 sn).
+        targetLight.intensity = Mathf.Lerp(minIntensity, maxIntensity, percentage / 0.02f);
 
         // Hiç enerji yoksa ışığı tamamen kapat (Performans için)
         targetLight.enabled = (currentEnergy > 0);

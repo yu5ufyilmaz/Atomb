@@ -1,2 +1,6 @@
-RUNNING 2026-10-31T16:48:41.5304642Z
-FAIL Moving during the safe tutorial must fail and retry the lesson, without dying.
+RUNNING 2026-11-04T00:50:09.2600516Z
+PRACTICE movement and retry passed
+BEGIN movement=True, pause=False, timeScale=1, result=False, gamePause=True
+TIMELINE playing; duration=6.483333333332
+PASS 12 real Play assertions
+2026-11-04T00:50:22.2390048Z

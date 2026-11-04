@@ -282,14 +282,6 @@ MonoBehaviour:
       textEN: Good, at least I can see ahead. Now I must go out to the corridor,
         find the breaker box, and restore the power.
       textDE: 
-    - duration: 2
-      textTR: 
-      textEN: You can go out.
-      textDE: 
-    - duration: 2
-      textTR: 
-      textEN: Now its time for solve problem
-      textDE: 
   - id: tut_006
     note: 
     voiceClip: {fileID: 0}

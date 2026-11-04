@@ -108,7 +108,7 @@ public static class TutorialPlayChecks
             Require(workspace.ShowCollectedPart(id), "Toplanan parça bulunamadı: " + id); Canvas.ForceUpdateCanvases();
             var note = Object.FindObjectsByType<NotebookDraggableBlock>(FindObjectsSortMode.None)
                 .First(n => !n.IsSource && n.isActiveAndEnabled && n.Data.itemID == id);
-            Vector2 local = board.minBounds + Vector2.Scale(board.maxBounds - board.minBounds, new Vector2(.76f - i * .25f, .72f));
+            Vector2 local = board.minBounds + Vector2.Scale(board.maxBounds - board.minBounds, new Vector2(.76f - i * .25f, .62f)); // ChalkboardTutorial.GuideCircuit yuvaları
             Vector2 pointer = Camera.main.WorldToScreenPoint(board.boardTransform.TransformPoint(new Vector3(local.x, local.y, .02f)));
             var before = new HashSet<DraggableFormula>(board.boardTransform.GetComponentsInChildren<DraggableFormula>());
             DropAwayFromNotebook(workspace, note, pointer);
@@ -175,6 +175,7 @@ public static class TutorialPlayChecks
         }
         Require(!spot.canExit, "Düşman eğitimi sırasında dolaptan erken çıkılabiliyor.");
         yield return WaitFor(() => spot.canExit, "Guderian'ın gitmesi ve güvenli çıkış", 100);
+        Require(GuderianAI.Instance.currentState == GuderianAI.GuderianState.Hidden, "Dolap Guderian gitmeden açıldı.");
         spot.ForceExit(); yield return WaitFor(() => game.activeInteraction == null, "Dolaptan çıkış");
         yield return WaitFor(() => !spot.IsOccupied && Object.FindFirstObjectByType<UnityEngine.CharacterController>().enabled
             && Camera.main.GetComponent<Cinemachine.CinemachineBrain>().enabled, "Dolap çıkış animasyonu ve oyuncu kontrolü");

@@ -77,7 +77,7 @@ public static class LeesResistanceGameplaySetup
         if (enemy.audioSource != null) control.heartbeatAudio.outputAudioMixerGroup = enemy.audioSource.outputAudioMixerGroup;
         var canvas = control.hud.GetComponent<Canvas>(); canvas.renderMode = RenderMode.ScreenSpaceOverlay;
         canvas.worldCamera = enemy.playerCamera; control.hud.gameObject.SetActive(false);
-        var workshopLabel = control.hud.transform.Find("Workshop Label"); if (workshopLabel != null) workshopLabel.gameObject.SetActive(false);
+        foreach (var label in new[] { "Workshop Label", "Identity" }) { var t = control.hud.transform.Find(label); if (t != null) t.gameObject.SetActive(false); }
         var suspended = new List<Behaviour>();
         void Suspend(Behaviour component) { if (component != null && !suspended.Contains(component)) suspended.Add(component); }
         if (enemy.playerMovementScript != control.playerMovement) Suspend(enemy.playerMovementScript);

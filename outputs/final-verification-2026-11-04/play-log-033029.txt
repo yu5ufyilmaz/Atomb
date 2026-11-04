@@ -1,0 +1,67 @@
+sessionOnly=True
+[63.97] Log: CLAUDE GUARD outputs/final-verification-2026-11-04\play-log-033029.txt
+[63.99] WATCH guderian=Hidden subtitle=thought_board_0 occupiedCanExit=
+[64.37] Exception: InvalidOperationException: Boş arşiv dersi atladı.
+TutorialPlayChecks+<Flow>d__5.MoveNext () (at Assets/Scripts/Editor/TutorialPlayChecks.cs:270)
+UnityEngine.SetupCoroutine.InvokeMoveNext (System.Collections.IEnumerator enumerator, System.IntPtr returnValueAddress) (at <de88af24691e4d5d8139304fcf46f698>:0)
+
+[66.32] Warning: Parameter 'InteractIdle' does not exist.
+[68.41] WATCH guderian=Hidden subtitle= occupiedCanExit=
+[68.69] WATCH guderian=Hidden subtitle=thought_pin_0 occupiedCanExit=
+[73.17] WATCH guderian=Hidden subtitle= occupiedCanExit=
+[73.46] WATCH guderian=Hidden subtitle=thought_clear_board_0 occupiedCanExit=
+[74.54] WATCH guderian=Hidden subtitle= occupiedCanExit=
+[74.86] WATCH guderian=Hidden subtitle=thought_build_0 occupiedCanExit=
+[80.87] WATCH guderian=Hidden subtitle= occupiedCanExit=
+[90.20] Warning: The character used for Ellipsis is not available in font asset [DMSans-Medium SDF] or any potential fallbacks. Switching Text Overflow mode to Truncate.
+[90.22] Warning: The character used for Ellipsis is not available in font asset [DMSans-Medium SDF] or any potential fallbacks. Switching Text Overflow mode to Truncate.
+[90.48] WATCH guderian=Hidden subtitle=thought_store_0 occupiedCanExit=
+[90.67] Warning: The character used for Ellipsis is not available in font asset [DMSans-Medium SDF] or any potential fallbacks. Switching Text Overflow mode to Truncate.
+[91.00] Warning: The character used for Ellipsis is not available in font asset [DMSans-Medium SDF] or any potential fallbacks. Switching Text Overflow mode to Truncate.
+[91.01] WATCH guderian=Hidden subtitle= occupiedCanExit=
+[91.34] WATCH guderian=Hidden subtitle=thought_leave_board_0 occupiedCanExit=
+[91.61] WATCH guderian=Hidden subtitle= occupiedCanExit=
+[92.87] WATCH guderian=Hidden subtitle=thought_lock_0 occupiedCanExit=
+[97.87] WATCH guderian=Hidden subtitle= occupiedCanExit=
+[98.99] WATCH guderian=Approaching subtitle= occupiedCanExit=
+[99.21] WATCH guderian=Approaching subtitle=thought_hide_0 occupiedCanExit=
+[101.96] WATCH guderian=Approaching subtitle= occupiedCanExit=
+[102.20] WATCH guderian=Approaching subtitle=thought_wait_hidden_0 occupiedCanExit=
+[102.47] WATCH guderian=Approaching subtitle=thought_wait_hidden_0 occupiedCanExit=False
+[103.01] WATCH guderian=Breaching subtitle=thought_wait_hidden_0 occupiedCanExit=False
+[107.19] WATCH guderian=Breaching subtitle= occupiedCanExit=False
+[108.03] WATCH guderian=Entering subtitle= occupiedCanExit=False
+[112.54] WATCH guderian=Searching subtitle= occupiedCanExit=False
+[113.64] WATCH guderian=Exiting subtitle= occupiedCanExit=False
+[118.57] WATCH guderian=Hidden subtitle= occupiedCanExit=False
+[118.82] WATCH guderian=Hidden subtitle=thought_leave_hiding_0 occupiedCanExit=False
+[119.58] WATCH guderian=Hidden subtitle=thought_leave_hiding_0 occupiedCanExit=True
+[122.84] WATCH guderian=Hidden subtitle= occupiedCanExit=True
+[132.43] WATCH guderian=Hidden subtitle= occupiedCanExit=
+[132.69] WATCH guderian=Hidden subtitle=thought_notice_lees_0 occupiedCanExit=
+[135.09] WATCH guderian=Hidden subtitle= occupiedCanExit=
+[135.33] WATCH guderian=Hidden subtitle=thought_avoid_lees_0 occupiedCanExit=
+[141.34] WATCH guderian=Hidden subtitle= occupiedCanExit=
+[148.35] WATCH guderian=Hidden subtitle=thought_turing_0 occupiedCanExit=
+[154.45] WATCH guderian=Hidden subtitle= occupiedCanExit=
+[158.32] WATCH guderian=Hidden subtitle=thought_insert_0 occupiedCanExit=
+[159.57] Warning: The character used for Ellipsis is not available in font asset [DMSans-Medium SDF] or any potential fallbacks. Switching Text Overflow mode to Truncate.
+[159.59] Warning: The character used for Ellipsis is not available in font asset [DMSans-Medium SDF] or any potential fallbacks. Switching Text Overflow mode to Truncate.
+[161.54] Warning: The character used for Ellipsis is not available in font asset [DMSans-Medium SDF] or any potential fallbacks. Switching Text Overflow mode to Truncate.
+[162.20] Warning: The character used for Ellipsis is not available in font asset [DMSans-Medium SDF] or any potential fallbacks. Switching Text Overflow mode to Truncate.
+[162.25] WATCH guderian=Hidden subtitle= occupiedCanExit=
+[162.51] WATCH guderian=Hidden subtitle=thought_reader_0 occupiedCanExit=
+[168.53] WATCH guderian=Hidden subtitle= occupiedCanExit=
+[171.89] WATCH guderian=Hidden subtitle=thought_confirm_0 occupiedCanExit=
+[173.52] WATCH guderian=Hidden subtitle= occupiedCanExit=
+[173.70] WATCH guderian=Hidden subtitle=thought_valve_room_0 occupiedCanExit=
+[178.71] WATCH guderian=Hidden subtitle= occupiedCanExit=
+[188.17] WATCH guderian=Hidden subtitle=thought_valve_0 occupiedCanExit=
+[193.16] WATCH guderian=Hidden subtitle= occupiedCanExit=
+[199.01] WATCH guderian=Hidden subtitle=thought_leave_valve_0 occupiedCanExit=
+[200.94] WATCH guderian=Hidden subtitle= occupiedCanExit=
+[201.18] WATCH guderian=Hidden subtitle=thought_wait_power_0 occupiedCanExit=
+[203.93] Warning: DEBUG MENU: Şartel Zorla Attırıldı!
+[203.98] WATCH guderian=Hidden subtitle= occupiedCanExit=
+[204.23] WATCH guderian=Hidden subtitle=thought_breaker_0 occupiedCanExit=
+[209.25] WATCH guderian=Hidden subtitle= occupiedCanExit=

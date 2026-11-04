@@ -12,8 +12,8 @@ public sealed class LeesResistanceHud : MonoBehaviour
     public void ShowPrompt(string heading, string message, string controls)
     {
         gameObject.SetActive(true);
-        title.text = heading; title.color = Bone; detail.text = message; footer.text = controls;
-        pressureLabel.text = ""; progressLabel.text = "";
+        GameLocalization.Set(title, heading); title.color = Bone; GameLocalization.Set(detail, message); GameLocalization.Set(footer, controls);
+        GameLocalization.Set(pressureLabel, ""); GameLocalization.Set(progressLabel, "");
         graphic.active = false; graphic.danger = graphic.progress = 0; graphic.Refresh();
     }
     public void Present(LeesResistanceModel model, bool paused, bool workshopControls = true)
@@ -26,32 +26,37 @@ public sealed class LeesResistanceHud : MonoBehaviour
         graphic.pull = model.PullStrength / Mathf.Max(1, model.Settings.pullDegreesPerSecond);
         graphic.clock = model.Elapsed; graphic.Refresh();
         title.color = Bone;
-        footer.text = workshopControls ? "FARE  /  TERS YÖNE ÇEK                         ESC  /  DURAKLAT" : "";
-        pressureLabel.text = graphic.active ? "BASKI  " + Mathf.RoundToInt(model.Danger * 100).ToString("00") + "%" : "";
-        progressLabel.text = graphic.active ? "DAYAN  " + Mathf.CeilToInt(model.Settings.survivalSeconds - model.Elapsed) + " sn" : "";
+        GameLocalization.Set(footer, workshopControls ? "FARE  /  TERS YÖNE ÇEK                         ESC  /  DURAKLAT" : "");
+        if (graphic.active)
+        {
+            GameLocalization.SetFormat(pressureLabel, "BASKI  {0:00}%", Mathf.RoundToInt(model.Danger * 100));
+            GameLocalization.SetFormat(progressLabel, "DAYAN  {0} sn", Mathf.CeilToInt(model.Settings.survivalSeconds - model.Elapsed));
+        }
+        else { GameLocalization.Set(pressureLabel, ""); GameLocalization.Set(progressLabel, ""); }
         if (paused && workshopControls)
         {
-            title.text = "DURAKLATILDI"; detail.text = "Devam etmek için tıkla.";
-            footer.text = "Mücadele ve sesler bekliyor."; return;
+            GameLocalization.Set(title, "DURAKLATILDI"); GameLocalization.Set(detail, "Devam etmek için tıkla.");
+            GameLocalization.Set(footer, "Mücadele ve sesler bekliyor."); return;
         }
         switch (model.State)
         {
             case LeesResistanceModel.Phase.Approaching:
-                title.text = "HAREKET ETME"; detail.text = "Arkanda. Yaklaşıyor.\nBaşını çevirmesine izin verme."; break;
+                GameLocalization.Set(title, "HAREKET ETME"); GameLocalization.Set(detail, "Arkanda. Yaklaşıyor.\nBaşını çevirmesine izin verme."); break;
             case LeesResistanceModel.Phase.Struggling:
-                title.text = model.PullDirection > 0 ? "SOLA DİREN" : "SAĞA DİREN";
+                GameLocalization.Set(title, model.PullDirection > 0 ? "SOLA DİREN" : "SAĞA DİREN");
                 title.color = model.Danger > .7f ? Red : Bone;
-                detail.text = model.PullDirection > 0 ? "LEES sağa çekiyor. Fareyi sola çek." : "LEES sola çekiyor. Fareyi sağa çek.";
-                if (model.DirectionAge < model.Settings.directionWarningSeconds) detail.text = "TUTUŞUNU DEĞİŞTİRİYOR…  " + detail.text;
+                string pull = model.PullDirection > 0 ? "LEES sağa çekiyor. Fareyi sola çek." : "LEES sola çekiyor. Fareyi sağa çek.";
+                if (model.DirectionAge < model.Settings.directionWarningSeconds) GameLocalization.SetFormat(detail, "TUTUŞUNU DEĞİŞTİRİYOR…  {0}", pull);
+                else GameLocalization.Set(detail, pull);
                 break;
             case LeesResistanceModel.Phase.Survived:
-                title.text = "KURTULDUN"; title.color = new Color(.62f, .83f, .74f);
-                detail.text = "Tutuşu gevşedi. Artık arkanda değil.";
-                footer.text = workshopControls ? "R  /  YENİDEN DENE" : ""; graphic.danger = 0; break;
+                GameLocalization.Set(title, "KURTULDUN"); title.color = new Color(.62f, .83f, .74f);
+                GameLocalization.Set(detail, "Tutuşu gevşedi. Artık arkanda değil.");
+                GameLocalization.Set(footer, workshopControls ? "R  /  YENİDEN DENE" : ""); graphic.danger = 0; break;
             case LeesResistanceModel.Phase.Caught:
-                title.text = "YAKALANDIN"; title.color = Red;
-                detail.text = "Başını çevirdi. Mücadeleyi kaybettin.";
-                footer.text = workshopControls ? "R  /  YENİDEN DENE" : ""; break;
+                GameLocalization.Set(title, "YAKALANDIN"); title.color = Red;
+                GameLocalization.Set(detail, "Başını çevirdi. Mücadeleyi kaybettin.");
+                GameLocalization.Set(footer, workshopControls ? "R  /  YENİDEN DENE" : ""); break;
         }
     }
 }

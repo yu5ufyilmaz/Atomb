@@ -4411,6 +4411,361 @@
             "text": "Notebook"
         },
         {
+            "key": "exp.status.reader_hint",
+            "source": "Ölçümler'deki ölçüm kağıdını okuyucuya bırak veya kodu elle gir.",
+            "text": "Drop the measurement sheet from Measurements into the reader, or enter the code by hand."
+        },
+        {
+            "key": "exp.status.build_first",
+            "source": "Önce bir düzen kur; ÖLÇ düğmesine bas.",
+            "text": "Build a setup first, then press MEASURE."
+        },
+        {
+            "key": "exp.status.take_sheet",
+            "source": "Ölçüm kağıdını deftere al.",
+            "text": "Take the measurement sheet into your notebook."
+        },
+        {
+            "key": "exp.status.session_limit",
+            "source": "Bu oturumda 999 ölçüm alındı. Yeni ölçüm kodu için yeni oyun başlat.",
+            "text": "999 measurements taken this session. Start a new game for new measurement codes."
+        },
+        {
+            "key": "exp.status.measure_ready",
+            "source": "Ölçüm hazır. Kağıdı deftere al.",
+            "text": "Measurement ready. Take the sheet into your notebook."
+        },
+        {
+            "key": "exp.card.sheet_title",
+            "source": "ÖLÇÜM KAĞIDI",
+            "text": "MEASUREMENT SHEET"
+        },
+        {
+            "key": "exp.status.unknown_code",
+            "source": "Bu koda ait bir ölçüm yok. Tahtadaki çıktıyı kontrol et.",
+            "text": "No measurement matches this code. Check the output on the board."
+        },
+        {
+            "key": "exp.status.other_session",
+            "source": "Bu ölçüm başka bir puzzle veya oturuma ait.",
+            "text": "This measurement belongs to another puzzle or session."
+        },
+        {
+            "key": "exp.status.mixture_mismatch",
+            "source": "Karışım hedefe uymuyor. Rengi, yoğunluğu ve miktarı karşılaştır.",
+            "text": "The mixture does not match the target. Compare color, density and quantity."
+        },
+        {
+            "key": "exp.status.trace_mismatch",
+            "source": "Kayıt hedefle örtüşmüyor. Şekli, yüksekliği ve zaman aralığını karşılaştır.",
+            "text": "The record does not match the target. Compare shape, height and timing."
+        },
+        {
+            "key": "exp.status.verified",
+            "source": "DENEY ONAYLANDI / Kayıt hedefle örtüşüyor.",
+            "text": "EXPERIMENT VERIFIED / The record matches the target."
+        },
+        {
+            "key": "exp.col.build_setup",
+            "source": "Kaynak ile analizör arasında bir karışım düzeneği kur.",
+            "text": "Build a mixing setup between the source and the analyzer."
+        },
+        {
+            "key": "exp.sim.build_setup",
+            "source": "Kaynak ile ölçer arasında bir deney düzeni kur (en fazla 64 parça).",
+            "text": "Build an experiment setup between the source and the meter (at most 64 parts)."
+        },
+        {
+            "key": "exp.col.part_not_allowed",
+            "source": "Bu parça renk ve karışım deneyinde kullanılamaz.",
+            "text": "This part cannot be used in the color mixing experiment."
+        },
+        {
+            "key": "exp.sim.unknown_part",
+            "source": "Ölçümde tanınmayan bir bileşen var.",
+            "text": "The setup contains an unrecognized component."
+        },
+        {
+            "key": "exp.col.single_source",
+            "source": "Tek taşıyıcı kaynağı kullan.",
+            "text": "Use a single carrier source."
+        },
+        {
+            "key": "exp.sim.single_source",
+            "source": "Tek atım kaynağı kullan.",
+            "text": "Use a single pulse source."
+        },
+        {
+            "key": "exp.col.single_analyzer",
+            "source": "Tek analizör kullan.",
+            "text": "Use a single analyzer."
+        },
+        {
+            "key": "exp.sim.single_meter",
+            "source": "Tek ölçer kullan.",
+            "text": "Use a single meter."
+        },
+        {
+            "key": "exp.col.missing_ends",
+            "source": "Taşıyıcı kaynağı veya analizör eksik.",
+            "text": "The carrier source or the analyzer is missing."
+        },
+        {
+            "key": "exp.sim.missing_ends",
+            "source": "Atım kaynağı veya ölçer eksik.",
+            "text": "The pulse source or the meter is missing."
+        },
+        {
+            "key": "exp.col.bad_link",
+            "source": "Çıkış okunu başka bir parçanın girişine bağla.",
+            "text": "Connect the output arrow to another part's input."
+        },
+        {
+            "key": "exp.sim.bad_link",
+            "source": "Hat okunamadı. Çıkış okunu bir giriş halkasına bağla.",
+            "text": "The line cannot be read. Connect the output arrow to an input ring."
+        },
+        {
+            "key": "exp.col.capacity",
+            "source": "Giriş veya çıkış kapasitesi aşıldı.",
+            "text": "Input or output capacity exceeded."
+        },
+        {
+            "key": "exp.sim.capacity",
+            "source": "Bir bileşenin giriş veya çıkış sayısı aşıldı.",
+            "text": "A component has too many inputs or outputs."
+        },
+        {
+            "key": "exp.col.loop",
+            "source": "Sıvı hattında döngü var.",
+            "text": "There is a loop in the fluid line."
+        },
+        {
+            "key": "exp.sim.loop",
+            "source": "Hat kendi üzerine dönüyor; döngüyü kaldır.",
+            "text": "The line loops back on itself; remove the loop."
+        },
+        {
+            "key": "exp.col.all_parts_work",
+            "source": "Bütün parçalar çalışmalı. Dağıtıcının iki çıkışını ve karıştırıcının iki girişini de bağla.",
+            "text": "Every part must work. Connect both splitter outputs and both mixer inputs."
+        },
+        {
+            "key": "exp.sim.all_parts_work",
+            "source": "Bütün parçalar kaynaktan beslenip ölçere ulaşmalı; açık veya kullanılmayan uçları kaldır.",
+            "text": "Every part must be fed by the source and reach the meter; remove open or unused ends."
+        },
+        {
+            "key": "exp.col.part_count",
+            "source": "Parça adedi {0}–{1} olmalı.",
+            "text": "Part count must be {0}–{1}."
+        },
+        {
+            "key": "exp.sim.part_count",
+            "source": "Toplam parça koşulu: {0}–{1}.",
+            "text": "Total parts required: {0}–{1}."
+        },
+        {
+            "key": "exp.col.pigment_count",
+            "source": "Pigment adedi {0}–{1} olmalı.",
+            "text": "Pigment count must be {0}–{1}."
+        },
+        {
+            "key": "exp.sim.sample_count",
+            "source": "Numune adedi koşulu: {0}–{1}.",
+            "text": "Samples required: {0}–{1}."
+        },
+        {
+            "key": "exp.col.max_depth",
+            "source": "En fazla hat derinliği aşıldı.",
+            "text": "Maximum line depth exceeded."
+        },
+        {
+            "key": "exp.sim.max_depth",
+            "source": "En fazla bağlantı derinliği aşıldı.",
+            "text": "Maximum connection depth exceeded."
+        },
+        {
+            "key": "exp.col.forbidden_part",
+            "source": "Yasak parça: {0}",
+            "text": "Forbidden part: {0}"
+        },
+        {
+            "key": "exp.sim.forbidden_part",
+            "source": "Bu görevde kullanılamaz: {0}",
+            "text": "Not allowed in this task: {0}"
+        },
+        {
+            "key": "exp.sim.part_quantity",
+            "source": "{0}: adet koşulu {1}–{2}.",
+            "text": "{0}: quantity required {1}–{2}."
+        },
+        {
+            "key": "exp.sim.too_many_traces",
+            "source": "Çok fazla iz oluştu. Çift tepki sayısını azalt.",
+            "text": "Too many traces. Reduce the number of double responses."
+        },
+        {
+            "key": "exp.sim.trace_budget",
+            "source": "Ölçüm iz bütçesi aşıldı.",
+            "text": "Measurement trace budget exceeded."
+        },
+        {
+            "key": "exp.sim.no_trace",
+            "source": "Ölçere ulaşan iz yok. Açık kalan hatları gözlemle.",
+            "text": "No trace reaches the meter. Check the open lines."
+        },
+        {
+            "key": "exp.col.no_flow",
+            "source": "Analizöre sıvı ulaşmıyor.",
+            "text": "No fluid reaches the analyzer."
+        },
+        {
+            "key": "lees.hud.controls",
+            "source": "FARE  /  TERS YÖNE ÇEK                         ESC  /  DURAKLAT",
+            "text": "MOUSE  /  PULL THE OTHER WAY                         ESC  /  PAUSE"
+        },
+        {
+            "key": "lees.hud.pressure",
+            "source": "BASKI  {0:00}%",
+            "text": "PRESSURE  {0:00}%"
+        },
+        {
+            "key": "lees.hud.hold",
+            "source": "DAYAN  {0} sn",
+            "text": "HOLD ON  {0} s"
+        },
+        {
+            "key": "lees.hud.paused",
+            "source": "DURAKLATILDI",
+            "text": "PAUSED"
+        },
+        {
+            "key": "lees.hud.click_continue",
+            "source": "Devam etmek için tıkla.",
+            "text": "Click to continue."
+        },
+        {
+            "key": "lees.hud.paused_detail",
+            "source": "Mücadele ve sesler bekliyor.",
+            "text": "The struggle and the sounds are on hold."
+        },
+        {
+            "key": "lees.hud.dont_move",
+            "source": "HAREKET ETME",
+            "text": "DON'T MOVE"
+        },
+        {
+            "key": "lees.hud.behind",
+            "source": "Arkanda. Yaklaşıyor.\nBaşını çevirmesine izin verme.",
+            "text": "It's behind you. Getting closer.\nDon't let it turn your head."
+        },
+        {
+            "key": "lees.hud.resist_left",
+            "source": "SOLA DİREN",
+            "text": "RESIST LEFT"
+        },
+        {
+            "key": "lees.hud.resist_right",
+            "source": "SAĞA DİREN",
+            "text": "RESIST RIGHT"
+        },
+        {
+            "key": "lees.hud.pull_right",
+            "source": "LEES sağa çekiyor. Fareyi sola çek.",
+            "text": "LEES is pulling right. Drag the mouse left."
+        },
+        {
+            "key": "lees.hud.pull_left",
+            "source": "LEES sola çekiyor. Fareyi sağa çek.",
+            "text": "LEES is pulling left. Drag the mouse right."
+        },
+        {
+            "key": "lees.hud.shifting_grip",
+            "source": "TUTUŞUNU DEĞİŞTİRİYOR…  {0}",
+            "text": "SHIFTING ITS GRIP…  {0}"
+        },
+        {
+            "key": "lees.hud.survived",
+            "source": "KURTULDUN",
+            "text": "YOU BROKE FREE"
+        },
+        {
+            "key": "lees.hud.survived_detail",
+            "source": "Tutuşu gevşedi. Artık arkanda değil.",
+            "text": "Its grip has loosened. It's no longer behind you."
+        },
+        {
+            "key": "lees.hud.retry",
+            "source": "R  /  YENİDEN DENE",
+            "text": "R  /  TRY AGAIN"
+        },
+        {
+            "key": "lees.hud.caught_detail",
+            "source": "Başını çevirdi. Mücadeleyi kaybettin.",
+            "text": "It turned your head. You lost the struggle."
+        },
+        {
+            "key": "board.feedback.unlinked",
+            "source": "Bu bilginin hangi hedefe ait olduğu henüz belirlenemedi.",
+            "text": "It is not yet clear which target this information belongs to."
+        },
+        {
+            "key": "board.feedback.research_pinned",
+            "source": "Araştırma kaydı panoya takıldı. İlgili olup olmadığını sen değerlendir.",
+            "text": "Research record pinned to the board. You decide whether it is relevant."
+        },
+        {
+            "key": "board.feedback.info_linked",
+            "source": "Bilgi doğru hedefe bağlandı.",
+            "text": "Information linked to the right target."
+        },
+        {
+            "key": "board.feedback.part_failed",
+            "source": "Parça tahtaya aktarılamadı: {0}",
+            "text": "The part could not be moved to the board: {0}"
+        },
+        {
+            "key": "board.feedback.area_not_ready",
+            "source": "Deney alanı hazır değil.",
+            "text": "The experiment area is not ready."
+        },
+        {
+            "key": "board.feedback.need_target",
+            "source": "Önce defterindeki HEDEF notunu tahtaya sürükle.",
+            "text": "First drag the TARGET note from your notebook onto the board."
+        },
+        {
+            "key": "board.feedback.area_empty",
+            "source": "Deney alanı boş.",
+            "text": "The experiment area is empty."
+        },
+        {
+            "key": "board.feedback.place_all",
+            "source": "Yapının tamamını tahta alanına yerleştir.",
+            "text": "Place the whole setup inside the board area."
+        },
+        {
+            "key": "board.feedback.links_not_ready",
+            "source": "Deney bağlantıları hazır değil.",
+            "text": "The experiment connections are not ready."
+        },
+        {
+            "key": "board.feedback.saved_part_missing",
+            "source": "Tahta kaydındaki parça bulunamadı; mevcut tahta korundu.",
+            "text": "A part in the board save was not found; the current board was kept."
+        },
+        {
+            "key": "board.feedback.load_failed",
+            "source": "Tahta yüklenemedi; mevcut tahta korundu: {0}",
+            "text": "The board could not be loaded; the current board was kept: {0}"
+        },
+        {
+            "key": "board.feedback.unlinked_info",
+            "source": "Bağlantısı belirsiz bilgiler",
+            "text": "Information with an unclear link"
+        },
+        {
             "key": "subtitle.chemistry_lab_entrance.0",
             "source": "",
             "text": "Did you think you left me behind at the university, Arthur?"
@@ -4639,16 +4994,6 @@
             "key": "subtitle.tut_005.0",
             "source": "",
             "text": "Good, at least I can see ahead. Now I must go out to the corridor, find the breaker box, and restore the power."
-        },
-        {
-            "key": "subtitle.tut_005.1",
-            "source": "",
-            "text": "You can go out."
-        },
-        {
-            "key": "subtitle.tut_005.2",
-            "source": "",
-            "text": "Now its time for solve problem"
         },
         {
             "key": "subtitle.tut_006.0",

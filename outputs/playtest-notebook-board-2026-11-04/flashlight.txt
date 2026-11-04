@@ -1,0 +1,14 @@
+0.0s intensity 0 energy 15.00
+0.5s intensity 800 energy 13.50
+1.0s intensity 800 energy 11.98
+1.5s intensity 800 energy 10.45
+2.0s intensity 800 energy 8.94
+2.5s intensity 800 energy 7.43
+3.0s intensity 800 energy 5.90
+3.5s intensity 800 energy 4.36
+4.0s intensity 800 energy 2.86
+4.6s intensity 533 energy 1.33
+5.1s intensity 0 energy 0.00
+5.6s intensity 0 energy 0.00
+full until 4.33s, off at 5.02s
+PASS

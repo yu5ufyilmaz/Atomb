@@ -1,0 +1,68 @@
+sessionOnly=True
+[17.99] Log: CLAUDE GUARD outputs/final-verification-2026-11-04\play-log-034458.txt
+[18.03] WATCH guderian=Hidden subtitle= occupiedCanExit=
+[18.43] Warning: The character used for Ellipsis is not available in font asset [DMSans-Medium SDF] or any potential fallbacks. Switching Text Overflow mode to Truncate.
+[38.35] WATCH guderian=Hidden subtitle=thought_book_0 occupiedCanExit=
+[42.36] WATCH guderian=Hidden subtitle= occupiedCanExit=
+[43.17] Log: TUTORIAL PLAY STAGE PASS: a click during the camera hold opens the book
+[43.36] WATCH guderian=Hidden subtitle=thought_collect_0 occupiedCanExit=
+[43.94] Log: RESEARCH BOOK READABILITY PASS: 5 visible source blocks fit their text regions.
+[44.15] Log: RESEARCH BOOK COLLECT PASS: 5 physical page blocks passed through the real notebook drop path. Targets: 1
+[44.51] WATCH guderian=Hidden subtitle=thought_leave_book_0 occupiedCanExit=
+[44.58] Log: TUTORIAL PLAY STAGE PASS: book collection
+[44.61] WATCH guderian=Hidden subtitle= occupiedCanExit=
+[44.86] WATCH guderian=Hidden subtitle=thought_board_0 occupiedCanExit=
+[45.07] Warning: Parameter 'InteractIdle' does not exist.
+[47.20] WATCH guderian=Hidden subtitle= occupiedCanExit=
+[47.63] WATCH guderian=Hidden subtitle=thought_build_0 occupiedCanExit=
+[47.70] Warning: The character used for Ellipsis is not available in font asset [DMSans-Medium SDF] or any potential fallbacks. Switching Text Overflow mode to Truncate.
+[47.79] Warning: The character used for Ellipsis is not available in font asset [DMSans-Medium SDF] or any potential fallbacks. Switching Text Overflow mode to Truncate.
+[47.85] WATCH guderian=Hidden subtitle= occupiedCanExit=
+[47.86] Warning: The character used for Ellipsis is not available in font asset [DMSans-Medium SDF] or any potential fallbacks. Switching Text Overflow mode to Truncate.
+[47.89] Log: SIGNAL TRIAL OUTPUT COLLECT PASS: ÖLÇÜM / ECHOECHO = 001
+[47.89] Warning: The character used for Ellipsis is not available in font asset [DMSans-Medium SDF] or any potential fallbacks. Switching Text Overflow mode to Truncate.
+[49.25] Log: TUTORIAL PLAY STAGE PASS: real board, close button, ports, measurement and archived output
+[49.36] WATCH guderian=Approaching subtitle= occupiedCanExit=
+[49.56] WATCH guderian=Approaching subtitle=thought_hide_0 occupiedCanExit=
+[53.40] WATCH guderian=Breaching subtitle= occupiedCanExit=
+[53.62] WATCH guderian=Breaching subtitle=thought_wait_hidden_0 occupiedCanExit=
+[53.89] WATCH guderian=Breaching subtitle=thought_wait_hidden_0 occupiedCanExit=False
+[58.43] WATCH guderian=Entering subtitle=thought_wait_hidden_0 occupiedCanExit=False
+[58.66] WATCH guderian=Entering subtitle= occupiedCanExit=False
+[62.95] WATCH guderian=Searching subtitle= occupiedCanExit=False
+[88.66] WATCH guderian=Searching subtitle=thought_wait_hidden_1 occupiedCanExit=False
+[92.68] WATCH guderian=Searching subtitle= occupiedCanExit=False
+[112.97] WATCH guderian=Exiting subtitle= occupiedCanExit=False
+[122.15] WATCH guderian=Hidden subtitle= occupiedCanExit=False
+[122.41] WATCH guderian=Hidden subtitle=thought_leave_hiding_0 occupiedCanExit=False
+[123.18] WATCH guderian=Hidden subtitle=thought_leave_hiding_0 occupiedCanExit=True
+[126.44] WATCH guderian=Hidden subtitle= occupiedCanExit=True
+[129.39] WATCH guderian=Hidden subtitle= occupiedCanExit=
+[129.66] WATCH guderian=Hidden subtitle=thought_notice_lees_0 occupiedCanExit=
+[130.55] WATCH guderian=Hidden subtitle= occupiedCanExit=
+[130.78] WATCH guderian=Hidden subtitle=thought_avoid_lees_0 occupiedCanExit=
+[136.81] WATCH guderian=Hidden subtitle= occupiedCanExit=
+[143.68] Log: TUTORIAL PLAY STAGE PASS: lock, hiding and scripted enemies
+[143.92] WATCH guderian=Hidden subtitle=thought_turing_0 occupiedCanExit=
+[144.96] WATCH guderian=Hidden subtitle= occupiedCanExit=
+[145.25] WATCH guderian=Hidden subtitle=thought_insert_0 occupiedCanExit=
+[146.47] Warning: The character used for Ellipsis is not available in font asset [DMSans-Medium SDF] or any potential fallbacks. Switching Text Overflow mode to Truncate.
+[146.54] Warning: The character used for Ellipsis is not available in font asset [DMSans-Medium SDF] or any potential fallbacks. Switching Text Overflow mode to Truncate.
+[146.58] Warning: The character used for Ellipsis is not available in font asset [DMSans-Medium SDF] or any potential fallbacks. Switching Text Overflow mode to Truncate.
+[146.60] Warning: The character used for Ellipsis is not available in font asset [DMSans-Medium SDF] or any potential fallbacks. Switching Text Overflow mode to Truncate.
+[146.81] WATCH guderian=Hidden subtitle= occupiedCanExit=
+[147.11] WATCH guderian=Hidden subtitle=thought_reader_0 occupiedCanExit=
+[153.12] WATCH guderian=Hidden subtitle= occupiedCanExit=
+[156.27] WATCH guderian=Hidden subtitle=thought_valve_room_0 occupiedCanExit=
+[157.52] Log: TUTORIAL PLAY STAGE PASS: real Turing reader and acceptance
+[157.58] WATCH guderian=Hidden subtitle=thought_close_door_0 occupiedCanExit=
+[163.59] WATCH guderian=Hidden subtitle= occupiedCanExit=
+[165.77] Log: TUTORIAL PLAY STAGE PASS: first door exit stops the player until the door closes
+[166.05] WATCH guderian=Hidden subtitle=thought_valve_0 occupiedCanExit=
+[171.05] WATCH guderian=Hidden subtitle= occupiedCanExit=
+[177.55] WATCH guderian=Hidden subtitle=thought_leave_valve_0 occupiedCanExit=
+[178.72] WATCH guderian=Hidden subtitle= occupiedCanExit=
+[178.95] WATCH guderian=Hidden subtitle=thought_wait_power_0 occupiedCanExit=
+[181.71] Warning: DEBUG MENU: Şartel Zorla Attırıldı!
+[181.76] WATCH guderian=Hidden subtitle= occupiedCanExit=
+[181.81] Log: TUTORIAL REAL FLOW PASS: book → archive → pinned documents → closed panel → physical graph → measured note → lock/hiding/enemies → Turing → valve → single scripted breaker reset → normal play.

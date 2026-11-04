@@ -133,7 +133,7 @@ public partial class NotebookWorkspaceController
         foreach (var sample in samples)
         {
             bool have = archived.Exists(n => n.itemID == sample.id);
-            y += have ? DoneRow(sample.title, y) : PlaceholderRow(BookOf(b => b.blockType == NotebookBlockType.PartClue && b.itemID == sample.id), y);
+            y += have ? DoneRow(sample.title, y, sample.id) : PlaceholderRow(BookOf(b => b.blockType == NotebookBlockType.PartClue && b.itemID == sample.id), y);
         }
         targetContent.sizeDelta = new Vector2(0, Mathf.Max(targetPanel.rect.height, y));
         targetContent.anchoredPosition = Vector2.zero;
@@ -180,6 +180,7 @@ public partial class NotebookWorkspaceController
             title.enableAutoSizing = true; title.fontSizeMin = 10; title.fontSizeMax = 12;
             GameLocalization.Set(title, ShortTitle(note.title));
         }
+        block.onClick = () => ShowInformationNote(note);
         Checkbox(y, true); RowLine(y + 20);
         return 21;
     }
@@ -197,10 +198,11 @@ public partial class NotebookWorkspaceController
     }
 
     // Alınmış numune satırı: yeşil kutu ve adı (sürüklenecek kart Parçalar sekmesinde).
-    private float DoneRow(string text, float y)
+    private float DoneRow(string text, float y, string itemID)
     {
         var label = Label(targetContent, text, Vector2.zero, new Vector2(410, 20), 12);
         Top(label.rectTransform, new Vector2(11, -y)); label.alignment = TextAlignmentOptions.Left; label.color = DoneInk;
+        label.raycastTarget = true; label.gameObject.AddComponent<Button>().onClick.AddListener(() => ShowCollectedPart(itemID));
         Checkbox(y, true); RowLine(y + 20);
         return 21;
     }
@@ -230,6 +232,7 @@ public partial class NotebookWorkspaceController
         if (drawing != null) { drawing.anchorMin = new Vector2(.08f, .1f); drawing.anchorMax = new Vector2(.92f, .9f); drawing.offsetMin = drawing.offsetMax = Vector2.zero; }
         foreach (var text in block.GetComponentsInChildren<TextMeshProUGUI>(true))
             if (text.name == "Karışım Değerleri") { text.textWrappingMode = TextWrappingModes.NoWrap; text.fontSizeMax = 12; }
+        block.onClick = () => ShowCollectedPart(note.itemID);
     }
 
     private float Heading(string text, float y)

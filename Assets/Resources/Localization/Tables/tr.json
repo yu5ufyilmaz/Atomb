@@ -4411,6 +4411,361 @@
             "text": "Defter"
         },
         {
+            "key": "exp.status.reader_hint",
+            "source": "Ölçümler'deki ölçüm kağıdını okuyucuya bırak veya kodu elle gir.",
+            "text": "Ölçümler'deki ölçüm kağıdını okuyucuya bırak veya kodu elle gir."
+        },
+        {
+            "key": "exp.status.build_first",
+            "source": "Önce bir düzen kur; ÖLÇ düğmesine bas.",
+            "text": "Önce bir düzen kur; ÖLÇ düğmesine bas."
+        },
+        {
+            "key": "exp.status.take_sheet",
+            "source": "Ölçüm kağıdını deftere al.",
+            "text": "Ölçüm kağıdını deftere al."
+        },
+        {
+            "key": "exp.status.session_limit",
+            "source": "Bu oturumda 999 ölçüm alındı. Yeni ölçüm kodu için yeni oyun başlat.",
+            "text": "Bu oturumda 999 ölçüm alındı. Yeni ölçüm kodu için yeni oyun başlat."
+        },
+        {
+            "key": "exp.status.measure_ready",
+            "source": "Ölçüm hazır. Kağıdı deftere al.",
+            "text": "Ölçüm hazır. Kağıdı deftere al."
+        },
+        {
+            "key": "exp.card.sheet_title",
+            "source": "ÖLÇÜM KAĞIDI",
+            "text": "ÖLÇÜM KAĞIDI"
+        },
+        {
+            "key": "exp.status.unknown_code",
+            "source": "Bu koda ait bir ölçüm yok. Tahtadaki çıktıyı kontrol et.",
+            "text": "Bu koda ait bir ölçüm yok. Tahtadaki çıktıyı kontrol et."
+        },
+        {
+            "key": "exp.status.other_session",
+            "source": "Bu ölçüm başka bir puzzle veya oturuma ait.",
+            "text": "Bu ölçüm başka bir puzzle veya oturuma ait."
+        },
+        {
+            "key": "exp.status.mixture_mismatch",
+            "source": "Karışım hedefe uymuyor. Rengi, yoğunluğu ve miktarı karşılaştır.",
+            "text": "Karışım hedefe uymuyor. Rengi, yoğunluğu ve miktarı karşılaştır."
+        },
+        {
+            "key": "exp.status.trace_mismatch",
+            "source": "Kayıt hedefle örtüşmüyor. Şekli, yüksekliği ve zaman aralığını karşılaştır.",
+            "text": "Kayıt hedefle örtüşmüyor. Şekli, yüksekliği ve zaman aralığını karşılaştır."
+        },
+        {
+            "key": "exp.status.verified",
+            "source": "DENEY ONAYLANDI / Kayıt hedefle örtüşüyor.",
+            "text": "DENEY ONAYLANDI / Kayıt hedefle örtüşüyor."
+        },
+        {
+            "key": "exp.col.build_setup",
+            "source": "Kaynak ile analizör arasında bir karışım düzeneği kur.",
+            "text": "Kaynak ile analizör arasında bir karışım düzeneği kur."
+        },
+        {
+            "key": "exp.sim.build_setup",
+            "source": "Kaynak ile ölçer arasında bir deney düzeni kur (en fazla 64 parça).",
+            "text": "Kaynak ile ölçer arasında bir deney düzeni kur (en fazla 64 parça)."
+        },
+        {
+            "key": "exp.col.part_not_allowed",
+            "source": "Bu parça renk ve karışım deneyinde kullanılamaz.",
+            "text": "Bu parça renk ve karışım deneyinde kullanılamaz."
+        },
+        {
+            "key": "exp.sim.unknown_part",
+            "source": "Ölçümde tanınmayan bir bileşen var.",
+            "text": "Ölçümde tanınmayan bir bileşen var."
+        },
+        {
+            "key": "exp.col.single_source",
+            "source": "Tek taşıyıcı kaynağı kullan.",
+            "text": "Tek taşıyıcı kaynağı kullan."
+        },
+        {
+            "key": "exp.sim.single_source",
+            "source": "Tek atım kaynağı kullan.",
+            "text": "Tek atım kaynağı kullan."
+        },
+        {
+            "key": "exp.col.single_analyzer",
+            "source": "Tek analizör kullan.",
+            "text": "Tek analizör kullan."
+        },
+        {
+            "key": "exp.sim.single_meter",
+            "source": "Tek ölçer kullan.",
+            "text": "Tek ölçer kullan."
+        },
+        {
+            "key": "exp.col.missing_ends",
+            "source": "Taşıyıcı kaynağı veya analizör eksik.",
+            "text": "Taşıyıcı kaynağı veya analizör eksik."
+        },
+        {
+            "key": "exp.sim.missing_ends",
+            "source": "Atım kaynağı veya ölçer eksik.",
+            "text": "Atım kaynağı veya ölçer eksik."
+        },
+        {
+            "key": "exp.col.bad_link",
+            "source": "Çıkış okunu başka bir parçanın girişine bağla.",
+            "text": "Çıkış okunu başka bir parçanın girişine bağla."
+        },
+        {
+            "key": "exp.sim.bad_link",
+            "source": "Hat okunamadı. Çıkış okunu bir giriş halkasına bağla.",
+            "text": "Hat okunamadı. Çıkış okunu bir giriş halkasına bağla."
+        },
+        {
+            "key": "exp.col.capacity",
+            "source": "Giriş veya çıkış kapasitesi aşıldı.",
+            "text": "Giriş veya çıkış kapasitesi aşıldı."
+        },
+        {
+            "key": "exp.sim.capacity",
+            "source": "Bir bileşenin giriş veya çıkış sayısı aşıldı.",
+            "text": "Bir bileşenin giriş veya çıkış sayısı aşıldı."
+        },
+        {
+            "key": "exp.col.loop",
+            "source": "Sıvı hattında döngü var.",
+            "text": "Sıvı hattında döngü var."
+        },
+        {
+            "key": "exp.sim.loop",
+            "source": "Hat kendi üzerine dönüyor; döngüyü kaldır.",
+            "text": "Hat kendi üzerine dönüyor; döngüyü kaldır."
+        },
+        {
+            "key": "exp.col.all_parts_work",
+            "source": "Bütün parçalar çalışmalı. Dağıtıcının iki çıkışını ve karıştırıcının iki girişini de bağla.",
+            "text": "Bütün parçalar çalışmalı. Dağıtıcının iki çıkışını ve karıştırıcının iki girişini de bağla."
+        },
+        {
+            "key": "exp.sim.all_parts_work",
+            "source": "Bütün parçalar kaynaktan beslenip ölçere ulaşmalı; açık veya kullanılmayan uçları kaldır.",
+            "text": "Bütün parçalar kaynaktan beslenip ölçere ulaşmalı; açık veya kullanılmayan uçları kaldır."
+        },
+        {
+            "key": "exp.col.part_count",
+            "source": "Parça adedi {0}–{1} olmalı.",
+            "text": "Parça adedi {0}–{1} olmalı."
+        },
+        {
+            "key": "exp.sim.part_count",
+            "source": "Toplam parça koşulu: {0}–{1}.",
+            "text": "Toplam parça koşulu: {0}–{1}."
+        },
+        {
+            "key": "exp.col.pigment_count",
+            "source": "Pigment adedi {0}–{1} olmalı.",
+            "text": "Pigment adedi {0}–{1} olmalı."
+        },
+        {
+            "key": "exp.sim.sample_count",
+            "source": "Numune adedi koşulu: {0}–{1}.",
+            "text": "Numune adedi koşulu: {0}–{1}."
+        },
+        {
+            "key": "exp.col.max_depth",
+            "source": "En fazla hat derinliği aşıldı.",
+            "text": "En fazla hat derinliği aşıldı."
+        },
+        {
+            "key": "exp.sim.max_depth",
+            "source": "En fazla bağlantı derinliği aşıldı.",
+            "text": "En fazla bağlantı derinliği aşıldı."
+        },
+        {
+            "key": "exp.col.forbidden_part",
+            "source": "Yasak parça: {0}",
+            "text": "Yasak parça: {0}"
+        },
+        {
+            "key": "exp.sim.forbidden_part",
+            "source": "Bu görevde kullanılamaz: {0}",
+            "text": "Bu görevde kullanılamaz: {0}"
+        },
+        {
+            "key": "exp.sim.part_quantity",
+            "source": "{0}: adet koşulu {1}–{2}.",
+            "text": "{0}: adet koşulu {1}–{2}."
+        },
+        {
+            "key": "exp.sim.too_many_traces",
+            "source": "Çok fazla iz oluştu. Çift tepki sayısını azalt.",
+            "text": "Çok fazla iz oluştu. Çift tepki sayısını azalt."
+        },
+        {
+            "key": "exp.sim.trace_budget",
+            "source": "Ölçüm iz bütçesi aşıldı.",
+            "text": "Ölçüm iz bütçesi aşıldı."
+        },
+        {
+            "key": "exp.sim.no_trace",
+            "source": "Ölçere ulaşan iz yok. Açık kalan hatları gözlemle.",
+            "text": "Ölçere ulaşan iz yok. Açık kalan hatları gözlemle."
+        },
+        {
+            "key": "exp.col.no_flow",
+            "source": "Analizöre sıvı ulaşmıyor.",
+            "text": "Analizöre sıvı ulaşmıyor."
+        },
+        {
+            "key": "lees.hud.controls",
+            "source": "FARE  /  TERS YÖNE ÇEK                         ESC  /  DURAKLAT",
+            "text": "FARE  /  TERS YÖNE ÇEK                         ESC  /  DURAKLAT"
+        },
+        {
+            "key": "lees.hud.pressure",
+            "source": "BASKI  {0:00}%",
+            "text": "BASKI  {0:00}%"
+        },
+        {
+            "key": "lees.hud.hold",
+            "source": "DAYAN  {0} sn",
+            "text": "DAYAN  {0} sn"
+        },
+        {
+            "key": "lees.hud.paused",
+            "source": "DURAKLATILDI",
+            "text": "DURAKLATILDI"
+        },
+        {
+            "key": "lees.hud.click_continue",
+            "source": "Devam etmek için tıkla.",
+            "text": "Devam etmek için tıkla."
+        },
+        {
+            "key": "lees.hud.paused_detail",
+            "source": "Mücadele ve sesler bekliyor.",
+            "text": "Mücadele ve sesler bekliyor."
+        },
+        {
+            "key": "lees.hud.dont_move",
+            "source": "HAREKET ETME",
+            "text": "HAREKET ETME"
+        },
+        {
+            "key": "lees.hud.behind",
+            "source": "Arkanda. Yaklaşıyor.\nBaşını çevirmesine izin verme.",
+            "text": "Arkanda. Yaklaşıyor.\nBaşını çevirmesine izin verme."
+        },
+        {
+            "key": "lees.hud.resist_left",
+            "source": "SOLA DİREN",
+            "text": "SOLA DİREN"
+        },
+        {
+            "key": "lees.hud.resist_right",
+            "source": "SAĞA DİREN",
+            "text": "SAĞA DİREN"
+        },
+        {
+            "key": "lees.hud.pull_right",
+            "source": "LEES sağa çekiyor. Fareyi sola çek.",
+            "text": "LEES sağa çekiyor. Fareyi sola çek."
+        },
+        {
+            "key": "lees.hud.pull_left",
+            "source": "LEES sola çekiyor. Fareyi sağa çek.",
+            "text": "LEES sola çekiyor. Fareyi sağa çek."
+        },
+        {
+            "key": "lees.hud.shifting_grip",
+            "source": "TUTUŞUNU DEĞİŞTİRİYOR…  {0}",
+            "text": "TUTUŞUNU DEĞİŞTİRİYOR…  {0}"
+        },
+        {
+            "key": "lees.hud.survived",
+            "source": "KURTULDUN",
+            "text": "KURTULDUN"
+        },
+        {
+            "key": "lees.hud.survived_detail",
+            "source": "Tutuşu gevşedi. Artık arkanda değil.",
+            "text": "Tutuşu gevşedi. Artık arkanda değil."
+        },
+        {
+            "key": "lees.hud.retry",
+            "source": "R  /  YENİDEN DENE",
+            "text": "R  /  YENİDEN DENE"
+        },
+        {
+            "key": "lees.hud.caught_detail",
+            "source": "Başını çevirdi. Mücadeleyi kaybettin.",
+            "text": "Başını çevirdi. Mücadeleyi kaybettin."
+        },
+        {
+            "key": "board.feedback.unlinked",
+            "source": "Bu bilginin hangi hedefe ait olduğu henüz belirlenemedi.",
+            "text": "Bu bilginin hangi hedefe ait olduğu henüz belirlenemedi."
+        },
+        {
+            "key": "board.feedback.research_pinned",
+            "source": "Araştırma kaydı panoya takıldı. İlgili olup olmadığını sen değerlendir.",
+            "text": "Araştırma kaydı panoya takıldı. İlgili olup olmadığını sen değerlendir."
+        },
+        {
+            "key": "board.feedback.info_linked",
+            "source": "Bilgi doğru hedefe bağlandı.",
+            "text": "Bilgi doğru hedefe bağlandı."
+        },
+        {
+            "key": "board.feedback.part_failed",
+            "source": "Parça tahtaya aktarılamadı: {0}",
+            "text": "Parça tahtaya aktarılamadı: {0}"
+        },
+        {
+            "key": "board.feedback.area_not_ready",
+            "source": "Deney alanı hazır değil.",
+            "text": "Deney alanı hazır değil."
+        },
+        {
+            "key": "board.feedback.need_target",
+            "source": "Önce defterindeki HEDEF notunu tahtaya sürükle.",
+            "text": "Önce defterindeki HEDEF notunu tahtaya sürükle."
+        },
+        {
+            "key": "board.feedback.area_empty",
+            "source": "Deney alanı boş.",
+            "text": "Deney alanı boş."
+        },
+        {
+            "key": "board.feedback.place_all",
+            "source": "Yapının tamamını tahta alanına yerleştir.",
+            "text": "Yapının tamamını tahta alanına yerleştir."
+        },
+        {
+            "key": "board.feedback.links_not_ready",
+            "source": "Deney bağlantıları hazır değil.",
+            "text": "Deney bağlantıları hazır değil."
+        },
+        {
+            "key": "board.feedback.saved_part_missing",
+            "source": "Tahta kaydındaki parça bulunamadı; mevcut tahta korundu.",
+            "text": "Tahta kaydındaki parça bulunamadı; mevcut tahta korundu."
+        },
+        {
+            "key": "board.feedback.load_failed",
+            "source": "Tahta yüklenemedi; mevcut tahta korundu: {0}",
+            "text": "Tahta yüklenemedi; mevcut tahta korundu: {0}"
+        },
+        {
+            "key": "board.feedback.unlinked_info",
+            "source": "Bağlantısı belirsiz bilgiler",
+            "text": "Bağlantısı belirsiz bilgiler"
+        },
+        {
             "key": "subtitle.chemistry_lab_entrance.0",
             "source": "",
             "text": "Beni üniversitede geride bıraktığını mı sandın Arthur?"
@@ -4639,16 +4994,6 @@
             "key": "subtitle.tut_005.0",
             "source": "",
             "text": "Güzel, en azından önümü görebiliyorum. Şimdi koridora çıkıp sigorta kutusunu bulmalı ve elektriği geri açmalıyım."
-        },
-        {
-            "key": "subtitle.tut_005.1",
-            "source": "",
-            "text": "You can go out."
-        },
-        {
-            "key": "subtitle.tut_005.2",
-            "source": "",
-            "text": "Now its time for solve problem"
         },
         {
             "key": "subtitle.tut_006.0",

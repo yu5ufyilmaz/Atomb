@@ -1,0 +1,16 @@
+needle shot=outputs\missing-models-2026-11-04/needle.png occlusion=True
+  DM_PressureLeveler isVisible=True verts=0 bounds=(0.67, 1.89, -0.89)/(0.00, 0.00, 0.00)
+oscilloscope shot=outputs\missing-models-2026-11-04/oscilloscope.png occlusion=True
+  OsiloskopTennis isVisible=False verts=24 bounds=(7.27, 0.40, -9.03)/(1.00, 1.00, 1.00)
+  DM_Ossiloscope isVisible=True verts=0 bounds=(7.42, 1.34, -9.09)/(0.00, 0.00, 0.00)
+  DM_Ossiloscope.001 isVisible=False verts=0 bounds=(5.06, 0.94, 21.26)/(0.00, 0.00, 0.00)
+  DM_Ossiloscope1 isVisible=True verts=0 bounds=(7.33, 1.34, -9.09)/(0.00, 0.00, 0.00)
+  DM_Ossiloscope1.001 isVisible=False verts=0 bounds=(5.06, 0.94, 21.26)/(0.00, 0.00, 0.00)
+  SM_Ossiloscope.001 isVisible=True verts=289 bounds=(7.38, 1.50, -9.09)/(0.18, 0.18, 0.01)
+  Screen_Text isVisible=True verts=40 bounds=(7.58, 1.62, -9.08)/(0.12, 0.02, 0.00)
+  SM_Ossiloscope.002 isVisible=False verts=0 bounds=(5.06, 0.94, 21.26)/(0.00, 0.00, 0.00)
+  SM_Ossiloscope.003 isVisible=True verts=3713 bounds=(7.38, 1.39, -9.11)/(0.33, 0.49, 0.06)
+  SM_OssiloscopeBase isVisible=True verts=466 bounds=(7.36, 0.89, -8.60)/(4.60, 1.56, 1.42)
+  SM_OssiloscopePanel1 isVisible=False verts=0 bounds=(7.00, 1.05, -8.84)/(0.00, 0.00, 0.00)
+  SM_OssiloscopePanel2 isVisible=False verts=0 bounds=(6.25, 0.98, -8.40)/(0.00, 0.00, 0.00)
+  SM_OssiloscopePanel3 isVisible=False verts=25355 bounds=(8.72, 0.75, -8.50)/(1.27, 0.84, 0.94)

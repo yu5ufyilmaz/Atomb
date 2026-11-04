@@ -70543,8 +70543,8 @@ MonoBehaviour:
   maxEnergy: 100
   currentEnergy: 0
   chargePerClick: 15
-  drainRate: 20
-  maxIntensity: 350
+  drainRate: 3
+  maxIntensity: 800
   minIntensity: 0
 --- !u!82 &1236259380
 AudioSource:

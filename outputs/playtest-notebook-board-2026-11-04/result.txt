@@ -1,0 +1,25 @@
+RUNNING 2026-11-04T01:04:11.0248640Z
+collapsed Signal PASS: Kayıt B-29
+header Signal tr PASS: title 1 lines 14pt, toggle 2 lines 12pt
+shot outputs/playtest-notebook-board-2026-11-04/collapsed-Signal-tr.png
+header Signal en PASS: title 1 lines 12.4pt, toggle 2 lines 12pt
+shot outputs/playtest-notebook-board-2026-11-04/collapsed-Signal-en.png
+header Signal tr PASS: title 2 lines 14pt, toggle 2 lines 12pt
+shot outputs/playtest-notebook-board-2026-11-04/collapsed-long-title-tr.png
+header Signal en PASS: title 2 lines 13.5pt, toggle 2 lines 12pt
+shot outputs/playtest-notebook-board-2026-11-04/collapsed-long-title-en.png
+shot outputs/playtest-notebook-board-2026-11-04/expanded-Signal.png
+collapsed ColorMixture PASS: Kayıt A-17
+header ColorMixture tr PASS: title 1 lines 14pt, toggle 2 lines 12pt, values 11.5pt
+shot outputs/playtest-notebook-board-2026-11-04/collapsed-ColorMixture-tr.png
+header ColorMixture en PASS: title 1 lines 12.5pt, toggle 2 lines 12pt, values 10.5pt
+shot outputs/playtest-notebook-board-2026-11-04/collapsed-ColorMixture-en.png
+shot outputs/playtest-notebook-board-2026-11-04/expanded-ColorMixture.png
+shot outputs/playtest-notebook-board-2026-11-04/target-page.png
+chip click PASS: mix-red on parts page 1
+shot outputs/playtest-notebook-board-2026-11-04/chip-to-part.png
+info row click PASS: Kayıt A-17 / DENEYİN KOŞULLARI on information page 1
+shot outputs/playtest-notebook-board-2026-11-04/row-to-information.png
+group header PASS: SAMPLE page 0 -> 1
+shot outputs/playtest-notebook-board-2026-11-04/group-header.png
+PASS

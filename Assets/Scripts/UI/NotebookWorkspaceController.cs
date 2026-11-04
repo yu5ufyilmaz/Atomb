@@ -357,6 +357,22 @@ public partial class NotebookWorkspaceController : MonoBehaviour
         return true;
     }
 
+    public void ShowInformationNote(NotebookBlockData note)
+    {
+        informationArchivePage = Mathf.Max(0, InformationNotes().FindIndex(n => SameInformation(n, note))) / 2;
+        ShowInformation();
+    }
+
+    // Parçalar sekmesinde grup başlığı: o grubun ilk sayfasına sayfa çevirerek gider.
+    private void ShowPartsGroup(string partGroup)
+    {
+        int previous = partsArchivePage, next = PartsPages().FindIndex(p => p.group == partGroup);
+        if (next < 0 || next == previous || IsPaused) return;
+        ResetNotebookPageTurn();
+        partsArchivePage = next; RefreshPartsArchive();
+        BeginNotebookPageTurn(next - previous);
+    }
+
     private void ChangeArchivePage(int delta)
     {
         if (delta == 0 || IsPaused) return;
@@ -412,6 +428,8 @@ public partial class NotebookWorkspaceController : MonoBehaviour
                 Top(label.rectTransform, new Vector2(-220 + step * (i + .5f), -4));
                 bool selected = groups[i] == current.group;
                 label.fontStyle = selected ? FontStyles.Bold : FontStyles.Normal; label.color = selected ? NotebookInk : new Color(.09f, .11f, .095f, .5f);
+                string partGroup = groups[i];
+                label.raycastTarget = true; label.gameObject.AddComponent<Button>().onClick.AddListener(() => ShowPartsGroup(partGroup));
                 if (selected)
                 {
                     var underline = Panel("Seçili Grup", partsContent, new Vector2(step - 24, 1), NotebookInk);
@@ -531,8 +549,7 @@ public partial class NotebookWorkspaceController : MonoBehaviour
             if (block.Data.blockType == NotebookBlockType.PartClue) ShowCollectedPart(block.Data.itemID);
             if (IsSolutionNote(block.Data))
                 solutionsArchivePage = Mathf.Max(0, InformationNotes(true).FindIndex(n => SameInformation(n, block.Data))) / 2;
-            else if (block.Data.blockType == NotebookBlockType.RuleClue)
-                informationArchivePage = Mathf.Max(0, InformationNotes().FindIndex(n => SameInformation(n, block.Data))) / 2;
+            else if (block.Data.blockType == NotebookBlockType.RuleClue) ShowInformationNote(block.Data);
             if (block.Data.blockType == NotebookBlockType.Quest)
                 targetArchivePage = Mathf.Max(0, notebook.EnsureCollectedQuests().FindIndex(n => n.questID == block.Data.questID));
             RefreshPage();

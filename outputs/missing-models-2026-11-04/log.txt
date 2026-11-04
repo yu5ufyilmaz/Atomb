@@ -1,0 +1,5 @@
+EMPTY DM_Ossiloscope active=False mesh=DM_Ossiloscope asset=Assets/Models/Revisyons/revizemodeller.fbx
+EMPTY DM_Ossiloscope1 active=False mesh=DM_Ossiloscope1 asset=Assets/Models/Revisyons/revizemodeller.fbx
+EMPTY DM_Ossiloscope active=True mesh=DM_Ossiloscope asset=Assets/Models/Revisyons/revizemodeller.fbx
+EMPTY DM_Ossiloscope1 active=True mesh=DM_Ossiloscope1 asset=Assets/Models/Revisyons/revizemodeller.fbx
+SCAN renderers=808 emptyMeshes=4

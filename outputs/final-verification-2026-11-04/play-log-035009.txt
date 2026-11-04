@@ -1,0 +1,22 @@
+sessionOnly=True
+[19.49] Log: CLAUDE GUARD outputs/final-verification-2026-11-04\play-log-035009.txt
+[19.49] language en -> en
+[19.59] WATCH guderian=Hidden subtitle= occupiedCanExit=
+[24.69] HUD Identity active=False text='L E E S   /   0 1'
+[24.69] HUD Workshop Label active=False text='D İ R E N Ç   Ç A L I Ş M A S I'
+[24.69] HUD Action active=True text='RESIST LEFT'
+[24.69] HUD Instruction active=True text='LEES is pulling right. Drag the mouse left.'
+[24.69] HUD Controls active=True text=''
+[24.69] HUD Pressure active=True text='PRESSURE  43%'
+[24.69] HUD Survival active=True text='HOLD ON  16 s'
+[24.69] ACTIVE 'L E E S' labels: 0 lang=en
+[25.70] language restored en
+[25.93] Error: ÖLÜM: He turned your head.
+UnityEngine.Debug:LogError (object)
+LeesEnemyAI:ExecuteDeathNow (string,bool) (at Assets/Scripts/EnemyAI/LeesEnemyAI.cs:561)
+LeesEnemyAI:TriggerDeath (string,bool) (at Assets/Scripts/EnemyAI/LeesEnemyAI.cs:535)
+LeesEnemyAI:ResistanceCaught () (at Assets/Scripts/EnemyAI/LeesEnemyAI.cs:386)
+UnityEngine.Events.UnityEvent:Invoke ()
+LeesResistanceController:Update () (at Assets/Scripts/EnemyAI/LeesResistanceController.cs:129)
+
+[32.47] Log: LEES REAL DEATH PASS: timeline and death screen; 12 assertions.

@@ -1,0 +1,20 @@
+sessionOnly=True
+[19.75] Log: CLAUDE GUARD outputs/final-verification-2026-11-04\play-log-035340.txt
+[19.84] Warning: The character used for Ellipsis is not available in font asset [DMSans-Medium SDF] or any potential fallbacks. Switching Text Overflow mode to Truncate.
+[19.87] WATCH guderian=Hidden subtitle= occupiedCanExit=
+[39.39] Warning: DEBUG MENU: Şartel Zorla Attırıldı!
+[39.99] FLASH tripped=True
+[39.99] FLASH drainRate=3 maxIntensity=800 scene=scn_LaboratorySynthesis
+[40.01] FLASH t=0.00 intensity=800.0 enabled=True energy=14.94
+[40.53] FLASH t=0.52 intensity=800.0 enabled=True energy=13.38
+[41.05] FLASH t=1.04 intensity=800.0 enabled=True energy=11.83
+[41.56] FLASH t=1.55 intensity=800.0 enabled=True energy=10.30
+[42.06] FLASH t=2.05 intensity=800.0 enabled=True energy=8.79
+[42.56] FLASH t=2.55 intensity=800.0 enabled=True energy=7.28
+[43.07] FLASH t=3.06 intensity=800.0 enabled=True energy=5.76
+[43.58] FLASH t=3.57 intensity=676.0 enabled=True energy=4.23
+[44.09] FLASH t=4.08 intensity=432.6 enabled=True energy=2.70
+[44.60] FLASH t=4.59 intensity=187.9 enabled=True energy=1.17
+[45.10] FLASH t=5.09 intensity=0.0 enabled=False energy=0.00
+[45.10] FLASH off at t=5.09
+[45.10] Log: CLAUDE FLASH DONE

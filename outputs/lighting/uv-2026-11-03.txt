@@ -1,0 +1,6 @@
+model | mesh | renderers | uv0 bounds | overlap % | generateSecondaryUV
+Assets/Models/SciencInstute.fbx | SM_OssiloscopePanel1 | 1 | (0,0)-(0,0) | 0.0 | True
+Assets/Models/SciencInstute.fbx | SM_OssiloscopePanel2 | 1 | (0,0)-(0,0) | 0.0 | True
+Assets/Models/Revisyons/revizemodeller.fbx | SM_Ossiloscope.002 | 2 | (0,0)-(0,0) | 0.0 | True
+Assets/Models/Revisyons/revizemodeller.fbx | SM_OssiloscopePanel1 | 2 | (0,0)-(0,0) | 0.0 | True
+Assets/Models/Revisyons/revizemodeller.fbx | SM_OssiloscopePanel2 | 2 | (0,0)-(0,0) | 0.0 | True

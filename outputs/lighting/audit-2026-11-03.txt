@@ -1,0 +1,154 @@
+LightingSettings: Assets/Scenes/scn_LaboratorySynthesis/scn_LaboratorySynthesis.lighting
+  backend ProgressiveGPU, mixed IndirectOnly, directional Single, Dual, res 64/m, max 2048, padding 2, compression HighQuality, AO True (1 m), samples direct/indirect/env 32/256/128, bounces 4, filter Advanced, denoiser Optix/Optix/Optix
+LightingData: Assets/Scenes/scn_LaboratorySynthesis/LightingData.asset, lightmaps 4, mode Single, Dual, probes 56
+HDRP HDRP High Fidelity: shadowmask True, probe system LegacyLightProbes
+Occlusion: data 0 B, smallest occluder 0.5, smallest hole 0.05, backface 100
+StaticLightingSky: StaticLightingSky profile Assets/Scenes/scnl_labratory/Global Volume Profile.asset sky id 3 active True
+
+LIGHTS
+  ENVIRONMENT/Chemistry_Lab/InteractableProbs/Switches/ChemistryLab/CL_Switch_01/Area Light | on | Rectangle Mixed | 19.8 | range 1.3 | shadows None EveryFrame res o512 vol 1 fade 10000 | baked True Mixed IndirectOnly
+  ENVIRONMENT/Chemistry_Lab/InteractableProbs/Switches/ChemistryLab/CL_Switch_01/Area Light (1) | on | Rectangle Mixed | 21.3 | range 0.6 | shadows None EveryFrame res o512 vol 1 fade 10000 | baked True Mixed IndirectOnly
+  ENVIRONMENT/Chemistry_Lab/InteractableProbs/Switches/ChemistryLab/CL_Switch_01/lambdeneme (38)/Spot Light (4) | on | Spot Mixed | 1209.4 | range 6 | shadows Hard OnEnable res L0 vol 5 fade 10000 | baked True Mixed IndirectOnly | prefab Spot Light (4)
+  ENVIRONMENT/Chemistry_Lab/InteractableProbs/Switches/ChemistryLab/CL_Switch_01/lambdeneme (54)/Spot Light (4) | on | Spot Mixed | 1209.4 | range 6 | shadows Hard OnEnable res L0 vol 5 fade 10000 | baked True Mixed IndirectOnly | prefab Spot Light (4)
+  ENVIRONMENT/Chemistry_Lab/InteractableProbs/Switches/ChemistryLab/CL_Switch_02/lambdeneme (41)/Spot Light (4) | on | Spot Mixed | 1209.4 | range 6 | shadows Hard OnEnable res L0 vol 5 fade 10000 | baked True Mixed IndirectOnly | prefab Spot Light (4)
+  ENVIRONMENT/Chemistry_Lab/InteractableProbs/Switches/ChemistryLab/CL_Switch_02/lambdeneme (52)/Spot Light (4) | on | Spot Mixed | 1209.4 | range 6 | shadows Hard OnEnable res L0 vol 5 fade 10000 | baked True Mixed IndirectOnly | prefab Spot Light (4)
+  ENVIRONMENT/Chemistry_Lab/InteractableProbs/Switches/ChemistryLab/CL_Switch_02/lambdeneme (61)/Spot Light (4) | on | Spot Mixed | 1209.4 | range 6 | shadows Hard OnEnable res L0 vol 5 fade 10000 | baked True Mixed IndirectOnly | prefab Spot Light (4)
+  ENVIRONMENT/Chemistry_Lab/InteractableProbs/Switches/ChemistryLab/CL_Switch_03/lambdeneme (46)/Spot Light (4) | on | Spot Mixed | 1209.4 | range 6 | shadows Hard OnEnable res L0 vol 5 fade 10000 | baked True Mixed IndirectOnly | prefab Spot Light (4)
+  ENVIRONMENT/Chemistry_Lab/InteractableProbs/Switches/ChemistryLab/CL_Switch_03/lambdeneme (47)/Spot Light (4) | on | Spot Mixed | 1209.4 | range 6 | shadows Hard OnEnable res L0 vol 5 fade 10000 | baked True Mixed IndirectOnly | prefab Spot Light (4)
+  ENVIRONMENT/Chemistry_Lab/InteractableProbs/Switches/ChemistryLab/CL_Switch_03/lambdeneme (63)/Spot Light (4) | on | Spot Mixed | 1209.4 | range 6 | shadows Hard OnEnable res L0 vol 5 fade 10000 | baked True Mixed IndirectOnly | prefab Spot Light (4)
+  ENVIRONMENT/FinalRoom/NewProbs/Area Light | on | Point Baked | 164 | range 10 | shadows None EveryFrame res o512 vol 1 fade 10000 | baked True Baked IndirectOnly
+  ENVIRONMENT/FinalRoom/SM_FinalroomCamera (1)/Spot Light | on | Spot Mixed | 485.2 | range 8.2 | shadows Hard EveryFrame res o512 vol 1 fade 20 | baked True Mixed IndirectOnly
+  ENVIRONMENT/FinalRoom/SM_FinalroomCamera/Spot Light | OFF | Spot Realtime | 271.6 | range 5 | shadows Hard EveryFrame res o512 vol 1 fade 20 | baked False Realtime Shadowmask
+  ENVIRONMENT/Office_Room/InteractablesProbs/SWITCHES/OR_Switch_05/lambdeneme (36)/Spot Light (4) | on | Spot Mixed | 1209.4 | range 6 | shadows Hard OnEnable res L0 vol 5 fade 10000 | baked True Mixed IndirectOnly | prefab Spot Light (4)
+  ENVIRONMENT/Office_Room/InteractablesProbs/SWITCHES/OR_Switch_05/lambdeneme (42)/Spot Light (4) | on | Spot Mixed | 1209.4 | range 6 | shadows Hard OnEnable res L0 vol 5 fade 10000 | baked True Mixed IndirectOnly | prefab Spot Light (4)
+  ENVIRONMENT/Office_Room/InteractablesProbs/SWITCHES/OR_Switch_05/lambdeneme (56)/Spot Light (4) | on | Spot Mixed | 1209.4 | range 6 | shadows Hard OnEnable res L0 vol 5 fade 10000 | baked True Mixed IndirectOnly | prefab Spot Light (4)
+  ENVIRONMENT/Office_Room/InteractablesProbs/SWITCHES/OR_Switch_05/lambdeneme (57)/Spot Light (4) | on | Spot Mixed | 241.9 | range 6 | shadows Hard OnEnable res L0 vol 5 fade 10000 | baked True Mixed IndirectOnly | prefab Spot Light (4)
+  ENVIRONMENT/Office_Room/InteractablesProbs/SWITCHES/OR_Switch_05/lambdeneme (58)/Spot Light (4) | on | Spot Mixed | 1209.4 | range 6 | shadows Hard OnEnable res L0 vol 5 fade 10000 | baked True Mixed IndirectOnly | prefab Spot Light (4)
+  ENVIRONMENT/Office_Room/InteractablesProbs/SWITCHES/OR_Switch_06/lambdeneme (49)/Spot Light (4) | on | Spot Mixed | 1209.4 | range 6 | shadows Hard OnEnable res L0 vol 5 fade 10000 | baked True Mixed IndirectOnly | prefab Spot Light (4)
+  ENVIRONMENT/Office_Room/InteractablesProbs/SWITCHES/OR_Switch_06/lambdeneme (62)/Spot Light (4) | on | Spot Mixed | 1209.4 | range 6 | shadows Hard OnEnable res L0 vol 5 fade 10000 | baked True Mixed IndirectOnly | prefab Spot Light (4)
+  ENVIRONMENT/Office_Room/InteractablesProbs/SWITCHES/OR_Switch_06/lambdeneme (64)/Spot Light (4) | on | Spot Mixed | 1209.4 | range 6 | shadows Hard OnEnable res L0 vol 5 fade 10000 | baked True Mixed IndirectOnly | prefab Spot Light (4)
+  ENVIRONMENT/Office_Room/InteractablesProbs/SWITCHES/OR_Switch_07/lambdeneme (45)/Spot Light (4) | on | Spot Mixed | 1209.4 | range 6 | shadows Hard OnEnable res L0 vol 5 fade 10000 | baked True Mixed IndirectOnly | prefab Spot Light (4)
+  ENVIRONMENT/Office_Room/InteractablesProbs/SWITCHES/OR_Switch_07/lambdeneme (48)/Spot Light (4) | on | Spot Mixed | 1209.4 | range 6 | shadows Hard OnEnable res L0 vol 5 fade 10000 | baked True Mixed IndirectOnly | prefab Spot Light (4)
+  ENVIRONMENT/Office_Room/InteractablesProbs/SWITCHES/OR_Switch_07/lambdeneme (50)/Spot Light (4) | on | Spot Mixed | 1209.4 | range 6 | shadows Hard OnEnable res L0 vol 5 fade 10000 | baked True Mixed IndirectOnly | prefab Spot Light (4)
+  ENVIRONMENT/ParticleAccelerator_Room/InteractableProbs/Switches (1)/OR_Switch_05/Area Light | on | Rectangle Realtime | 67.3 | range 10 | shadows None EveryFrame res o512 vol 1 fade 10000 | baked False Realtime Shadowmask
+  ENVIRONMENT/ParticleAccelerator_Room/InteractableProbs/Switches (1)/OR_Switch_05/lambdeneme (33)/Spot Light (4) | on | Spot Mixed | 1209.4 | range 6 | shadows Hard OnEnable res L0 vol 5 fade 10000 | baked True Mixed IndirectOnly | prefab Spot Light (4)
+  ENVIRONMENT/ParticleAccelerator_Room/InteractableProbs/Switches (1)/OR_Switch_05/lambdeneme (34)/Spot Light (4) | on | Spot Mixed | 1209.4 | range 6 | shadows Hard OnEnable res L0 vol 5 fade 10000 | baked True Mixed IndirectOnly | prefab Spot Light (4)
+  ENVIRONMENT/ParticleAccelerator_Room/InteractableProbs/Switches (1)/OR_Switch_05/lambdeneme (59)/Spot Light (4) | on | Spot Mixed | 1209.4 | range 6 | shadows Hard OnEnable res L0 vol 5 fade 10000 | baked True Mixed IndirectOnly | prefab Spot Light (4)
+  ENVIRONMENT/SciencInstute/SI_Lambs/lambdeneme (35)/Spot Light (4) | on | Spot Mixed | 1209.4 | range 6 | shadows Hard OnEnable res L0 vol 5 fade 10000 | baked True Mixed IndirectOnly | prefab Spot Light (4)
+  ENVIRONMENT/SciencInstute/SI_Lambs/lambdeneme (37)/Spot Light (4) | on | Spot Mixed | 1209.4 | range 6 | shadows Hard OnEnable res L0 vol 5 fade 10000 | baked True Mixed IndirectOnly | prefab Spot Light (4)
+  ENVIRONMENT/SciencInstute/SI_Lambs/lambdeneme (39)/Spot Light (4) | on | Spot Mixed | 1209.4 | range 6 | shadows Hard OnEnable res L0 vol 5 fade 10000 | baked True Mixed IndirectOnly | prefab Spot Light (4)
+  ENVIRONMENT/SciencInstute/SI_Lambs/lambdeneme (40)/Spot Light (4) | on | Spot Mixed | 1209.4 | range 6 | shadows Hard OnEnable res L0 vol 5 fade 10000 | baked True Mixed IndirectOnly | prefab Spot Light (4)
+  ENVIRONMENT/SciencInstute/SI_Lambs/lambdeneme (43)/Spot Light (4) | on | Spot Mixed | 1209.4 | range 6 | shadows Hard OnEnable res L0 vol 5 fade 10000 | baked True Mixed IndirectOnly | prefab Spot Light (4)
+  ENVIRONMENT/SciencInstute/SI_Lambs/lambdeneme (51)/Spot Light (4) | on | Spot Mixed | 1209.4 | range 6 | shadows Hard OnEnable res L0 vol 5 fade 10000 | baked True Mixed IndirectOnly | prefab Spot Light (4)
+  ENVIRONMENT/SciencInstute/SI_Lambs/lambdeneme (53)/Spot Light (4) | on | Spot Mixed | 1209.4 | range 6 | shadows Hard OnEnable res L0 vol 5 fade 10000 | baked True Mixed IndirectOnly | prefab Spot Light (4)
+  ENVIRONMENT/SciencInstute/SI_Lambs/lambdeneme (55)/Spot Light (4) | on | Spot Mixed | 1209.4 | range 6 | shadows Hard OnEnable res L0 vol 5 fade 10000 | baked True Mixed IndirectOnly | prefab Spot Light (4)
+  ENVIRONMENT/SciencInstute/SI_Lambs/lambdeneme (57)/Spot Light (4) | on | Spot Mixed | 1209.4 | range 6 | shadows Hard OnEnable res L0 vol 5 fade 10000 | baked True Mixed IndirectOnly | prefab Spot Light (4)
+  ENVIRONMENT/SciencInstute/SI_Lambs/lambdeneme (58)/Spot Light (4) | on | Spot Mixed | 1209.4 | range 6 | shadows Hard OnEnable res L0 vol 5 fade 10000 | baked True Mixed IndirectOnly | prefab Spot Light (4)
+  ENVIRONMENT/SciencInstute/SI_Lambs/lambdeneme (60)/Spot Light (4) | on | Spot Mixed | 1209.4 | range 6 | shadows Hard OnEnable res L0 vol 5 fade 10000 | baked True Mixed IndirectOnly | prefab Spot Light (4)
+  ENVIRONMENT/SciencInstute/SI_Lambs/lambdeneme (65)/Spot Light (4) | on | Spot Mixed | 1209.4 | range 6 | shadows Hard OnEnable res L0 vol 5 fade 10000 | baked True Mixed IndirectOnly | prefab Spot Light (4)
+  ENVIRONMENT/Valve_Room/Switches/OR_Switch_05/lambdeneme (44)/Spot Light (4) | on | Spot Mixed | 1209.4 | range 7 | shadows Hard OnEnable res L0 vol 5 fade 10000 | baked True Mixed IndirectOnly | prefab Spot Light (4)
+  ENVIRONMENT/WorkTableTestAssets/Luminaria-Lowpoly/Case-T.003/Spot Light | on | Spot Mixed | 12 | range 10 | shadows Hard EveryFrame res o512 vol 1 fade 20 | baked True Mixed IndirectOnly
+  Senekas_Player/root/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/CC_Base_NeckTwist01/CC_Base_NeckTwist02/CC_Base_Head/MainCamera/LEES / Temple Grip/Hand Fill | OFF | Point Realtime | 20 | range 1 | shadows None EveryFrame res o512 vol 1 fade 10000 | baked False Realtime Shadowmask
+  Senekas_Player/root/CC_Base_Hip/CC_Base_Waist/CC_Base_Spine01/CC_Base_Spine02/CC_Base_NeckTwist01/CC_Base_NeckTwist02/CC_Base_Head/PlayerCameraRoot/PlayerFollowCamera/FlashLight | on | Spot Realtime | 0 | range 20 | shadows Hard EveryFrame res L1 vol 0 fade 10000 | baked False Realtime Shadowmask
+  total 44: Realtime 4, Mixed 39, Baked 1; Mixed/Baked not in bake: 0
+
+RENDERERS 808: lightmapped 209 (missing lightmap 0, no UV2 0, no mesh 0), probe-lit GI static 8, dynamic 591
+  occluder static 200, occludee static 200, batching static 222
+  largest: ENVIRONMENT/SciencInstute/SM_ScienceInstitute 4144 m², needs 4120² texels (scale 1), lightmap 0 scaleOffset (1.02, 1.02, 0.00, 0.00)
+  largest: ENVIRONMENT/SciencInstute/SM_Vantilation 213 m², needs 933² texels (scale 1), lightmap 1 scaleOffset (0.53, 0.53, -0.04, -0.04)
+  largest: ENVIRONMENT/Office_Room/NewProbs/SM_BookCaseTwoSided2 189 m², needs 879² texels (scale 1), lightmap 1 scaleOffset (0.44, 0.44, -0.01, 0.45)
+  largest: ENVIRONMENT/Office_Room/NewProbs/SM_BookCaseTwoSided 189 m², needs 879² texels (scale 1), lightmap 1 scaleOffset (0.44, 0.44, 0.44, -0.01)
+  largest: ENVIRONMENT/Chemistry_Lab/NewProbs/SM_ChemistryMassSpectrometry 105 m², needs 657² texels (scale 1), lightmap -1 scaleOffset (1.00, 1.00, 0.00, 0.00)
+  largest: ENVIRONMENT/Chemistry_Lab/InteractableProbs/MassSpec_System_Fixed/SM_ChemistryMassSpectrometry 105 m², needs 655² texels (scale 1), lightmap 1 scaleOffset (0.33, 0.33, 0.45, 0.43)
+  largest: ENVIRONMENT/Office_Room/NewProbs/SM_BookCaseOneSided.001 103 m², needs 650² texels (scale 1), lightmap 2 scaleOffset (0.33, 0.33, -0.01, -0.01)
+  largest: ENVIRONMENT/Office_Room/NewProbs/SM_BookCaseOneSided 103 m², needs 649² texels (scale 1), lightmap 2 scaleOffset (0.33, 0.33, -0.01, 0.31)
+  static but movable/interactive: ENVIRONMENT/Office_Room/InteractablesProbs/DM_DoorLibrary/SM_DoorLibrary flags 2147483629
+  static but movable/interactive: ENVIRONMENT/Office_Room/InteractablesProbs/DM_DoorLibrary/SM_DoorLibrary.001 flags 2147483629
+  static but movable/interactive: ENVIRONMENT/Office_Room/InteractablesProbs/SWITCHES/OR_Switch_05/lambdeneme (42)/Bulb_E27_Standart_006 flags 2147483647
+  static but movable/interactive: ENVIRONMENT/Office_Room/InteractablesProbs/SWITCHES/OR_Switch_05/lambdeneme (42)/Cylinder004 flags 2147483647
+  static but movable/interactive: ENVIRONMENT/Office_Room/InteractablesProbs/SWITCHES/OR_Switch_05/lambdeneme (36)/Bulb_E27_Standart_006 flags 2147483647
+  static but movable/interactive: ENVIRONMENT/Office_Room/InteractablesProbs/SWITCHES/OR_Switch_05/lambdeneme (36)/Cylinder004 flags 2147483647
+  static but movable/interactive: ENVIRONMENT/Office_Room/InteractablesProbs/SWITCHES/OR_Switch_05/lambdeneme (56)/Bulb_E27_Standart_006 flags 2147483647
+  static but movable/interactive: ENVIRONMENT/Office_Room/InteractablesProbs/SWITCHES/OR_Switch_05/lambdeneme (56)/Cylinder004 flags 2147483647
+  static but movable/interactive: ENVIRONMENT/Office_Room/InteractablesProbs/SWITCHES/OR_Switch_05/lambdeneme (58)/Bulb_E27_Standart_006 flags 2147483647
+  static but movable/interactive: ENVIRONMENT/Office_Room/InteractablesProbs/SWITCHES/OR_Switch_05/lambdeneme (58)/Cylinder004 flags 2147483647
+  static but movable/interactive: ENVIRONMENT/Office_Room/InteractablesProbs/SWITCHES/OR_Switch_05/lambdeneme (57)/Bulb_E27_Standart_006 flags 2147483647
+  static but movable/interactive: ENVIRONMENT/Office_Room/InteractablesProbs/SWITCHES/OR_Switch_05/lambdeneme (57)/Cylinder004 flags 2147483647
+  static but movable/interactive: ENVIRONMENT/Office_Room/InteractablesProbs/SWITCHES/OR_Switch_06/lambdeneme (64)/Bulb_E27_Standart_006 flags 2147483647
+  static but movable/interactive: ENVIRONMENT/Office_Room/InteractablesProbs/SWITCHES/OR_Switch_06/lambdeneme (64)/Cylinder004 flags 2147483647
+  static but movable/interactive: ENVIRONMENT/Office_Room/InteractablesProbs/SWITCHES/OR_Switch_06/lambdeneme (49)/Bulb_E27_Standart_006 flags 2147483647
+  static but movable/interactive: ENVIRONMENT/Office_Room/InteractablesProbs/SWITCHES/OR_Switch_06/lambdeneme (49)/Cylinder004 flags 2147483647
+  static but movable/interactive: ENVIRONMENT/Office_Room/InteractablesProbs/SWITCHES/OR_Switch_06/lambdeneme (62)/Bulb_E27_Standart_006 flags 2147483647
+  static but movable/interactive: ENVIRONMENT/Office_Room/InteractablesProbs/SWITCHES/OR_Switch_06/lambdeneme (62)/Cylinder004 flags 2147483647
+  static but movable/interactive: ENVIRONMENT/Office_Room/InteractablesProbs/SWITCHES/OR_Switch_07/lambdeneme (48)/Bulb_E27_Standart_006 flags 2147483647
+  static but movable/interactive: ENVIRONMENT/Office_Room/InteractablesProbs/SWITCHES/OR_Switch_07/lambdeneme (48)/Cylinder004 flags 2147483647
+  static but movable/interactive: ENVIRONMENT/Office_Room/InteractablesProbs/SWITCHES/OR_Switch_07/lambdeneme (50)/Bulb_E27_Standart_006 flags 2147483647
+  static but movable/interactive: ENVIRONMENT/Office_Room/InteractablesProbs/SWITCHES/OR_Switch_07/lambdeneme (50)/Cylinder004 flags 2147483647
+  static but movable/interactive: ENVIRONMENT/Office_Room/InteractablesProbs/SWITCHES/OR_Switch_07/lambdeneme (45)/Bulb_E27_Standart_006 flags 2147483647
+  static but movable/interactive: ENVIRONMENT/Office_Room/InteractablesProbs/SWITCHES/OR_Switch_07/lambdeneme (45)/Cylinder004 flags 2147483647
+  static but movable/interactive: ENVIRONMENT/Office_Room/InteractablesProbs/HIDINGSPOTS/HidingSpot/Hiding_Interaction/SM_LibraryCabinet1Door flags 2147483629
+  static but movable/interactive: ENVIRONMENT/Office_Room/InteractablesProbs/HIDINGSPOTS/HidingSpot/Hiding_Interaction/SM_LibraryCabinet1Door2 flags 2147483629
+  static but movable/interactive: ENVIRONMENT/Office_Room/InteractablesProbs/HIDINGSPOTS/HidingSpot (1)/Hiding_Interaction/SM_LibraryCabinet2Door flags 2147483629
+  static but movable/interactive: ENVIRONMENT/Valve_Room/Switches/OR_Switch_05/lambdeneme (44)/Bulb_E27_Standart_006 flags 2147483647
+  static but movable/interactive: ENVIRONMENT/Valve_Room/Switches/OR_Switch_05/lambdeneme (44)/Cylinder004 flags 2147483647
+  static but movable/interactive: ENVIRONMENT/Valve_Room/DM_DoorValve/SM_DoorLibrary flags 2147483629
+  static but movable/interactive: ENVIRONMENT/Valve_Room/DM_DoorValve/SM_DoorLibrary.001 flags 2147483629
+  static but movable/interactive: ENVIRONMENT/Chemistry_Lab/InteractableProbs/SM_ChemistryFuse flags 2147483647
+  static but movable/interactive: ENVIRONMENT/Chemistry_Lab/InteractableProbs/SM_ChemistryFuse/SM_ChemistryFuseLever flags 2147483647
+  static but movable/interactive: ENVIRONMENT/Chemistry_Lab/InteractableProbs/MassSpec_System_Fixed/SM_ChemistryMassSpectrometry flags 2147483647
+  static but movable/interactive: ENVIRONMENT/Chemistry_Lab/InteractableProbs/MassSpec_System_Fixed/SM_ChemistryMassSpectrometry.001 flags 2147483647
+  static but movable/interactive: ENVIRONMENT/Chemistry_Lab/InteractableProbs/MassSpec_System_Fixed/SM_ChemistryMassSpectrometry.002 flags 2147483647
+  static but movable/interactive: ENVIRONMENT/Chemistry_Lab/InteractableProbs/MassSpec_System_Fixed/SM_ChemistryMassSpectrometryGlass flags 2147483647
+  static but movable/interactive: ENVIRONMENT/Chemistry_Lab/InteractableProbs/Switches/ChemistryLab/CL_Switch_01/lambdeneme (38)/Bulb_E27_Standart_006 flags 2147483647
+  static but movable/interactive: ENVIRONMENT/Chemistry_Lab/InteractableProbs/Switches/ChemistryLab/CL_Switch_01/lambdeneme (38)/Cylinder004 flags 2147483647
+  static but movable/interactive: ENVIRONMENT/Chemistry_Lab/InteractableProbs/Switches/ChemistryLab/CL_Switch_01/lambdeneme (54)/Bulb_E27_Standart_006 flags 2147483647
+  static but movable/interactive: ENVIRONMENT/Chemistry_Lab/InteractableProbs/Switches/ChemistryLab/CL_Switch_01/lambdeneme (54)/Cylinder004 flags 2147483647
+  static but movable/interactive: ENVIRONMENT/Chemistry_Lab/InteractableProbs/Switches/ChemistryLab/CL_Switch_02/lambdeneme (41)/Bulb_E27_Standart_006 flags 2147483647
+  static but movable/interactive: ENVIRONMENT/Chemistry_Lab/InteractableProbs/Switches/ChemistryLab/CL_Switch_02/lambdeneme (41)/Cylinder004 flags 2147483647
+  static but movable/interactive: ENVIRONMENT/Chemistry_Lab/InteractableProbs/Switches/ChemistryLab/CL_Switch_02/lambdeneme (52)/Bulb_E27_Standart_006 flags 2147483647
+  static but movable/interactive: ENVIRONMENT/Chemistry_Lab/InteractableProbs/Switches/ChemistryLab/CL_Switch_02/lambdeneme (52)/Cylinder004 flags 2147483647
+  static but movable/interactive: ENVIRONMENT/Chemistry_Lab/InteractableProbs/Switches/ChemistryLab/CL_Switch_02/lambdeneme (61)/Bulb_E27_Standart_006 flags 2147483647
+  static but movable/interactive: ENVIRONMENT/Chemistry_Lab/InteractableProbs/Switches/ChemistryLab/CL_Switch_02/lambdeneme (61)/Cylinder004 flags 2147483647
+  static but movable/interactive: ENVIRONMENT/Chemistry_Lab/InteractableProbs/Switches/ChemistryLab/CL_Switch_03/lambdeneme (63)/Bulb_E27_Standart_006 flags 2147483647
+  static but movable/interactive: ENVIRONMENT/Chemistry_Lab/InteractableProbs/Switches/ChemistryLab/CL_Switch_03/lambdeneme (63)/Cylinder004 flags 2147483647
+  static but movable/interactive: ENVIRONMENT/Chemistry_Lab/InteractableProbs/Switches/ChemistryLab/CL_Switch_03/lambdeneme (46)/Bulb_E27_Standart_006 flags 2147483647
+  static but movable/interactive: ENVIRONMENT/Chemistry_Lab/InteractableProbs/Switches/ChemistryLab/CL_Switch_03/lambdeneme (46)/Cylinder004 flags 2147483647
+  static but movable/interactive: ENVIRONMENT/Chemistry_Lab/InteractableProbs/Switches/ChemistryLab/CL_Switch_03/lambdeneme (47)/Bulb_E27_Standart_006 flags 2147483647
+  static but movable/interactive: ENVIRONMENT/Chemistry_Lab/InteractableProbs/Switches/ChemistryLab/CL_Switch_03/lambdeneme (47)/Cylinder004 flags 2147483647
+  static but movable/interactive: ENVIRONMENT/Chemistry_Lab/InteractableProbs/DM_DoorLab/SM_DoorLibrary flags 2147483629
+  static but movable/interactive: ENVIRONMENT/Chemistry_Lab/InteractableProbs/DM_DoorLab/SM_DoorLibrary.001 flags 2147483629
+  static but movable/interactive: ENVIRONMENT/Fuse_Room/NewProbs/DM_DoorLab (1)/SM_DoorLibrary flags 2147483629
+  static but movable/interactive: ENVIRONMENT/Fuse_Room/NewProbs/DM_DoorLab (1)/SM_DoorLibrary.001 flags 2147483629
+  static but movable/interactive: ENVIRONMENT/ParticleAccelerator_Room/InteractableProbs/Switches (1)/OR_Switch_05/lambdeneme (33)/Bulb_E27_Standart_006 flags 2147483647
+  static but movable/interactive: ENVIRONMENT/ParticleAccelerator_Room/InteractableProbs/Switches (1)/OR_Switch_05/lambdeneme (33)/Cylinder004 flags 2147483647
+  static but movable/interactive: ENVIRONMENT/ParticleAccelerator_Room/InteractableProbs/Switches (1)/OR_Switch_05/lambdeneme (34)/Bulb_E27_Standart_006 flags 2147483647
+  static but movable/interactive: ENVIRONMENT/ParticleAccelerator_Room/InteractableProbs/Switches (1)/OR_Switch_05/lambdeneme (34)/Cylinder004 flags 2147483647
+  static but movable/interactive: ENVIRONMENT/ParticleAccelerator_Room/InteractableProbs/Switches (1)/OR_Switch_05/lambdeneme (59)/Bulb_E27_Standart_006 flags 2147483647
+  static but movable/interactive: ENVIRONMENT/ParticleAccelerator_Room/InteractableProbs/Switches (1)/OR_Switch_05/lambdeneme (59)/Cylinder004 flags 2147483647
+  static but movable/interactive: ENVIRONMENT/ParticleAccelerator_Room/InteractableProbs/Osiloskop/SM_Ossiloscope.001 flags 2147483647
+  static but movable/interactive: ENVIRONMENT/ParticleAccelerator_Room/InteractableProbs/Osiloskop/SM_Ossiloscope.001 flags 2147483647
+  static but movable/interactive: ENVIRONMENT/ParticleAccelerator_Room/InteractableProbs/Osiloskop/SM_Ossiloscope.002 flags 2147483647
+  static but movable/interactive: ENVIRONMENT/ParticleAccelerator_Room/InteractableProbs/Osiloskop/SM_Ossiloscope.003 flags 2147483647
+  static but movable/interactive: ENVIRONMENT/ParticleAccelerator_Room/InteractableProbs/Osiloskop/SM_OssiloscopeBase flags 2147483647
+  static but movable/interactive: ENVIRONMENT/ParticleAccelerator_Room/InteractableProbs/Osiloskop/SM_OssiloscopePanel1 flags 2147483647
+  static but movable/interactive: ENVIRONMENT/ParticleAccelerator_Room/InteractableProbs/Osiloskop/SM_OssiloscopePanel2 flags 2147483647
+  static but movable/interactive: ENVIRONMENT/ParticleAccelerator_Room/InteractableProbs/Osiloskop/SM_OssiloscopePanel3 flags 2147483647
+  static but movable/interactive: ENVIRONMENT/ParticleAccelerator_Room/InteractableProbs/OsiloskopTennis/SM_Ossiloscope.001 flags 2147483647
+  static but movable/interactive: ENVIRONMENT/ParticleAccelerator_Room/InteractableProbs/OsiloskopTennis/SM_Ossiloscope.001 flags 2147483647
+  static but movable/interactive: ENVIRONMENT/ParticleAccelerator_Room/InteractableProbs/OsiloskopTennis/SM_Ossiloscope.002 flags 2147483647
+  static but movable/interactive: ENVIRONMENT/ParticleAccelerator_Room/InteractableProbs/OsiloskopTennis/SM_Ossiloscope.003 flags 2147483647
+  static but movable/interactive: ENVIRONMENT/ParticleAccelerator_Room/InteractableProbs/OsiloskopTennis/SM_OssiloscopeBase flags 2147483647
+  static but movable/interactive: ENVIRONMENT/ParticleAccelerator_Room/InteractableProbs/OsiloskopTennis/SM_OssiloscopePanel1 flags 2147483647
+  static but movable/interactive: ENVIRONMENT/ParticleAccelerator_Room/InteractableProbs/OsiloskopTennis/SM_OssiloscopePanel2 flags 2147483647
+  static but movable/interactive: ENVIRONMENT/ParticleAccelerator_Room/InteractableProbs/OsiloskopTennis/SM_OssiloscopePanel3 flags 2147483647
+  static but movable/interactive: ENVIRONMENT/ParticleAccelerator_Room/InteractableProbs/DM_DoorPArticle/SM_DoorLibrary flags 2147483629
+
+PROBES
+  probe group ENVIRONMENT/LIGHTING/Light Probe Group: 56 probes, active True
+  reflection ENVIRONMENT/LIGHTING/REFLECTION PROBES/Reflection Probe: Baked, active True, baked Assets/Scenes/scn_LaboratorySynthesis/ReflectionProbe-6.exr
+  reflection ENVIRONMENT/LIGHTING/REFLECTION PROBES/Reflection Probe (4): Baked, active True, baked Assets/Scenes/scn_LaboratorySynthesis/ReflectionProbe-3.exr
+  reflection ENVIRONMENT/LIGHTING/REFLECTION PROBES/Reflection Probe (5): Baked, active True, baked Assets/Scenes/scn_LaboratorySynthesis/ReflectionProbe-1.exr
+  reflection ENVIRONMENT/LIGHTING/REFLECTION PROBES/Reflection Probe (6): Baked, active True, baked Assets/Scenes/scn_LaboratorySynthesis/ReflectionProbe-4.exr
+  reflection ENVIRONMENT/LIGHTING/REFLECTION PROBES/Reflection Probe (1): Baked, active True, baked Assets/Scenes/scn_LaboratorySynthesis/ReflectionProbe-5.exr
+  reflection ENVIRONMENT/LIGHTING/REFLECTION PROBES/Reflection Probe (2): Baked, active True, baked Assets/Scenes/scn_LaboratorySynthesis/ReflectionProbe-2.exr
+  reflection ENVIRONMENT/LIGHTING/REFLECTION PROBES/Reflection Probe (3): Baked, active True, baked Assets/Scenes/scn_LaboratorySynthesis/ReflectionProbe-0.exr

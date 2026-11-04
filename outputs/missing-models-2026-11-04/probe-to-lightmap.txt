@@ -1,0 +1,8 @@
+PROBELIT SM_OssiloscopePanel1 active=False id=215790 asset=Assets/Models/SciencInstute.fbx verts=13999 uv2=True -> Lightmaps
+PROBELIT SM_OssiloscopePanel2 active=False id=216504 asset=Assets/Models/SciencInstute.fbx verts=22780 uv2=True -> Lightmaps
+PROBELIT SM_Ossiloscope.002 active=False id=220428 asset=Assets/Models/Revisyons/revizemodeller.fbx verts=4788 uv2=True -> Lightmaps
+PROBELIT SM_OssiloscopePanel1 active=False id=217498 asset=Assets/Models/Revisyons/revizemodeller.fbx verts=12483 uv2=True -> Lightmaps
+PROBELIT SM_OssiloscopePanel2 active=False id=218280 asset=Assets/Models/Revisyons/revizemodeller.fbx verts=20283 uv2=True -> Lightmaps
+PROBELIT SM_Ossiloscope.002 active=True id=207294 asset=Assets/Models/Revisyons/revizemodeller.fbx verts=4788 uv2=True -> Lightmaps
+PROBELIT SM_OssiloscopePanel1 active=True id=209020 asset=Assets/Models/Revisyons/revizemodeller.fbx verts=12483 uv2=True -> Lightmaps
+PROBELIT SM_OssiloscopePanel2 active=True id=213226 asset=Assets/Models/Revisyons/revizemodeller.fbx verts=20283 uv2=True -> Lightmaps

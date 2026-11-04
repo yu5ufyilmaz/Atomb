@@ -400,9 +400,15 @@ public class NotebookDraggableBlock : MonoBehaviour, IBeginDragHandler, IDragHan
             workspace.TryDropBlock(this, eventData.position);
     }
 
+    // Yalnız Hedef sayfasındaki çip/satırlar atar: sol tık kaydın kendi sayfasına götürür. Sürükleme tıklama sayılmaz.
+    public System.Action onClick;
+
     public void OnPointerClick(PointerEventData eventData)
     {
         var workspace = NotebookWorkspaceController.Instance;
+        if (onClick != null && workspace != null && !workspace.IsPaused && !dragging && !eventData.dragging
+            && eventData.button == PointerEventData.InputButton.Left)
+            onClick();
         if (!IsSource && workspace != null && !workspace.IsPaused
             && eventData.button == PointerEventData.InputButton.Right)
             workspace.DeleteBlock(this);
