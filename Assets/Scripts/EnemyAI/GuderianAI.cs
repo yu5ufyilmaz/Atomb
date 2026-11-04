@@ -8,6 +8,9 @@ using UnityEngine.Playables;
 public class GuderianAI : MonoBehaviour
 {
     public static GuderianAI Instance;
+    // Behind-player cinematic: "Gute Nacht." while the gun is held on the player. GuderianBehindTimelineSetup puts the voice here too.
+    public const float GuteNachtTime = 5f;
+    const string GuteNachtLine = "guderian_gute_nacht";
 
     public enum GuderianState
     {
@@ -677,11 +680,18 @@ public class GuderianAI : MonoBehaviour
             if (director.GetGenericBinding(output.sourceObject) is GameObject bound)
                 timelineObjects.Add((bound, bound.activeSelf));
         director.Play();
+        if (director == timelineBehindPlayer) StartCoroutine(SayGoodNight(director));
         // 4. BİTMESİNİ BEKLE VE ÖLÜM EKRANINA GEÇ
         yield return new WaitForSeconds((float)director.duration);
 
         if (DeathUIManager.Instance != null)
             DeathUIManager.Instance.ShowDeathScreen(reason);
+    }
+
+    private IEnumerator SayGoodNight(PlayableDirector director)
+    {
+        while (director.state == PlayState.Playing && director.time < GuteNachtTime) yield return null;
+        if (director.state == PlayState.Playing && GlobalSubtitleManager.Instance != null) GlobalSubtitleManager.Instance.Show(GuteNachtLine);
     }
 
     private void FadeAudio(AudioClip clip, float duration, bool fadeIn)

@@ -15,6 +15,7 @@ public class DamageFxClip : PlayableAsset, ITimelineClipAsset
     public AnimationCurve exposure = new AnimationCurve();
     public AnimationCurve desaturate = new AnimationCurve();
     public AnimationCurve blur = new AnimationCurve();
+    public AnimationCurve presence = AnimationCurve.Constant(0, 1, 1); // Volume weight: at 0 the player's own post-processing is untouched.
 
     public ClipCaps clipCaps => ClipCaps.None;
 
@@ -64,6 +65,7 @@ public class DamageFxBehaviour : PlayableBehaviour
     {
         if (volume == null) return;
         float time = (float)playable.GetTime();
+        volume.weight = Clip.presence.Evaluate(time);
         vignette.intensity.value = Clip.vignette.Evaluate(time);
         aberration.intensity.value = Clip.aberration.Evaluate(time);
         distortion.intensity.value = Clip.distortion.Evaluate(time);

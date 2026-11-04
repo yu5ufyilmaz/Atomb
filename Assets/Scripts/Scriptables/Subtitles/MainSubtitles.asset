@@ -1220,3 +1220,12 @@ MonoBehaviour:
         someone coming.
       textDE: "Warte, lassen wir die T\xFCr nicht offen. Ist sie zu, h\xF6ren wir
         wenigstens, wenn jemand kommt."
+  - id: guderian_gute_nacht
+    note: 'Guderian, arka jumpscare: silah oyuncuya tutulurken. Ses timeline''da
+      (yer tutucu TTS).'
+    voiceClip: {fileID: 8300000, guid: 05aa37123794059408da62a03207b32a, type: 3}
+    segments:
+    - duration: 2
+      textTR: "Gute Nacht. (\u0130yi geceler.)"
+      textEN: Gute Nacht. (Good night.)
+      textDE: Gute Nacht.

@@ -5559,6 +5559,11 @@
             "key": "subtitle.thought_close_door_0.0",
             "source": "",
             "text": "Wait, let's not leave the door open. If it's shut, at least we'll hear someone coming."
+        },
+        {
+            "key": "subtitle.guderian_gute_nacht.0",
+            "source": "",
+            "text": "Gute Nacht. (Good night.)"
         }
     ]
 }

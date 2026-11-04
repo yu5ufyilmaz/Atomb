@@ -10,6 +10,7 @@ public class GunAimClip : PlayableAsset, ITimelineClipAsset
 {
     public AnimationCurve weight = new AnimationCurve();
     public AnimationCurve focus = new AnimationCurve();
+    public AnimationCurve startView = new AnimationCurve(); // 1: the player's own frame at the trigger (eye, view, lens); fades into the whip turn.
     public float crawlStart, shotTime;
 
     public ClipCaps clipCaps => ClipCaps.None;
@@ -25,6 +26,8 @@ public class GunAimClip : PlayableAsset, ITimelineClipAsset
         var shooter = animators.FirstOrDefault(animator => animator.isHuman);
         behaviour.Arm = shooter != null ? shooter.GetBoneTransform(HumanBodyBones.RightUpperArm) : null;
         behaviour.Gun = shooter != null ? shooter.GetBoneTransform(HumanBodyBones.RightHand).Find("911pistol") : null;
+        behaviour.Head = shooter != null ? shooter.GetBoneTransform(HumanBodyBones.Head) : null;
+        behaviour.Body = shooter;
         behaviour.Lens = animators.Select(animator => animator.GetComponent<CinemachineVirtualCamera>()).FirstOrDefault(lens => lens != null);
         if (behaviour.Arm == null || behaviour.Gun == null || behaviour.Lens == null) Debug.LogError("GunAimClip: kol, silah veya kamera bulunamadı.", owner);
         return playable;
@@ -34,7 +37,8 @@ public class GunAimClip : PlayableAsset, ITimelineClipAsset
 public class GunAimBehaviour : PlayableBehaviour
 {
     public GunAimClip Clip;
-    public Transform Arm, Gun;
+    public Transform Arm, Gun, Head;
+    public Animator Body;
     public CinemachineVirtualCamera Lens;
     GunAimDriver driver;
 
@@ -44,7 +48,15 @@ public class GunAimBehaviour : PlayableBehaviour
         var host = new GameObject("Gun Aim") { hideFlags = HideFlags.HideAndDontSave };
         host.SetActive(false); // So OnEnable sees the fields.
         driver = host.AddComponent<GunAimDriver>();
-        driver.Arm = Arm; driver.Gun = Gun; driver.Eye = Lens.transform; driver.Lens = Lens;
+        driver.Arm = Arm; driver.Gun = Gun; driver.Head = Head; driver.Body = Body; driver.Eye = Lens.transform; driver.Lens = Lens;
+        // The brain has not switched yet this frame: Camera.main still shows exactly what the player sees.
+        var view = Camera.main;
+        driver.StartPosition = view != null ? view.transform.position : Lens.transform.position;
+        driver.StartRotation = view != null ? view.transform.rotation : Lens.transform.rotation;
+        // The whole lens of the gameplay camera (aperture and the rest drive HDRP's depth of field), at the FOV it rendered with.
+        var gameplay = view != null && view.TryGetComponent(out CinemachineBrain brain) ? brain.ActiveVirtualCamera as CinemachineVirtualCamera : null;
+        driver.StartLens = gameplay != null && gameplay != Lens ? gameplay.m_Lens : Lens.m_Lens;
+        if (view != null) driver.StartLens.FieldOfView = view.fieldOfView;
         host.SetActive(true);
     }
 
@@ -54,6 +66,7 @@ public class GunAimBehaviour : PlayableBehaviour
         float time = (float)playable.GetTime();
         driver.Weight = Clip.weight.Evaluate(time);
         driver.Focus = Clip.focus.Evaluate(time);
+        driver.StartView = Clip.startView.Evaluate(time);
         driver.StopAtWalls = time >= Clip.crawlStart;
         driver.Hunted = driver.StopAtWalls && time < Clip.shotTime;
 #if UNITY_EDITOR

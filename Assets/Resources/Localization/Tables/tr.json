@@ -5559,6 +5559,11 @@
             "key": "subtitle.thought_close_door_0.0",
             "source": "",
             "text": "Dur, kapıyı açık bırakmayalım. Kapalıyken biri gelirse en azından ayak seslerini duyarız."
+        },
+        {
+            "key": "subtitle.guderian_gute_nacht.0",
+            "source": "",
+            "text": "Gute Nacht. (İyi geceler.)"
         }
     ]
 }
