@@ -137,7 +137,11 @@ public sealed partial class ChalkboardTutorial : MonoBehaviour
         }
         // Rehber defteri ve kitabı tarar; 0,1 sn'de bir yeter, hayalet animasyonu kendi karesinde akar.
         if (Time.unscaledTime >= nextGuidePoll) { nextGuidePoll = Time.unscaledTime + .1f; UpdateGuide(); }
-        if (boardStep.HasTriggered && !doorStep.HasTriggered && officeDoor.IsLocked()) doorLocked.ReceiveSignal();
+        if (boardStep.HasTriggered && !doorStep.HasTriggered && officeDoor.IsLocked())
+        {
+            TutorialManager.Instance?.RecordLockCheckpoint(officeDoor);
+            doorLocked.ReceiveSignal();
+        }
         if (valveRoomStep.HasTriggered && !valveStep.HasTriggered)
         {
             if (GameManager.Instance.activeInteraction is InteractablePressureValve) valveUsed = true;

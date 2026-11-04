@@ -248,7 +248,7 @@ public class LeesEnemyAI : MonoBehaviour
 
         if (currentRoom != spawnRoom)
         {
-            TriggerDeath("There is no escape.", true);
+            TriggerDeath("Kaçış yok.", true);
             return;
         }
         if (resistance != null && resistance.IsRunning)
@@ -284,7 +284,7 @@ public class LeesEnemyAI : MonoBehaviour
             {
                 currentIgnoranceTimer += Time.deltaTime;
                 if (currentIgnoranceTimer >= maxIgnoranceTime)
-                    TriggerDeath("You ignored him.");
+                    TriggerDeath("Onu görmezden geldin.");
             }
         }
         else
@@ -293,14 +293,14 @@ public class LeesEnemyAI : MonoBehaviour
             {
                 if (hasTurnedAway)
                 {
-                    TriggerDeath("You look him again.");
+                    TriggerDeath("Ona yeniden baktın.");
                     return;
                 }
                 currentReactionTimer += Time.deltaTime;
                 currentSurvivalTimer = 0f;
 
                 if (currentReactionTimer >= maxReactionTime)
-                    TriggerDeath("You stared too long.");
+                    TriggerDeath("Ona fazla uzun baktın.");
             }
             else
             {
@@ -317,7 +317,7 @@ public class LeesEnemyAI : MonoBehaviour
                     currentMovementGraceTimer += Time.deltaTime;
                     if (currentMovementGraceTimer >= movementGraceTime)
                     {
-                        TriggerDeath("You moved.");
+                        TriggerDeath("Kıpırdadın.");
                     }
                 }
                 else
@@ -354,10 +354,10 @@ public class LeesEnemyAI : MonoBehaviour
         if (resistance.Model.State != LeesResistanceModel.Phase.Approaching && resistance.Model.State != LeesResistanceModel.Phase.Struggling) return;
         bool moving = (playerInputs != null && playerInputs.move.sqrMagnitude > .01f) || playerSpeed > movementTolerance;
         currentMovementGraceTimer = moving ? currentMovementGraceTimer + Time.deltaTime : 0;
-        if (currentMovementGraceTimer >= movementGraceTime) { TriggerDeath("You moved.", true); return; }
+        if (currentMovementGraceTimer >= movementGraceTime) { TriggerDeath("Kıpırdadın.", true); return; }
         if (resistance.Model.State == LeesResistanceModel.Phase.Approaching)
         {
-            if (CheckIfVisible()) { TriggerDeath("You look him again.", true); return; }
+            if (CheckIfVisible()) { TriggerDeath("Ona yeniden baktın.", true); return; }
             Vector3 behind = playerTransform.position - resistanceApproachForward * 1.15f; behind.y = resistanceApproachStart.y;
             float progress = resistance.Model.Elapsed / Mathf.Max(.01f, resistance.Model.Settings.approachSeconds);
             transform.position = Vector3.Lerp(resistanceApproachStart, behind, Mathf.SmoothStep(0, 1, progress));
@@ -383,7 +383,7 @@ public class LeesEnemyAI : MonoBehaviour
             resistance.BeginResistance(true);
             return;
         }
-        TriggerDeath("He turned your head.", true);
+        TriggerDeath("Başını çevirdi.", true);
     }
     private void StopEncounterAudio()
     {

@@ -19,18 +19,54 @@ public class TutorialManager : MonoBehaviour
     [Tooltip("Eğitimde ölen oyuncu, ölüm animasyonundan sonra bu dolabın içinde devam eder (boşsa normal ölüm ekranı).")]
     public InteractableHidingSpot deathRespawnSpot;
 
+    // 4 Nov: where the player stood when the office door was locked; a death out of hiding rewinds here.
+    private InteractableDoor lockDoor;
+    private Vector3 lockPosition;
+    private Quaternion lockRotation;
+    private float lockYaw, lockPitch;
+
+    public void RecordLockCheckpoint(InteractableDoor door)
+    {
+        var mover = FindFirstObjectByType<StarterAssets.CharacterController>();
+        if (mover == null) return;
+        lockDoor = door;
+        lockPosition = mover.transform.position;
+        lockRotation = mover.transform.rotation;
+        lockYaw = mover.IntendedLookYaw;
+        lockPitch = mover.IntendedLookPitch;
+    }
+
     // 3 Nov playtest: a tutorial death keeps its jumpscare, then the lesson resumes inside the wardrobe.
     public bool TryRewindDeath()
     {
         // Only Guderian's catch: the wardrobe is his lesson, and other deaths leave their own enemy state behind.
         if (!IsRunning || deathRespawnSpot == null || GameManager.Instance == null || GuderianAI.Instance == null
             || GuderianAI.Instance.currentState != GuderianAI.GuderianState.Jumpscare) return false;
+        // The locker catch leaves the spot occupied: caught while hidden (peeking, leaving) vs. caught in the open.
+        bool wasHidden = deathRespawnSpot.IsOccupied;
         if (JumpscareManager.Instance != null) JumpscareManager.Instance.ResetAfterRewind();
         GuderianAI.Instance.ResetAfterRewind();
         GameManager.Instance.CancelDeath();
+        if (!wasHidden && lockDoor != null)
+        {
+            // Back to the lock moment: same spot and view, door locked and shut, Guderian approaching again.
+            var body = FindFirstObjectByType<CharacterController>();
+            if (body != null)
+            {
+                body.enabled = false;
+                body.transform.SetPositionAndRotation(lockPosition, lockRotation);
+                body.enabled = true;
+            }
+            FindFirstObjectByType<StarterAssets.CharacterController>()?.ForceCameraRotation(lockYaw, lockPitch);
+            lockDoor.SetLocked(true); // closes it too if it was open
+            GuderianAI.Instance.RestartAttackForRewind();
+            return true;
+        }
         deathRespawnSpot.PlaceInside();
         // The lesson's "hide" step listens for the wardrobe interaction.
         PlayerInteraction.NotifyInteracted(deathRespawnSpot.gameObject);
+        // Back to the search: he is inside and looking again; the "he left" step waits for that search to end.
+        if (wasHidden) GuderianAI.Instance.ResumeSearchingForRewind(GameManager.Instance.allRooms.Find(r => r.hidingSpots.Contains(deathRespawnSpot)));
         return true;
     }
 

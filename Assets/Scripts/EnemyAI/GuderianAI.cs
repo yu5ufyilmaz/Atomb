@@ -267,7 +267,7 @@ public class GuderianAI : MonoBehaviour
             return;
 
         guderianModel.SetActive(true);
-        TriggerPositionedJumpscare(JumpscareType.InFrontOfPlayer, "Walked into an ambush.");
+        TriggerPositionedJumpscare(JumpscareType.InFrontOfPlayer, "Pusuya düştün.");
     }
 
     private void AttemptSpawn()
@@ -723,7 +723,7 @@ public class GuderianAI : MonoBehaviour
         InFrontOfPlayer,
     }
 
-    private void TriggerPositionedJumpscare(JumpscareType type, string reason = "You didn't hide.")
+    private void TriggerPositionedJumpscare(JumpscareType type, string reason = "Saklanmadın.")
     {
         if (!GameManager.TryBeginDeath())
             return;
@@ -869,8 +869,11 @@ public class GuderianAI : MonoBehaviour
         }
     }
 
-    public void TriggerLockerJumpscare(Transform lockerExitPoint)
+    public void TriggerLockerJumpscare(Transform lockerExitPoint, string reason = "Çok erken çıktın.")
     {
+        // Same gate as the other catches, so a tutorial rewind can undo the death (CancelDeath).
+        if (!GameManager.TryBeginDeath())
+            return;
         currentState = GuderianState.Jumpscare;
         debugStatus = "DOLAP JUMPSCARE!";
         StopAllCoroutines();
@@ -893,7 +896,7 @@ public class GuderianAI : MonoBehaviour
         // --- YENİ (TİMELİNE) SİSTEMİ ---
         if (timelineLocker != null)
         {
-            StartCoroutine(ExecuteTimelineJumpscareRoutine(timelineLocker, "You left too early."));
+            StartCoroutine(ExecuteTimelineJumpscareRoutine(timelineLocker, reason));
         }
         else
         {
@@ -923,7 +926,7 @@ public class GuderianAI : MonoBehaviour
                     guderianJumpscareProfile,
                     false,
                     JumpscareStyle.Direct,
-                    "You left too early."
+                    reason
                 );
         }
     }
@@ -1010,6 +1013,31 @@ public class GuderianAI : MonoBehaviour
         if (GlobalEnemyManager.Instance != null)
             GlobalEnemyManager.Instance.RegisterAttackEnd();
         cooldownTimer = minTimeBetweenAttacks;
+    }
+
+    // Rewind to the lock moment: after ResetAfterRewind, he walks up to the same room's door again.
+    public void RestartAttackForRewind()
+    {
+        if (activeRoom == null) return;
+        StopAllCoroutines();
+        GlobalEnemyManager.Instance?.RegisterAttackStart(); // the death's stopAllEnemies cleared the flag
+        StartCoroutine(AttackSequence());
+    }
+
+    // Rewind to the search: after ResetAfterRewind, he is already inside with the door open.
+    // The room comes from the caller: a marked player may leave after he has gone, which cleared activeRoom.
+    public void ResumeSearchingForRewind(RoomManager room)
+    {
+        if (room == null || room.roomDoor == null) return;
+        activeRoom = room;
+        StopAllCoroutines();
+        GlobalEnemyManager.Instance?.RegisterAttackStart();
+        InteractableDoor door = activeRoom.roomDoor;
+        door.SetLocked(false);
+        if (!door.isOpen) door.SetOpen(true);
+        TeleportAgent(activeRoom.doorInsidePoint.position);
+        guderianModel.SetActive(true);
+        StartCoroutine(StartSearching());
     }
 
     public void ForceLeave()

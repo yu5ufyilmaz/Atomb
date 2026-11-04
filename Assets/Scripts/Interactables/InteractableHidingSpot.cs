@@ -298,7 +298,7 @@ public class InteractableHidingSpot : MonoBehaviour, IInteractable, IForceExitab
         // (Bir önceki düzeltmeden gelen fazla gözetleme ölüm işareti)
         if (isMarkedForDeath)
         {
-            StartCoroutine(CaughtSequence());
+            StartCoroutine(CaughtSequence("Dolaptan fazla uzun gözetledin."));
             return;
         }
 
@@ -567,7 +567,7 @@ public class InteractableHidingSpot : MonoBehaviour, IInteractable, IForceExitab
     }
 
     // --- GUDERIAN YAKALANMA SEKANSI ---
-    private IEnumerator CaughtSequence()
+    private IEnumerator CaughtSequence(string reason = "Çok erken çıktın.")
     {
         inTransition = true;
 
@@ -602,7 +602,7 @@ public class InteractableHidingSpot : MonoBehaviour, IInteractable, IForceExitab
         // 3. JUMPSCARE ÇAĞRISI
         if (GuderianAI.Instance != null)
         {
-            GuderianAI.Instance.TriggerLockerJumpscare(exitPosition);
+            GuderianAI.Instance.TriggerLockerJumpscare(exitPosition, reason);
         }
 
         yield return null;

@@ -15,19 +15,24 @@ public static class TutorialPlayChecks
 {
     private const BindingFlags Private = BindingFlags.Instance | BindingFlags.NonPublic;
 
-    private static bool caughtAtHiding;
+    private enum Variant { Hide, Peek, Unlock }
+    private static Variant variant;
 
     [MenuItem("Senzora/Doğrulama/Tutorial Gerçek Oyun Akışı")]
-    public static void Run() => Start(false);
+    public static void Run() => Start(Variant.Hide);
 
-    // Same flow, but the player stays out at the wardrobe lesson and is caught by Guderian.
+    // Same flow, but the player peeks too long in the wardrobe, is marked, and dies on leaving it.
     [MenuItem("Senzora/Doğrulama/Tutorial Gerçek Oyun Akışı - Guderian'a Yakalan")]
-    public static void RunCaught() => Start(true);
+    public static void RunCaught() => Start(Variant.Peek);
 
-    private static void Start(bool caught)
+    // Same flow, but the player unlocks the door again and stays out in the room.
+    [MenuItem("Senzora/Doğrulama/Tutorial Gerçek Oyun Akışı - Kilidi Açıp Yakalan")]
+    public static void RunUnlockDeath() => Start(Variant.Unlock);
+
+    private static void Start(Variant chosen)
     {
         Require(Application.isPlaying && ResearchPuzzleTrial.Active != null, "Laboratuvarda Play gerekli.");
-        caughtAtHiding = caught;
+        variant = chosen;
         ResearchPuzzleTrial.Active.StartCoroutine(Flow());
     }
 
@@ -143,38 +148,96 @@ public static class TutorialPlayChecks
         yield return WaitFor(() => lesson.doorStep.HasTriggered, "Gerçek kapı kilidi");
         var spot = manager.tutorialEventsParent.GetComponentsInChildren<HidingSpotControlAction>().First().hidingSpot;
         yield return WaitFor(() => PlayerInteraction.Instance.CanInteractWithWorld, "Saklanmadan önce kamera odağı");
-        if (caughtAtHiding)
+        // 3 Nov playtest: the jumpscare still plays, then the lesson rewinds without the death screen.
+        var volume = Object.FindFirstObjectByType<UnityEngine.Rendering.Volume>();
+        volume.profile.TryGet(out UnityEngine.Rendering.HighDefinition.Vignette vignette);
+        float vignetteBefore = vignette != null ? vignette.intensity.value : 0;
+        Func<bool> rewoundCleanly = () => Time.timeScale == 1 && !Field<GameObject>(DeathUIManager.Instance, "deathScreenPanel").activeSelf
+            && (vignette == null || Mathf.Approximately(vignette.intensity.value, vignetteBefore));
+        var guderian = GuderianAI.Instance;
+        if (variant == Variant.Unlock)
         {
-            // 3 Nov playtest: the jumpscare still plays, then the lesson resumes inside the wardrobe.
-            var volume = Object.FindFirstObjectByType<UnityEngine.Rendering.Volume>();
-            volume.profile.TryGet(out UnityEngine.Rendering.HighDefinition.Vignette vignette);
-            float vignetteBefore = vignette != null ? vignette.intensity.value : 0;
-            // Facing the door makes him wait behind it; turned away, he comes in and catches the player from behind.
+            // 4 Nov: the handle stays usable; unlocked and out in the open, he comes in and the lesson rewinds to the lock.
             var mover = Object.FindFirstObjectByType<StarterAssets.CharacterController>();
+            var player = Object.FindFirstObjectByType<UnityEngine.CharacterController>();
+            Vector3 lockPosition = Field<Vector3>(manager, "lockPosition");
+            Require(Vector3.Distance(player.transform.position, lockPosition) < .3f, "Kilitleme anı kaydedilmedi.");
+            RequireAllowed(doorLock.gameObject); doorLock.Interact();
+            Require(!lesson.officeDoor.IsLocked(), "Kapı kilidi geri açılamadı.");
+            // Facing the door makes him wait behind it; turned away, he comes in and catches the player from behind.
             Vector3 away = mover.transform.position - lesson.officeDoor.transform.position; away.y = 0;
             float awayYaw = Quaternion.LookRotation(away).eulerAngles.y;
+            float caughtAt = Time.realtimeSinceStartup;
             yield return WaitFor(() => { if (!game.IsGameplayOver) mover.ForceCameraRotation(awayYaw, 0); return game.IsGameplayOver; }, "Guderian'ın yakalaması", 100);
-            yield return WaitFor(() => !game.IsGameplayOver && spot.IsOccupied, "Ölümden sonra dolapta devam", 30);
+            Debug.Log($"TUTORIAL PLAY TIMING: unlocked -> caught in {Time.realtimeSinceStartup - caughtAt:F1}s"); caughtAt = Time.realtimeSinceStartup;
+            yield return WaitFor(() => !game.IsGameplayOver, "Ölümden sonra geri sarma", 30);
+            Debug.Log($"TUTORIAL PLAY TIMING: caught -> rewound in {Time.realtimeSinceStartup - caughtAt:F1}s");
             yield return new WaitForSeconds(.5f);
-            Require(Time.timeScale == 1 && !Field<GameObject>(DeathUIManager.Instance, "deathScreenPanel").activeSelf, "Eğitim ölümü ölüm ekranını açtı.");
-            Require(vignette == null || Mathf.Approximately(vignette.intensity.value, vignetteBefore), "Jumpscare efektleri geri alınmadı.");
-            var guderianState = GuderianAI.Instance.currentState;
-            Require(game.activeInteraction == spot && (guderianState == GuderianAI.GuderianState.Exiting || guderianState == GuderianAI.GuderianState.Hidden),
-                "Geri sarma dolabı veya Guderian'ın gidişini kurmadı.");
-            yield return new WaitForSeconds(1f);
+            Require(rewoundCleanly(), "Eğitim ölümü ölüm ekranını açtı veya jumpscare efektleri geri alınmadı.");
+            float distance = Vector3.Distance(player.transform.position, lockPosition);
+            Require(distance < .3f && player.enabled && !spot.IsOccupied && game.activeInteraction == null, $"Geri sarma oyuncuyu kilitleme anına koymadı ({distance:F2} m).");
+            Require(lesson.officeDoor.IsLocked() && !lesson.officeDoor.isOpen, "Geri sarmada kapı kilitli ve kapalı değil.");
+            Require(guderian.currentState == GuderianAI.GuderianState.Approaching, "Guderian yeniden yaklaşmıyor: " + guderian.currentState);
+            ScreenCapture.CaptureScreenshot("outputs/playtest-guderian-unlock-rewind.png");
+            Debug.Log("TUTORIAL PLAY STAGE PASS: unlocked and caught in the open rewinds to the lock moment");
+            yield return WaitFor(() => PlayerInteraction.Instance.CanInteractWithWorld, "Geri sarmadan sonra etkileşim");
+        }
+        RequireAllowed(spot.gameObject);
+        spot.Interact(); BroadcastInteraction(spot.gameObject);
+        yield return WaitFor(() => spot.IsOccupied && !Field<bool>(spot, "inTransition"), "Gerçek dolaba giriş");
+        if (variant == Variant.Peek)
+        {
+            // Peeking too long while he is about only marks the player; leaving the wardrobe later is the death.
+            yield return WaitFor(() => guderian.currentState == GuderianAI.GuderianState.Searching, "Guderian'ın aramaya başlaması", 40);
+            for (int round = 0; round < 2; round++)
+            {
+                // Real Peek bindings through the Input System: left mouse in round 1, W in round 2.
+                var mouse = AddGameMouse(); var keyboard = InputSystem.AddDevice<Keyboard>();
+                try
+                {
+                    if (round == 0) InputSystem.QueueStateEvent(mouse, new MouseState().WithButton(MouseButton.Left));
+                    else { keyboard.MakeCurrent(); InputSystem.QueueStateEvent(keyboard, new KeyboardState(Key.W)); }
+                    yield return new WaitForSeconds(2.5f);
+                }
+                finally { InputSystem.RemoveDevice(keyboard); RemoveGameMouse(mouse); }
+                yield return null;
+                Require(!game.IsGameplayOver && spot.IsOccupied && Field<bool>(spot, "isMarkedForDeath"),
+                    $"Fazla gözetleme (tur {round + 1}) oyuncuyu işaretlemedi veya hemen öldürdü.");
+            }
+            Require(guderian.currentState == GuderianAI.GuderianState.Searching && !spot.canExit, "Gözetleme aramayı bozdu veya çıkışı açtı.");
+            Debug.Log("TUTORIAL PLAY STAGE PASS: peeking too long marks the player without killing");
+            float searchAt = Time.realtimeSinceStartup;
+            yield return WaitFor(() => spot.canExit && guderian.currentState == GuderianAI.GuderianState.Hidden, "Guderian'ın gitmesi ve güvenli çıkış", 100);
+            Debug.Log($"TUTORIAL PLAY TIMING: marked -> Guderian gone and exit open in {Time.realtimeSinceStartup - searchAt:F1}s");
+            Require(Field<bool>(spot, "isMarkedForDeath"), "Guderian gidince gözetleme işareti kalktı.");
+            // Real exit input: F (Cancel).
+            float exitAt = Time.realtimeSinceStartup;
+            yield return PressKey(Key.F);
+            yield return WaitFor(() => game.IsGameplayOver, "İşaretli oyuncunun dolaptan çıkarken yakalanması", 5);
+            Debug.Log($"TUTORIAL PLAY TIMING: exit pressed -> caught in {Time.realtimeSinceStartup - exitAt:F1}s");
+            float caughtAt = Time.realtimeSinceStartup;
+            yield return WaitFor(() => !game.IsGameplayOver && spot.IsOccupied, "Ölümden sonra dolapta devam", 30);
+            Debug.Log($"TUTORIAL PLAY TIMING: caught -> rewound in {Time.realtimeSinceStartup - caughtAt:F1}s");
+            yield return new WaitForSeconds(.5f);
+            Require(rewoundCleanly(), "Eğitim ölümü ölüm ekranını açtı veya jumpscare efektleri geri alınmadı.");
+            Require(game.activeInteraction == spot && guderian.currentState == GuderianAI.GuderianState.Searching,
+                "Geri sarma dolabı veya Guderian'ın aramasını kurmadı: " + guderian.currentState);
+            Require(lesson.officeDoor.isOpen && !lesson.officeDoor.IsLocked(), "Geri sarmada kapı açık değil.");
+            Require(!Field<bool>(spot, "isMarkedForDeath") && Field<float>(spot, "currentPeekTimer") == 0, "Geri sarma gözetleme işaretini/sayacını temizlemedi.");
+            Require(spot.canExit, "Geri sarma, 006'nın açtığı dolap çıkışını yeniden kilitledi.");
             ScreenCapture.CaptureScreenshot("outputs/playtest-stage3-death-rewind.png");
-            Debug.Log("TUTORIAL PLAY STAGE PASS: Guderian's catch rewinds into the wardrobe");
+            Debug.Log("TUTORIAL PLAY STAGE PASS: a marked exit dies, then rewinds into the wardrobe with Guderian searching");
+            searchAt = Time.realtimeSinceStartup;
+            yield return WaitFor(() => guderian.currentState == GuderianAI.GuderianState.Hidden, "Geri sarmadan sonra aramanın bitmesi", 100);
+            Debug.Log($"TUTORIAL PLAY TIMING: rewound search ended in {Time.realtimeSinceStartup - searchAt:F1}s");
         }
         else
         {
-            RequireAllowed(spot.gameObject);
-            spot.Interact(); BroadcastInteraction(spot.gameObject);
-            yield return WaitFor(() => spot.IsOccupied, "Gerçek dolaba giriş");
             yield return new WaitForSeconds(1.5f);
             ScreenCapture.CaptureScreenshot("outputs/playtest-stage3-hidden-normal.png");
+            Require(!spot.canExit, "Düşman eğitimi sırasında dolaptan erken çıkılabiliyor.");
+            yield return WaitFor(() => spot.canExit, "Guderian'ın gitmesi ve güvenli çıkış", 100);
         }
-        Require(!spot.canExit, "Düşman eğitimi sırasında dolaptan erken çıkılabiliyor.");
-        yield return WaitFor(() => spot.canExit, "Guderian'ın gitmesi ve güvenli çıkış", 100);
         Require(GuderianAI.Instance.currentState == GuderianAI.GuderianState.Hidden, "Dolap Guderian gitmeden açıldı.");
         spot.ForceExit(); yield return WaitFor(() => game.activeInteraction == null, "Dolaptan çıkış");
         yield return WaitFor(() => !spot.IsOccupied && Object.FindFirstObjectByType<UnityEngine.CharacterController>().enabled
@@ -283,6 +346,16 @@ public static class TutorialPlayChecks
         }
         RemoveGameMouse(mouse);
         Require(finished(), "Lees eğitimi fareyle tamamlanamadı.");
+    }
+
+    private static IEnumerator PressKey(Key key)
+    {
+        var mouse = AddGameMouse(); var keyboard = InputSystem.AddDevice<Keyboard>(); keyboard.MakeCurrent();
+        InputSystem.QueueStateEvent(keyboard, new KeyboardState(key));
+        yield return null; yield return null;
+        InputSystem.QueueStateEvent(keyboard, new KeyboardState());
+        yield return null; yield return null;
+        InputSystem.RemoveDevice(keyboard); RemoveGameMouse(mouse);
     }
 
     private static IEnumerator ClickLeftMouse()

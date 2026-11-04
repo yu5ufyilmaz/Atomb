@@ -4766,6 +4766,61 @@
             "text": "Information with an unclear link"
         },
         {
+            "key": "death.ambush",
+            "source": "Pusuya düştün.",
+            "text": "You walked into an ambush."
+        },
+        {
+            "key": "death.not_hidden",
+            "source": "Saklanmadın.",
+            "text": "You didn't hide."
+        },
+        {
+            "key": "death.left_early",
+            "source": "Çok erken çıktın.",
+            "text": "You left too early."
+        },
+        {
+            "key": "death.peeked_too_long",
+            "source": "Dolaptan fazla uzun gözetledin.",
+            "text": "You peeked out of the wardrobe for too long."
+        },
+        {
+            "key": "death.darkness",
+            "source": "Karanlıkta fazla kaldın.",
+            "text": "You stayed in the dark too long."
+        },
+        {
+            "key": "death.no_escape",
+            "source": "Kaçış yok.",
+            "text": "There is no escape."
+        },
+        {
+            "key": "death.ignored",
+            "source": "Onu görmezden geldin.",
+            "text": "You ignored him."
+        },
+        {
+            "key": "death.looked_again",
+            "source": "Ona yeniden baktın.",
+            "text": "You looked at him again."
+        },
+        {
+            "key": "death.stared",
+            "source": "Ona fazla uzun baktın.",
+            "text": "You stared too long."
+        },
+        {
+            "key": "death.moved",
+            "source": "Kıpırdadın.",
+            "text": "You moved."
+        },
+        {
+            "key": "death.head_turned",
+            "source": "Başını çevirdi.",
+            "text": "He turned your head."
+        },
+        {
             "key": "subtitle.chemistry_lab_entrance.0",
             "source": "",
             "text": "Did you think you left me behind at the university, Arthur?"

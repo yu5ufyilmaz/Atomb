@@ -52644,6 +52644,7 @@ MonoBehaviour:
   enableTutorialMode: 1
   allowedInteractables:
   - {fileID: 454887303}
+  - {fileID: 1413967748}
 --- !u!114 &734015698
 MonoBehaviour:
   m_ObjectHideFlags: 0

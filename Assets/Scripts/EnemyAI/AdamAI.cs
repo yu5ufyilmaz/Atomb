@@ -212,7 +212,7 @@ public class AdamAI : MonoBehaviour
                 adamJumpscareProfile,
                 true,
                 JumpscareStyle.Direct,
-                "Too long in darkness."
+                "Karanlıkta fazla kaldın."
             );
     }
 

@@ -4766,6 +4766,61 @@
             "text": "Bağlantısı belirsiz bilgiler"
         },
         {
+            "key": "death.ambush",
+            "source": "Pusuya düştün.",
+            "text": "Pusuya düştün."
+        },
+        {
+            "key": "death.not_hidden",
+            "source": "Saklanmadın.",
+            "text": "Saklanmadın."
+        },
+        {
+            "key": "death.left_early",
+            "source": "Çok erken çıktın.",
+            "text": "Çok erken çıktın."
+        },
+        {
+            "key": "death.peeked_too_long",
+            "source": "Dolaptan fazla uzun gözetledin.",
+            "text": "Dolaptan fazla uzun gözetledin."
+        },
+        {
+            "key": "death.darkness",
+            "source": "Karanlıkta fazla kaldın.",
+            "text": "Karanlıkta fazla kaldın."
+        },
+        {
+            "key": "death.no_escape",
+            "source": "Kaçış yok.",
+            "text": "Kaçış yok."
+        },
+        {
+            "key": "death.ignored",
+            "source": "Onu görmezden geldin.",
+            "text": "Onu görmezden geldin."
+        },
+        {
+            "key": "death.looked_again",
+            "source": "Ona yeniden baktın.",
+            "text": "Ona yeniden baktın."
+        },
+        {
+            "key": "death.stared",
+            "source": "Ona fazla uzun baktın.",
+            "text": "Ona fazla uzun baktın."
+        },
+        {
+            "key": "death.moved",
+            "source": "Kıpırdadın.",
+            "text": "Kıpırdadın."
+        },
+        {
+            "key": "death.head_turned",
+            "source": "Başını çevirdi.",
+            "text": "Başını çevirdi."
+        },
+        {
             "key": "subtitle.chemistry_lab_entrance.0",
             "source": "",
             "text": "Beni üniversitede geride bıraktığını mı sandın Arthur?"
