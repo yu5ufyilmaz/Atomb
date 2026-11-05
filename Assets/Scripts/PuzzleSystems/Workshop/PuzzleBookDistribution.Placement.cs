@@ -15,6 +15,9 @@ public static partial class PuzzleBookDistribution
 
     private sealed class Slot { public int book, index; public Entry owner; }
 
+    // Masa kitabına sabitlenen aygıt kartları, bu sırayla.
+    public static readonly string[] DeskParts = { SignalTrial.Source, SignalTrial.Meter, ColorMixtureLibrary.Source, ColorMixtureLibrary.Meter };
+
     // Plan the entire assignment before the live session is touched. References are derived last.
     public static List<BookWorkspacePage>[] Build(List<PuzzleDefinition> puzzles, List<PuzzleBookProfile> books, int seed)
     {
@@ -75,8 +78,20 @@ public static partial class PuzzleBookDistribution
             Shuffle(slots, random); available.Add(slots);
         }
         Shuffle(entries, random);
+        // Masa kitabı (0) her oturumda iki ailenin kaynak ve ölçer kartını hedef sayfasından sonraki ilk boş yuvalarda taşır.
+        // Sabitlenen yuvalar aday listesine girmez; yer kalmazsa kalan kart normal dağıtıma düşer.
+        var deskSlots = available[0].OrderBy(s => s.index).ToList();
+        foreach (var entry in entries.Where(e => e.topic == PuzzleBookTopic.Foundations && e.note.blockType == NotebookBlockType.PartClue
+                && Array.IndexOf(DeskParts, e.note.itemID) >= 0).GroupBy(e => e.note.itemID).Select(g => g.First())
+                .OrderBy(e => Array.IndexOf(DeskParts, e.note.itemID)).ToList())
+        {
+            if (deskSlots.Count == 0) break;
+            var slot = deskSlots[0]; deskSlots.RemoveAt(0); available[0].Remove(slot);
+            slot.owner = entry; entry.slot = slot;
+        }
         foreach (var entry in entries)
         {
+            if (entry.slot != null) continue;
             if (!candidates.ContainsKey(entry.topic))
             {
                 var eligible = Enumerable.Range(0, books.Count).Where(i => (books[i].topics & entry.topic) != 0).ToList();
@@ -84,7 +99,7 @@ public static partial class PuzzleBookDistribution
             }
         }
         foreach (var entry in entries)
-            if (!AssignSlot(entry, candidates, new HashSet<Slot>()))
+            if (entry.slot == null && !AssignSlot(entry, candidates, new HashSet<Slot>()))
                 throw new InvalidOperationException("Uygun kitap sayfa alanı yetersiz: " + entry.topic + ". Kitap konusunu veya sayfa kapasitesini artır.");
         foreach (var entry in entries)
         {

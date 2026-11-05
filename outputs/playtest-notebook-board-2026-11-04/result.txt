@@ -1,4 +1,4 @@
-RUNNING 2026-11-04T01:04:11.0248640Z
+RUNNING 2026-11-05T18:01:45.0073916Z
 collapsed Signal PASS: Kayıt B-29
 header Signal tr PASS: title 1 lines 14pt, toggle 2 lines 12pt
 shot outputs/playtest-notebook-board-2026-11-04/collapsed-Signal-tr.png
@@ -20,6 +20,6 @@ chip click PASS: mix-red on parts page 1
 shot outputs/playtest-notebook-board-2026-11-04/chip-to-part.png
 info row click PASS: Kayıt A-17 / DENEYİN KOŞULLARI on information page 1
 shot outputs/playtest-notebook-board-2026-11-04/row-to-information.png
-group header PASS: SAMPLE page 0 -> 1
+group header PASS: NUMUNE page 0 -> 1
 shot outputs/playtest-notebook-board-2026-11-04/group-header.png
 PASS

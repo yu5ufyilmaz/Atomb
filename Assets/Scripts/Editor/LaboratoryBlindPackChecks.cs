@@ -31,6 +31,8 @@ public static class LaboratoryBlindPackChecks
             Require(notes.Select(n => n.instanceID).Distinct().Count() == notes.Count, "Archive identities collide across puzzles.");
             foreach (var part in PuzzleParts.ForKind(PuzzleKind.Signal).Where(p => puzzles.Any(q => q.rules.Allows(p.id))))
                 Require(notes.Any(n => n.blockType == NotebookBlockType.PartClue && n.itemID == part.id), "Missing collectable part.");
+            foreach (string id in PuzzleBookDistribution.DeskParts.Where(id => puzzles.Any(q => q.rules.Allows(id))))
+                Require(books[0].SelectMany(p => p.blocks).Any(n => n.blockType == NotebookBlockType.PartClue && n.itemID == id), "Desk book lacks device card: " + id);
         }
             Debug.Log("LAB BLIND PACK MODEL PASS: distinct target books, bounded pages, unique archive identities, 48 distributions including 47-book library.");
     }
@@ -38,7 +40,8 @@ public static class LaboratoryBlindPackChecks
     [MenuItem("Senzora/Puzzle Atölyesi/Doğrulama/Üçlü Araştırma Canlı")]
     public static void Live()
     {
-        Require(Application.isPlaying && ResearchPuzzleTrial.Active != null && ResearchPuzzleTrial.Active.Puzzles.Count == 3, "Üçlü laboratuvarda Play gerekli.");
+        Require(Application.isPlaying && ResearchPuzzleTrial.Active != null && ResearchPuzzleTrial.Active.Puzzles.Count >= 3, "Üçlü laboratuvarda Play gerekli.");
+        SaveManager.Instance.sessionOnly = true; // gerçek Yeni Oyun yolu kayıt dosyasını silmesin
         ResearchPuzzleTrial.Active.StartCoroutine(LiveFlow());
     }
 
@@ -135,7 +138,9 @@ public static class LaboratoryBlindPackChecks
         var experiment = SignalExperiment.Active; var notebook = NotebookUI.Instance; var workspace = NotebookWorkspaceController.Instance;
         string path = Path.Combine(Application.persistentDataPath, "SenzoraLocalSave.json");
         string normalBefore = File.Exists(path) ? Convert.ToBase64String(File.ReadAllBytes(path)) : null;
-        yield return ResearchGuidanceChecks.EnterNormalGame();
+        // Tutorial whitelist blocks the library books.
+        yield return ResearchGuidanceChecks.EnterNormalGame(false);
+        if (GlobalEnemyManager.Instance != null) GlobalEnemyManager.Instance.stopAllEnemies = true; // a 47-book walk outlasts the first attack timer
         var player = UnityEngine.Object.FindFirstObjectByType<SynthesisBlockoutPlayer>();
         var begin = typeof(SynthesisBlockoutPlayer).GetMethod("Begin", Private);
         int checkedBooks = 0;
@@ -154,10 +159,11 @@ public static class LaboratoryBlindPackChecks
             yield return null;
             if (++checkedBooks % 10 == 0) Debug.Log("LAB BLIND PACK BOOKS CHECKED: " + checkedBooks + "/" + trial.books.Length);
         }
-        Require(notebook.EnsureCollectedQuests().Count == 3, "Not all three goals can be collected from the physical books.");
+        Require(notebook.EnsureCollectedQuests().Count == trial.Puzzles.Count, "Not all three goals can be collected from the physical books.");
         var boardInteraction = UnityEngine.Object.FindFirstObjectByType<InteractableChalkboard>();
         var puzzles = trial.Puzzles.ToList(); var readings = new Dictionary<string, SignalExperiment.Reading>();
-        foreach (int index in new[] { 2, 0, 1 })
+        // Out of order: 2,0,1 for three targets, 2,3,0,1 for four.
+        foreach (int index in Enumerable.Range(0, puzzles.Count).Select(i => (i + 2) % puzzles.Count))
         {
             var puzzle = puzzles[index];
             if (player != null) begin.Invoke(player, new object[] { boardInteraction, player.boardView }); else boardInteraction.Interact();
@@ -185,12 +191,27 @@ public static class LaboratoryBlindPackChecks
                 Require(workspace.ShowCollectedPart(id), "A required part cannot be collected from the books."); Canvas.ForceUpdateCanvases();
                 var note = UnityEngine.Object.FindObjectsByType<NotebookDraggableBlock>(FindObjectsSortMode.None)
                     .FirstOrDefault(n => !n.IsSource && n.isActiveAndEnabled && n.Data.itemID == id);
-                Vector2 local = board.minBounds + Vector2.Scale(board.maxBounds - board.minBounds, new Vector2(.18f + i % 3 * .27f, .72f - i / 3 * .32f));
-                Vector2 pointer = Camera.main.WorldToScreenPoint(board.boardTransform.TransformPoint(new Vector3(local.x, local.y, .02f)));
+                // Raptiyeli hedef kartı tahtanın sol üstünü kaplar; oyuncu da parçayı kartın üstüne bırakamaz, yuvayı aşağı kaydır.
+                Vector2 slot = new Vector2(.18f + i % 3 * .27f, .72f - i / 3 * .32f), pointer;
                 float half = notebookWindow.rect.width * notebookWindow.localScale.x * .5f + 50;
-                notebookWindow.anchoredPosition = new Vector2(pointer.x < Screen.width * .5f ? -half : -parent.rect.width + half, original.y); Canvas.ForceUpdateCanvases();
+                while (true)
+                {
+                    Vector2 local = board.minBounds + Vector2.Scale(board.maxBounds - board.minBounds, slot);
+                    pointer = Camera.main.WorldToScreenPoint(board.boardTransform.TransformPoint(new Vector3(local.x, local.y, .02f)));
+                    notebookWindow.anchoredPosition = new Vector2(pointer.x < Screen.width * .5f ? -half : -parent.rect.width + half, original.y); Canvas.ForceUpdateCanvases();
+                    if (!board.EnsureDocuments().ContainsPointer(pointer) || slot.y <= .1f) break;
+                    slot.y -= .04f;
+                }
                 var existing = new HashSet<DraggableFormula>(board.boardTransform.GetComponentsInChildren<DraggableFormula>());
-                Require(note != null && workspace.TryDropBlock(note, pointer), "Collected part cannot be dropped on the physical board.");
+                Require(note != null, "Collected part has no notebook card: " + id);
+                if (!workspace.TryDropBlock(note, pointer))
+                {
+                    var hits = new List<UnityEngine.EventSystems.RaycastResult>();
+                    UnityEngine.EventSystems.EventSystem.current?.RaycastAll(new UnityEngine.EventSystems.PointerEventData(UnityEngine.EventSystems.EventSystem.current) { position = pointer }, hits);
+                    throw new InvalidOperationException("Collected part cannot be dropped on the physical board: " + id + " card=" + note.name + " parent=" + note.transform.parent?.name
+                        + " pointer=" + pointer + " screen=" + Screen.width + "x" + Screen.height + " top=" + (hits.Count > 0 ? hits[0].gameObject.name + "/" + hits[0].gameObject.transform.parent?.name : "none")
+                        + " docs=" + board.EnsureDocuments().ContainsPointer(pointer) + " canMove=" + workspace.CanMoveBlocks + " machine=" + board.isMachineActive);
+                }
                 parts.Add(board.boardTransform.GetComponentsInChildren<DraggableFormula>().First(p => !existing.Contains(p)));
             }
             notebookWindow.anchoredPosition = original;
@@ -202,19 +223,21 @@ public static class LaboratoryBlindPackChecks
             }
             board.AttemptSynthesis(); Require(experiment.LastReading.MeetsTarget, "Authored puzzle cannot be solved on the physical board.");
             readings.Add(puzzle.id, experiment.LastReading); SignalTrialPlayChecks.CollectOutput();
-            var wrong = trial.Content.Quests.First(q => q.questID != puzzle.id);
-            Require(board.TryPinQuest(wrong.CreateQuest()) && !experiment.Submit(experiment.LastReading.Code), "A different target accepted this result.");
-            Require(board.TryPinQuest(trial.Content.Quests.First(q => q.questID == puzzle.id).CreateQuest()), "Cannot return to a previously pinned target.");
+            // 2026-10-29'dan beri ölçüm oturumdaki eşleşen hedefi seçer; başka hedef raptiyeliyken de kendi hedefine yazılmalı.
+            var wrong = trial.Content.Quests.FirstOrDefault(q => q.questID != puzzle.id && !trial.Completed.Contains(q.questID));
+            if (wrong != null) Require(board.TryPinQuest(wrong.CreateQuest()), "Cannot pin another target before submitting.");
             boardInteraction.ForceExit(); yield return WaitFor(() => game.activeInteraction == null, "Board closing"); yield return null;
             SignalTrialPlayChecks.OpenTerminal();
             yield return WaitFor(() => game.activeInteraction == experiment.terminal && experiment.terminal.RequiresMeasurementCursor, "Terminal opening");
             yield return new WaitForSeconds(.5f);
             SignalTrialPlayChecks.SubmitLastOutput();
-            Require(trial.Completed.Contains(puzzle.id), "Real terminal did not complete the selected target.");
+            Require(trial.Completed.Contains(puzzle.id), "Real terminal did not complete the measured target.");
+            Require(wrong == null || !trial.Completed.Contains(wrong.questID) && !(board.PinnedQuest?.questID == wrong.questID && board.PinnedQuest.completed),
+                "The measurement was credited to the pinned target " + wrong?.questID + " instead of " + puzzle.id);
             experiment.terminal.ForceExit(); yield return WaitFor(() => game.activeInteraction == null, "Terminal closing"); yield return null;
-            Debug.Log("LAB BLIND PACK REAL TARGET PASS: " + trial.Completed.Count + "/3; other-target submission refused.");
+            Debug.Log("LAB BLIND PACK REAL TARGET PASS: " + trial.Completed.Count + "/" + puzzles.Count + "; credited to " + puzzle.id + (wrong != null ? " while " + wrong.questID + " was pinned." : "."));
         }
-        Require(trial.Completed.Count == 3, "Completing a target lost previous completion.");
+        Require(trial.Completed.Count == puzzles.Count, "Completing a target lost previous completion.");
         var saved = new GameData(); trial.CaptureSession(saved); board.SaveData(ref saved); notebook.SaveData(ref saved);
         string exact = JsonUtility.ToJson(saved.puzzleSession); string oldID = trial.SessionID;
         trial.StartNewSession(); Require(trial.SessionID != oldID && trial.Completed.Count == 0, "New Game did not reset the full set.");
@@ -229,7 +252,7 @@ public static class LaboratoryBlindPackChecks
         }
         boardInteraction.ForceExit(); yield return WaitFor(() => game.activeInteraction == null, "Restored board closing");
         Require((File.Exists(path) ? Convert.ToBase64String(File.ReadAllBytes(path)) : null) == normalBefore, "Playtest changed the normal save.");
-        Debug.Log("LAB BLIND PACK LIVE PASS: all physical books readable/collectable, 3 goals solved out of order via notebook/board/real terminal, cross-target refusal, complete snapshot restore, normal save untouched.");
+        Debug.Log("LAB BLIND PACK LIVE PASS: all physical books readable/collectable, " + puzzles.Count + " goals solved out of order via notebook/board/real terminal, measurements credited to their own target under another pin, complete snapshot restore, normal save untouched.");
     }
 
     private static IEnumerator WaitFor(Func<bool> ready, string context)

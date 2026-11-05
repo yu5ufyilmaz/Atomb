@@ -176,7 +176,6 @@ public partial class InteractableBook : MonoBehaviour, IInteractable, IForceExit
     private static readonly int OpenTrigger = Animator.StringToHash("Open");
     private static readonly int CloseTrigger = Animator.StringToHash("Close");
     private static readonly int IsOpenBool = Animator.StringToHash("IsOpen");
-    private static readonly int PageNumber = Animator.StringToHash("PageNumber");
 
     private int pageIndexL;
     private int pageIndexR;
@@ -360,7 +359,6 @@ public partial class InteractableBook : MonoBehaviour, IInteractable, IForceExit
         if (bookAnimator != null)
         {
             bookAnimator.SetBool(IsOpenBool, isOpen);
-            bookAnimator.SetInteger(PageNumber, currentPage);
 
             // Oyun başlar başlamaz animasyonun direkt o karede (açık/kapalı) başlaması için:
             bookAnimator.Update(0f);

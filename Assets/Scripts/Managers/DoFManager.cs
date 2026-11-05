@@ -131,9 +131,7 @@ public class DoFManager : MonoBehaviour
             bool turningFast = Vector3.Angle(lastForward, cam.forward) > maxTurnSpeed * deltaTime;
             lastForward = cam.forward;
 
-            m_DepthOfField.focusDistance.Override(
-                focusFilter.Step(SampleFocusDistance(cam), deltaTime, turningFast)
-            );
+            ApplyFocus(focusFilter.Step(SampleFocusDistance(cam), deltaTime, turningFast));
         }
     }
 
@@ -202,11 +200,20 @@ public class DoFManager : MonoBehaviour
             float t = elapsed / duration;
             t = t * t * (3f - 2f * t);
 
-            m_DepthOfField.focusDistance.Override(Mathf.Lerp(startDistance, target, t));
+            ApplyFocus(Mathf.Lerp(startDistance, target, t));
             yield return null;
         }
 
-        m_DepthOfField.focusDistance.Override(target);
+        ApplyFocus(target);
+    }
+
+    // Manual mod: uzak bulanıklık odağın arkasından başlar, yakın bulanıklık profilde kapalı (elde tutulan kitap hep net).
+    private void ApplyFocus(float distance)
+    {
+        float farStart = Mathf.Max(distance * 1.5f, distance + 1f);
+        m_DepthOfField.focusDistance.Override(distance);
+        m_DepthOfField.farFocusStart.Override(farStart);
+        m_DepthOfField.farFocusEnd.Override(farStart + Mathf.Max(6f, distance * 4f));
     }
 
     // Sahne değişince eski örnek kalmasın; Instance?.X() çağrıları Unity'nin sahte null kontrolünü atlar.

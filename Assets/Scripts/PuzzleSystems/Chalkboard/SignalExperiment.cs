@@ -184,7 +184,8 @@ public sealed class SignalExperiment : MonoBehaviour
             return false;
         }
         trial.MarkCompleted(CurrentQuestID);
-        if (trial.Board.PinnedQuest != null) trial.Board.PinnedQuest.completed = true;
+        // Ölçüm kendi hedefini seçer; raptiyeli başka bir hedef tamamlanmış görünmesin.
+        if (trial.Board.PinnedQuest != null && trial.Board.PinnedQuest.questID == CurrentQuestID) trial.Board.PinnedQuest.completed = true;
         TerminalMessage = trial.Puzzles.Count > 1 ? $"DENEY ONAYLANDI / {trial.Completed.Count}/{trial.Puzzles.Count} hedef tamamlandı." : "DENEY ONAYLANDI / Kayıt hedefle örtüşüyor.";
         Debug.Log("SIGNAL TRIAL COMPLETE: " + code);
         MeasurementAccepted?.Invoke(CurrentQuestID);

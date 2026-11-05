@@ -13,7 +13,8 @@ public sealed partial class ChalkboardTutorial
         if (workspace == null) return;
         var interaction = GameManager.Instance.activeInteraction;
         if (lessonBook.ExitLocked && ReferenceEquals(interaction, lessonBook)) workspace.GuideBook(lessonBook);
-        else if (collectedStep.HasTriggered && !boardStep.HasTriggered && research.Board.isMachineActive) GuideBoard(workspace);
+        else if (collectedStep.HasTriggered && !sampleStep.HasTriggered && ReferenceEquals(interaction, sampleBook)) workspace.GuideBook(sampleBook);
+        else if (sampleStep.HasTriggered && !boardStep.HasTriggered && research.Board.isMachineActive) GuideBoard(workspace);
         else if (terminalReadyStep.HasTriggered && !terminalAccepted.IsMet() && ReferenceEquals(interaction, experiment.terminal)) GuideTerminal(workspace);
         else workspace.ClearGuide();
     }

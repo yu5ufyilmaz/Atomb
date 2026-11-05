@@ -101,6 +101,10 @@ public class InteractableHidingSpot : MonoBehaviour, IInteractable, IForceExitab
     [SerializeField]
     private float doorOpenDelay = 1.0f; // <-- BUNU EKLE
 
+    // Locker death: the jumpscare timeline drives the lids from shut; a peeking lid holds its pose until the track opens past it.
+    private Transform[] lidParts;
+    private Quaternion[] lidShut, lidHeld;
+
     private void Start()
     {
         playerController = Object.FindFirstObjectByType<UnityEngine.CharacterController>();
@@ -119,6 +123,29 @@ public class InteractableHidingSpot : MonoBehaviour, IInteractable, IForceExitab
             originalCameraParent = mainCamera.parent; // Eski ebeveyni kaydet
             cinemachineBrain = mainCamera.GetComponent<CinemachineBrain>();
         }
+        if (propAnimator)
+        {
+            lidParts = propAnimator.GetComponentsInChildren<Transform>();
+            lidShut = System.Array.ConvertAll(lidParts, t => t.localRotation);
+        }
+    }
+
+    private void LateUpdate()
+    {
+        if (lidHeld == null)
+            return;
+        bool holding = false;
+        for (int i = 0; i < lidParts.Length; i++)
+        {
+            float held = Quaternion.Angle(lidHeld[i], lidShut[i]);
+            if (held > 1f && Quaternion.Angle(lidParts[i].localRotation, lidShut[i]) <= held)
+            {
+                lidParts[i].localRotation = lidHeld[i];
+                holding = true;
+            }
+        }
+        if (!holding)
+            lidHeld = null;
     }
 
     public void Interact()
@@ -194,13 +221,9 @@ public class InteractableHidingSpot : MonoBehaviour, IInteractable, IForceExitab
                 if (currentPeekTimer >= maxPeekTimeWhileDangerous)
                 {
                     currentPeekTimer = 0f;
-                    isPeeking = false;
-                    if (propAnimator)
-                        propAnimator.SetBool(propPeekBool, false);
-
-                    // YENİ: Anında CaughtSequence başlatmak yerine oyuncuyu ölüm için işaretle
+                    // YENİ: Anında CaughtSequence başlatmak yerine oyuncuyu ölüm için işaretle.
+                    // The lid stays open while Peek is held: forcing it shut here reopened it next frame, a close/open loop.
                     isMarkedForDeath = true;
-                    return; // Kamerayı daha fazla oynatma
                 }
             }
             else
@@ -278,9 +301,11 @@ public class InteractableHidingSpot : MonoBehaviour, IInteractable, IForceExitab
         TogglePlayerModel(false);
         if (propAnimator)
         {
-            propAnimator.SetBool(propPeekBool, false);
-            propAnimator.SetTrigger(propCloseTrigger);
+            // Snap to the closed idle: a Close trigger only fires from OpenDoors and would linger until the next exit.
+            propAnimator.Rebind();
+            propAnimator.Update(0f);
         }
+        lidHeld = null;
         isOccupied = true;
         isPeeking = isMarkedForDeath = inTransition = false;
         currentPeekYaw = currentPeekPitch = currentPeekTimer = 0f;
@@ -338,6 +363,7 @@ public class InteractableHidingSpot : MonoBehaviour, IInteractable, IForceExitab
     {
         inTransition = true;
         isMarkedForDeath = false;
+        lidHeld = null;
         // Eğer playerMoveScript null ise burada bulalım ki hata vermesin
         if (playerMoveScript == null && playerController != null)
             playerMoveScript = playerController.GetComponent<StarterAssets.CharacterController>();
@@ -570,6 +596,8 @@ public class InteractableHidingSpot : MonoBehaviour, IInteractable, IForceExitab
     private IEnumerator CaughtSequence(string reason = "Çok erken çıktın.")
     {
         inTransition = true;
+        if (lidParts != null)
+            lidHeld = System.Array.ConvertAll(lidParts, t => t.localRotation);
 
         // 1. Kamerayı serbest bırak ama DÜNYA AÇISINI (o an baktığı yeri) KORU
         if (mainCamera != null && originalCameraParent != null)

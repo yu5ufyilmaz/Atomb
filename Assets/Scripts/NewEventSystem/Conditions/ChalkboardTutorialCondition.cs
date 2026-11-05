@@ -6,7 +6,7 @@ using UnityEngine;
 public class ChalkboardTutorialCondition : MonoBehaviour, ICondition
 {
     public enum Context { Book, Collect, LeaveBook, Board, Pin, ClearBoard, Build, Store, LeaveBoard,
-        Turing, Insert, Reader, Confirm, RetryMeasurement, Valve, LeaveValve, WaitPower, Breaker }
+        Turing, Insert, Reader, Confirm, RetryMeasurement, Valve, LeaveValve, WaitPower, Breaker, Sample }
     public ChalkboardTutorial lesson;
     public Context context;
     public event Action OnConditionChanged;
@@ -42,6 +42,8 @@ public class ChalkboardTutorialCondition : MonoBehaviour, ICondition
             case Context.LeaveValve: return PressureSystemManager.Instance.GetPressure() <= 20 && interaction is InteractablePressureValve;
             case Context.WaitPower: return !lesson.SawBreakerTrip && !BreakerBox.Instance.IsTripped;
             case Context.Breaker: return BreakerBox.Instance.IsTripped;
+            // Masa kitabındayken leave_book konuşur; numune kitabını açınca rehber kartı gösterir.
+            case Context.Sample: return interaction != lesson.lessonBook && interaction != lesson.sampleBook;
             default: return false;
         }
     }
@@ -64,7 +66,7 @@ public class ChalkboardTutorialCondition : MonoBehaviour, ICondition
         if (context == Context.Collect && notebook != null)
         {
             int count = notebook.EnsureCollectedQuests().Exists(n => n.questID == ChalkboardTutorial.QuestID) ? 1 : 0;
-            bool ports = false, source = false, narrow = false, meter = false;
+            bool ports = false, source = false, meter = false;
             foreach (var page in notebook.workspacePages)
             {
                 if (page?.blocks == null) continue;
@@ -74,11 +76,10 @@ public class ChalkboardTutorialCondition : MonoBehaviour, ICondition
                     if (n.questID == ChalkboardTutorial.QuestID && n.itemID == "tutorial/ports") ports = true;
                     if (n.blockType != NotebookBlockType.PartClue) continue;
                     if (n.itemID == SignalTrial.Source) source = true;
-                    else if (n.itemID == SignalTrial.Narrow) narrow = true;
                     else if (n.itemID == SignalTrial.Meter) meter = true;
                 }
             }
-            return count + (ports ? 1 : 0) + (source ? 1 : 0) + (narrow ? 1 : 0) + (meter ? 1 : 0);
+            return count + (ports ? 1 : 0) + (source ? 1 : 0) + (meter ? 1 : 0);
         }
         if (context == Context.Pin) return (lesson.research.Board.PinnedQuest?.questID == ChalkboardTutorial.QuestID ? 1 : 0)
             + (lesson.research.Board.pinnedInformation.Exists(n => n.questID == ChalkboardTutorial.QuestID && n.itemID == "tutorial/ports") ? 1 : 0);

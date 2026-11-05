@@ -48,6 +48,11 @@ public partial class NotebookWorkspaceController
         return null;
     }
 
+    // Parça kartının kitabı; aynı parçanın birden çok kopyası varsa bu hedef için konmuş kopya (instanceID "hedef/...") önce gelir.
+    private static string PartBook(string itemID, string questID)
+        => BookOf(b => b.blockType == NotebookBlockType.PartClue && b.itemID == itemID && b.instanceID != null && b.instanceID.StartsWith(questID + "/"))
+            ?? BookOf(b => b.blockType == NotebookBlockType.PartClue && b.itemID == itemID);
+
     // hints=false: deney koşulu ve ekipman notu. hints=true: puzzle'a özel ek notlar.
     private List<TargetItem> ExpectedItems(PuzzleDefinition puzzle, NotebookBlockData target, bool hints)
     {
@@ -133,8 +138,12 @@ public partial class NotebookWorkspaceController
         foreach (var sample in samples)
         {
             bool have = archived.Exists(n => n.itemID == sample.id);
-            y += have ? DoneRow(sample.title, y, sample.id) : PlaceholderRow(BookOf(b => b.blockType == NotebookBlockType.PartClue && b.itemID == sample.id), y);
+            y += have ? DoneRow(sample.title, y, sample.id) : PlaceholderRow(PartBook(sample.id, target?.questID), y);
         }
+
+        // AYGITLARIN YERİ: kaynak ve ölçer (girişsiz/çıkışsız parçalar) masa kitabında durur; tek satır, sayfa kaydırmasız.
+        var devices = AllowedParts(puzzle).FindAll(p => p.inputs == 0 || p.outputs == 0);
+        if (devices.Count > 0) { y += 2; y += Heading("AYGITLARIN YERİ", y); y += DeviceRow(devices, archived, target?.questID, y); }
         targetContent.sizeDelta = new Vector2(0, Mathf.Max(targetPanel.rect.height, y));
         targetContent.anchoredPosition = Vector2.zero;
     }
@@ -194,6 +203,24 @@ public partial class NotebookWorkspaceController
         Top(where.rectTransform, new Vector2(95, -y)); where.alignment = TextAlignmentOptions.Right; where.color = MissingInk;
         where.enableAutoSizing = true; where.fontSizeMin = 8; where.fontSizeMax = 11;
         Checkbox(y, false); RowLine(y + 20);
+        return 21;
+    }
+
+    // Aygıt satırı: adlar solda; eksik aygıt varsa onun kitabı · rafı sağda. Hepsi alınınca kutu dolar.
+    private float DeviceRow(List<SignalPartLibrary.Part> devices, List<NotebookBlockData> archived, string questID, float y)
+    {
+        var missing = devices.Find(d => !archived.Exists(n => n.itemID == d.id));
+        var names = Label(targetContent, "", Vector2.zero, new Vector2(missing == null ? 410 : 200, 20), 12);
+        Top(names.rectTransform, new Vector2(missing == null ? 11 : -94, -y)); names.alignment = TextAlignmentOptions.Left;
+        names.color = missing == null ? DoneInk : MissingInk; names.enableAutoSizing = true; names.fontSizeMin = 8; names.fontSizeMax = 12;
+        GameLocalization.SetFormat(names, string.Join(", ", devices.Select((d, i) => "{" + i + "}")), devices.Select(d => (object)d.title).ToArray());
+        if (missing != null)
+        {
+            var where = Label(targetContent, PartBook(missing.id, questID) ?? "?", Vector2.zero, new Vector2(230, 20), 11);
+            Top(where.rectTransform, new Vector2(105, -y)); where.alignment = TextAlignmentOptions.Right; where.color = MissingInk;
+            where.enableAutoSizing = true; where.fontSizeMin = 8; where.fontSizeMax = 11;
+        }
+        Checkbox(y, missing == null); RowLine(y + 20);
         return 21;
     }
 

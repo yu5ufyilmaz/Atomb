@@ -61,7 +61,7 @@ public sealed partial class PuzzleWorkshopWindow
         var copy = ScriptableObject.CreateInstance<PuzzleDefinitionSO>(); copy.hideFlags = HideFlags.HideAndDontSave;
         copy.definition = asset.definition.Clone(); copy.includeInPool = asset.includeInPool;
         document = copy; cleanJson = JsonUtility.ToJson(copy); draftID = Guid.NewGuid().ToString("N");
-        transientJson = cleanJson; selectedNode = connectFrom = -1; graphScroll = Vector2.zero;
+        transientJson = cleanJson; selectedNode = connectFrom = -1; graphScroll = Vector2.zero; targetLocked = false;
         tab = 1; fitGraph = true; ValidateDocument();
     }
 
@@ -74,7 +74,7 @@ public sealed partial class PuzzleWorkshopWindow
         document.definition = new PuzzleDefinition { kind = kind, rules = PuzzleRules.ForKind(kind),
             title = kind == PuzzleKind.ColorMixture ? "Yeni Renk Karışımı" : "Yeni Sinyal Deneyi" };
         document.includeInPool = false; cleanJson = JsonUtility.ToJson(document); draftID = Guid.NewGuid().ToString("N");
-        transientJson = cleanJson; selectedNode = connectFrom = -1; graphScroll = Vector2.zero;
+        transientJson = cleanJson; selectedNode = connectFrom = -1; graphScroll = Vector2.zero; targetLocked = false;
         SetMessage("Hazır başlangıç. Parça ekle veya Rastgele oluştur'u kullan; ayrıntıları Kurallar sekmesinden değiştirebilirsin.", MessageType.Info);
     }
 
@@ -86,7 +86,7 @@ public sealed partial class PuzzleWorkshopWindow
         document = ScriptableObject.CreateInstance<PuzzleDefinitionSO>(); document.hideFlags = HideFlags.HideAndDontSave;
         JsonUtility.FromJsonOverwrite(entry.json, document); cleanJson = entry.clean; transientJson = entry.json; draftID = entry.id;
         sourceAsset = string.IsNullOrEmpty(entry.assetPath) ? null : AssetDatabase.LoadAssetAtPath<PuzzleDefinitionSO>(entry.assetPath);
-        selectedNode = connectFrom = -1; tab = 1; fitGraph = true;
+        selectedNode = connectFrom = -1; tab = 1; fitGraph = true; targetLocked = false;
         SetMessage("Korunan taslak açıldı. Asıl puzzleı güncellemek için Kaydet kullan.", MessageType.Info);
     }
 

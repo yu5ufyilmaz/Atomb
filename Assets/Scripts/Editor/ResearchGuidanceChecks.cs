@@ -32,7 +32,7 @@ public static class ResearchGuidanceChecks
         Debug.Log("RESEARCH VISUAL CAPTURE PASS: Temp/research-book-goal.png");
     }
 
-    public static IEnumerator EnterNormalGame()
+    public static IEnumerator EnterNormalGame(bool tutorial = true)
     {
         Application.runInBackground = true;
         EditorApplication.isPaused = false;
@@ -48,7 +48,7 @@ public static class ResearchGuidanceChecks
         {
             var sequence = UnityEngine.Object.FindFirstObjectByType<InGameMenuController>();
             bool awaitSequence = sequence != null && sequence.enabled;
-            menu.PlayGame(); if (menu.IsTutorialChoiceOpen) menu.ChooseTutorial(true);
+            menu.PlayGame(); if (menu.IsTutorialChoiceOpen) menu.ChooseTutorial(tutorial);
             end = Time.realtimeSinceStartup + 90;
             while ((panel.activeInHierarchy || !game.isGameStarted || awaitSequence && sequence.enabled) && Time.realtimeSinceStartup < end) yield return null;
             Require(!panel.activeInHierarchy && game.isGameStarted && (!awaitSequence || !sequence.enabled), "Gerçek Yeni Oyun geçişi bitmedi.");

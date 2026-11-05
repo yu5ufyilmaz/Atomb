@@ -6,8 +6,14 @@ using UnityEngine;
 public sealed partial class ChalkboardTutorial : MonoBehaviour
 {
     public const string QuestID = "tutorial-first-trace";
+    // Numune N-12 kütüphanedeki bu kitapta; sahne kurulumu ve kontroller kitabı bu adla bulur.
+    public const string SampleBookTitle = "Kısa ve Uzun Tepkiler";
     public ResearchPuzzleTrial research;
     public InteractableBook lessonBook;
+    [Tooltip("Numune N-12'nin konduğu kütüphane kitabı (SampleBookTitle).")]
+    public InteractableBook sampleBook;
+    public EventLogicController sampleStep;
+    public SignalCondition sampleCollected;
     public EventLogicController firstStep, collectedStep, boardStep, terminalReadyStep, finalStep;
     public SignalCondition cardsCollected, boardPracticed, terminalAccepted;
     public InteractableDoor officeDoor;
@@ -45,34 +51,58 @@ public sealed partial class ChalkboardTutorial : MonoBehaviour
     {
         var pages = new List<BookWorkspacePage> {
             new BookWorkspacePage { pageIndex = 0, title = "TAHTA ALIŞTIRMASI",
-                explanation = "Önce HEDEF ve BAĞLANTI SIRASI notlarını deftere sürükle. Yan sayfadaki üç parçayı da al. Tab defteri açar/kapatır.",
+                explanation = "Önce HEDEF ve BAĞLANTI SIRASI notlarını deftere sürükle. Yan sayfadaki iki parçayı da al. Tab defteri açar/kapatır.",
                 blocks = new List<NotebookBlockData> {
                     new NotebookBlockData { blockType = NotebookBlockType.Quest, questID = QuestID,
                         title = puzzle.title, description = puzzle.description, itemID = puzzle.TargetVisual },
                     new NotebookBlockData { blockType = NotebookBlockType.RuleClue, questID = QuestID, itemID = "tutorial/ports",
                         title = "BAĞLANTI SIRASI", description = "Atım Kaynağı → Numune N-12 → Ölçer. Ok çıkış, halka giriştir. Ölçerin bir girişini kullanman yeterli. Tahtada hedefi ve bu ipucunu panoya tak; BELGELERİ TOPLA ile çalışma alanını aç." }
                 } },
-            new BookWorkspacePage { pageIndex = 1, title = "ÜÇ PARÇAYI DA TOPLA",
-                explanation = "Her parçayı deftere sürükle. F ile kitabı bırak; kara tahtaya geç. Defterdeki asıllar korunur.",
+            // Kaynak ve ölçer kartları PrepareLesson'da masa kitabının kendi sayfalarından buraya taşınır.
+            new BookWorkspacePage { pageIndex = 1, title = "KAYNAK VE ÖLÇERİ TOPLA",
+                explanation = "İki parçayı deftere sürükle. Numune N-12 bu kitapta değil; F ile kitabı bırak, kütüphanede ara.",
                 blocks = new List<NotebookBlockData>() }
         };
-        foreach (string id in new[] { SignalTrial.Source, SignalTrial.Narrow, SignalTrial.Meter })
-        {
-            var part = PuzzleParts.Find(id);
-            pages[1].blocks.Add(new NotebookBlockData { blockType = NotebookBlockType.PartClue,
-                itemID = id, title = part.title, description = part.description });
-        }
         return pages;
     }
+
+    public static List<BookWorkspacePage> CreateSamplePages(NotebookBlockData sample) => new List<BookWorkspacePage> {
+        new BookWorkspacePage { pageIndex = 0, title = "KISA TEPKİ NUMUNESİ",
+            explanation = "Numune N-12 kartını deftere sürükle. Tahtadaki alıştırma bu numuneyle kurulur.",
+            blocks = new List<NotebookBlockData> { sample } },
+        new BookWorkspacePage { pageIndex = 1, title = "KISA TEPKİ NUMUNESİ",
+            explanation = "Numune defterindeyse F ile kitabı bırak; kara tahtaya geç.", blocks = new List<NotebookBlockData>() }
+    };
+
+    // Kart oturumun kitabındaysa oradan alınır (aynı kart iki kez görünmez), yoksa katalogdan yazılır.
+    private static NotebookBlockData TakeCard(InteractableBook book, string id)
+    {
+        foreach (var page in book.synthesisPages)
+        {
+            int index = page?.blocks?.FindIndex(n => n != null && n.blockType == NotebookBlockType.PartClue && n.itemID == id) ?? -1;
+            if (index < 0) continue;
+            var card = page.blocks[index]; page.blocks.RemoveAt(index);
+            card.bookRegion = default; // ders sayfası kartları sırayla dizer
+            return card;
+        }
+        var part = PuzzleParts.Find(id);
+        return new NotebookBlockData { blockType = NotebookBlockType.PartClue, itemID = id, title = part.title, description = part.description };
+    }
+
+    private static List<NotebookBlockData> NotebookNotes(NotebookUI notebook)
+        => notebook.workspacePages.Where(p => p?.blocks != null).SelectMany(p => p.blocks).Where(n => n != null).ToList();
 
     public static bool HasCollectedCards(NotebookUI notebook)
     {
         if (notebook == null || !notebook.EnsureCollectedQuests().Exists(n => n.questID == QuestID)) return false;
-        var notes = notebook.workspacePages.Where(p => p?.blocks != null).SelectMany(p => p.blocks).Where(n => n != null).ToList();
+        var notes = NotebookNotes(notebook);
         return notes.Exists(n => n.blockType == NotebookBlockType.RuleClue && n.questID == QuestID && n.itemID == "tutorial/ports")
-            && new[] { SignalTrial.Source, SignalTrial.Narrow, SignalTrial.Meter }
+            && new[] { SignalTrial.Source, SignalTrial.Meter }
                 .All(id => notes.Exists(n => n.blockType == NotebookBlockType.PartClue && n.itemID == id));
     }
+
+    public static bool HasSampleCard(NotebookUI notebook)
+        => notebook != null && NotebookNotes(notebook).Exists(n => n.blockType == NotebookBlockType.PartClue && n.itemID == SignalTrial.Narrow);
 
     private void OnEnable()
     {
@@ -105,7 +135,20 @@ public sealed partial class ChalkboardTutorial : MonoBehaviour
         sawBreakerTrip = valveUsed = false;
         var puzzle = CreatePuzzle();
         lessonFingerprint = puzzle.Fingerprint();
-        research.AddTutorial(puzzle, lessonBook, CreatePages(puzzle));
+        // AddTutorial gibi: ders oturumda zaten varsa (kayıttan dönüş) sayfalar ikinci kez eklenmez.
+        if (!research.Puzzles.Any(p => p.id == QuestID))
+        {
+            var pages = CreatePages(puzzle);
+            pages[1].blocks.Add(TakeCard(lessonBook, SignalTrial.Source));
+            pages[1].blocks.Add(TakeCard(lessonBook, SignalTrial.Meter));
+            // Arşivin kendi N-12 kartı yerinde kalır (kaynakçası onu gösterir); dersin kartı ayrı bir kopyadır.
+            var sample = TakeCard(lessonBook, SignalTrial.Narrow);
+            sample.instanceID = QuestID + "/part/" + SignalTrial.Narrow; // defter hedef sayfası bu kopyanın kitabını gösterir
+            research.AddTutorial(puzzle, lessonBook, pages);
+            research.InsertPages(sampleBook, CreateSamplePages(sample));
+        }
+        // Kurulum bütün kitapların ışığını söndürür; ders adımı bu kitabı yanıp söndürebilsin.
+        sampleBook.emissionIntensity = 10;
         foreach (var dialogue in GetComponentsInChildren<DialogAction>(true))
             if (dialogue.followConditions) dialogue.ResetDialogue();
     }
@@ -127,6 +170,11 @@ public sealed partial class ChalkboardTutorial : MonoBehaviour
         // The player may already be inside the opening trigger when New Game ends.
         firstStep.RefreshConditions();
         if (!firstStep.HasTriggered) return;
+        if (collectedStep.HasTriggered && !sampleStep.HasTriggered && (HasSampleCard(NotebookUI.Instance) || HasCorrectReading))
+        {
+            sampleBook.OnLoseFocus(); sampleBook.emissionIntensity = 0; // malzemeler kurulumdan beri sönük
+            sampleCollected.ReceiveSignal();
+        }
         if (!collectedStep.HasTriggered)
         {
             bool collected = HasCollectedCards(NotebookUI.Instance) || HasCorrectReading;
@@ -153,7 +201,7 @@ public sealed partial class ChalkboardTutorial : MonoBehaviour
             if (BreakerBox.Instance.IsTripped) sawBreakerTrip = true;
             else if (sawBreakerTrip) breakerRestored.ReceiveSignal();
         }
-        if (!collectedStep.HasTriggered || boardStep.HasTriggered) return;
+        if (!sampleStep.HasTriggered || boardStep.HasTriggered) return;
         // Hedef artık panoyu açmaz; yalnız hedefi takmak "panoyu topla" adımını atlatmamalı.
         if (!research.Board.EnsureDocuments().IsDocumentPanelOpen && HasPinnedCards)
             panelWasClosed = true;

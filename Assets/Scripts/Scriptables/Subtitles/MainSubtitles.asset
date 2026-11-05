@@ -477,12 +477,12 @@ MonoBehaviour:
     voiceClip: {fileID: 0}
     segments:
     - duration: 6
-      textTR: "Hedef, ba\u011Flant\u0131 notu ve \xFC\xE7 par\xE7a... Bunlar defterinde
+      textTR: "Hedef, ba\u011Flant\u0131 notu, kaynak ve \xF6l\xE7er... Bunlar defterinde
         dursa iyi olur. Tab ile a\xE7abiliyorsun."
-      textEN: The target, connection note and three parts... We could keep them in
-        your notebook. Tab opens it.
-      textDE: "Das Ziel, die Verbindungsnotiz und drei Teile... Im Notizbuch w\xE4ren
-        sie gut aufgehoben. Tab \xF6ffnet es."
+      textEN: The target, connection note, source and meter... We could keep them
+        in your notebook. Tab opens it.
+      textDE: "Das Ziel, die Verbindungsnotiz, Quelle und Messger\xE4t... Im Notizbuch
+        w\xE4ren sie gut aufgehoben. Tab \xF6ffnet es."
   - id: thought_collect_1
     note: Tutorial inner companion / collect
     voiceClip: {fileID: 0}
@@ -499,33 +499,34 @@ MonoBehaviour:
     voiceClip: {fileID: 0}
     segments:
     - duration: 7
-      textTR: "Bir \u015Feyler eksik h\xE2l\xE2. Hedef, Ba\u011Flant\u0131 S\u0131ras\u0131
-        ve yan sayfadaki \xFC\xE7 par\xE7a... Hepsi laz\u0131m olabilir."
-      textEN: Something's still missing. The target, connection order and three parts
-        on the other page... We may need all of them.
-      textDE: Etwas fehlt noch. Ziel, Verbindungsfolge und die drei Teile auf der
-        anderen Seite... Vielleicht brauchen wir alles.
+      textTR: "Bir \u015Feyler eksik h\xE2l\xE2. Hedef, Ba\u011Flant\u0131 S\u0131ras\u0131,
+        yan sayfadaki kaynak ve \xF6l\xE7er... Hepsi laz\u0131m olabilir."
+      textEN: Something's still missing. The target, connection order, and the source
+        and meter on the other page... We may need all of them.
+      textDE: "Etwas fehlt noch. Ziel, Verbindungsfolge, Quelle und Messger\xE4t
+        auf der anderen Seite... Vielleicht brauchen wir alles."
   - id: thought_leave_book_0
     note: Tutorial inner companion / leave_book
     voiceClip: {fileID: 0}
     segments:
     - duration: 5
-      textTR: "Tamam, hepsi yan\u0131m\u0131zda. \u015Eu kara tahtada bunlarla bir
-        \u015Fey yapabiliriz."
-      textEN: Good, we have everything. We could try something with these on that
-        chalkboard.
-      textDE: "Gut, wir haben alles. An der Tafel k\xF6nnten wir etwas damit versuchen."
+      textTR: "Tamam, bunlar yan\u0131m\u0131zda. Numune burada yok ama; k\xFCt\xFCphaneye
+        bakal\u0131m."
+      textEN: Good, we have these. The sample isn't here, though; let's check the
+        library.
+      textDE: Gut, die haben wir. Die Probe ist aber nicht hier; sehen wir in der
+        Bibliothek nach.
   - id: thought_leave_book_1
     note: Tutorial inner companion / leave_book
     voiceClip: {fileID: 0}
     segments:
     - duration: 5
       textTR: "Kitaptaki i\u015Fimiz bitti gibi. F ile b\u0131rakt\u0131\u011F\u0131nda
-        tahtaya ge\xE7ebiliriz."
-      textEN: I think we're done with the book. F puts it down, then we can try the
-        board.
+        k\xFCt\xFCphaneye ge\xE7ebiliriz."
+      textEN: I think we're done with the book. F puts it down, then we can head
+        to the library.
       textDE: "Mit dem Buch sind wir wohl fertig. Mit F legst du es weg, dann k\xF6nnen
-        wir zur Tafel."
+        wir in die Bibliothek."
   - id: thought_leave_book_2
     note: Tutorial inner companion / leave_book
     voiceClip: {fileID: 0}
@@ -1229,3 +1230,39 @@ MonoBehaviour:
       textTR: "Gute Nacht. (\u0130yi geceler.)"
       textEN: Gute Nacht. (Good night.)
       textDE: Gute Nacht.
+  - id: thought_sample_0
+    note: Tutorial inner companion / sample
+    voiceClip: {fileID: 0}
+    segments:
+    - duration: 5
+      textTR: "Numune masada de\u011Fil. K\xFCt\xFCphanede, 'K\u0131sa ve Uzun Tepkiler'
+        kitab\u0131nda olmal\u0131."
+      textEN: The sample isn't on the desk. It should be in the library, in 'Short
+        and Long Responses'.
+      textDE: "Die Probe liegt nicht auf dem Tisch. Sie m\xFCsste in der Bibliothek
+        sein, in 'Kurze und lange Reaktionen'."
+    - duration: 4
+      textTR: "Defterde hangi rafta oldu\u011Fu yaz\u0131yor."
+      textEN: The notebook says which shelf it's on.
+      textDE: Im Notizbuch steht, in welchem Regal es ist.
+  - id: thought_sample_1
+    note: Tutorial inner companion / sample
+    voiceClip: {fileID: 0}
+    segments:
+    - duration: 5
+      textTR: "K\xFCt\xFCphaneye bakal\u0131m. Yan\u0131p s\xF6nen kitap, N-12 orada
+        olmal\u0131."
+      textEN: Let's look in the library. The blinking book; N-12 should be in there.
+      textDE: "Sehen wir in der Bibliothek nach. Das blinkende Buch; N-12 m\xFCsste
+        darin sein."
+  - id: thought_sample_2
+    note: Tutorial inner companion / sample
+    voiceClip: {fileID: 0}
+    segments:
+    - duration: 6
+      textTR: "Raf\u0131 unuttuysan defterin hedef sayfas\u0131na bak; numunenin
+        yeri orada yaz\u0131yor."
+      textEN: If you forgot the shelf, check the notebook's target page; the sample's
+        place is written there.
+      textDE: Falls du das Regal vergessen hast, sieh auf der Zielseite im Notizbuch
+        nach; dort steht, wo die Probe ist.

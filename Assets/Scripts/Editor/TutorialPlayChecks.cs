@@ -15,7 +15,7 @@ public static class TutorialPlayChecks
 {
     private const BindingFlags Private = BindingFlags.Instance | BindingFlags.NonPublic;
 
-    private enum Variant { Hide, Peek, Unlock }
+    private enum Variant { Hide, Peek, Unlock, ExitDeath }
     private static Variant variant;
 
     [MenuItem("Senzora/Doğrulama/Tutorial Gerçek Oyun Akışı")]
@@ -29,10 +29,17 @@ public static class TutorialPlayChecks
     [MenuItem("Senzora/Doğrulama/Tutorial Gerçek Oyun Akışı - Kilidi Açıp Yakalan")]
     public static void RunUnlockDeath() => Start(Variant.Unlock);
 
+    // Same flow up to the wardrobe: leaving it while Guderian searches dies and rewinds into it. Stops there.
+    [MenuItem("Senzora/Doğrulama/Tutorial Gerçek Oyun Akışı - Dolaptan Çıkıp Yakalan")]
+    public static void RunExitDeath() => Start(Variant.ExitDeath);
+
     private static void Start(Variant chosen)
     {
         Require(Application.isPlaying && ResearchPuzzleTrial.Active != null, "Laboratuvarda Play gerekli.");
         variant = chosen;
+        SaveManager.Instance.sessionOnly = true; // the real New Game path and the quit autosave must not touch the user's save
+        // A run stopped mid-click leaves a temporary input settings object behind; start from the project asset.
+        if (EditorBuildSettings.TryGetConfigObject("com.unity.input.settings", out InputSettings projectInput)) InputSystem.settings = projectInput;
         ResearchPuzzleTrial.Active.StartCoroutine(Flow());
     }
 
@@ -68,10 +75,37 @@ public static class TutorialPlayChecks
         ScreenCapture.CaptureScreenshot("Temp/tutorial-book.png");
         ResearchTrialBookChecks.CollectVisible();
         yield return WaitFor(() => lesson.collectedStep.HasTriggered, "Gerçek kartların toplanması");
-        Require(ChalkboardTutorial.HasCollectedCards(NotebookUI.Instance), "Beş eğitim kartı arşivlenmedi.");
+        Require(ChalkboardTutorial.HasCollectedCards(NotebookUI.Instance), "Dört masa kartı (hedef, bağlantı, kaynak, ölçer) arşivlenmedi.");
         yield return WaitFor(() => !lesson.lessonBook.ExitLocked && Field<RectTransform>(workspace, "ghost") == null, "Kartlar toplanınca kitap kilidinin ve hayaletin kalkması");
         lesson.lessonBook.ForceExit(); yield return WaitFor(() => game.activeInteraction == null, "Kitaptan çıkış");
         Debug.Log("TUTORIAL PLAY STAGE PASS: book collection");
+
+        // 5 Nov: N-12 is in a library book; the board opens only once it is in the notebook.
+        var sampleBook = lesson.sampleBook; var chalkboard = Object.FindFirstObjectByType<InteractableChalkboard>();
+        Require(!ChalkboardTutorial.HasSampleCard(NotebookUI.Instance) && !lesson.sampleStep.HasTriggered, "Numune masa kitabından toplandı.");
+        foreach (string id in PuzzleBookDistribution.DeskParts)
+            Require(lesson.lessonBook.synthesisPages.SelectMany(p => p.blocks).Count(n => n.blockType == NotebookBlockType.PartClue && n.itemID == id) == 1, "Masa kitabında aygıt kartı yok veya iki kez var: " + id);
+        Require(!Field<HashSet<GameObject>>(PlayerInteraction.Instance, "allowedTutorialSet").Contains(chalkboard.gameObject), "Numune alınmadan tahta açılabiliyor.");
+        RequireAllowed(sampleBook.gameObject);
+        Require(sampleBook.emissionIntensity > 0, "Numune kitabı yanıp sönmüyor (ışık kapalı).");
+        yield return WaitFor(() => GlobalSubtitleManager.Instance.CurrentID == "thought_sample_0", "Kütüphane kitabı altyazısı", 15);
+        var partBook = typeof(NotebookWorkspaceController).GetMethod("PartBook", BindingFlags.Static | BindingFlags.NonPublic);
+        string sampleWhere = (string)partBook.Invoke(null, new object[] { SignalTrial.Narrow, ChalkboardTutorial.QuestID });
+        string deviceWhere = (string)partBook.Invoke(null, new object[] { SignalTrial.Meter, ChalkboardTutorial.QuestID });
+        Require(sampleWhere != null && sampleWhere.StartsWith(ChalkboardTutorial.SampleBookTitle), "Defter numunenin yerini göstermiyor: " + sampleWhere);
+        Require(deviceWhere != null && deviceWhere.StartsWith(lesson.lessonBook.GetComponent<PuzzleBookIdentity>().title), "Defter ölçerin yerini masa kitabı göstermiyor: " + deviceWhere);
+        yield return WaitFor(() => PlayerInteraction.Instance.CanInteractWithWorld, "Numune kitabından önce kamera");
+        sampleBook.Interact();
+        yield return WaitFor(() => sampleBook.isOpen && !sampleBook.isAnimating && workspace.IsActive, "Numune kitabı");
+        yield return null;
+        workspace.ShowCollectedTargets(); Canvas.ForceUpdateCanvases(); yield return null;
+        ScreenCapture.CaptureScreenshot("Temp/tutorial-sample-book.png"); yield return null; yield return null;
+        Require(workspace.ShowCollectedPart(SignalTrial.Source), "Defter Parçalar sayfasına dönmedi."); Canvas.ForceUpdateCanvases(); yield return null;
+        ResearchTrialBookChecks.CollectVisible();
+        yield return WaitFor(() => lesson.sampleStep.HasTriggered, "Numune N-12'nin toplanması");
+        Require(sampleBook.emissionIntensity == 0, "Numune alındıktan sonra kitap ışığı söndürülmedi.");
+        sampleBook.ForceExit(); yield return WaitFor(() => game.activeInteraction == null, "Numune kitabından çıkış");
+        Debug.Log("TUTORIAL PLAY STAGE PASS: library sample book (" + sampleWhere + ", devices: " + deviceWhere + ")");
 
         var interaction = Object.FindFirstObjectByType<InteractableChalkboard>();
         RequireAllowed(interaction.gameObject);
@@ -163,22 +197,36 @@ public static class TutorialPlayChecks
             Vector3 lockPosition = Field<Vector3>(manager, "lockPosition");
             Require(Vector3.Distance(player.transform.position, lockPosition) < .3f, "Kilitleme anı kaydedilmedi.");
             RequireAllowed(doorLock.gameObject); doorLock.Interact();
+            // Shut pose of every animated door part, to prove the rewind snaps it back without the swing.
+            var doorParts = Field<Animator>(lesson.officeDoor, "doorAnimator").GetComponentsInChildren<Transform>();
+            var shutPose = doorParts.Select(t => t.localRotation).ToArray();
+            Func<float> doorSwing = () => doorParts.Select((t, i) => Quaternion.Angle(t.localRotation, shutPose[i])).Max();
             Require(!lesson.officeDoor.IsLocked(), "Kapı kilidi geri açılamadı.");
             // Facing the door makes him wait behind it; turned away, he comes in and catches the player from behind.
             Vector3 away = mover.transform.position - lesson.officeDoor.transform.position; away.y = 0;
             float awayYaw = Quaternion.LookRotation(away).eulerAngles.y;
             float caughtAt = Time.realtimeSinceStartup;
             yield return WaitFor(() => { if (!game.IsGameplayOver) mover.ForceCameraRotation(awayYaw, 0); return game.IsGameplayOver; }, "Guderian'ın yakalaması", 100);
-            Debug.Log($"TUTORIAL PLAY TIMING: unlocked -> caught in {Time.realtimeSinceStartup - caughtAt:F1}s"); caughtAt = Time.realtimeSinceStartup;
-            yield return WaitFor(() => !game.IsGameplayOver, "Ölümden sonra geri sarma", 30);
+            Debug.Log($"TUTORIAL PLAY TIMING: unlocked -> caught in {Time.realtimeSinceStartup - caughtAt:F1}s, door swung {doorSwing():F0} deg"); caughtAt = Time.realtimeSinceStartup;
+            float swingBeforeRewind = 0;
+            yield return WaitFor(() => { if (game.IsGameplayOver) swingBeforeRewind = doorSwing(); return !game.IsGameplayOver; }, "Ölümden sonra geri sarma", 30);
             Debug.Log($"TUTORIAL PLAY TIMING: caught -> rewound in {Time.realtimeSinceStartup - caughtAt:F1}s");
+            float swingAtRewind = doorSwing();
+            Require(swingAtRewind < 1f && lesson.officeDoor.IsLocked() && !lesson.officeDoor.isOpen, $"Geri sarma karesinde kapı kapalı değil ({swingAtRewind:F1} derece açık).");
+            Debug.Log($"TUTORIAL PLAY STAGE PASS: the door is shut on the rewind frame ({swingBeforeRewind:F0} deg open the frame before, {swingAtRewind:F2} deg after)");
             yield return new WaitForSeconds(.5f);
             Require(rewoundCleanly(), "Eğitim ölümü ölüm ekranını açtı veya jumpscare efektleri geri alınmadı.");
             float distance = Vector3.Distance(player.transform.position, lockPosition);
             Require(distance < .3f && player.enabled && !spot.IsOccupied && game.activeInteraction == null, $"Geri sarma oyuncuyu kilitleme anına koymadı ({distance:F2} m).");
-            Require(lesson.officeDoor.IsLocked() && !lesson.officeDoor.isOpen, "Geri sarmada kapı kilitli ve kapalı değil.");
+            Require(lesson.officeDoor.IsLocked() && !lesson.officeDoor.isOpen && doorSwing() < 1f, "Geri sarmada kapı kilitli ve kapalı değil.");
             Require(guderian.currentState == GuderianAI.GuderianState.Approaching, "Guderian yeniden yaklaşmıyor: " + guderian.currentState);
             ScreenCapture.CaptureScreenshot("outputs/playtest-guderian-unlock-rewind.png");
+            // Turn to the door for a shot of it shut after the rewind.
+            Vector3 toDoor = lesson.officeDoor.GetComponentInChildren<Renderer>().bounds.center - Camera.main.transform.position;
+            var doorLook = Quaternion.LookRotation(toDoor).eulerAngles;
+            mover.ForceCameraRotation(doorLook.y, doorLook.x);
+            yield return new WaitForSeconds(1f);
+            ScreenCapture.CaptureScreenshot("outputs/guderian-rewind-2026-11-04/unlock-rewind-door.png");
             Debug.Log("TUTORIAL PLAY STAGE PASS: unlocked and caught in the open rewinds to the lock moment");
             yield return WaitFor(() => PlayerInteraction.Instance.CanInteractWithWorld, "Geri sarmadan sonra etkileşim");
         }
@@ -189,6 +237,10 @@ public static class TutorialPlayChecks
         {
             // Peeking too long while he is about only marks the player; leaving the wardrobe later is the death.
             yield return WaitFor(() => guderian.currentState == GuderianAI.GuderianState.Searching, "Guderian'ın aramaya başlaması", 40);
+            // Lid opening in degrees from its shut pose: it must not swing shut while Peek is held, or when the death starts.
+            var lid = Field<Animator>(spot, "propAnimator").GetComponentsInChildren<Transform>();
+            var lidShut = lid.Select(t => t.localRotation).ToArray();
+            Func<float> lidOpen = () => lid.Select((t, i) => Quaternion.Angle(t.localRotation, lidShut[i])).Max();
             for (int round = 0; round < 2; round++)
             {
                 // Real Peek bindings through the Input System: left mouse in round 1, W in round 2.
@@ -197,22 +249,57 @@ public static class TutorialPlayChecks
                 {
                     if (round == 0) InputSystem.QueueStateEvent(mouse, new MouseState().WithButton(MouseButton.Left));
                     else { keyboard.MakeCurrent(); InputSystem.QueueStateEvent(keyboard, new KeyboardState(Key.W)); }
-                    yield return new WaitForSeconds(2.5f);
+                    // Round 1 holds 6.5 s, past the 2 s mark, sampling the lid every frame.
+                    float heldFor = 0, peak = 0;
+                    while (heldFor < (round == 0 ? 6.5f : 2.5f))
+                    {
+                        yield return null; heldFor += Time.deltaTime;
+                        if (round != 0) continue;
+                        float open = lidOpen(); peak = Mathf.Max(peak, open);
+                        Require(heldFor < 1.5f || open >= peak - 2f, $"Gözetleme basılıyken kapak kapandı ({open:F0}/{peak:F0} derece, {heldFor:F1} s).");
+                        if (heldFor >= 6f && peak > 0) { ScreenCapture.CaptureScreenshot("outputs/guderian-rewind-2026-11-04/peek-6s.png"); Debug.Log($"TUTORIAL PLAY STAGE PASS: the lid stays open through 6 s of held peek ({open:F0} deg)"); peak = -1; }
+                    }
                 }
                 finally { InputSystem.RemoveDevice(keyboard); RemoveGameMouse(mouse); }
                 yield return null;
                 Require(!game.IsGameplayOver && spot.IsOccupied && Field<bool>(spot, "isMarkedForDeath"),
                     $"Fazla gözetleme (tur {round + 1}) oyuncuyu işaretlemedi veya hemen öldürdü.");
             }
-            Require(guderian.currentState == GuderianAI.GuderianState.Searching && !spot.canExit, "Gözetleme aramayı bozdu veya çıkışı açtı.");
+            Require(guderian.currentState == GuderianAI.GuderianState.Searching, "Gözetleme aramayı bozdu.");
             Debug.Log("TUTORIAL PLAY STAGE PASS: peeking too long marks the player without killing");
             float searchAt = Time.realtimeSinceStartup;
-            yield return WaitFor(() => spot.canExit && guderian.currentState == GuderianAI.GuderianState.Hidden, "Guderian'ın gitmesi ve güvenli çıkış", 100);
-            Debug.Log($"TUTORIAL PLAY TIMING: marked -> Guderian gone and exit open in {Time.realtimeSinceStartup - searchAt:F1}s");
+            yield return WaitFor(() => guderian.currentState == GuderianAI.GuderianState.Hidden, "Guderian'ın gitmesi", 100);
+            Debug.Log($"TUTORIAL PLAY TIMING: marked -> Guderian gone in {Time.realtimeSinceStartup - searchAt:F1}s");
             Require(Field<bool>(spot, "isMarkedForDeath"), "Guderian gidince gözetleme işareti kalktı.");
-            // Real exit input: F (Cancel).
+            // Real exit input: F (Cancel), pressed while peeking (W) so the lid is open when the death starts.
             float exitAt = Time.realtimeSinceStartup;
-            yield return PressKey(Key.F);
+            var exitMouse = AddGameMouse(); var exitKeys = InputSystem.AddDevice<Keyboard>(); exitKeys.MakeCurrent();
+            try
+            {
+                InputSystem.QueueStateEvent(exitKeys, new KeyboardState(Key.W));
+                float peekAt = Time.realtimeSinceStartup;
+                yield return WaitFor(() => lidOpen() > 20f, "Çıkıştan önce gözetleme kapağının açılması", 5);
+                Debug.Log($"TUTORIAL PLAY TIMING: peek lid open in {Time.realtimeSinceStartup - peekAt:F1}s");
+                float lastLid = lidOpen();
+                exitAt = Time.realtimeSinceStartup;
+                InputSystem.QueueStateEvent(exitKeys, new KeyboardState(Key.W, Key.F));
+                float deadline = Time.realtimeSinceStartup + 5;
+                while (!game.IsGameplayOver && Time.realtimeSinceStartup < deadline) yield return null;
+                ScreenCapture.CaptureScreenshot("outputs/guderian-rewind-2026-11-04/death-frame0.png");
+                var deathLid = new List<float>();
+                for (int frame = 0; frame < 3; frame++)
+                {
+                    yield return null;
+                    float open = lidOpen(); deathLid.Add(open);
+                    Require(open >= lastLid - 2f, $"Ölüm başında kapak kapandı (kare {frame}: {open:F0} < {lastLid:F0} derece).");
+                    lastLid = open;
+                }
+                ScreenCapture.CaptureScreenshot("outputs/guderian-rewind-2026-11-04/death-frame3.png");
+                yield return new WaitForSeconds(.4f);
+                ScreenCapture.CaptureScreenshot("outputs/guderian-rewind-2026-11-04/death-0.4s.png");
+                Debug.Log($"TUTORIAL PLAY STAGE PASS: the peeking lid does not snap shut as the death starts ({string.Join(", ", deathLid.Select(a => a.ToString("F0")))} deg)");
+            }
+            finally { InputSystem.RemoveDevice(exitKeys); RemoveGameMouse(exitMouse); }
             yield return WaitFor(() => game.IsGameplayOver, "İşaretli oyuncunun dolaptan çıkarken yakalanması", 5);
             Debug.Log($"TUTORIAL PLAY TIMING: exit pressed -> caught in {Time.realtimeSinceStartup - exitAt:F1}s");
             float caughtAt = Time.realtimeSinceStartup;
@@ -224,19 +311,33 @@ public static class TutorialPlayChecks
                 "Geri sarma dolabı veya Guderian'ın aramasını kurmadı: " + guderian.currentState);
             Require(lesson.officeDoor.isOpen && !lesson.officeDoor.IsLocked(), "Geri sarmada kapı açık değil.");
             Require(!Field<bool>(spot, "isMarkedForDeath") && Field<float>(spot, "currentPeekTimer") == 0, "Geri sarma gözetleme işaretini/sayacını temizlemedi.");
-            Require(spot.canExit, "Geri sarma, 006'nın açtığı dolap çıkışını yeniden kilitledi.");
             ScreenCapture.CaptureScreenshot("outputs/playtest-stage3-death-rewind.png");
             Debug.Log("TUTORIAL PLAY STAGE PASS: a marked exit dies, then rewinds into the wardrobe with Guderian searching");
             searchAt = Time.realtimeSinceStartup;
             yield return WaitFor(() => guderian.currentState == GuderianAI.GuderianState.Hidden, "Geri sarmadan sonra aramanın bitmesi", 100);
             Debug.Log($"TUTORIAL PLAY TIMING: rewound search ended in {Time.realtimeSinceStartup - searchAt:F1}s");
         }
+        else if (variant == Variant.ExitDeath)
+        {
+            // 4 Nov: no exit lock; F while he searches is the death, and the lesson rewinds into the wardrobe.
+            yield return WaitFor(() => guderian.currentState == GuderianAI.GuderianState.Searching, "Guderian'ın aramaya başlaması", 40);
+            Require(spot.canExit, "Dolap çıkışı hâlâ kilitli.");
+            yield return PressKey(Key.F);
+            yield return WaitFor(() => game.IsGameplayOver, "Arama sırasında dolaptan çıkarken yakalanma", 5);
+            yield return WaitFor(() => !game.IsGameplayOver && spot.IsOccupied, "Ölümden sonra dolapta devam", 30);
+            yield return new WaitForSeconds(.5f);
+            Require(rewoundCleanly(), "Eğitim ölümü ölüm ekranını açtı veya jumpscare efektleri geri alınmadı.");
+            Require(game.activeInteraction == spot && guderian.currentState == GuderianAI.GuderianState.Searching,
+                "Geri sarma dolabı veya Guderian'ın aramasını kurmadı: " + guderian.currentState);
+            ScreenCapture.CaptureScreenshot("outputs/guderian-rewind-2026-11-04/exit-death-rewind.png");
+            Debug.Log("TUTORIAL PLAY STAGE PASS: leaving the wardrobe while he searches dies, then rewinds into it with Guderian searching");
+            yield break;
+        }
         else
         {
             yield return new WaitForSeconds(1.5f);
             ScreenCapture.CaptureScreenshot("outputs/playtest-stage3-hidden-normal.png");
-            Require(!spot.canExit, "Düşman eğitimi sırasında dolaptan erken çıkılabiliyor.");
-            yield return WaitFor(() => spot.canExit, "Guderian'ın gitmesi ve güvenli çıkış", 100);
+            yield return WaitFor(() => GuderianAI.Instance.currentState == GuderianAI.GuderianState.Hidden, "Guderian'ın gitmesi", 100);
         }
         Require(GuderianAI.Instance.currentState == GuderianAI.GuderianState.Hidden, "Dolap Guderian gitmeden açıldı.");
         spot.ForceExit(); yield return WaitFor(() => game.activeInteraction == null, "Dolaptan çıkış");

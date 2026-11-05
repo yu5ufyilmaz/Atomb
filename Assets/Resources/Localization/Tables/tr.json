@@ -3367,8 +3367,8 @@
         },
         {
             "key": "tutorial.first_trace.page.explanation",
-            "source": "Önce HEDEF ve BAĞLANTI SIRASI notlarını deftere sürükle. Yan sayfadaki üç parçayı da al. Tab defteri açar/kapatır.",
-            "text": "Önce HEDEF ve BAĞLANTI SIRASI notlarını deftere sürükle. Yan sayfadaki üç parçayı da al. {input:ToggleNotebook} defteri açar/kapatır."
+            "source": "Önce HEDEF ve BAĞLANTI SIRASI notlarını deftere sürükle. Yan sayfadaki iki parçayı da al. Tab defteri açar/kapatır.",
+            "text": "Önce HEDEF ve BAĞLANTI SIRASI notlarını deftere sürükle. Yan sayfadaki iki parçayı da al. {input:ToggleNotebook} defteri açar/kapatır."
         },
         {
             "key": "tutorial.first_trace.ports.title",
@@ -3382,13 +3382,13 @@
         },
         {
             "key": "tutorial.first_trace.parts.title",
-            "source": "ÜÇ PARÇAYI DA TOPLA",
-            "text": "ÜÇ PARÇAYI DA TOPLA"
+            "source": "KAYNAK VE ÖLÇERİ TOPLA",
+            "text": "KAYNAK VE ÖLÇERİ TOPLA"
         },
         {
             "key": "tutorial.first_trace.parts.explanation",
-            "source": "Her parçayı deftere sürükle. F ile kitabı bırak; kara tahtaya geç. Defterdeki asıllar korunur.",
-            "text": "Her parçayı deftere sürükle. {input:Cancel} ile kitabı bırak; kara tahtaya geç. Defterdeki asıllar korunur."
+            "source": "İki parçayı deftere sürükle. Numune N-12 bu kitapta değil; F ile kitabı bırak, kütüphanede ara.",
+            "text": "İki parçayı deftere sürükle. Numune N-12 bu kitapta değil; {input:Cancel} ile kitabı bırak, kütüphanede ara."
         },
         {
             "key": "tutorial.first_trace.measurement_hint",
@@ -4821,6 +4821,26 @@
             "text": "Başını çevirdi."
         },
         {
+            "key": "tutorial.first_trace.sample.title",
+            "source": "KISA TEPKİ NUMUNESİ",
+            "text": "KISA TEPKİ NUMUNESİ"
+        },
+        {
+            "key": "tutorial.first_trace.sample.explanation",
+            "source": "Numune N-12 kartını deftere sürükle. Tahtadaki alıştırma bu numuneyle kurulur.",
+            "text": "Numune N-12 kartını deftere sürükle. Tahtadaki alıştırma bu numuneyle kurulur."
+        },
+        {
+            "key": "tutorial.first_trace.sample.leave",
+            "source": "Numune defterindeyse F ile kitabı bırak; kara tahtaya geç.",
+            "text": "Numune defterindeyse {input:Cancel} ile kitabı bırak; kara tahtaya geç."
+        },
+        {
+            "key": "notebook.target.device_locations",
+            "source": "AYGITLARIN YERİ",
+            "text": "AYGITLARIN YERİ"
+        },
+        {
             "key": "subtitle.chemistry_lab_entrance.0",
             "source": "",
             "text": "Beni üniversitede geride bıraktığını mı sandın Arthur?"
@@ -5198,7 +5218,7 @@
         {
             "key": "subtitle.thought_collect_0.0",
             "source": "",
-            "text": "Hedef, bağlantı notu ve üç parça... Bunlar defterinde dursa iyi olur. Tab ile açabiliyorsun."
+            "text": "Hedef, bağlantı notu, kaynak ve ölçer... Bunlar defterinde dursa iyi olur. Tab ile açabiliyorsun."
         },
         {
             "key": "subtitle.thought_collect_1.0",
@@ -5208,17 +5228,17 @@
         {
             "key": "subtitle.thought_collect_2.0",
             "source": "",
-            "text": "Bir şeyler eksik hâlâ. Hedef, Bağlantı Sırası ve yan sayfadaki üç parça... Hepsi lazım olabilir."
+            "text": "Bir şeyler eksik hâlâ. Hedef, Bağlantı Sırası, yan sayfadaki kaynak ve ölçer... Hepsi lazım olabilir."
         },
         {
             "key": "subtitle.thought_leave_book_0.0",
             "source": "",
-            "text": "Tamam, hepsi yanımızda. Şu kara tahtada bunlarla bir şey yapabiliriz."
+            "text": "Tamam, bunlar yanımızda. Numune burada yok ama; kütüphaneye bakalım."
         },
         {
             "key": "subtitle.thought_leave_book_1.0",
             "source": "",
-            "text": "Kitaptaki işimiz bitti gibi. F ile bıraktığında tahtaya geçebiliriz."
+            "text": "Kitaptaki işimiz bitti gibi. F ile bıraktığında kütüphaneye geçebiliriz."
         },
         {
             "key": "subtitle.thought_leave_book_2.0",
@@ -5564,6 +5584,26 @@
             "key": "subtitle.guderian_gute_nacht.0",
             "source": "",
             "text": "Gute Nacht. (İyi geceler.)"
+        },
+        {
+            "key": "subtitle.thought_sample_0.0",
+            "source": "",
+            "text": "Numune masada değil. Kütüphanede, 'Kısa ve Uzun Tepkiler' kitabında olmalı."
+        },
+        {
+            "key": "subtitle.thought_sample_0.1",
+            "source": "",
+            "text": "Defterde hangi rafta olduğu yazıyor."
+        },
+        {
+            "key": "subtitle.thought_sample_1.0",
+            "source": "",
+            "text": "Kütüphaneye bakalım. Yanıp sönen kitap, N-12 orada olmalı."
+        },
+        {
+            "key": "subtitle.thought_sample_2.0",
+            "source": "",
+            "text": "Rafı unuttuysan defterin hedef sayfasına bak; numunenin yeri orada yazıyor."
         }
     ]
 }

@@ -31,7 +31,7 @@ public static class TutorialVoiceChecks
         Require(Tick(null, 0, 200) == -1 && Tick("book", 0, .4f) == 0, "Eğitim kapatılıp açıldığında eski sayaç devam etti.");
 
         var database = AssetDatabase.LoadAssetAtPath<SubtitleData>("Assets/Scripts/Scriptables/Subtitles/MainSubtitles.asset");
-        string[] steps = { "book", "collect", "leave_book", "board", "pin", "clear_board", "build", "store", "leave_board", "lock",
+        string[] steps = { "book", "collect", "leave_book", "sample", "board", "pin", "clear_board", "build", "store", "leave_board", "lock",
             "hide", "wait_hidden", "leave_hiding", "notice_lees", "avoid_lees", "turing", "insert", "reader", "confirm", "valve_room",
             "valve", "leave_valve", "wait_power", "breaker", "retry_measurement" };
         foreach (string step in steps)
@@ -52,7 +52,7 @@ public static class TutorialVoiceChecks
         TutorialFlowChecks.Core();
         var manager = Object.FindFirstObjectByType<TutorialManager>();
         var actions = manager.tutorialEventsParent.GetComponentsInChildren<DialogAction>(true).Where(d => d.followConditions).ToArray();
-        Require(actions.Length == 25, "Konuşmalar sahnedeki 25 event düğümüne bağlı değil.");
+        Require(actions.Length == 26, "Konuşmalar sahnedeki 26 event düğümüne bağlı değil.");
         foreach (var action in actions)
         {
             Require(action.contextOwner == manager && action.GetComponent<EventLogicController>() != null
@@ -60,7 +60,7 @@ public static class TutorialVoiceChecks
             Require(database.GetEntry(action.subtitleID) != null && action.reminderSubtitleIDs.Length == 2
                 && action.reminderSubtitleIDs.All(id => database.GetEntry(id) != null), "Konuşma ID veya hatırlatmaları eksik: " + action.name);
         }
-        Debug.Log("TUTORIAL VOICE CORE PASS: real clock and 25 steps / 75 distinct TR-EN-DE thoughts.");
+        Debug.Log("TUTORIAL VOICE CORE PASS: real clock and 26 steps / 78 distinct TR-EN-DE thoughts.");
     }
 
     [MenuItem("Senzora/Doğrulama/Tutorial İç Ses Gerçek Oyun")]

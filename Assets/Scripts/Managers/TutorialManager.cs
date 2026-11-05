@@ -58,7 +58,7 @@ public class TutorialManager : MonoBehaviour
                 body.enabled = true;
             }
             FindFirstObjectByType<StarterAssets.CharacterController>()?.ForceCameraRotation(lockYaw, lockPitch);
-            lockDoor.SetLocked(true); // closes it too if it was open
+            lockDoor.SnapShutAndLocked(); // the player must not see it swing shut or hear the lock
             GuderianAI.Instance.RestartAttackForRewind();
             return true;
         }

@@ -113,9 +113,16 @@ public sealed class ResearchPuzzleTrial : MonoBehaviour
         SelectPuzzle(puzzle.id);
         Board.formulaCatalog = new List<FormulaItemSO>(Content.Parts);
         FormulaCatalog.Instance.RegisterCatalog(Content.Parts);
-        foreach (var page in book.synthesisPages) page.pageIndex += 2;
+        InsertPages(book, pages);
+    }
+
+    // Ders sayfalarını kitabın başına koyar; sayfa sayısı çift kalır, kitap ilk açılışta bu sayfalarda açılır.
+    public void InsertPages(InteractableBook book, List<BookWorkspacePage> pages)
+    {
+        if (Array.IndexOf(books, book) < 0 || pages.Count % 2 != 0) throw new InvalidOperationException("Ders sayfaları araştırma kitabına çift sayfa olarak eklenmeli.");
+        foreach (var page in book.synthesisPages) page.pageIndex += pages.Count;
         book.synthesisPages.InsertRange(0, pages);
-        book.totalPages += 2; book.startPageIndex = 0;
+        book.totalPages += pages.Count; book.startPageIndex = 0;
         book.GetComponent<BookPageBlockSurface>().InvalidatePages();
     }
 

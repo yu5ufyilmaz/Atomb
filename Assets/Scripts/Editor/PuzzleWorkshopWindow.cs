@@ -8,7 +8,7 @@ public sealed partial class PuzzleWorkshopWindow : EditorWindow
     [SerializeField] private PuzzleDefinitionSO document, sourceAsset;
     [SerializeField] private string transientJson, cleanJson, draftID;
     [SerializeField] private int generationSeed = 271026, assignmentSeed = 100, tab;
-    [SerializeField] private bool fixedSeed, advanced;
+    [SerializeField] private bool fixedSeed, advanced, targetLocked;
     private Vector2 settingsScroll, graphScroll, notesScroll, homeScroll;
     private int selectedNode = -1, connectFrom = -1, selectedRule;
     private string search = "", message = "Hazır bir örnek seçebilir, rastgele puzzle üretebilir veya kendi şemanı kurabilirsin.";
@@ -51,9 +51,20 @@ public sealed partial class PuzzleWorkshopWindow : EditorWindow
     }
     private void OnDisable() { RememberDraft(true); Undo.undoRedoPerformed -= OnUndo; }
     private void OnUndo() { RememberDraft(); Repaint(); }
-    private void Mutate(string label, Action action)
+    // schema: the edit changed parts/bonds, so an unlocked target follows the new measurement.
+    private void Mutate(string label, Action action, bool schema = false)
     {
-        Undo.RecordObject(document, label); action(); EditorUtility.SetDirty(document); RememberDraft(); Repaint();
+        Undo.RecordObject(document, label); action();
+        if (schema && !targetLocked) TakeTarget();
+        EditorUtility.SetDirty(document); RememberDraft(); ValidateDocument(); Repaint();
+    }
+    private string TakeTarget()
+    {
+        var reading = PuzzleSimulation.Measure(Puzzle.solution, Puzzle);
+        if (!reading.Measurable || !string.IsNullOrEmpty(reading.targetFeedback)) return reading.problem ?? reading.targetFeedback;
+        if (Puzzle.kind == PuzzleKind.ColorMixture) Puzzle.mixtureTarget = reading.mixture.Copy();
+        else { Puzzle.target = reading.pulses; Puzzle.rules.traceCount = reading.pulses.Count; }
+        return null;
     }
 
     private void OnGUI()
@@ -65,7 +76,7 @@ public sealed partial class PuzzleWorkshopWindow : EditorWindow
         GUILayout.Label(Puzzle.kind == PuzzleKind.ColorMixture ? "RENK VE KARIŞIM" : "SİNYAL DENEYİ", EditorStyles.boldLabel, GUILayout.Width(170));
         EditorGUILayout.EndHorizontal();
         Toolbar();
-        tab = GUILayout.Toolbar(tab, new[] { "Başlangıç", "Şema", "Kurallar", "Kitaplar", "Kaydet ve Dene" }, GUILayout.Height(32));
+        tab = GUILayout.Toolbar(Mathf.Min(tab, 3), new[] { "Başlangıç", "Şema", "Kurallar", "Kitaplar" }, GUILayout.Height(32));
         EditorGUILayout.Space(5);
         if (EditorApplication.isPlayingOrWillChangePlaymode)
             EditorGUILayout.HelpBox("Oynanış denemesi açık. Düzenlemeye dönmek için Play'i durdur. Taslağın korunur.", MessageType.Info);
@@ -80,8 +91,7 @@ public sealed partial class PuzzleWorkshopWindow : EditorWindow
                     EditorGUILayout.BeginVertical(GUILayout.ExpandWidth(true)); Graph(); Target(); EditorGUILayout.EndVertical();
                     EditorGUILayout.EndHorizontal(); break;
                 case 2: Settings(); break;
-                case 3: Notes(); break;
-                default: SavePage(); break;
+                default: Notes(); break;
             }
         }
     }
@@ -95,8 +105,14 @@ public sealed partial class PuzzleWorkshopWindow : EditorWindow
             if (GUILayout.Button("Aç", EditorStyles.toolbarButton, GUILayout.Width(45))) OpenPicker();
             var picked = (PuzzleDefinitionSO)EditorGUILayout.ObjectField(sourceAsset, typeof(PuzzleDefinitionSO), false, GUILayout.MinWidth(100));
             if (picked != sourceAsset && picked != null) Select(picked);
-            GUILayout.Label(HasDraftChanges ? "Kaydedilmemiş taslak · otomatik korunur" : "Kaydedildi", EditorStyles.miniLabel);
-            if (GUILayout.Button("Kaydet", EditorStyles.toolbarButton, GUILayout.Width(60))) Save(false);
+            EditorGUI.BeginChangeCheck(); string title = EditorGUILayout.TextField(Puzzle.title, EditorStyles.toolbarTextField, GUILayout.MinWidth(140));
+            if (EditorGUI.EndChangeCheck()) Mutate("Puzzle adı", () => Puzzle.title = title);
+            EditorGUI.BeginChangeCheck();
+            bool pool = GUILayout.Toggle(document.includeInPool, new GUIContent("Havuzda kullan", "Yeni oyun etkin havuzdan seçim yapar. Havuza yalnız geçerli puzzle kaydedilir; işaretsizse taslak olarak saklanır."), GUILayout.Width(105));
+            if (EditorGUI.EndChangeCheck()) Mutate("Havuzda kullan", () => document.includeInPool = pool);
+            GUILayout.Label(new GUIContent(HasDraftChanges ? "Kaydedilmedi" : "Kaydedildi", "Kaydedilmemiş taslak otomatik korunur."), EditorStyles.miniLabel);
+            string location = sourceAsset != null ? AssetDatabase.GetAssetPath(sourceAsset) : "Kaydedince proje içindeki Puzzles klasöründe oluşturulur.";
+            if (GUILayout.Button(new GUIContent("Kaydet", "Konum: " + location), EditorStyles.toolbarButton, GUILayout.Width(60))) Save(false);
             if (GUILayout.Button("Kopyasını Kaydet", EditorStyles.toolbarButton, GUILayout.Width(115))) Save(true);
             if (GUILayout.Button("Oyunda Dene", EditorStyles.toolbarButton, GUILayout.Width(95)))
                 Try(() => { if (Save(false)) PuzzleWorkshopSetup.Preview(sourceAsset); });
@@ -114,7 +130,7 @@ public sealed partial class PuzzleWorkshopWindow : EditorWindow
         FamilyCard(PuzzleKind.Signal, "Sinyal deneyi", "Numuneleri ve işlem parçalarını bağla. Hedefteki izlerin zamanını, yüksekliğini ve genişliğini üret.", "CiftKayit.asset");
         EditorGUILayout.EndHorizontal();
         EditorGUILayout.Space(10);
-        EditorGUILayout.HelpBox("1. Örnekle başla veya rastgele üret.  2. Şemada parçaları düzenle.  3. Hedefi şemadan al.  4. Doğrula, kaydet ve oyunda dene.\nKurallar ve kitap notları ayrı sekmelerde; ilk denemede hepsini ayarlaman gerekmez.", MessageType.None);
+        EditorGUILayout.HelpBox("1. Örnekle başla veya rastgele üret.  2. Şemada parçaları düzenle; hedef şemayı otomatik izler.  3. Üst çubuğa adını yaz, istersen Havuzda kullan'ı işaretle.  4. Kaydet ve Oyunda Dene.\nKurallar ve kitap notları ayrı sekmelerde; ilk denemede hepsini ayarlaman gerekmez.", MessageType.None);
         EditorGUILayout.LabelField("Hazır puzzlelar", EditorStyles.boldLabel);
         var pool = AssetDatabase.LoadAssetAtPath<PuzzlePoolSO>(PuzzleWorkshopSetup.PoolPath);
         if (pool != null) foreach (var asset in pool.puzzles)
@@ -161,13 +177,17 @@ public sealed partial class PuzzleWorkshopWindow : EditorWindow
         {
             if (!Puzzle.rules.Allows(part.id) || (!string.IsNullOrEmpty(search) && part.title.IndexOf(search, StringComparison.CurrentCultureIgnoreCase) < 0)) continue;
             EditorGUILayout.BeginVertical(EditorStyles.helpBox);
-            EditorGUILayout.LabelField(part.title, EditorStyles.boldLabel);
+            EditorGUILayout.BeginHorizontal();
+            GUILayout.Label(part.title, EditorStyles.boldLabel); GUILayout.FlexibleSpace();
+            bool single = InSchemaOnce(part);
+            using (new EditorGUI.DisabledScope(single))
+                if (GUILayout.Button(new GUIContent("+", single ? "Zaten şemada; kaynak ve ölçer birer adet olur" : "Şemaya ekle"), GUILayout.Width(26))) AddPart(part.id);
+            EditorGUILayout.EndHorizontal();
             EditorGUILayout.LabelField(part.description, EditorStyles.wordWrappedMiniLabel);
-            if (GUILayout.Button("Şemaya Ekle", GUILayout.Height(25))) AddPart(part.id);
             EditorGUILayout.EndVertical();
         }
         EditorGUILayout.EndScrollView();
-        EditorGUILayout.HelpBox("Tek giriş/çıkışlı parça seçiliyken eklediğin parça onun arkasına bağlanır. Diğer bağlar: ok → giriş.", MessageType.None);
+        EditorGUILayout.HelpBox("Tek giriş/çıkışlı parça seçiliyken eklediğin parça onun arkasına bağlanır. Diğer bağlar: oku halkaya sürükle veya sırayla tıkla. Sağ tık: parça menüsü. Hedef şemayı otomatik izler.", MessageType.None);
         EditorGUILayout.EndVertical();
     }
 
@@ -221,26 +241,7 @@ public sealed partial class PuzzleWorkshopWindow : EditorWindow
         EditorGUILayout.EndScrollView();
     }
 
-    private void SavePage()
-    {
-        EditorGUILayout.LabelField("Puzzleı kaydet ve dene", EditorStyles.boldLabel);
-        EditorGUI.BeginChangeCheck(); string title = EditorGUILayout.TextField("Puzzle adı", Puzzle.title);
-        EditorGUILayout.LabelField("Oyuncunun okuyacağı hedef açıklaması");
-        string description = EditorGUILayout.TextArea(Puzzle.description, GUILayout.Height(70));
-        if (EditorGUI.EndChangeCheck()) Mutate("Puzzle bilgileri", () => { Puzzle.title = title; Puzzle.description = description; });
-        string issue = PuzzleSimulation.Validate(Puzzle);
-        EditorGUILayout.HelpBox(issue ?? "Örnek çözüm bütün koşulları ve hedefi karşılıyor.", issue == null ? MessageType.Info : MessageType.Warning);
-        EditorGUILayout.BeginHorizontal();
-        if (GUILayout.Button("Taslak Olarak Kaydet", GUILayout.Height(35))) { Mutate("Taslak", () => document.includeInPool = false); Save(false); }
-        using (new EditorGUI.DisabledScope(issue != null))
-        {
-            if (GUILayout.Button("Kaydet ve Havuzda Kullan", GUILayout.Height(35))) { Mutate("Havuzda etkinleştir", () => document.includeInPool = true); Save(false); }
-            if (GUILayout.Button("Oyunda Dene", GUILayout.Height(35))) Try(() => { if (Save(false)) PuzzleWorkshopSetup.Preview(sourceAsset); });
-        }
-        EditorGUILayout.EndHorizontal();
-        EditorGUILayout.LabelField("Konum: " + (sourceAsset != null ? AssetDatabase.GetAssetPath(sourceAsset) : "Kaydedince proje içindeki Puzzles klasöründe oluşturulur."), EditorStyles.wordWrappedMiniLabel);
-        EditorGUILayout.HelpBox("Yeni oyun etkin havuzdan seçim yapar. Devam Et, kayıtlı puzzleı ve kitap dağılımını geri getirir. Taslaklar havuzdan seçilmez.", MessageType.None);
-    }
+    private bool InSchemaOnce(SignalPartLibrary.Part part) => (part.inputs == 0 || part.outputs == 0) && Puzzle.solution.parts.Exists(p => p.itemID == part.id);
 
     private void Generate()
     {

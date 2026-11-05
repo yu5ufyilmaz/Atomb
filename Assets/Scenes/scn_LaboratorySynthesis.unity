@@ -36248,7 +36248,6 @@ GameObject:
   - component: {fileID: 487760406}
   - component: {fileID: 487760404}
   - component: {fileID: 487760402}
-  - component: {fileID: 487760407}
   - component: {fileID: 487760408}
   m_Layer: 0
   m_Name: Tutorail_Hiding_005
@@ -36335,21 +36334,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::InteractionCondition
   targetInteractable: {fileID: 454887303}
   completionMode: 0
---- !u!114 &487760407
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 487760399}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 94c302089fc46c14da95ce9bbb054fa3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::HidingSpotControlAction
-  delay: 0
-  hidingSpot: {fileID: 454887305}
-  lockExit: 1
 --- !u!114 &487760408
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -43624,6 +43608,7 @@ GameObject:
   - component: {fileID: 605129798}
   - component: {fileID: 605129802}
   - component: {fileID: 605129803}
+  - component: {fileID: 605129804}
   m_Layer: 0
   m_Name: Tutorail_NoteInteract_002
   m_TagString: Untagged
@@ -43695,7 +43680,7 @@ MonoBehaviour:
   enableTutorialMode: 1
   allowedInteractables:
   - {fileID: 2849696929093020335}
-  - {fileID: 1151116803}
+  - {fileID: 1223161651}
 --- !u!114 &605129803
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -43708,6 +43693,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e781907afe0376d428648e9e7ae9863a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SignalCondition
+--- !u!114 &605129804
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 605129794}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 68524a304a124a349ab60c3dd14750e8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::HighlightAction
+  delay: 0
+  mode: 2
+  targetNote: {fileID: 0}
+  targetBook: {fileID: 1223161656}
+  pulseSpeed: 1
+  duration: 5
 --- !u!1 &608461607
 GameObject:
   m_ObjectHideFlags: 0
@@ -60556,6 +60559,55 @@ SkinnedMeshRenderer:
     m_Center: {x: 0.000008187839, y: 0.0005853566, z: -0.000018266495}
     m_Extent: {x: 0.0033028107, y: 0.0002629276, z: 0.0022870095}
   m_DirtyAABB: 0
+--- !u!1 &855448054
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 855448056}
+  - component: {fileID: 855448055}
+  m_Layer: 0
+  m_Name: VintageCameraLook
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &855448055
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 855448054}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 172515602e62fb746b5d573b38a5fe58, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.RenderPipelines.Core.Runtime::UnityEngine.Rendering.Volume
+  m_IsGlobal: 1
+  priority: 10
+  blendDistance: 0
+  weight: 1
+  sharedProfile: {fileID: 11400000, guid: f388bda47b5cc4b4a9211e3045c60ed0, type: 2}
+--- !u!4 &855448056
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 855448054}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &857126309
 GameObject:
   m_ObjectHideFlags: 0
@@ -71415,6 +71467,7 @@ Transform:
   m_Children:
   - {fileID: 1091296234}
   - {fileID: 605129795}
+  - {fileID: 1043982754}
   - {fileID: 2080874722}
   - {fileID: 734015692}
   - {fileID: 487760400}
@@ -71444,6 +71497,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ChalkboardTutorial
   research: {fileID: 769475112}
   lessonBook: {fileID: 7306699996885676005}
+  sampleBook: {fileID: 1223161656}
+  sampleStep: {fileID: 1043982755}
+  sampleCollected: {fileID: 1043982751}
   firstStep: {fileID: 1091296238}
   collectedStep: {fileID: 605129796}
   boardStep: {fileID: 2080874728}
@@ -73828,6 +73884,104 @@ MonoBehaviour:
   m_AmplitudeGain: 1
   m_FrequencyGain: 1
   mNoiseOffsets: {x: 326.6029, y: -965.9396, z: -781.63367}
+--- !u!1 &1043982750
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1043982754}
+  - component: {fileID: 1043982755}
+  - component: {fileID: 1043982753}
+  - component: {fileID: 1043982751}
+  - component: {fileID: 1043982752}
+  m_Layer: 0
+  m_Name: Tutorial_SampleBook
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1043982751
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1043982750}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e781907afe0376d428648e9e7ae9863a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SignalCondition
+--- !u!114 &1043982752
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1043982750}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eb1423e9569c23148afc04e883b71e34, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerControlAction
+  delay: 0
+  modifyMovement: 0
+  freezePlayer: 0
+  modifyLook: 0
+  lockCameraInput: 0
+  modifyInteractionRules: 1
+  enableTutorialMode: 1
+  allowedInteractables:
+  - {fileID: 2849696929093020335}
+  - {fileID: 1223161651}
+  - {fileID: 1151116803}
+--- !u!114 &1043982753
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1043982750}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb33f8c8e606a9468246904fc40e08c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PrerequisiteCondition
+  requiredEvent: {fileID: 605129796}
+  requireTriggered: 1
+--- !u!4 &1043982754
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1043982750}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1006456096}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1043982755
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1043982750}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2350ebc7d48054446bec7126651cd467, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EventLogicController
+  requireAllConditions: 1
+  triggerOnlyOnce: 1
 --- !u!1 &1044069244
 GameObject:
   m_ObjectHideFlags: 0
@@ -98052,6 +98206,121 @@ Light:
   m_CorrespondingSourceObject: {fileID: 8043881135435346455, guid: a7a4f37d86589d0418168437d00fce87, type: 3}
   m_PrefabInstance: {fileID: 1367097810}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1370255310
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1370255311}
+  - component: {fileID: 1370255316}
+  - component: {fileID: 1370255315}
+  - component: {fileID: 1370255314}
+  - component: {fileID: 1370255313}
+  - component: {fileID: 1370255312}
+  m_Layer: 0
+  m_Name: sample
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1370255311
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1370255310}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2900000001}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1370255312
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1370255310}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 942e52852a30b8d4981b66bc52f37d43, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DialogAction
+  delay: 0
+  subtitleID: thought_sample_0
+  dialogClip: {fileID: 0}
+  audioSource: {fileID: 0}
+  followConditions: 1
+  contextOwner: {fileID: 248469711}
+  reminderSubtitleIDs:
+  - thought_sample_1
+  - thought_sample_2
+  reminderDelay: 10
+  requiredWithoutVoice: 1
+--- !u!114 &1370255313
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1370255310}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 90da6f6e897e41afb104745c53b9730d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ChalkboardTutorialCondition
+  lesson: {fileID: 1006456097}
+  context: 18
+--- !u!114 &1370255314
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1370255310}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb33f8c8e606a9468246904fc40e08c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PrerequisiteCondition
+  requiredEvent: {fileID: 1043982755}
+  requireTriggered: 0
+--- !u!114 &1370255315
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1370255310}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb33f8c8e606a9468246904fc40e08c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PrerequisiteCondition
+  requiredEvent: {fileID: 605129796}
+  requireTriggered: 1
+--- !u!114 &1370255316
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1370255310}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2350ebc7d48054446bec7126651cd467, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EventLogicController
+  requireAllConditions: 1
+  triggerOnlyOnce: 1
 --- !u!1 &1370544545
 GameObject:
   m_ObjectHideFlags: 0
@@ -155019,6 +155288,7 @@ Transform:
   - {fileID: 2900000150}
   - {fileID: 2900000157}
   - {fileID: 2900000164}
+  - {fileID: 1370255311}
   m_Father: {fileID: 1006456096}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2900000002
@@ -155327,7 +155597,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bbb33f8c8e606a9468246904fc40e08c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PrerequisiteCondition
-  requiredEvent: {fileID: 2080874728}
+  requiredEvent: {fileID: 1043982755}
   requireTriggered: 0
 --- !u!114 &2900000021
 MonoBehaviour:
@@ -155428,7 +155698,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bbb33f8c8e606a9468246904fc40e08c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PrerequisiteCondition
-  requiredEvent: {fileID: 605129796}
+  requiredEvent: {fileID: 1043982755}
   requireTriggered: 1
 --- !u!114 &2900000027
 MonoBehaviour:
@@ -155543,7 +155813,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bbb33f8c8e606a9468246904fc40e08c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PrerequisiteCondition
-  requiredEvent: {fileID: 605129796}
+  requiredEvent: {fileID: 1043982755}
   requireTriggered: 1
 --- !u!114 &2900000034
 MonoBehaviour:
@@ -155658,7 +155928,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bbb33f8c8e606a9468246904fc40e08c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PrerequisiteCondition
-  requiredEvent: {fileID: 605129796}
+  requiredEvent: {fileID: 1043982755}
   requireTriggered: 1
 --- !u!114 &2900000041
 MonoBehaviour:
@@ -155773,7 +156043,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bbb33f8c8e606a9468246904fc40e08c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PrerequisiteCondition
-  requiredEvent: {fileID: 605129796}
+  requiredEvent: {fileID: 1043982755}
   requireTriggered: 1
 --- !u!114 &2900000048
 MonoBehaviour:
@@ -155888,7 +156158,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bbb33f8c8e606a9468246904fc40e08c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PrerequisiteCondition
-  requiredEvent: {fileID: 605129796}
+  requiredEvent: {fileID: 1043982755}
   requireTriggered: 1
 --- !u!114 &2900000055
 MonoBehaviour:
@@ -156003,7 +156273,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bbb33f8c8e606a9468246904fc40e08c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PrerequisiteCondition
-  requiredEvent: {fileID: 605129796}
+  requiredEvent: {fileID: 1043982755}
   requireTriggered: 1
 --- !u!114 &2900000062
 MonoBehaviour:
@@ -221226,3 +221496,4 @@ SceneRoots:
   - {fileID: 77305080}
   - {fileID: 2118044505}
   - {fileID: 340370010}
+  - {fileID: 855448056}

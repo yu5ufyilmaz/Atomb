@@ -35,7 +35,7 @@ public static class LaboratoryBlindPackSetup
             AssetDatabase.CreateAsset(set, SetPath);
         }
         var playable = set.Playable(out string error);
-        if (error != null || playable.Count != 3) throw new InvalidOperationException(error ?? "Deneme kümesi üç hedef içermeli.");
+        if (error != null || playable.Count < 3) throw new InvalidOperationException(error ?? "Deneme kümesi üç hedef içermeli.");
         var scene = EditorSceneManager.OpenScene(PuzzleWorkshopSetup.LabPath);
         var trial = PuzzleWorkshopSetup.FindTrial(scene);
         if (trial == null) throw new InvalidOperationException("Laboratuvar araştırma sistemi eksik.");

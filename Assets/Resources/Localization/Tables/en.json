@@ -3367,8 +3367,8 @@
         },
         {
             "key": "tutorial.first_trace.page.explanation",
-            "source": "Önce HEDEF ve BAĞLANTI SIRASI notlarını deftere sürükle. Yan sayfadaki üç parçayı da al. Tab defteri açar/kapatır.",
-            "text": "First drag the TARGET and CONNECTION ORDER notes into your notebook. Collect all three parts on the next page too. {input:ToggleNotebook} opens and closes the notebook."
+            "source": "Önce HEDEF ve BAĞLANTI SIRASI notlarını deftere sürükle. Yan sayfadaki iki parçayı da al. Tab defteri açar/kapatır.",
+            "text": "First drag the TARGET and CONNECTION ORDER notes into your notebook. Collect both parts on the next page too. {input:ToggleNotebook} opens and closes the notebook."
         },
         {
             "key": "tutorial.first_trace.ports.title",
@@ -3382,13 +3382,13 @@
         },
         {
             "key": "tutorial.first_trace.parts.title",
-            "source": "ÜÇ PARÇAYI DA TOPLA",
-            "text": "COLLECT ALL THREE PARTS"
+            "source": "KAYNAK VE ÖLÇERİ TOPLA",
+            "text": "COLLECT THE SOURCE AND METER"
         },
         {
             "key": "tutorial.first_trace.parts.explanation",
-            "source": "Her parçayı deftere sürükle. F ile kitabı bırak; kara tahtaya geç. Defterdeki asıllar korunur.",
-            "text": "Drag each part into your notebook. Press {input:Cancel} to put down the book and go to the blackboard. The originals remain in your notebook."
+            "source": "İki parçayı deftere sürükle. Numune N-12 bu kitapta değil; F ile kitabı bırak, kütüphanede ara.",
+            "text": "Drag both parts into your notebook. Sample N-12 is not in this book; press {input:Cancel} to put it down and search the library."
         },
         {
             "key": "tutorial.first_trace.measurement_hint",
@@ -4821,6 +4821,26 @@
             "text": "He turned your head."
         },
         {
+            "key": "tutorial.first_trace.sample.title",
+            "source": "KISA TEPKİ NUMUNESİ",
+            "text": "SHORT RESPONSE SAMPLE"
+        },
+        {
+            "key": "tutorial.first_trace.sample.explanation",
+            "source": "Numune N-12 kartını deftere sürükle. Tahtadaki alıştırma bu numuneyle kurulur.",
+            "text": "Drag the Sample N-12 card into your notebook. The board exercise is built with this sample."
+        },
+        {
+            "key": "tutorial.first_trace.sample.leave",
+            "source": "Numune defterindeyse F ile kitabı bırak; kara tahtaya geç.",
+            "text": "Once the sample is in your notebook, press {input:Cancel} to put the book down and go to the blackboard."
+        },
+        {
+            "key": "notebook.target.device_locations",
+            "source": "AYGITLARIN YERİ",
+            "text": "DEVICE LOCATIONS"
+        },
+        {
             "key": "subtitle.chemistry_lab_entrance.0",
             "source": "",
             "text": "Did you think you left me behind at the university, Arthur?"
@@ -5198,7 +5218,7 @@
         {
             "key": "subtitle.thought_collect_0.0",
             "source": "",
-            "text": "The target, connection note and three parts... We could keep them in your notebook. Tab opens it."
+            "text": "The target, connection note, source and meter... We could keep them in your notebook. Tab opens it."
         },
         {
             "key": "subtitle.thought_collect_1.0",
@@ -5208,17 +5228,17 @@
         {
             "key": "subtitle.thought_collect_2.0",
             "source": "",
-            "text": "Something's still missing. The target, connection order and three parts on the other page... We may need all of them."
+            "text": "Something's still missing. The target, connection order, and the source and meter on the other page... We may need all of them."
         },
         {
             "key": "subtitle.thought_leave_book_0.0",
             "source": "",
-            "text": "Good, we have everything. We could try something with these on that chalkboard."
+            "text": "Good, we have these. The sample isn't here, though; let's check the library."
         },
         {
             "key": "subtitle.thought_leave_book_1.0",
             "source": "",
-            "text": "I think we're done with the book. F puts it down, then we can try the board."
+            "text": "I think we're done with the book. F puts it down, then we can head to the library."
         },
         {
             "key": "subtitle.thought_leave_book_2.0",
@@ -5564,6 +5584,26 @@
             "key": "subtitle.guderian_gute_nacht.0",
             "source": "",
             "text": "Gute Nacht. (Good night.)"
+        },
+        {
+            "key": "subtitle.thought_sample_0.0",
+            "source": "",
+            "text": "The sample isn't on the desk. It should be in the library, in 'Short and Long Responses'."
+        },
+        {
+            "key": "subtitle.thought_sample_0.1",
+            "source": "",
+            "text": "The notebook says which shelf it's on."
+        },
+        {
+            "key": "subtitle.thought_sample_1.0",
+            "source": "",
+            "text": "Let's look in the library. The blinking book; N-12 should be in there."
+        },
+        {
+            "key": "subtitle.thought_sample_2.0",
+            "source": "",
+            "text": "If you forgot the shelf, check the notebook's target page; the sample's place is written there."
         }
     ]
 }

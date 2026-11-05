@@ -65,7 +65,7 @@ public sealed partial class PuzzleWorkshopWindow
                 if (stage == 0 || stage == 3) ValidateGraphInput(window);
                 Debug.Log("PUZZLE WORKSHOP GRAPH CASE PASS: " + stage + " zoom=" + window.graphZoom + " scroll=" + window.graphScroll);
                 stage++;
-                if (stage == 8) { Debug.Log("PUZZLE WORKSHOP GRAPH LAYOUT PASS: 8 rendered cases, both families, resize, zoom, scroll, 64-part fit, unchanged documents and real selection/connect/drag."); finished = true; }
+                if (stage == 8) { Debug.Log("PUZZLE WORKSHOP GRAPH LAYOUT PASS: 8 rendered cases, both families, resize, zoom, scroll, 64-part fit, unchanged documents and real selection/connect/drag, drag-connect, wheel zoom, body select and Delete."); finished = true; }
                 else configure();
             }
             catch (Exception e) { Debug.LogException(e); finished = true; }
@@ -153,5 +153,29 @@ public sealed partial class PuzzleWorkshopWindow
         send(EventType.MouseUp, header + delta);
         if (Vector2.Distance(window.Puzzle.positions[0], old + delta / window.graphZoom) > .1f)
             throw new InvalidOperationException("Node drag does not match rendered zoom/scroll: old=" + old + " actual=" + window.Puzzle.positions[0] + " expected=" + (old + delta / window.graphZoom));
+        window.Puzzle.solution.bonds.RemoveAll(b => b.fromIndex == 0 && b.toIndex == 1);
+        Vector2 from = offset + (window.Puzzle.positions[0] + new Vector2(NodeWidth - 19, 48)) * window.graphZoom;
+        Vector2 to = offset + (window.Puzzle.positions[1] + new Vector2(19, 48)) * window.graphZoom;
+        send(EventType.MouseDown, from);
+        window.SendEvent(new Event { type = EventType.MouseDrag, mousePosition = to, delta = to - from, button = 0 });
+        send(EventType.MouseUp, to);
+        if (!window.Puzzle.solution.bonds.Exists(b => b.fromIndex == 0 && b.toIndex == 1))
+            throw new InvalidOperationException("Dragging an output arrow onto an input ring does not connect.");
+        float stageZoom = window.graphZoom; string json = JsonUtility.ToJson(window.document);
+        window.graphZoom = Mathf.Min(stageZoom, 1); // stage 3 starts at the 1.25 maximum
+        float zoomBefore = window.graphZoom;
+        Vector2 center = window.layoutProbe.viewport.center - window.position.position;
+        window.SendEvent(new Event { type = EventType.ScrollWheel, mousePosition = center, delta = new Vector2(0, -3) });
+        if (window.graphZoom <= zoomBefore || json != JsonUtility.ToJson(window.document))
+            throw new InvalidOperationException("Mouse wheel did not zoom in, or zooming changed the document: " + zoomBefore + " -> " + window.graphZoom);
+        window.graphZoom = stageZoom;
+        window.selectedNode = -1;
+        click(1, new Vector2(120, 80));
+        if (window.selectedNode != 1) throw new InvalidOperationException("Clicking a node body does not select it.");
+        // Last: deletes a part. configure() re-selects the asset for the next stage.
+        int parts = window.Puzzle.solution.parts.Count;
+        window.selectedNode = parts - 1;
+        window.SendEvent(new Event { type = EventType.KeyDown, keyCode = KeyCode.Delete, mousePosition = center });
+        if (window.Puzzle.solution.parts.Count != parts - 1) throw new InvalidOperationException("Delete key does not remove the selected part.");
     }
 }

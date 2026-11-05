@@ -4,6 +4,10 @@ using UnityEngine;
 
 public sealed partial class PuzzleWorkshopWindow
 {
+    private Vector2? placeAt;
+    // Canvas menu: same chaining as AddPart, but the new node stays where the user clicked.
+    private void AddPartAt(string id, Vector2 at) { placeAt = at; try { AddPart(id); } finally { placeAt = null; } }
+
     private void AddPart(string id)
     {
         if (Puzzle.solution.parts.Count >= PuzzleSimulation.MaxParts) { SetMessage("En fazla 64 parça eklenebilir.", MessageType.Warning); return; }
@@ -27,15 +31,16 @@ public sealed partial class PuzzleWorkshopWindow
                     if (edge != null) { edge.toIndex = added; Puzzle.solution.bonds.Add(new SynthesisBondData { fromIndex = added, toIndex = previous, directed = true }); }
                 }
             }
-            selectedNode = added; LayoutGraph(); fitGraph = true;
-        });
+            selectedNode = added;
+            if (placeAt is Vector2 at) Puzzle.positions[added] = Vector2.Max(at, Vector2.one * 8); else { LayoutGraph(); fitGraph = true; }
+        }, true);
     }
 
     private void Graph()
     {
         EditorGUILayout.LabelField("2 / ÖRNEK ÇÖZÜM ŞEMASI", EditorStyles.boldLabel);
         EditorGUILayout.BeginHorizontal();
-        GUILayout.Label(connectFrom >= 0 ? "Çıkış seçildi: giriş halkasına tıkla. Esc: iptal." : "Sürükle: parçayı taşı · Ok → halka: bağla", EditorStyles.miniLabel);
+        GUILayout.Label(connectFrom >= 0 ? "Çıkış seçildi: giriş halkasına bırak veya tıkla. Esc: iptal." : "Başlık: taşı · Ok → halka: sürükle veya tıkla · Tekerlek: yakınlaştır · Sağ tık: menü · Delete: sil", EditorStyles.miniLabel);
         EditorGUILayout.EndHorizontal();
         EditorGUILayout.BeginHorizontal();
         if (GUILayout.Button("Otomatik Düzenle", GUILayout.Width(120))) Mutate("Şemayı düzenle", () => { LayoutGraph(); fitGraph = true; });
@@ -44,7 +49,7 @@ public sealed partial class PuzzleWorkshopWindow
         GUILayout.FlexibleSpace();
         using (new EditorGUI.DisabledScope(selectedNode < 0))
         {
-            if (GUILayout.Button("Bağlarını Sil", GUILayout.Width(90))) Mutate("Bağları sil", () => Puzzle.solution.bonds.RemoveAll(e => e.fromIndex == selectedNode || e.toIndex == selectedNode));
+            if (GUILayout.Button("Bağlarını Sil", GUILayout.Width(90))) DeleteBonds(selectedNode);
             if (GUILayout.Button("Parçayı Sil", GUILayout.Width(85))) DeleteNode();
         }
         EditorGUILayout.EndHorizontal();
@@ -64,6 +69,14 @@ public sealed partial class PuzzleWorkshopWindow
             graphMinimumZoom = Mathf.Min(.35f, graphZoom);
             graphScroll = Vector2.zero; fitGraph = false;
         }
+        bool overCanvas = viewport.Contains(Event.current.mousePosition);
+        if (overCanvas && Event.current.type == EventType.ScrollWheel)
+        { graphZoom = Mathf.Clamp(graphZoom - Event.current.delta.y * .05f, graphMinimumZoom, 1.25f); Event.current.Use(); }
+        // Drag from an output port: the port button stays hot and may Use() the release, so test rawType.
+        if (overCanvas && connectFrom >= 0 && Event.current.rawType == EventType.MouseUp)
+            for (int i = 0; i < Puzzle.solution.parts.Count; i++)
+                if (SignalTrial.Inputs(Puzzle.solution.parts[i].itemID) > 0 && new Rect(viewport.position - graphScroll + (Puzzle.positions[i] + new Vector2(4, 35)) * graphZoom,
+                    new Vector2(30, 26) * graphZoom).Contains(Event.current.mousePosition)) { Connect(connectFrom, i); break; }
         graphScroll = GUI.BeginScrollView(viewport, graphScroll, new Rect(0, 0, width * graphZoom, height * graphZoom));
         // Scale content rectangles only. Scaling GUI.matrix also scales the scrollview's clip,
         // which makes the canvas overlap the toolbar and cuts off nodes when zoomed out.
@@ -109,6 +122,20 @@ public sealed partial class PuzzleWorkshopWindow
             Repaint();
         }
         if (Event.current.type == EventType.KeyDown && Event.current.keyCode == KeyCode.Escape) { connectFrom = -1; Event.current.Use(); }
+        if (Event.current.type == EventType.KeyDown && (Event.current.keyCode == KeyCode.Delete || Event.current.keyCode == KeyCode.Backspace)
+            && selectedNode >= 0 && !EditorGUIUtility.editingTextField) { DeleteNode(); Event.current.Use(); }
+        if (overCanvas && Event.current.type == EventType.ContextClick)
+        {
+            Vector2 at = Event.current.mousePosition / graphZoom; var menu = new GenericMenu();
+            foreach (var part in PuzzleParts.ForKind(Puzzle.kind))
+            {
+                if (!Puzzle.rules.Allows(part.id)) continue;
+                string id = part.id;
+                if (InSchemaOnce(part)) menu.AddDisabledItem(new GUIContent(part.title));
+                else menu.AddItem(new GUIContent(part.title), false, () => AddPartAt(id, at));
+            }
+            menu.ShowAsContext(); Event.current.Use();
+        }
         if (layoutProbe != null) EditorGUI.DrawRect(new Rect(graphScroll + viewport.size * .85f, Vector2.one * 4), Color.green);
         GUI.EndScrollView();
     }
@@ -118,6 +145,19 @@ public sealed partial class PuzzleWorkshopWindow
         if (layoutProbe != null && Event.current.type == EventType.Repaint) layoutProbe.nodes.Add(GUIUtility.GUIToScreenPoint(Vector2.zero));
         var part = PuzzleParts.Find(Puzzle.solution.parts[index].itemID);
         if (part == null) return;
+        var e = Event.current; bool inside = ZoomRect(0, 0, NodeWidth, NodeHeight).Contains(e.mousePosition);
+        if (inside && e.type == EventType.MouseDown)
+        {
+            selectedNode = index; // not Used: buttons and DragWindow still get the press
+            if (part.outputs > 0 && ZoomRect(NodeWidth - 34, 35, 30, 26).Contains(e.mousePosition)) connectFrom = index;
+        }
+        if (inside && e.type == EventType.ContextClick)
+        {
+            selectedNode = index; var menu = new GenericMenu();
+            menu.AddItem(new GUIContent("Parçayı Sil"), false, () => { selectedNode = index; DeleteNode(); });
+            menu.AddItem(new GUIContent("Bağlarını Sil"), false, () => DeleteBonds(index));
+            menu.ShowAsContext(); e.Use();
+        }
         var buttonStyle = new GUIStyle(GUI.skin.button) { fontSize = Mathf.Max(1, Mathf.RoundToInt(12 * graphZoom)) };
         var hintStyle = new GUIStyle(EditorStyles.centeredGreyMiniLabel) { fontSize = Mathf.Max(1, Mathf.RoundToInt(9 * graphZoom)) };
         if (GUI.Button(ZoomRect(39, 34, 85, 30), part.symbol, buttonStyle)) selectedNode = index;
@@ -144,8 +184,10 @@ public sealed partial class PuzzleWorkshopWindow
         int inputs = Puzzle.solution.bonds.FindAll(e => e.toIndex == to).Count;
         if (outputs >= SignalTrial.Outputs(Puzzle.solution.parts[from].itemID) || inputs >= SignalTrial.Inputs(Puzzle.solution.parts[to].itemID))
         { SetMessage("Bu parçanın giriş veya çıkışları dolu. Önce eski bağını sil.", MessageType.Warning); return; }
-        Mutate("Parçaları bağla", () => Puzzle.solution.bonds.Add(new SynthesisBondData { fromIndex = from, toIndex = to, directed = true }));
+        Mutate("Parçaları bağla", () => Puzzle.solution.bonds.Add(new SynthesisBondData { fromIndex = from, toIndex = to, directed = true }), true);
     }
+
+    private void DeleteBonds(int index) => Mutate("Bağları sil", () => Puzzle.solution.bonds.RemoveAll(e => e.fromIndex == index || e.toIndex == index), true);
 
     private void DeleteNode()
     {
@@ -155,7 +197,7 @@ public sealed partial class PuzzleWorkshopWindow
             Puzzle.solution.bonds.RemoveAll(e => e.fromIndex == index || e.toIndex == index);
             foreach (var edge in Puzzle.solution.bonds) { if (edge.fromIndex > index) edge.fromIndex--; if (edge.toIndex > index) edge.toIndex--; }
             selectedNode = connectFrom = -1;
-        });
+        }, true);
     }
 
     private void Target()
@@ -164,17 +206,17 @@ public sealed partial class PuzzleWorkshopWindow
         if (layoutProbe != null && Event.current.type == EventType.Repaint)
             layoutProbe.target = new Rect(GUIUtility.GUIToScreenPoint(panel.position), panel.size);
         EditorGUILayout.BeginHorizontal();
-        EditorGUILayout.LabelField("3 / HEDEF KAYIT", EditorStyles.boldLabel);
-        if (GUILayout.Button("Hedefi Şemadan Al", GUILayout.Width(145)))
-        {
-            var reading = PuzzleSimulation.Measure(Puzzle.solution, Puzzle);
-            if (!reading.Measurable || !string.IsNullOrEmpty(reading.targetFeedback)) SetMessage(reading.problem ?? reading.targetFeedback, MessageType.Warning);
-            else Mutate("Hedefi örnek çözümden al", () => {
-                if (Puzzle.kind == PuzzleKind.ColorMixture) Puzzle.mixtureTarget = reading.mixture.Copy();
-                else { Puzzle.target = reading.pulses; Puzzle.rules.traceCount = reading.pulses.Count; }
-                ValidateDocument();
-            });
-        }
+        GUILayout.Label("3 / HEDEF KAYIT", EditorStyles.boldLabel);
+        GUILayout.Label(targetLocked ? "Hedef kilitli" : "Hedef şemayı izliyor", EditorStyles.miniLabel);
+        GUILayout.FlexibleSpace();
+        bool locked = GUILayout.Toggle(targetLocked, new GUIContent("Hedefi kilitle", "Kilitliyken şema değişse de hedef değişmez; sayıları elle düzenleyebilirsin"), GUILayout.Width(100));
+        if (locked != targetLocked) { targetLocked = locked; if (!locked) Mutate("Hedef şemayı izlesin", () => TakeTarget()); }
+        using (new EditorGUI.DisabledScope(!targetLocked))
+            if (GUILayout.Button("Şemadan Al", GUILayout.Width(85)))
+            {
+                string issue = null; Mutate("Hedefi örnek çözümden al", () => issue = TakeTarget());
+                if (issue != null) SetMessage(issue, MessageType.Warning);
+            }
         EditorGUILayout.EndHorizontal();
         if (Puzzle.kind == PuzzleKind.ColorMixture)
         {
@@ -196,11 +238,11 @@ public sealed partial class PuzzleWorkshopWindow
             float time = EditorGUILayout.FloatField("Zaman", pulse.time);
             float height = EditorGUILayout.FloatField("Yükseklik", pulse.height);
             float width = EditorGUILayout.FloatField("Genişlik", pulse.width);
-            if (EditorGUI.EndChangeCheck()) Mutate("Hedef izini düzenle", () => { pulse.time = time; pulse.height = height; pulse.width = width; Puzzle.target[i] = pulse; });
+            if (EditorGUI.EndChangeCheck()) { targetLocked = true; Mutate("Hedef izini düzenle", () => { pulse.time = time; pulse.height = height; pulse.width = width; Puzzle.target[i] = pulse; }); }
             EditorGUIUtility.labelWidth = 0;
             EditorGUILayout.EndHorizontal();
         }
-        EditorGUILayout.LabelField("Hedef değişince örnek çözümü yeniden doğrula. Ölçüm alanı: zaman 0–1; yükseklik 0–2,1.", EditorStyles.wordWrappedMiniLabel);
+        EditorGUILayout.LabelField("Bir izi elle düzenlemek hedefi kilitler. Ölçüm alanı: zaman 0–1; yükseklik 0–2,1.", EditorStyles.wordWrappedMiniLabel);
         EditorGUILayout.EndVertical();
     }
 
@@ -224,6 +266,10 @@ public sealed partial class PuzzleWorkshopWindow
     {
         EditorGUILayout.BeginVertical(EditorStyles.helpBox, GUILayout.ExpandWidth(true));
         notesScroll = EditorGUILayout.BeginScrollView(notesScroll);
+        EditorGUILayout.LabelField("Oyuncunun okuyacağı hedef açıklaması", EditorStyles.boldLabel);
+        EditorGUI.BeginChangeCheck(); string description = EditorGUILayout.TextArea(Puzzle.description, GUILayout.Height(70));
+        if (EditorGUI.EndChangeCheck()) Mutate("Puzzle açıklaması", () => Puzzle.description = description);
+        EditorGUILayout.Space(8);
         EditorGUILayout.LabelField("4 / KİTAPLAR VE GÖZLEMLER", EditorStyles.boldLabel);
         EditorGUILayout.LabelField("Zorunlu parça ve kural bilgileri otomatik eklenir. Örnek çözüm oyuncuya gösterilmez.", EditorStyles.wordWrappedMiniLabel);
         if (GUILayout.Button("Gözlem Notu Ekle")) Mutate("Gözlem ekle", () => Puzzle.notes.Add(new BookWorkspacePage { title = "Yeni Gözlem", explanation = "" }));
@@ -259,7 +305,7 @@ public sealed partial class PuzzleWorkshopWindow
         EditorGUILayout.LabelField(title, EditorStyles.boldLabel);
         Rect swatch = GUILayoutUtility.GetRect(80, 42, GUILayout.ExpandWidth(true));
         EditorGUI.DrawRect(swatch, result?.Swatch ?? new Color(.2f, .23f, .24f));
-        EditorGUILayout.LabelField(result?.Describe() ?? "Önce şemayı kur ve Hedefi Şemadan Al'a bas.", EditorStyles.wordWrappedLabel, GUILayout.MinHeight(35));
+        EditorGUILayout.LabelField(result?.Describe() ?? "Önce şemayı kur; ölçülebilen şema hedefi otomatik belirler.", EditorStyles.wordWrappedLabel, GUILayout.MinHeight(35));
         EditorGUILayout.EndVertical();
     }
 

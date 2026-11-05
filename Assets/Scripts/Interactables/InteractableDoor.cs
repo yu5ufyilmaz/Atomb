@@ -147,6 +147,21 @@ public class InteractableDoor : MonoBehaviour, IInteractable
         }
     }
 
+    // Tutorial rewind: shut and locked at once, no close animation and no lock/close sound.
+    public void SnapShutAndLocked()
+    {
+        StopAllCoroutines();
+        isAnimating = false;
+        isLocked = true;
+        isOpen = false;
+        if (doorAnimator != null)
+        {
+            doorAnimator.Rebind(); // default state is the closed idle on every door controller; clears pending triggers
+            doorAnimator.SetBool(IsOpenBool, false);
+            doorAnimator.Update(0f);
+        }
+    }
+
     public void SetOpen(bool openState)
     {
         isOpen = openState;

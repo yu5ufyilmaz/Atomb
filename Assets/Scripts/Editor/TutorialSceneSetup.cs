@@ -9,6 +9,8 @@ using Object = UnityEngine.Object;
 
 public static class TutorialSceneSetup
 {
+    public const string SampleStepName = "Tutorial_SampleBook";
+
     [MenuItem("Senzora/Tutorial/Yeni Tahta Dersini Bağla")]
     public static void Apply()
     {
@@ -41,13 +43,32 @@ public static class TutorialSceneSetup
 
         Remove<InteractionCondition>(Step(2)); Remove<NoteAction>(Step(2)); Remove<UIAction>(Step(2)); Remove<DialogAction>(Step(2));
         lesson.cardsCollected = Signal(Step(2));
-        Step(2).GetComponent<PlayerControlAction>().allowedInteractables = new List<GameObject> { book.gameObject, board.gameObject };
+        // Masa kartlarından sonra numune kütüphanedeki kitapta: kitap yanıp söner, tahta numune alınınca açılır.
+        var sampleBook = research.books.Single(b => b.TryGetComponent<PuzzleBookIdentity>(out var id) && id.title == ChalkboardTutorial.SampleBookTitle);
+        if ((sampleBook.GetComponent<PuzzleBookIdentity>().topics & PuzzleBookTopic.SignalSamples) == 0)
+            throw new InvalidOperationException(ChalkboardTutorial.SampleBookTitle + " numune (SignalSamples) kitabı değil.");
+        lesson.sampleBook = sampleBook;
+        Step(2).GetComponent<PlayerControlAction>().allowedInteractables = new List<GameObject> { book.gameObject, sampleBook.gameObject };
+        var glow = Step(2).GetComponent<HighlightAction>() ?? Step(2).gameObject.AddComponent<HighlightAction>();
+        glow.targetNote = null; glow.targetBook = sampleBook; glow.mode = HighlightAction.HighlightMode.BlinkUntilInteracted;
+        var sampleNode = root.transform.Find(SampleStepName);
+        if (sampleNode == null) { sampleNode = new GameObject(SampleStepName).transform; sampleNode.SetParent(root.transform, false); sampleNode.SetSiblingIndex(Step(2).transform.GetSiblingIndex() + 1); }
+        var sampleStep = sampleNode.GetComponent<EventLogicController>() ?? sampleNode.gameObject.AddComponent<EventLogicController>();
+        sampleStep.triggerOnlyOnce = true; sampleStep.requireAllConditions = true;
+        var afterCards = sampleNode.GetComponent<PrerequisiteCondition>() ?? sampleNode.gameObject.AddComponent<PrerequisiteCondition>();
+        afterCards.requiredEvent = Step(2); afterCards.requireTriggered = true;
+        lesson.sampleStep = sampleStep; lesson.sampleCollected = Signal(sampleStep);
+        var boardControls = sampleNode.GetComponent<PlayerControlAction>() ?? sampleNode.gameObject.AddComponent<PlayerControlAction>();
+        boardControls.modifyInteractionRules = true; boardControls.enableTutorialMode = true;
+        boardControls.allowedInteractables = new List<GameObject> { book.gameObject, sampleBook.gameObject, board.gameObject };
+        foreach (var component in new Component[] { glow, sampleStep, afterCards, lesson.sampleCollected, boardControls }) EditorUtility.SetDirty(component);
         Remove<InputCondition>(Step(3)); lesson.boardPracticed = Signal(Step(3));
         var doorControls = Step(3).GetComponent<PlayerControlAction>() ?? Step(3).gameObject.AddComponent<PlayerControlAction>();
         doorControls.modifyInteractionRules = true; doorControls.enableTutorialMode = true;
         doorControls.allowedInteractables = new List<GameObject> { doorHandle };
         Remove<InteractionCondition>(Step(4)); lesson.doorLocked = Signal(Step(4));
-        Step(5).GetComponent<HidingSpotControlAction>().delay = 0;
+        // 4 Nov: no wardrobe exit lock; leaving while Guderian is about kills and rewinds into the wardrobe.
+        Remove<HidingSpotControlAction>(Step(5));
         Step(9).GetComponent<PlayerControlAction>().allowedInteractables.AddRange(new[] { book.gameObject, board.gameObject });
         Step(9).GetComponent<PlayerControlAction>().allowedInteractables = Step(9).GetComponent<PlayerControlAction>().allowedInteractables.Distinct().ToList();
         Step(9).GetComponent<DialogAction>().subtitleID = "tut_board_terminal";
@@ -80,13 +101,15 @@ public static class TutorialSceneSetup
         var lesson = root.GetComponent<ChalkboardTutorial>();
         var events = root.GetComponentsInChildren<EventLogicController>(true);
         EventLogicController Step(int number) => events.Single(e => e.name.EndsWith("_" + number.ToString("D3")));
+        var sample = lesson.sampleStep;
         foreach (var dialogue in root.GetComponentsInChildren<DialogAction>(true))
             if (!dialogue.followConditions && dialogue.gameObject != lesson.finalStep.gameObject)
             { dialogue.enabled = false; EditorUtility.SetDirty(dialogue); }
         lesson.firstStep.gameObject.SetActive(true);
         var group = root.transform.Find("Konuşma Eventleri");
         if (group == null) { group = new GameObject("Konuşma Eventleri").transform; group.SetParent(root.transform, false); }
-        void Cue(string id, int after, int before, ChalkboardTutorialCondition.Context? context = null, float delay = 10)
+        void Cue(string id, int after, int before, ChalkboardTutorialCondition.Context? context = null, float delay = 10,
+            EventLogicController from = null, EventLogicController until = null)
         {
             var node = group.Find(id);
             if (node == null) { node = new GameObject(id).transform; node.SetParent(group, false); }
@@ -94,8 +117,8 @@ public static class TutorialSceneSetup
             controller.triggerOnlyOnce = true; controller.requireAllConditions = true;
             var gates = node.GetComponents<PrerequisiteCondition>().ToList();
             while (gates.Count < 2) gates.Add(node.gameObject.AddComponent<PrerequisiteCondition>());
-            gates[0].requiredEvent = Step(after); gates[0].requireTriggered = true;
-            gates[1].requiredEvent = Step(before); gates[1].requireTriggered = false;
+            gates[0].requiredEvent = from ?? Step(after); gates[0].requireTriggered = true;
+            gates[1].requiredEvent = until ?? Step(before); gates[1].requireTriggered = false;
             if (context.HasValue)
             {
                 var condition = node.GetComponent<ChalkboardTutorialCondition>() ?? node.gameObject.AddComponent<ChalkboardTutorialCondition>();
@@ -111,13 +134,14 @@ public static class TutorialSceneSetup
         }
         Cue("book", 1, 2, ChalkboardTutorialCondition.Context.Book);
         Cue("collect", 1, 2, ChalkboardTutorialCondition.Context.Collect, 30);
-        Cue("leave_book", 2, 3, ChalkboardTutorialCondition.Context.LeaveBook);
-        Cue("board", 2, 3, ChalkboardTutorialCondition.Context.Board);
-        Cue("pin", 2, 3, ChalkboardTutorialCondition.Context.Pin, 30);
-        Cue("clear_board", 2, 3, ChalkboardTutorialCondition.Context.ClearBoard);
-        Cue("build", 2, 3, ChalkboardTutorialCondition.Context.Build, 30);
-        Cue("store", 2, 3, ChalkboardTutorialCondition.Context.Store);
-        Cue("leave_board", 2, 3, ChalkboardTutorialCondition.Context.LeaveBoard);
+        Cue("leave_book", 2, 3, ChalkboardTutorialCondition.Context.LeaveBook, until: sample);
+        Cue("sample", 2, 3, ChalkboardTutorialCondition.Context.Sample, until: sample);
+        Cue("board", 2, 3, ChalkboardTutorialCondition.Context.Board, from: sample);
+        Cue("pin", 2, 3, ChalkboardTutorialCondition.Context.Pin, 30, from: sample);
+        Cue("clear_board", 2, 3, ChalkboardTutorialCondition.Context.ClearBoard, from: sample);
+        Cue("build", 2, 3, ChalkboardTutorialCondition.Context.Build, 30, from: sample);
+        Cue("store", 2, 3, ChalkboardTutorialCondition.Context.Store, from: sample);
+        Cue("leave_board", 2, 3, ChalkboardTutorialCondition.Context.LeaveBoard, from: sample);
         Cue("lock", 3, 4);
         Cue("hide", 4, 5);
         Cue("wait_hidden", 5, 6, delay: 30);
@@ -136,7 +160,7 @@ public static class TutorialSceneSetup
         Cue("breaker", 12, 13, ChalkboardTutorialCondition.Context.Breaker);
         EditorSceneManager.MarkSceneDirty(root.scene);
         if (!EditorSceneManager.SaveScene(root.scene)) throw new InvalidOperationException("Konuşma eventleri kaydedilemedi.");
-        Debug.Log("TUTORIAL DIALOGUE CONFIGURED: 25 scene events with editable conditions, subtitle IDs and reminders.");
+        Debug.Log("TUTORIAL DIALOGUE CONFIGURED: 26 scene events with editable conditions, subtitle IDs and reminders.");
     }
 
     private static SignalCondition Signal(Component step) => step.GetComponent<SignalCondition>() ?? step.gameObject.AddComponent<SignalCondition>();
