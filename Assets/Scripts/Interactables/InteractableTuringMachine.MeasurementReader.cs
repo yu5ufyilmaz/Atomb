@@ -85,7 +85,7 @@ public partial class InteractableTuringMachine
         readerPaper = physicalFeed.Paper;
         readerFeedback = null;
         SignalExperiment.Active.TerminalMessage = "Ölçüm okunuyor. Kod yerleşince Enter ile sına.";
-        UpdateIndicators(0);
+        UpdateIndicators(SignalExperiment.Active.CompletedCount);
         IsReadingMeasurement = true;
         measurementRoutine = StartCoroutine(ReadMeasurement(fields));
         return true;

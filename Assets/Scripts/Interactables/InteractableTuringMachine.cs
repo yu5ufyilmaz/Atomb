@@ -627,7 +627,7 @@ public partial class InteractableTuringMachine : MonoBehaviour, IInteractable, I
             bool accepted = experiment.Submit(pw);
             ShowMeasurementResult(accepted, experiment.TerminalMessage);
             PlaySound(accepted ? successSound : failSound);
-            UpdateIndicators(accepted ? 1 : 0);
+            UpdateIndicators(experiment.CompletedCount);
             return;
         }
 

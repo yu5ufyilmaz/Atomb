@@ -22,6 +22,7 @@ public sealed class SignalExperiment : MonoBehaviour
     private CanvasGroup outputInput;
     private TextMeshProUGUI deviceFeedback;
     private readonly Dictionary<string, Reading> readings = new Dictionary<string, Reading>();
+    public int CompletedCount => trial != null ? trial.Completed.Count : 0;
     public string TerminalMessage { get; internal set; } = "Ölçümler'deki ölçüm kağıdını okuyucuya bırak veya kodu elle gir.";
     public Reading LastReading { get; private set; }
     public event Action<string> MeasurementAccepted;
