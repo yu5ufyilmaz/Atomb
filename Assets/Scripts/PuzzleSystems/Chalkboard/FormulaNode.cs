@@ -141,7 +141,7 @@ public class FormulaNode : MonoBehaviour
     public void Erase()
     {
         if (connectedNode == null) return;
-        if (bondType == BondType.Double) bondType = connectedNode.bondType = BondType.Single;
+        if (bondType == BondType.Double) { bondType = connectedNode.bondType = BondType.Single; UISoundPlayer.Play(UISoundKind.BondBreak); }
         else Disconnect();
     }
 
@@ -195,6 +195,7 @@ public class FormulaNode : MonoBehaviour
         otherNode.bondType = bondType;
         connectedNode = otherNode;
         otherNode.connectedNode = this;
+        UISoundPlayer.Play(UISoundKind.BondConnect);
         isLineOwner = true;
         otherNode.isLineOwner = false;
         if (!upgrade && ChalkboardManager.Instance != null) ChalkboardManager.Instance.RebuildFormulaGroups();
@@ -203,6 +204,7 @@ public class FormulaNode : MonoBehaviour
     public void Disconnect()
     {
         if (connectedNode == null) return;
+        UISoundPlayer.Play(UISoundKind.BondBreak);
         FormulaNode other = connectedNode;
         connectedNode = other.connectedNode = null;
         isLineOwner = other.isLineOwner = false;

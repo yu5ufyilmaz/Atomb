@@ -144,6 +144,7 @@ public class NotebookUI : MonoBehaviour, ISaveable
         if (workspace != null && workspace.IsArchiveNotebook) { workspace.ToggleStandaloneNotebook(); return; }
         if (IsDocumentInteraction) return;
         isNotebookOpen = !isNotebookOpen;
+        UISoundPlayer.Play(isNotebookOpen ? UISoundKind.NotebookOpen : UISoundKind.NotebookClose);
         if (playerAnimator != null)
             playerAnimator.SetBool(animatorParameterName, isNotebookOpen);
 

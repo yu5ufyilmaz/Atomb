@@ -21,6 +21,7 @@ public partial class NotebookWorkspaceController
         pageTurnSurface = page.gameObject.activeSelf ? page
             : targetPanel.gameObject.activeSelf ? targetPanel : informationPanel;
         if (!pageTurnSurface.gameObject.activeSelf) { pageTurnSurface = null; return; }
+        UISoundPlayer.Play(UISoundKind.PageFlip);
         pageTurnRestPosition = pageTurnSurface.anchoredPosition;
         pageTurnOpacity = pageTurnSurface.GetComponent<CanvasGroup>();
         if (pageTurnOpacity == null) pageTurnOpacity = pageTurnSurface.gameObject.AddComponent<CanvasGroup>();

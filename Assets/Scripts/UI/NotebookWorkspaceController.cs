@@ -330,6 +330,7 @@ public partial class NotebookWorkspaceController : MonoBehaviour
     private void StoreArchiveNote(NotebookBlockData note)
     {
         if (IsArchived(note)) return;
+        UISoundPlayer.Play(UISoundKind.NoteAdd);
         var copy = note.Clone();
         copy.instanceID = Guid.NewGuid().ToString("N"); copy.rotation = 0;
         (note.blockType == NotebookBlockType.Quest ? notebook.EnsureCollectedQuests() : notebook.EnsureWorkspacePage().blocks).Add(copy);
@@ -506,6 +507,8 @@ public partial class NotebookWorkspaceController : MonoBehaviour
             return;
         }
         ShowNotebookView(NotebookView.Notes);
+        // The workspace "<" ">" buttons have no turn animation; the flip sound marks the change.
+        if (notebook.currentWorkspacePage != Mathf.Max(0, index)) UISoundPlayer.Play(UISoundKind.PageFlip);
         notebook.currentWorkspacePage = Mathf.Max(0, index);
         RefreshPage();
     }
@@ -566,6 +569,7 @@ public partial class NotebookWorkspaceController : MonoBehaviour
                 copy.instanceID = Guid.NewGuid().ToString("N");
                 copy.position = Vector2.one * .5f;
                 notebook.EnsureWorkspacePage().blocks.Add(copy);
+                UISoundPlayer.Play(UISoundKind.NoteAdd);
             }
             RefreshInformation(); RefreshBookmarks();
             return true;
@@ -583,6 +587,7 @@ public partial class NotebookWorkspaceController : MonoBehaviour
                     data.instanceID = Guid.NewGuid().ToString("N");
                     data.rotation = 0;
                     targets.Add(data);
+                    UISoundPlayer.Play(UISoundKind.NoteAdd);
                 }
             }
             RefreshCollectedTargets();
@@ -606,6 +611,7 @@ public partial class NotebookWorkspaceController : MonoBehaviour
                 var copy = CreateBlock(data, false, page);
                 notebook.EnsureWorkspacePage().blocks.Add(copy.Data);
                 pageBlocks.Add(copy);
+                UISoundPlayer.Play(UISoundKind.NoteAdd);
                 PlaceOnPage(copy);
                 RefreshBookmarks();
                 RefreshInformation();
@@ -681,6 +687,7 @@ public partial class NotebookWorkspaceController : MonoBehaviour
         var copy = CreateBlock(data, false, page);
         notebook.EnsureWorkspacePage().blocks.Add(copy.Data);
         pageBlocks.Add(copy);
+        UISoundPlayer.Play(UISoundKind.NoteAdd);
         PlaceOnPage(copy);
         RefreshBookmarks();
         return true;
@@ -700,16 +707,19 @@ public partial class NotebookWorkspaceController : MonoBehaviour
                 if (savedPage != null && savedPage.blocks != null)
                     savedPage.blocks.RemoveAll(n => n != null && (ReferenceEquals(n, block.Data)
                         || (!string.IsNullOrEmpty(block.Data.instanceID) && n.instanceID == block.Data.instanceID)));
+            UISoundPlayer.Play(UISoundKind.NoteRemove);
             RefreshPage();
             return;
         }
         if (block.Data.blockType == NotebookBlockType.Quest)
         {
             notebook.EnsureCollectedQuests().Remove(block.Data);
+            UISoundPlayer.Play(UISoundKind.NoteRemove);
             RefreshCollectedTargets();
             return;
         }
         notebook.EnsureWorkspacePage().blocks.Remove(block.Data);
+        UISoundPlayer.Play(UISoundKind.NoteRemove);
         pageBlocks.Remove(block);
         RemoveObject(block.gameObject);
         RefreshBookmarks();

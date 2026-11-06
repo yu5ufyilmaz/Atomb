@@ -23,11 +23,11 @@ public partial class NotebookWorkspaceController
         Label(targetDropZone, "HEDEF NOTUNU BURAYA BIRAK\nTopladıklarını görmek için tıkla", new Vector2(0, -20), new Vector2(480, 36), 13);
         targetDropZone.gameObject.AddComponent<Button>().onClick.AddListener(ShowCollectedTargets);
         if (IsArchiveNotebook) targetDropZone.gameObject.SetActive(false);
-        Button(window, IsArchiveNotebook ? "Parçalar" : "Notlar", new Vector2(-192, 158), new Vector2(120, 30), () => ShowNotebookView(NotebookView.Notes), UISoundKind.Tab);
-        Button(window, "Hedefler", new Vector2(IsArchiveNotebook ? 64 : -64, 158), new Vector2(120, 30), ShowCollectedTargets, UISoundKind.Tab);
-        Button(window, "Bilgiler", new Vector2(IsArchiveNotebook ? -64 : 64, 158), new Vector2(120, 30), ShowInformation, UISoundKind.Tab);
-        if (IsArchiveNotebook) Button(window, "Ölçümler", new Vector2(192, 158), new Vector2(120, 30), ShowSolutions, UISoundKind.Tab);
-        else Button(window, "Hile Aç/Kapat", new Vector2(192, 158), new Vector2(120, 30), ToggleSynthesisGuide, UISoundKind.Tab);
+        Button(window, IsArchiveNotebook ? "Parçalar" : "Notlar", new Vector2(-192, 158), new Vector2(120, 30), () => ShowNotebookView(NotebookView.Notes), UISoundKind.PaperTap);
+        Button(window, "Hedefler", new Vector2(IsArchiveNotebook ? 64 : -64, 158), new Vector2(120, 30), ShowCollectedTargets, UISoundKind.PaperTap);
+        Button(window, "Bilgiler", new Vector2(IsArchiveNotebook ? -64 : 64, 158), new Vector2(120, 30), ShowInformation, UISoundKind.PaperTap);
+        if (IsArchiveNotebook) Button(window, "Ölçümler", new Vector2(192, 158), new Vector2(120, 30), ShowSolutions, UISoundKind.PaperTap);
+        else Button(window, "Hile Aç/Kapat", new Vector2(192, 158), new Vector2(120, 30), ToggleSynthesisGuide, UISoundKind.PaperTap);
         BuildInformationSection(window);
 
         targetPanel = Panel("Hedef Arşivi", window, page.sizeDelta, new Color(.97f, .94f, .82f));

@@ -101,6 +101,7 @@ public class NotebookFreehandDrawer : MaskableGraphic, IPointerDownHandler, IDra
     public void BeginStroke(Vector2 point, bool erase)
     {
         if (IsPaused) return;
+        UISoundPlayer.Scribble(erase);
         EndStroke();
         if (erase)
         {
@@ -132,6 +133,7 @@ public class NotebookFreehandDrawer : MaskableGraphic, IPointerDownHandler, IDra
         if (IsPaused) { EndStroke(); return; }
         if (erasing)
         {
+            UISoundPlayer.Scribble(true);
             Erase(previousEraserPoint, point);
             previousEraserPoint = point;
             return;
@@ -143,6 +145,7 @@ public class NotebookFreehandDrawer : MaskableGraphic, IPointerDownHandler, IDra
             < minimumPointDistance * minimumPointDistance)
             return;
         activeStroke.points.Add(normalized);
+        UISoundPlayer.Scribble(false);
         if (activeStroke.points.Count - activeGraphic.StartPoint > PointsPerGraphic)
             activeGraphic = AddGraphic(activeStroke, activeStroke.points.Count - 2);
         activeGraphic.SetVerticesDirty();

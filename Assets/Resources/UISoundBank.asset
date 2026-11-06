@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5d5ab811370542469dfb8fa5553adf2e, type: 3}
+  m_Name: UISoundBank
+  m_EditorClassIdentifier: Assembly-CSharp::UISoundBank
+  pageFlip:
+  - {fileID: 8300000, guid: b834bb856252b1e4585d3c13972b81bc, type: 3}
+  - {fileID: 8300000, guid: d22de3a66f9dc1b4c87728423893da36, type: 3}
+  - {fileID: 8300000, guid: 4190c7a1cd6375b4c94d2f18b34c18d5, type: 3}
+  notebookOpen: {fileID: 8300000, guid: fa63e2ac008f76245aa27b7ea4938007, type: 3}
+  notebookClose: {fileID: 8300000, guid: c87d4bd814009324eb507e77fcc2164d, type: 3}
+  pencilWrite: {fileID: 0}
+  crumple: {fileID: 0}
+  chalkTap: {fileID: 0}
+  chalkDrag: {fileID: 0}
+  chalkPlace: {fileID: 0}
+  pin: {fileID: 0}
+  paperTap: {fileID: 0}

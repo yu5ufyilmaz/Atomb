@@ -10,7 +10,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
-// Play check: main menu hover/click, settings tabs and rows, notebook section tabs and the chalkboard document buttons all tick.
+// Play check: main menu hover/click and settings tabs/rows tick; notebook tabs and chalkboard controls paper-tap without hover; chalk, bond and pin sounds play.
 [InitializeOnLoad]
 public static class UISoundPlayChecks
 {
@@ -48,12 +48,14 @@ public static class UISoundPlayChecks
             if (iterator.Current is IEnumerator child) stack.Push(child); else yield return iterator.Current;
         }
         File.WriteAllText(Result, failure == null ? "PASS " + DateTime.Now.ToString("s") : "FAIL " + failure);
-        if (failure == null) Debug.Log("UI SOUND PLAY PASS: main menu, settings tabs/rows, notebook tabs, chalkboard buttons tick through SFX; repeats within 40 ms stay silent."); else Debug.LogError(failure);
+        if (failure == null) Debug.Log("UI SOUND PLAY PASS: main menu and settings tick through SFX, repeats within 40 ms stay silent; notebook tabs and board controls paper-tap without hover; page flip, notebook fold/unfold, chalk place, bond connect/break, part wipe, target pin and the chalk scribble loop play."); else Debug.LogError(failure);
         EditorApplication.delayCall += () => EditorApplication.isPlaying = false;
     }
 
     static void Require(bool value, string message) { if (!value) throw new Exception("UI SOUND PLAY: " + message); }
     static IEnumerator Gap() { yield return new WaitForSecondsRealtime(.06f); }
+    static void Heard(int before, int added, UISoundKind kind, string what) => Require(UISoundPlayer.PlayCount == before + added && UISoundPlayer.LastKind == kind,
+        what + ": " + kind + " did not play (count " + before + "->" + UISoundPlayer.PlayCount + ", last " + UISoundPlayer.LastKind + ").");
     static PointerEventData Pointer() => new PointerEventData(EventSystem.current) { button = PointerEventData.InputButton.Left };
     static IEnumerator Expect(GameObject target, bool click, UISoundKind kind, string what)
     {
@@ -109,14 +111,26 @@ public static class UISoundPlayChecks
         boardInteraction.Interact(); yield return WaitFor(() => board.isMachineActive, "Chalkboard entry");
         yield return new WaitForSecondsRealtime(.5f);
         var workspace = NotebookWorkspaceController.Instance; Require(workspace != null && workspace.IsActive, "Notebook workspace not open at the chalkboard.");
-        // The workspace builds its own "Senzora Workspace" canvas at the scene root, not under the controller.
-        var tabs = UnityEngine.Object.FindObjectsByType<UISoundOnPointer>(FindObjectsInactive.Include, FindObjectsSortMode.None).Where(h => h.click == UISoundKind.Tab && h.GetComponent<Button>() != null && h.transform.root.name == "Senzora Workspace").ToArray();
-        Require(tabs.Length >= 3, "Notebook section tabs lack the Tab hook (" + tabs.Length + ").");
-        var expanded = typeof(NotebookWorkspaceController).GetField("notebookExpanded", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
+        // The workspace builds its own "Senzora Workspace" canvas at the scene root, not under the controller; section tabs are named by their label.
+        var tabViews = new Dictionary<string, string> { ["Notlar"] = "Notes", ["Parçalar"] = "Notes", ["Hedefler"] = "Targets", ["Bilgiler"] = "Information" };
+        var tabs = UnityEngine.Object.FindObjectsByType<UISoundOnPointer>(FindObjectsInactive.Include, FindObjectsSortMode.None).Where(h => tabViews.ContainsKey(h.name) && h.GetComponent<Button>() != null && h.transform.root.name == "Senzora Workspace").ToArray();
+        Require(tabs.Length >= 3 && tabs.All(h => h.click == UISoundKind.PaperTap), "Notebook section tabs lack the PaperTap hook: " + string.Join(" | ", tabs.Select(State)));
+        var flags = System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic;
+        var expanded = typeof(NotebookWorkspaceController).GetField("notebookExpanded", flags); var shown = typeof(NotebookWorkspaceController).GetField("currentNotebookView", flags);
         if (!(bool)expanded.GetValue(workspace)) workspace.ToggleNotebook();
-        yield return WaitFor(() => tabs.Any(h => h.isActiveAndEnabled && h.GetComponent<Selectable>().IsInteractable()), "Notebook tab interactable " + string.Join(" | ", tabs.Select(State)), 5);
-        var targets = tabs.First(h => h.isActiveAndEnabled && h.GetComponent<Selectable>().IsInteractable());
-        yield return Expect(targets.gameObject, true, UISoundKind.Tab, "notebook tab click");
+        bool Live(UISoundOnPointer h) => h.isActiveAndEnabled && h.GetComponent<Selectable>().IsInteractable();
+        UISoundOnPointer OtherTab() => tabs.FirstOrDefault(h => Live(h) && tabViews[h.name] != shown.GetValue(workspace).ToString());
+        yield return WaitFor(() => OtherTab() != null, "Notebook tab interactable " + string.Join(" | ", tabs.Select(State)), 5);
+        // Paper tap on press, then the view change turns the page.
+        IEnumerator TabFlip(string what)
+        {
+            var tab = OtherTab(); Require(tab != null, what + ": no tab for another view.");
+            yield return Gap(); int before = UISoundPlayer.PlayCount;
+            ExecuteEvents.Execute(tab.gameObject, Pointer(), ExecuteEvents.pointerDownHandler); Heard(before, 1, UISoundKind.PaperTap, what + " press");
+            ExecuteEvents.Execute(tab.gameObject, Pointer(), ExecuteEvents.pointerClickHandler);
+            yield return null; Heard(before, 2, UISoundKind.PageFlip, what + " page flip");
+        }
+        yield return TabFlip("notebook tab click");
         // Machine UI: every control live at the chalkboard (board documents, notebook, HUD) carries the hook; the sweep covers code-built panels.
         yield return new WaitForSecondsRealtime(.3f);
         var live = UnityEngine.Object.FindObjectsByType<Selectable>(FindObjectsSortMode.None).Where(c => c.isActiveAndEnabled && c.IsInteractable()).ToArray();
@@ -124,8 +138,45 @@ public static class UISoundPlayChecks
         var bare = live.Where(c => c.GetComponent<UISoundOnPointer>() == null).Select(c => Path(c.transform)).ToArray();
         Require(bare.Length == 0, "Live controls without hook: " + string.Join(", ", bare));
         Debug.Log("UI SOUND PLAY: " + live.Length + " live controls at the chalkboard all hooked, e.g. " + string.Join(", ", live.Take(6).Select(c => c.name)));
-        var other = live.FirstOrDefault(c => c.gameObject != targets.gameObject) ?? live[0];
-        yield return Expect(other.gameObject, false, UISoundKind.Hover, "chalkboard control hover");
+        // In-game paper control: no hover tick, a paper tap on press (pointer down only, so its action does not run).
+        var paper = live.Select(c => c.GetComponent<UISoundOnPointer>()).FirstOrDefault(h => h.quiet && h.click == UISoundKind.PaperTap && h.GetComponent<Button>() != null && !tabViews.ContainsKey(h.name));
+        Require(paper != null, "No quiet PaperTap control at the chalkboard: " + string.Join(", ", live.Take(12).Select(c => State(c.GetComponent<UISoundOnPointer>()))));
+        yield return Gap(); count = UISoundPlayer.PlayCount; ExecuteEvents.Execute(paper.gameObject, Pointer(), ExecuteEvents.pointerEnterHandler);
+        Require(UISoundPlayer.PlayCount == count, "Paper control hover ticked: " + Path(paper.transform));
+        ExecuteEvents.Execute(paper.gameObject, Pointer(), ExecuteEvents.pointerDownHandler); Heard(count, 1, UISoundKind.PaperTap, "paper control press " + Path(paper.transform));
+
+        yield return TabFlip("notebook section page flip");
+        yield return Gap(); count = UISoundPlayer.PlayCount; workspace.ToggleNotebook(); Heard(count, 1, UISoundKind.NotebookClose, "notebook fold");
+        yield return new WaitForSecondsRealtime(.4f); count = UISoundPlayer.PlayCount; workspace.ToggleNotebook(); Heard(count, 1, UISoundKind.NotebookOpen, "notebook unfold");
+        yield return new WaitForSecondsRealtime(.4f);
+
+        // Chalk bonds between two free compatible ports, then wiping a part off the board.
+        var parts = ResearchPuzzleTrial.Active.Content.Parts; Require(parts.Count > 0, "Research trial has no parts.");
+        Vector2 center = Camera.main.WorldToScreenPoint(board.boardTransform.TransformPoint((board.minBounds + board.maxBounds) * .5f));
+        yield return Gap(); count = UISoundPlayer.PlayCount;
+        var spawned = Enumerable.Range(0, 4).Select(i => board.SpawnFormula(parts[i % parts.Count], center)).Where(f => f != null).ToList();
+        Require(spawned.Count > 0 && UISoundPlayer.PlayCount > count && UISoundPlayer.LastKind == UISoundKind.ChalkPlace, "Part spawn: ChalkPlace did not play (last " + UISoundPlayer.LastKind + ").");
+        yield return null;
+        var pair = (from a in spawned from b in spawned where a != b from x in a.GetOwnNodes() from y in b.GetOwnNodes()
+                    where x.CanConnect(b, y) && y.CanConnect(a, x) select new { x, y }).FirstOrDefault();
+        Require(pair != null, "No free compatible port pair among " + spawned.Count + " spawned parts.");
+        yield return Gap(); count = UISoundPlayer.PlayCount; pair.x.ConnectTo(pair.y); Heard(count, 1, UISoundKind.BondConnect, "bond connect");
+        Require(pair.x.connectedNode == pair.y, "Bond did not connect.");
+        yield return Gap(); count = UISoundPlayer.PlayCount; pair.x.Disconnect(); Heard(count, 1, UISoundKind.BondBreak, "bond break");
+        yield return Gap(); count = UISoundPlayer.PlayCount; board.RemoveFormula(spawned[0]); Heard(count, 1, UISoundKind.BondBreak, "part removal");
+        foreach (var part in spawned.Skip(1)) board.RemoveFormula(part);
+        // Target card pinned to the cork board: pushpin thunk.
+        var quest = ResearchPuzzleTrial.Active.Content.Quests.FirstOrDefault(); Require(quest != null, "Research trial has no target."); var previousQuest = board.PinnedQuest;
+        yield return Gap(); count = UISoundPlayer.PlayCount; Require(board.TryPinQuest(quest.CreateQuest()), "Target did not pin."); Heard(count, 1, UISoundKind.Pin, "target pin");
+        if (previousQuest != null) board.TryPinQuest(previousQuest);
+
+        // Chalk scribble loop runs only while the stroke moves.
+        var chalk = board.EnsureDrawing(); Require(chalk != null, "Chalkboard drawer missing.");
+        chalk.BeginStroke(Vector2.zero, false); chalk.ContinueStroke(new Vector2(40, 0)); chalk.ContinueStroke(new Vector2(80, 10));
+        yield return null; Require(player.ScribbleActive, "Chalk scribble loop did not start while drawing.");
+        chalk.EndStroke(); yield return new WaitForSecondsRealtime(.5f);
+        Require(!player.ScribbleActive, "Chalk scribble loop kept playing after the stroke ended.");
+        chalk.Clear();
         if (game.activeInteraction != null) game.activeInteraction.ForceExit();
         yield return WaitFor(() => game.activeInteraction == null, "Chalkboard exit");
     }

@@ -8,17 +8,20 @@ using UnityEngine.UI;
 public sealed class UISoundOnPointer : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler
 {
     public UISoundKind click = UISoundKind.Click;
+    // In-game paper controls (notebook, board documents) press without a hover tick.
+    public bool quiet;
     Selectable selectable;
 
-    public static UISoundOnPointer Attach(GameObject target, UISoundKind? click = null)
+    public static UISoundOnPointer Attach(GameObject target, UISoundKind? click = null, bool? quiet = null)
     {
         var hook = target.GetComponent<UISoundOnPointer>();
         if (hook == null) hook = target.AddComponent<UISoundOnPointer>();
         if (click.HasValue) hook.click = click.Value;
+        if (quiet.HasValue) hook.quiet = quiet.Value;
         return hook;
     }
     void Awake() { selectable = GetComponent<Selectable>(); }
     bool Ready => selectable == null || selectable.IsInteractable();
-    public void OnPointerEnter(PointerEventData data) { if (Ready) UISoundPlayer.Play(UISoundKind.Hover); }
+    public void OnPointerEnter(PointerEventData data) { if (Ready && !quiet) UISoundPlayer.Play(UISoundKind.Hover); }
     public void OnPointerDown(PointerEventData data) { if (Ready && data.button == PointerEventData.InputButton.Left) UISoundPlayer.Play(click); }
 }

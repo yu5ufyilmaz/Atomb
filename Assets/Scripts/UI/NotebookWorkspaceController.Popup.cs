@@ -49,10 +49,10 @@ public partial class NotebookWorkspaceController
         if (!IsArchiveNotebook || IsPaused || notebook == null || notebook.isOnMachine
             || (GameManager.Instance != null && GameManager.Instance.activeInteraction != null)) return;
         if (notebook.useScreenSpaceNotebook && GameManager.Instance != null && !GameManager.Instance.isGameStarted) return;
-        if (IsStandaloneOpen) { Close(); return; }
+        if (IsStandaloneOpen) { UISoundPlayer.Play(UISoundKind.NotebookClose); Close(); return; }
         Open(null);
-        // A notebook folded at a workstation must still open when requested with Tab.
-        if (!notebookExpanded) ToggleNotebook();
+        // A notebook folded at a workstation must still open when requested with Tab (ToggleNotebook plays the open sound).
+        if (!notebookExpanded) ToggleNotebook(); else UISoundPlayer.Play(UISoundKind.NotebookOpen);
         IsStandaloneOpen = true;
         if (notebook.useScreenSpaceNotebook) notebook.isNotebookOpen = true;
         if (!standaloneUnlocksCursor)
@@ -134,9 +134,10 @@ public partial class NotebookWorkspaceController
         // Kilitli kitapta defter tek bırakma alanıdır; kapanırsa oyuncu kartları taşıyamaz.
         if (activeBook != null && activeBook.ExitLocked && notebookExpanded) return;
         ResetNotebookPageTurn();
-        if (IsStandaloneOpen) { Close(); return; }
+        if (IsStandaloneOpen) { UISoundPlayer.Play(UISoundKind.NotebookClose); Close(); return; }
         if (notebookExpanded && notebookReveal >= 1) notebookOpenPosition = notebookWindow.anchoredPosition;
         notebookExpanded = !notebookExpanded;
+        UISoundPlayer.Play(notebookExpanded ? UISoundKind.NotebookOpen : UISoundKind.NotebookClose);
         drawer?.EndStroke();
         notebookVisibility.interactable = notebookVisibility.blocksRaycasts = notebookExpanded && notebookReveal >= 1;
         notebookWindow.gameObject.SetActive(true);

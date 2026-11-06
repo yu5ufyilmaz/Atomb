@@ -50,7 +50,7 @@ public class ChalkboardManager : MonoBehaviour, ISaveable
         foreach (var saved in pinnedInformation) PuzzleInformation.TryResolve(saved, this);
         if (!pinnedInformation.Exists(n => linked ? n.questID == note.questID && n.ruleIndex == note.ruleIndex
             : n.questID == note.questID && n.title == note.title && n.description == note.description))
-            pinnedInformation.Add(note.Clone());
+            { pinnedInformation.Add(note.Clone()); UISoundPlayer.Play(UISoundKind.Pin); }
         EnsureDocuments()?.Refresh();
         Report(research ? "Araştırma kaydı panoya takıldı. İlgili olup olmadığını sen değerlendir." : "Bilgi doğru hedefe bağlandı.", true);
         return true;
@@ -59,7 +59,7 @@ public class ChalkboardManager : MonoBehaviour, ISaveable
     public void RemoveInformation(NotebookBlockData note)
     {
         if (!isMachineActive || (GameManager.Instance != null && GameManager.Instance.isGamePaused)) return;
-        pinnedInformation.Remove(note);
+        if (pinnedInformation.Remove(note)) UISoundPlayer.Play(UISoundKind.Pin);
         documents?.Refresh();
     }
 
@@ -136,6 +136,7 @@ public class ChalkboardManager : MonoBehaviour, ISaveable
         if (practiceQuest != null && practice == null) return false;
         if (practice != null) practiceQuest = practice;
         PinnedQuest = quest;
+        UISoundPlayer.Play(UISoundKind.Pin);
         EnsureDocuments()?.Refresh();
         QuestPinned?.Invoke(quest);
         return true;
@@ -164,7 +165,12 @@ public class ChalkboardManager : MonoBehaviour, ISaveable
     public DraggableFormula SpawnFormula(FormulaItemSO data, Vector2 screenPosition)
     {
         if (!TryGetBoardPoint(screenPosition, out Vector3 point)) return null;
-        try { return CreateFormula(data, point, false); }
+        try
+        {
+            var formula = CreateFormula(data, point, false);
+            if (formula != null) UISoundPlayer.Play(UISoundKind.ChalkPlace);
+            return formula;
+        }
         catch (Exception exception)
         {
             Report("Parça tahtaya aktarılamadı: " + exception.Message, false);
@@ -376,6 +382,7 @@ public class ChalkboardManager : MonoBehaviour, ISaveable
     public void RemoveFormula(DraggableFormula formula)
     {
         if (formula == null) return;
+        UISoundPlayer.Play(UISoundKind.BondBreak);
         formula.BreakAllBonds();
         if (synthesisZone != null) synthesisZone.currentItems.Remove(formula);
         formula.gameObject.SetActive(false);

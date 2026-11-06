@@ -88,6 +88,8 @@ public partial class NotebookWorkspaceController
         if (!IsActive) return;
         if (ghost == null || ghostCard != null || ghostLabel != label)
         {
+            // Only a newly shown hint pings; the 0.1 s re-poll of the same label stays silent.
+            if (ghostLabel != label && !string.IsNullOrEmpty(label)) UISoundPlayer.Play(UISoundKind.Hint);
             ClearGuide();
             ghost = Panel("Eğitim Rehberi", bounds, Vector2.one, Color.clear);
             ghost.gameObject.AddComponent<CanvasGroup>().blocksRaycasts = false;
