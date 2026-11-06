@@ -1,8 +1,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
+using UnityEditor.SceneManagement;
 using UnityEditor.Timeline;
 using UnityEngine;
+using UnityEngine.Playables;
 using UnityEngine.Timeline;
 
 // Rebuilds the camera beats of TL_GuderianBehindJS. Values live in the camera track's space:
@@ -11,6 +13,13 @@ public static class GuderianBehindTimelineSetup
 {
     const string TimelinePath = "Assets/CutScenes/TL_GuderianBehindJS.playable";
     const string GuteNachtVoicePath = "Assets/Sounds/Guderian_GuteNacht_placeholder.wav"; // Placeholder TTS: replace with a real recording at the same path.
+    const string PunchPath = "Assets/Sounds/Sound Fx/Guderian/Guderian_Punch_placeholder.wav"; // Generated placeholder: replace with a real recording at the same path.
+    const string FootstepPath = "Assets/Sounds/Sound Fx/Guderian/Guderian_Footstep_{0}.wav"; // 1..5
+    const string CrawlPath = "Assets/Sounds/Sound Fx/Player/Player_Sit_Stand.wav";
+    const float PunchHitIn = .2f; // The generated file's hit sits at 0.20 s.
+    const float CrawlPeak = .25f; // Player_Sit_Stand's energy peak: it lands on each shove's effort.
+    // Guderian's foot contacts in timeline seconds: foot-contact sampling of Guderian_behind.fbx, 2026-11-06 (R .933 dropped, a flam 17 ms before L .95).
+    static readonly float[] StepTimes = { .43f, .95f, 1.57f, 2.53f, 3.2f, 3.67f };
     // Beats follow the acted reference (2026-11-04): calm, whip turn, punch, a hard fall, crawl back, look up, a long held aim, shot.
     // Camera keys are laid on Guderian_behind.fbx as sampled in Play (Senzora/Doğrulama/Guderian Arka Jumpscare Ham Animasyon).
     const float WalkStart = .05f;
@@ -137,6 +146,16 @@ public static class GuderianBehindTimelineSetup
         // "Gute Nacht." in the held aim; GuderianAI shows its subtitle at the same time. It must end before the shot clip or the two would crossfade.
         lineClip.start = GuderianAI.GuteNachtTime; lineClip.clipIn = 0; lineClip.displayName = "Gute Nacht (placeholder)";
         lineClip.duration = Mathf.Min(line.length, (float)voice.start - GuderianAI.GuteNachtTime - .02f);
+        // Overlapping clips on one AudioTrack crossfade, so the foley sits on its own tracks, played by the same AudioSource.
+        var punch = AssetDatabase.LoadAssetAtPath<AudioClip>(PunchPath);
+        if (punch == null) { Debug.LogError("GUDERIAN BEHIND INVALID: ses yok: " + PunchPath); return; }
+        var crawl = AssetDatabase.LoadAssetAtPath<AudioClip>(CrawlPath);
+        var steps = Enumerable.Range(1, 5).Select(n => AssetDatabase.LoadAssetAtPath<AudioClip>(string.Format(FootstepPath, n))).ToArray();
+        if (crawl == null || steps.Contains(null)) { Debug.LogError("GUDERIAN BEHIND INVALID: ses yok: " + CrawlPath + " / " + FootstepPath); return; }
+        var foley = new List<(string, AudioClip, float, float)> { ("Punch", punch, PunchTime - PunchHitIn, 1) };
+        foley.AddRange(Enumerable.Range(0, PushShares.Length).Select(i => ($"Crawl {i + 1}", crawl, PushStart + i * PushEvery + Effort - CrawlPeak, .75f)));
+        LayAudio(timeline, audio, "Audio Track (Foley)", foley);
+        LayAudio(timeline, audio, "Audio Track (Steps)", StepTimes.Select((time, i) => ($"Step {i + 1}", steps[i % 5], time, .6f)).ToList());
         var damageTrack = timeline.GetOutputTracks().OfType<DamageFxTrack>().FirstOrDefault() ?? timeline.CreateTrack<DamageFxTrack>(null, "Damage FX");
         var damage = damageTrack.GetClips().FirstOrDefault() ?? damageTrack.CreateClip<DamageFxClip>();
         damage.start = 0; damage.duration = End; damage.displayName = "Damage FX";
@@ -258,6 +277,39 @@ public static class GuderianBehindTimelineSetup
             SetCurve(clip, typeof(Transform), "m_LocalPosition." + name, poses.Select(pose => new Keyframe(pose.Time, pose.Position[index])));
             SetCurve(clip, typeof(Transform), "localEulerAnglesRaw." + name, poses.Select(pose => new Keyframe(pose.Time, pose.Euler[index])));
         }
+    }
+
+    // One clip per cue, reusing the track's clips in order; each is cut at the next cue so nothing crossfades.
+    static void LayAudio(TimelineAsset timeline, AudioTrack source, string name, List<(string Name, AudioClip Sound, float Start, float Volume)> cues)
+    {
+        var track = timeline.GetOutputTracks().OfType<AudioTrack>().FirstOrDefault(item => item.name == name) ?? timeline.CreateTrack<AudioTrack>(null, name);
+        var clips = track.GetClips().OrderBy(clip => clip.start).ToList();
+        foreach (var stale in clips.Skip(cues.Count)) timeline.DeleteClip(stale);
+        for (int i = 0; i < cues.Count; i++)
+        {
+            var cue = cues[i];
+            var clip = i < clips.Count ? clips[i] : track.CreateClip(cue.Sound);
+            var asset = (AudioPlayableAsset)clip.asset;
+            asset.clip = cue.Sound;
+            clip.displayName = cue.Name; clip.start = cue.Start; clip.clipIn = 0;
+            clip.duration = Mathf.Min(cue.Sound.length, (i + 1 < cues.Count ? cues[i + 1].Start : End) - cue.Start);
+            var properties = new SerializedObject(asset); // Timeline 1.8 keeps the clip volume internal.
+            properties.FindProperty("m_ClipProperties.volume").floatValue = cue.Volume;
+            properties.ApplyModifiedPropertiesWithoutUndo();
+            EditorUtility.SetDirty(asset);
+        }
+        // The binding lives in the scene: the new track plays through the Audio Track's AudioSource.
+        bool bound = false;
+        foreach (var director in Object.FindObjectsByType<PlayableDirector>(FindObjectsInactive.Include, FindObjectsSortMode.None).Where(item => item.playableAsset == timeline))
+        {
+            var output = director.GetGenericBinding(source);
+            bound |= output != null;
+            if (output == null || director.GetGenericBinding(track) == output) continue;
+            director.SetGenericBinding(track, output);
+            EditorSceneManager.MarkSceneDirty(director.gameObject.scene);
+            EditorSceneManager.SaveScene(director.gameObject.scene);
+        }
+        if (!bound) Debug.LogWarning($"GUDERIAN BEHIND: {name} bağlanmadı, scn_LaboratorySynthesis açıkken yeniden uygula.");
     }
 
     // Walk, freeze on the extended arm, then the same animation carries on after the shot.
