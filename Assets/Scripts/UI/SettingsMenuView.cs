@@ -80,7 +80,7 @@ public sealed class SettingsMenuView : MonoBehaviour
         var shade = style.Image(transform, "Shade", 0, 0, 1920, 1080, null, new Color(.035f,.035f,.032f,.96f)); Stretch(shade.rectTransform); shade.raycastTarget = true;
         stage = SettingsMenuStyle.Rect(transform, "SettingsStage", 0, 0, 1920, 1080); stage.anchorMin = stage.anchorMax = stage.pivot = new Vector2(.5f,.5f); stage.anchoredPosition = Vector2.zero;
         title = style.Label(stage, "Title", 130, 62, 440, 80, Text("title"), 50); if (style.headingFont != null) title.font = style.headingFont; title.characterSpacing = 12; title.color = Ink; title.textWrappingMode = TextWrappingModes.NoWrap;
-        for (int i=0;i<sections.Length;i++) { string id=sections[i]; var b=style.Button(stage,"Tab_"+id,0,78,200,64,Text(id),()=>ChangeSection(id),25); Ghost(b); tabs.Add(b); }
+        for (int i=0;i<sections.Length;i++) { string id=sections[i]; var b=style.Button(stage,"Tab_"+id,0,78,200,64,Text(id),()=>ChangeSection(id),25); Ghost(b); UISoundOnPointer.Attach(b.gameObject,UISoundKind.Tab); tabs.Add(b); }
         lbHint = Chip(stage, "LB", 0, 95, 52); rbHint = Chip(stage, "RB", 1738, 95, 52);
         tabLine = style.Image(stage, "TabUnderline", 0, 147, 200, 3, null, Ink).rectTransform;
         style.Image(stage,"HeaderLine",130,150,1660,1,null,Hairline);

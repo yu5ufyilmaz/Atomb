@@ -884,11 +884,12 @@ public partial class NotebookWorkspaceController : MonoBehaviour
         return label;
     }
 
-    private void Button(Transform parent, string text, Vector2 position, Vector2 size, UnityEngine.Events.UnityAction action)
+    private void Button(Transform parent, string text, Vector2 position, Vector2 size, UnityEngine.Events.UnityAction action, UISoundKind sound = UISoundKind.Click)
     {
         var rect = Panel(text, parent, size, new Color(0.76f, 0.73f, 0.62f));
         rect.anchoredPosition = position;
         rect.gameObject.AddComponent<Button>().onClick.AddListener(action);
+        UISoundOnPointer.Attach(rect.gameObject, sound);
         Label(rect, text, Vector2.zero, size, 16);
     }
 
