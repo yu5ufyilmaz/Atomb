@@ -18,12 +18,16 @@ public class IntroPen : MonoBehaviour
     public float putDownBlend = 0.6f;
     [Tooltip("Ucun başparmak ve işaret parmağı yastıklarından taşması (m)")]
     public float tipOut = 0.025f;
+    [Tooltip("Ucun en öndeki parmak ucundan en az ne kadar ileride olduğu (m)")]
+    public float tipPastFingers = 0.015f;
     [Tooltip("Kalem ucunun parmak yastıklarından el sırtı yönüne kaldırılması (m)")]
     public float liftOut = 0.005f;
     [Tooltip("Kalem gövdesinin başparmak-işaret boşluğunun ne kadar üstünden geçtiği (m), elin içinden geçmesin")]
     public float webClearance = 0.03f;
     [Tooltip("Parmak kıvırma yönü (+1/-1); parmaklar ters kıvrılırsa işareti değiştir")]
     public float curlSign = -1;
+    [Tooltip("Parmak kalınlığının yarısı (m); parmaklar kalem ekseninden en az kalem yarıçapı + bu kadar uzak durur")]
+    public float fingerRadius = 0.008f;
 
     Animator player;
     PlayableDirector intro;
@@ -65,7 +69,8 @@ public class IntroPen : MonoBehaviour
         }
         float pickUp = Mathf.InverseLerp(pickUpTime, pickUpTime + pickUpBlend, time);
         float putDown = Mathf.InverseLerp(putDownTime, putDownTime + putDownBlend, time);
-        Grasp(Mathf.Min(pickUp, 1 - putDown));
+        float hold = Mathf.Min(pickUp, 1 - putDown);
+        Grasp(hold);
 
         // Writing grip: pinched between the thumb and index pads, the body resting in the web between thumb and index
         // (bone positions are joints, so the pads lie half a distal segment past the distal joints).
@@ -76,11 +81,62 @@ public class IntroPen : MonoBehaviour
         var back = Vector3.Cross(indexPad - thumbPad, web - pinch).normalized; // out of the back of the hand
         if (Vector3.Dot(back, Vector3.up) < 0) back = -back;
         var tipward = (pinch - (web + back * webClearance)).normalized; // leans back over the web, not through the hand
-        var held = pinch + back * liftOut + tipward * (tipOut - halfLength);
+        // The writing tip always pokes out past the fingertips; a fixed offset ended inside the curled index finger.
+        float reach = tipOut;
+        foreach (var distal in new[] { HumanBodyBones.RightThumbDistal, HumanBodyBones.RightIndexDistal, HumanBodyBones.RightMiddleDistal })
+            reach = Mathf.Max(reach, Vector3.Dot(Pad(distal) * 2 - player.GetBoneTransform(distal).position - pinch, tipward) + tipPastFingers);
+        var held = pinch + back * liftOut + tipward * (reach - halfLength);
         var heldRotation = Quaternion.LookRotation(tipward, back);
         transform.SetPositionAndRotation(
             Vector3.Lerp(Vector3.Lerp(restPosition, held, pickUp), restPosition, putDown),
             Quaternion.Slerp(Quaternion.Slerp(restRotation, heldRotation, pickUp), restRotation, putDown));
+        if (hold > 0) foreach (var finger in Fingers) PushOut(finger);
+    }
+
+    static readonly HumanBodyBones[][] Fingers =
+    {
+        new[] { HumanBodyBones.RightThumbProximal, HumanBodyBones.RightThumbIntermediate, HumanBodyBones.RightThumbDistal },
+        new[] { HumanBodyBones.RightIndexProximal, HumanBodyBones.RightIndexIntermediate, HumanBodyBones.RightIndexDistal },
+        new[] { HumanBodyBones.RightMiddleProximal, HumanBodyBones.RightMiddleIntermediate, HumanBodyBones.RightMiddleDistal },
+        new[] { HumanBodyBones.RightRingProximal, HumanBodyBones.RightRingIntermediate, HumanBodyBones.RightRingDistal },
+        new[] { HumanBodyBones.RightLittleProximal, HumanBodyBones.RightLittleIntermediate, HumanBodyBones.RightLittleDistal },
+    };
+
+    // Keeps a finger out of the pen: from the root joint out, any segment closer to the pen axis than the pen radius
+    // plus the finger's own half-thickness turns about its joint until it rests on the pen's surface instead.
+    void PushOut(HumanBodyBones[] chain)
+    {
+        var tip = transform.position + transform.forward * halfLength;
+        var tail = transform.position - transform.forward * halfLength;
+        float clearance = radius + fingerRadius;
+        for (int i = 0; i < chain.Length; i++)
+        {
+            var joint = player.GetBoneTransform(chain[i]);
+            if (joint == null) continue;
+            for (int pass = 0; pass < 2; pass++)
+            {
+                var end = i + 1 < chain.Length ? player.GetBoneTransform(chain[i + 1]).position : Pad(chain[i]) + (Pad(chain[i]) - joint.position);
+                Vector3 worst = end, out_ = Vector3.zero; float depth = 0;
+                for (float f = 0.25f; f <= 1.001f; f += 0.25f)
+                {
+                    var point = Vector3.Lerp(joint.position, end, f);
+                    var axisPoint = ClosestOnSegment(tail, tip, point);
+                    float gap = clearance - Vector3.Distance(point, axisPoint);
+                    if (gap <= depth) continue;
+                    var away = point - axisPoint;
+                    if (away.sqrMagnitude < 1e-8f) away = Vector3.Cross(transform.forward, Vector3.up);
+                    depth = gap; worst = point; out_ = away.normalized * gap;
+                }
+                if (depth <= 0) break;
+                joint.rotation = Quaternion.FromToRotation(worst - joint.position, worst + out_ - joint.position) * joint.rotation;
+            }
+        }
+    }
+
+    static Vector3 ClosestOnSegment(Vector3 a, Vector3 b, Vector3 point)
+    {
+        var ab = b - a;
+        return a + ab * Mathf.Clamp01(Vector3.Dot(point - a, ab) / ab.sqrMagnitude);
     }
 
     Vector3 Pad(HumanBodyBones distal)
@@ -104,7 +160,7 @@ public class IntroPen : MonoBehaviour
         var thumbPad = Pad(HumanBodyBones.RightThumbDistal);
         var indexPad = Pad(HumanBodyBones.RightIndexDistal);
         var meet = (thumbPad + indexPad) / 2;
-        var gap = (indexPad - thumbPad).normalized * radius;
+        var gap = (indexPad - thumbPad).normalized * (radius + fingerRadius); // pads rest on the pen's surface, not in it
         Aim(HumanBodyBones.RightIndexProximal, HumanBodyBones.RightIndexDistal, meet + gap, weight);
         Aim(HumanBodyBones.RightThumbIntermediate, HumanBodyBones.RightThumbDistal, meet - gap, weight);
     }

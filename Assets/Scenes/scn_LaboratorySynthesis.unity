@@ -46185,8 +46185,11 @@ MonoBehaviour:
   pickUpBlend: 0.3
   putDownBlend: 0.6
   tipOut: 0.025
+  tipPastFingers: 0.015
   liftOut: 0.005
   webClearance: 0.03
+  curlSign: -1
+  fingerRadius: 0.008
 --- !u!4 &652494992
 Transform:
   m_ObjectHideFlags: 0

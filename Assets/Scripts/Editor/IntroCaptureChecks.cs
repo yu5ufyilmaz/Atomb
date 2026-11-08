@@ -120,6 +120,14 @@ public static class IntroCaptureChecks
                 string stamp = penTimes.Dequeue().ToString("00.0", Invariant);
                 CloseUp(new Bounds(rHand.position, Vector3.one * 0.25f), (facing * 0.8f + Vector3.up * 0.5f + side * 0.6f).normalized, $"pen-front-{stamp}");
                 CloseUp(new Bounds(rHand.position, Vector3.one * 0.25f), (-facing * 0.3f + Vector3.up * 0.8f + side * 0.6f).normalized, $"pen-top-{stamp}");
+                var pen = GameObject.Find("IntroPen"); // tight shots on the grip: from the player's eye and from the thumb side
+                if (pen != null)
+                {
+                    var grip = pen.GetComponentInChildren<Renderer>().bounds.center;
+                    CloseUp(new Bounds(grip, Vector3.one * 0.08f), (Camera.main.transform.position - grip).normalized, $"grip-eye-{stamp}");
+                    CloseUp(new Bounds(grip, Vector3.one * 0.08f), (-side * 0.7f + Vector3.up * 0.5f + facing * 0.3f).normalized, $"grip-thumb-{stamp}");
+                    CloseUp(new Bounds(grip, Vector3.one * 0.08f), (side * 0.7f + Vector3.up * 0.3f + facing * 0.5f).normalized, $"grip-out-{stamp}");
+                }
             }
             if (ashtray != null && closeTimes.Count > 0 && time >= closeTimes.Peek() - .001f)
                 CloseUp(ashtray.GetComponent<Renderer>().bounds, (Vector3.up * 0.6f + Vector3.back).normalized, $"ashtray-{closeTimes.Dequeue().ToString("00.0", Invariant)}");
