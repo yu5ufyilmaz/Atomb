@@ -12,8 +12,16 @@ public class InGameMenuController : MonoBehaviour
     [Tooltip("Başlangıçta çalışacak Timeline objesini (StartCutScene) buraya sürükle")]
     public PlayableDirector introTimeline;
 
-    [Tooltip("Timeline'daki ilk Cinemachine klibinin Ease In süresiyle aynı olmalı")]
-    public float introCameraBlend = 2.5f;
+    [Tooltip("Menü bu timeline saniyesinde donuk bekler, Start'ta buradan akar; öncesindeki SitIDLE gövdeyi masadan geride tutar")]
+    public float introStartTime = 5f;
+
+    [Tooltip("Kamera bu saniyede kafadan ayrılır; sonraki Recorded (3) klibi gövdeyi geri çeker (kadraj dışında), kalkışa yumuşak geçilir")]
+    public float headReleaseTime = 14.95f;
+
+    [Tooltip("Kafa kamerasının yukarı bakış açısı (derece), timeline saniyesine göre; sigara içerken ve kalkmadan önce düz öne bakar, eller kadrajdan çıkar")]
+    public AnimationCurve introLookUp = new AnimationCurve(
+        new Keyframe(7.9f, 0f), new Keyframe(8.5f, 25f), new Keyframe(9.7f, 25f), new Keyframe(10.3f, 0f),
+        new Keyframe(13.8f, 0f), new Keyframe(14.4f, 25f));
 
     [Header("Menü Objeleri (Masadaki Yazılar)")]
     public GameObject[] menuObjectsToHide;
@@ -36,8 +44,6 @@ public class InGameMenuController : MonoBehaviour
     [Header("Kapatılacak Kafa Modelleri")]
     public GameObject[] headModelsToHide;
 
-    private Vector3 lockedPosition;
-    private bool isCameraLocked = false;
     public AudioSource gameMusicSource;
     public float gameMusicFadeDuration = 3.0f;
 
@@ -56,11 +62,18 @@ public class InGameMenuController : MonoBehaviour
                     ui.SetActive(false);
             }
 
-            if (cameraTarget != null)
+            // Menü = intronun ilk karesi, kamera kafada: Start'a basınca kesmeden akar.
+            if (introTimeline != null)
             {
-                lockedPosition = cameraTarget.position;
-                isCameraLocked = true;
-                cameraTarget.SetParent(null);
+                introTimeline.time = introStartTime;
+                introTimeline.Play();
+                introTimeline.playableGraph.GetRootPlayable(0).SetSpeed(0);
+            }
+            if (cameraTarget != null && cameraAnchor != null)
+            {
+                cameraTarget.SetParent(cameraAnchor);
+                cameraTarget.localPosition = Vector3.zero;
+                cameraTarget.localRotation = Quaternion.identity;
             }
 
             if (menuMusicSource != null && !menuMusicSource.isPlaying)
@@ -72,15 +85,6 @@ public class InGameMenuController : MonoBehaviour
                         obj.SetActive(true);
                 }
             }
-        }
-    }
-
-    void LateUpdate()
-    {
-        // Kamera kilitliyken hedefi sabit tutar
-        if (isCameraLocked && cameraTarget != null)
-        {
-            cameraTarget.position = lockedPosition;
         }
     }
 
@@ -116,16 +120,21 @@ public class InGameMenuController : MonoBehaviour
             StartCoroutine(FadeInMusic(gameMusicSource, gameMusicFadeDuration));
         }
         // =================================================================
-        // 2. TİMELİNE ÇALIŞSIN VE ROOT OBJESİ GİZLİCE KAMERAYI TAKİP ETSİN!
+        // 2. TİMELİNE ÇALIŞSIN, KAMERA BAŞTAN SONA KAFADA (FPS) KALSIN
         // =================================================================
         bool wasSkipped = false;
         if (introTimeline != null)
         {
-            introTimeline.Play();
+            if (introTimeline.state != PlayState.Playing)
+            {
+                introTimeline.time = introStartTime;
+                introTimeline.Play();
+            }
+            introTimeline.playableGraph.GetRootPlayable(0).SetSpeed(1); // menüde donuk duran kare akmaya başlar
 
             // 🚨 SİHİRLİ DOKUNUŞ: Timeline oynadığı süre boyunca her kare (frame) çalışır
 
-            float timelineTimer = 0f;
+            float timelineTimer = (float)introTimeline.time;
             float skipTimer = 0f;
             float skipHoldTime = 1.5f; // Atlamak için E'ye basılı tutulacak süre (saniye)
             var skipHint = IntroSkipHint.Create(); // sağ altta "[E] Geçmek için basılı tut"
@@ -138,6 +147,7 @@ public class InGameMenuController : MonoBehaviour
                     skipTimer += Time.deltaTime;
                     if (skipTimer >= skipHoldTime)
                     {
+                        if (cameraTarget != null) cameraTarget.SetParent(null); // gövde son kareye atlar, kamera kayarak gider
                         introTimeline.time = introTimeline.duration;
                         introTimeline.Evaluate(); // <--- BU SATIRI MUTLAKA EKLE (Kamerayı anında son kareye ışınlar)
                         wasSkipped = true;
@@ -148,21 +158,17 @@ public class InGameMenuController : MonoBehaviour
                 {
                     skipTimer = 0f; // Tuş bırakılırsa sayacı sıfırla
                 }
-                // Blend sürerken menü kamerası yerinde kalmalı; hedefi taşımak geçişi aniden hızlandırır.
-                // Root objesini (0,0,0'da unutulan objeyi) her saniye zorla kameranın içine çekiyoruz
-                if (timelineTimer >= introCameraBlend && cameraTarget != null && Camera.main != null)
+                if (cameraTarget != null && cameraTarget.parent == cameraAnchor)
                 {
-                    isCameraLocked = false;
-                    cameraTarget.position = Camera.main.transform.position;
-                    cameraTarget.rotation = Camera.main.transform.rotation;
-                    lockedPosition = cameraTarget.position;
+                    if (introTimeline.time >= headReleaseTime)
+                        cameraTarget.SetParent(null); // dünya pozunda kalır, kalkış geçişi buradan kafaya gider
+                    else
+                        cameraTarget.localRotation = Quaternion.Euler(-introLookUp.Evaluate((float)introTimeline.time), 0f, 0f);
                 }
 
                 yield return null; // Bir sonraki frame'e geç
             }
 
-            // Timeline bittiğinde Root objesi tam olarak son kameranın (yüz kamerasının) olduğu yerde kalır!
-            isCameraLocked = true;
             skipHint.SetProgress(wasSkipped ? 1 : 0); skipHint.Close();
         }
 
@@ -179,10 +185,8 @@ public class InGameMenuController : MonoBehaviour
         }
 
         // KAMERA YUMUŞAK GEÇİŞİ (IŞINLANMA YERİNE BURAYI KULLANIYORUZ)
-        if (cameraTarget != null && cameraAnchor != null)
+        if (cameraTarget != null && cameraAnchor != null && cameraTarget.parent != cameraAnchor)
         {
-            isCameraLocked = false;
-
             // Eğer E'ye basıp atladıysak kamera hızlıca (örn: 0.5 saniyede) yerine gitsin.
             // Atlamadıysak, kalkma animasyonu süresi (standUpDuration) kadar sürede gitsin.
             float transitionTime = wasSkipped ? 0.5f : standUpDuration;
@@ -193,7 +197,8 @@ public class InGameMenuController : MonoBehaviour
         }
         else
         {
-            yield return new WaitForSeconds(standUpDuration);
+            // Kamera zaten kafada; kalkma animasyonunu kafadan izler.
+            yield return new WaitForSeconds(wasSkipped ? 0.5f : standUpDuration);
         }
         if (headModelsToHide != null)
         {
@@ -311,7 +316,8 @@ public class InGameMenuController : MonoBehaviour
 
     public void InstantSetupForLoad()
     {
-        isCameraLocked = false;
+        if (introTimeline != null)
+            introTimeline.Stop(); // menüde intronun ilk karesinde donuk bekliyordu
 
         if (cameraTarget != null && cameraAnchor != null)
         {
