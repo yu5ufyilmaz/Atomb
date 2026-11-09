@@ -75,6 +75,7 @@ public class GuderianAI : MonoBehaviour
 
     [SerializeField]
     private AudioClip[] footstepSounds;
+    public AudioClip[] FootstepSounds => footstepSounds; // Lees yaklaşma adımları da bunları kullanır
 
     [SerializeField]
     private AudioClip doorHandleSound;

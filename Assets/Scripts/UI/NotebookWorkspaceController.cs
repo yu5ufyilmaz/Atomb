@@ -79,6 +79,7 @@ public partial class NotebookWorkspaceController : MonoBehaviour
 
     public void Open(InteractableBook book)
     {
+        hidingStandalone = false; // kayarak kapanırken yeniden açılış kapanışı iptal eder
         SetNotebookZoom(false);
         RestoreWorkstationNotebookPosition();
         ResetNotebookPageTurn();
@@ -117,11 +118,15 @@ public partial class NotebookWorkspaceController : MonoBehaviour
         openingNotebook = false;
     }
 
-    public void Close()
+    public void Close() => Close(false);
+
+    // slide: Tab ile kapanan serbest defter açılıştaki gibi aşağı kayar; korkutma/duraklatma/tahta kapanışları anındadır.
+    private void Close(bool slide)
     {
         SetNotebookZoom(false);
         ResetNotebookPageTurn();
         bool restoreCursor = IsStandaloneOpen;
+        hidingStandalone = slide && restoreCursor && standalonePositioned && root != null && notebookReveal > 0;
         IsStandaloneOpen = false;
         if (notebook != null && notebook.useScreenSpaceNotebook) notebook.isNotebookOpen = false;
         if (ChalkboardManager.Instance != null)
@@ -129,7 +134,8 @@ public partial class NotebookWorkspaceController : MonoBehaviour
             ChalkboardManager.Instance.SynthesisFeedback -= ShowFeedback;
             ChalkboardManager.Instance.QuestPinned -= OnQuestPinned;
         }
-        if (root != null) root.SetActive(false);
+        if (hidingStandalone) notebookExpanded = false; // UpdateNotebookPopup kaydırıp sonunda root'u kapatır
+        else if (root != null) root.SetActive(false);
         activeBook = null;
         if (restoreCursor && GameManager.Instance != null) GameManager.Instance.UpdateCursorState();
     }
@@ -169,7 +175,7 @@ public partial class NotebookWorkspaceController : MonoBehaviour
         if (IsPaused) ResetNotebookPageTurn();
         else
         {
-            if (IsArchiveNotebook && !IsStandaloneOpen)
+            if (IsArchiveNotebook && !IsStandaloneOpen && !hidingStandalone)
             {
                 if (GameInput.Pressed("ToggleNotebook")) ToggleNotebook();
                 else if (activeBook != null) BrowseNotebook(GameInput.Pressed("PreviousTab") ? -1 : GameInput.Pressed("NextTab") ? 1 : 0, 0); // Kitap okurken de Q/E defter bölümünü değiştirir.

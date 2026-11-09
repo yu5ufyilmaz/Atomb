@@ -12,6 +12,8 @@ public partial class NotebookWorkspaceController
     private Vector2 notebookOpenPosition;
     private Vector2 workstationNotebookPosition;
     private bool standalonePositioned;
+    private bool hidingStandalone;
+    public bool IsStandaloneHiding => hidingStandalone;
     private float boardNotebookScale = .6f;
     private bool notebookZoomed;
     private Vector2 unzoomedNotebookPosition;
@@ -91,7 +93,7 @@ public partial class NotebookWorkspaceController
         if (!IsArchiveNotebook || IsPaused || notebook == null || notebook.isOnMachine
             || (GameManager.Instance != null && !NotebookUI.AllowsNotebook(GameManager.Instance.activeInteraction))) return;
         if (notebook.useScreenSpaceNotebook && GameManager.Instance != null && !GameManager.Instance.isGameStarted) return;
-        if (IsStandaloneOpen) { UISoundPlayer.Play(UISoundKind.NotebookClose); Close(); return; }
+        if (IsStandaloneOpen) { UISoundPlayer.Play(UISoundKind.NotebookClose); Close(true); return; }
         Open(null);
         // A notebook folded at a workstation must still open when requested with Tab (ToggleNotebook plays the open sound).
         if (!notebookExpanded) ToggleNotebook(); else UISoundPlayer.Play(UISoundKind.NotebookOpen);
@@ -101,8 +103,9 @@ public partial class NotebookWorkspaceController
         {
             workstationNotebookPosition = notebookOpenPosition;
             standalonePositioned = true;
+            // Alt kenar 72: HUD'daki "[Tab] Defter" satırı (üstü bu ölçekte ~65) defterin altında görünür kalır.
             notebookOpenPosition = new Vector2(-bounds.rect.width + notebookWindow.sizeDelta.x * NotebookScale * .5f + 45,
-                -bounds.rect.height * .5f + notebookWindow.sizeDelta.y * NotebookScale * .5f + 28);
+                -bounds.rect.height * .5f + notebookWindow.sizeDelta.y * NotebookScale * .5f + 72);
             notebookReveal = 0;
             notebookVisibility.alpha = 0;
             notebookVisibility.interactable = notebookVisibility.blocksRaycasts = false;
@@ -176,7 +179,7 @@ public partial class NotebookWorkspaceController
         // Kilitli kitapta defter tek bırakma alanıdır; kapanırsa oyuncu kartları taşıyamaz.
         if (activeBook != null && activeBook.ExitLocked && notebookExpanded) return;
         ResetNotebookPageTurn();
-        if (IsStandaloneOpen) { UISoundPlayer.Play(UISoundKind.NotebookClose); Close(); return; }
+        if (IsStandaloneOpen) { UISoundPlayer.Play(UISoundKind.NotebookClose); Close(true); return; }
         if (notebookExpanded && notebookReveal >= 1) notebookOpenPosition = notebookWindow.anchoredPosition;
         notebookExpanded = !notebookExpanded;
         UISoundPlayer.Play(notebookExpanded ? UISoundKind.NotebookOpen : UISoundKind.NotebookClose);
@@ -205,6 +208,8 @@ public partial class NotebookWorkspaceController
         notebookWindow.localScale = Vector3.one * NotebookScale * (standalonePositioned ? 1 : Mathf.Lerp(.08f, 1, t));
         notebookVisibility.alpha = t;
         notebookVisibility.interactable = notebookVisibility.blocksRaycasts = notebookReveal >= 1;
+        // Kayarak kapanış bitti: çalışma alanı kapanır, pencere açık kalır (sonraki Open onu yeniden konumlar).
+        if (notebookReveal <= 0 && hidingStandalone) { hidingStandalone = false; root.SetActive(false); return; }
         if (notebookReveal <= 0) notebookWindow.gameObject.SetActive(false);
     }
 }

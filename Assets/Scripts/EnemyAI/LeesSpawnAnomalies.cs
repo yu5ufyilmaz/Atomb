@@ -10,8 +10,8 @@ public static class LeesSpawnAnomalies
     public const string GlitchWord = "LEESSEEL"; // tekerlerdeki ve ekrandaki bozuk işaret, çevrilecek bir cümle değil
     private const float SecondChance = .25f; // bu ihtimalle ikinci, farklı bir anomali de oynar
     private const float NearbyMeters = 12f; // makine ya da osiloskop bundan uzaktaysa oyuncu fark etmez, aday sayılmaz
-    private const float TuringHoldSeconds = 2.5f; // tekerler kelimede bu kadar durur (yazma + dönüşle ~4.2 sn)
-    private const float ScopeSeconds = 2f;
+    private const float TuringHoldSeconds = 7f; // tekerler kelimede bu kadar durur (yazma + dönüşle ~8.7 sn)
+    private const float ScopeSeconds = 6f;
     private const float SpikeMultiplier = 5f;
 
     private static int lastMask;
@@ -119,17 +119,18 @@ public static class LeesSpawnAnomalies
 
     private static IEnumerator Spike()
     {
-        // Ani parlama, tam karanlık bir an (göz kopmayı fark etsin), sonra toparlanan 3 kırpışma; toplam ~1.4 sn.
-        float[] multipliers = { SpikeMultiplier, 0f, 2.2f, .3f, 1.6f, .5f };
-        float[] seconds = { .15f, .08f, .06f, .12f, .07f, .14f };
+        // Ani parlama, tam karanlık bir an (göz kopmayı fark etsin), sonra toparlanan 3 kırpışma,
+        // ardından 0.1–0.35 sn rastgele aralıklı 3 düzensiz kırpışma daha; toplam ~2.8 sn (2.2–3.3).
+        float[] multipliers = { SpikeMultiplier, 0f, 2.2f, .3f, 1.6f, .5f, .3f, 1.8f, .4f, 1.5f, .6f, 1.2f };
+        float[] seconds = { .15f, .08f, .06f, .12f, .07f, .14f }; // sonrakiler rastgele
         for (int step = 0; step < multipliers.Length; step++)
         {
             SetLights(multipliers[step]);
-            yield return new WaitForSeconds(seconds[step]);
+            yield return new WaitForSeconds(step < seconds.Length ? seconds[step] : Random.Range(.1f, .35f));
         }
         for (float t = 0; t < 1; t += Time.deltaTime / .8f)
         {
-            SetLights(Mathf.Lerp(.5f, 1f, t));
+            SetLights(Mathf.Lerp(multipliers[multipliers.Length - 1], 1f, t));
             yield return null;
         }
         spikeRoutine = null;

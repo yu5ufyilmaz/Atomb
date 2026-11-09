@@ -191,7 +191,7 @@ public class NotebookUI : MonoBehaviour, ISaveable
 
     public void ForceClose()
     {
-        if (workspace != null && workspace.IsStandaloneOpen) workspace.Close();
+        if (workspace != null && (workspace.IsStandaloneOpen || workspace.IsStandaloneHiding)) workspace.Close(); // kayan kapanışı da anında bitirir
         PutArmDown();
         if (notebookPanel != null)
             notebookPanel.SetActive(false);

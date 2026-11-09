@@ -67,6 +67,11 @@ public class LeesEnemyAI : MonoBehaviour
     public float audioFadeDuration = 2.0f;
     public AudioClip stareSound;
     public AudioClip jumpscareSound;
+    [Tooltip("Arkası dönükken yaklaşma ayak sesleri; boşsa Guderian'ın ayak sesleri kullanılır")]
+    public AudioClip[] approachSteps;
+    private AudioSource stepSource;
+    private float stepTimer;
+    private float stepProgress = -1f; // < 0: bu kare ayak sesi yok
 
     [Header("Jumpscare Ayarları")]
     public float jumpscareDistance = 1.2f;
@@ -182,6 +187,18 @@ public class LeesEnemyAI : MonoBehaviour
             audioSource.loop = true;
             audioSource.volume = 0f;
         }
+        if (approachSteps == null || approachSteps.Length == 0)
+        {
+            GuderianAI guderian = Object.FindFirstObjectByType<GuderianAI>();
+            if (guderian != null) approachSteps = guderian.FootstepSounds;
+        }
+        // Ayak sesleri Lees'in kendi konumundan, diğer düşman sesleriyle aynı mikser grubundan çalar.
+        stepSource = gameObject.AddComponent<AudioSource>();
+        stepSource.playOnAwake = false;
+        stepSource.spatialBlend = 1f;
+        if (audioSource != null) { stepSource.minDistance = audioSource.minDistance; stepSource.maxDistance = audioSource.maxDistance; }
+        stepSource.outputAudioMixerGroup = audioSource != null && audioSource.outputAudioMixerGroup != null
+            ? audioSource.outputAudioMixerGroup : SettingsManager.EnsureInstance().effectsGroup;
         globalVolume = Object.FindFirstObjectByType<Volume>();
         if (globalVolume != null && globalVolume.profile != null)
         {
@@ -224,10 +241,12 @@ public class LeesEnemyAI : MonoBehaviour
             timeSpentInCurrentRoom += Time.deltaTime;
         }
 
+        stepProgress = -1f;
         if (currentState == LeesState.Active)
         {
             HandleActiveLogic();
         }
+        TickApproachSteps();
 
 #if UNITY_EDITOR
         debugReactionTimer = currentReactionTimer;
@@ -283,6 +302,7 @@ public class LeesEnemyAI : MonoBehaviour
             else
             {
                 currentIgnoranceTimer += Time.deltaTime;
+                stepProgress = currentIgnoranceTimer / Mathf.Max(.01f, maxIgnoranceTime);
                 if (currentIgnoranceTimer >= maxIgnoranceTime)
                     TriggerDeath("Onu görmezden geldin.");
             }
@@ -360,6 +380,7 @@ public class LeesEnemyAI : MonoBehaviour
             if (CheckIfVisible()) { TriggerDeath("Ona yeniden baktın.", true); return; }
             Vector3 behind = playerTransform.position - resistanceApproachForward * 1.15f; behind.y = resistanceApproachStart.y;
             float progress = resistance.Model.Elapsed / Mathf.Max(.01f, resistance.Model.Settings.approachSeconds);
+            stepProgress = progress;
             transform.position = Vector3.Lerp(resistanceApproachStart, behind, Mathf.SmoothStep(0, 1, progress));
             Vector3 facing = playerTransform.position - transform.position; facing.y = 0;
             if (facing.sqrMagnitude > .001f) transform.rotation = Quaternion.LookRotation(facing);
@@ -385,6 +406,28 @@ public class LeesEnemyAI : MonoBehaviour
         }
         TriggerDeath("Başını çevirdi.", true);
     }
+    // Arkası dönükken yaklaşma: ilerleme 0→1 boyunca adım aralığı 0.9→0.35 s, ses 0.4→1.0.
+    // Bakınca, boğuşma başlayınca, Lees gizlenince ya da duraklatmada stepProgress < 0 kalır ve susar.
+    private void TickApproachSteps()
+    {
+        if (stepSource == null) return;
+        if (stepProgress < 0f || currentState != LeesState.Active)
+        {
+            if (stepTimer > 0f) StopApproachSteps();
+            return;
+        }
+        stepTimer -= Time.deltaTime;
+        if (stepTimer > 0f || approachSteps == null || approachSteps.Length == 0) return;
+        float p = Mathf.Clamp01(stepProgress);
+        AudioClip clip = approachSteps[Random.Range(0, approachSteps.Length)];
+        if (clip != null) stepSource.PlayOneShot(clip, Mathf.Lerp(.4f, 1f, p));
+        stepTimer = Mathf.Lerp(.9f, .35f, p);
+    }
+    private void StopApproachSteps()
+    {
+        stepTimer = 0f;
+        if (stepSource != null) stepSource.Stop();
+    }
     private void StopEncounterAudio()
     {
         if (audioFadeRoutine != null) { StopCoroutine(audioFadeRoutine); audioFadeRoutine = null; }
@@ -399,7 +442,7 @@ public class LeesEnemyAI : MonoBehaviour
         if (m_LensDistortion != null) m_LensDistortion.intensity.Override(baseLens);
         if (m_Aberration != null) m_Aberration.intensity.Override(baseAberration);
     }
-    private void OnDisable() { StopShock(); if (resistance != null) resistance.CancelResistance(); LeesSpawnAnomalies.Cancel(this); }
+    private void OnDisable() { StopShock(); StopApproachSteps(); if (resistance != null) resistance.CancelResistance(); LeesSpawnAnomalies.Cancel(this); }
 
     private IEnumerator ShockRoutine()
     {

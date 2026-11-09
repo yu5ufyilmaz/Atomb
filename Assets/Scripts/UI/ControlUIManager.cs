@@ -59,6 +59,9 @@ public class ControlsUIManager : MonoBehaviour
     [SerializeField]
     private GameObject hidingSpotPanel;
 
+    // Kitaptaki "T Sembol" ipucu şimdilik kapalı (playtest 2026-11-09).
+    private const bool showSymbolHint = false;
+
     private CanvasGroup canvasGroup;
     private GameObject currentActivePanel;
     private GameObject chalkboardPanel, doorLessonPanel;
@@ -135,6 +138,9 @@ public class ControlsUIManager : MonoBehaviour
             case MachineType.Book:
                 DoFManager.Instance.SetFocus(bookFocus);
                 currentActivePanel = bookPanel;
+                // Kitap panelinde "Icon (1)" T Sembol satırıdır; T tuşu çalışmaya devam eder, yalnız ipucu gizlenir.
+                var symbolRow = bookPanel != null ? bookPanel.transform.Find("Icon (1)") : null;
+                if (symbolRow != null) symbolRow.gameObject.SetActive(showSymbolHint);
                 break;
             case MachineType.HidingSpot:
                 currentActivePanel = hidingSpotPanel;
@@ -176,6 +182,7 @@ public class ControlsUIManager : MonoBehaviour
         SetControlRow(rightClick, -590, "Sil");
         SetControlIcon(rightClick, "MouseRightButton", "SecondaryInteract", "<Mouse>/rightButton");
         var notebookKey = panel.Find("Icon (1)");
+        notebookKey.gameObject.SetActive(true); // kitap panelinde gizlenen T Sembol satırı burada Tab satırı olur
         ((RectTransform)notebookKey).sizeDelta = new Vector2(46, 36);
         SetControlRow(notebookKey, -480, "Defter");
         SetControlIcon(notebookKey, "Tab", "ToggleNotebook", "<Keyboard>/tab");
