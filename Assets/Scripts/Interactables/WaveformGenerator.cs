@@ -24,6 +24,10 @@ public class WaveformGenerator : MonoBehaviour
     [HideInInspector] public float noiseAmount = 0f;
 
     private float xOffset = 0f;
+    private float disturbedUntil;
+    public bool IsDisturbed => Time.time < disturbedUntil;
+    // Lees anomalisi: iz birkaç saniye delirir, süre bitince kendi değerleriyle çizmeye döner. 0 hemen bitirir.
+    public void Disturb(float seconds) => disturbedUntil = seconds > 0 ? Time.time + seconds : 0;
     // Renk geçişi (Gradient) için
     private Gradient baseGradient;
 
@@ -48,6 +52,9 @@ public class WaveformGenerator : MonoBehaviour
     {
         xOffset += Time.deltaTime * animationSpeed;
         float startX = -waveWidth / 2f;
+        bool disturbed = IsDisturbed;
+        float noise = disturbed ? 1.4f : noiseAmount;
+        float amp = disturbed ? Mathf.Max(amplitude, 1f) * Random.Range(1.2f, 2.4f) : amplitude;
 
         for (int i = 0; i < pointCount; i++)
         {
@@ -59,8 +66,8 @@ public class WaveformGenerator : MonoBehaviour
             float sineValue = Mathf.Sin(sinePhase);
             
             // Gürültü + Mikro Titreşim (Analog hissi için sürekli titrer)
-            float totalNoise = Random.Range(-noiseAmount, noiseAmount) + Random.Range(-microJitter, microJitter);
-            float y = amplitude * (sineValue + totalNoise);
+            float totalNoise = Random.Range(-noise, noise) + Random.Range(-microJitter, microJitter);
+            float y = amp * (sineValue + totalNoise);
 
             // Kavis Hesabı (Bombeli Ekran)
             // Kenarlarda 0, ortada 1 olan bir eğri (Sinüs yayı)

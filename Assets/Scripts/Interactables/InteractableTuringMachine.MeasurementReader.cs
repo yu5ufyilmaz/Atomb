@@ -146,7 +146,7 @@ public partial class InteractableTuringMachine
 
     private void LateUpdate()
     {
-        if (readerFeedback == null || IsReadingMeasurement || ReaderPaused || Time.time - feedbackStarted < 2) return;
+        if (readerFeedback == null || IsReadingMeasurement || ReaderPaused || IsSpellingLees || Time.time - feedbackStarted < 2) return;
         string feedback = localizedReaderFeedback;
         int start = Mathf.FloorToInt((Time.time - feedbackStarted - 2) * 4) % feedback.Length;
         string loop = feedback + feedback;
@@ -339,6 +339,7 @@ public partial class InteractableTuringMachine
     {
         GameLocalization.LanguageChanged -= RefreshReaderLanguage;
         CloseMeasurementReader(true);
+        StopSpellingLees();
     }
 
     public void ResetMeasurementSession()

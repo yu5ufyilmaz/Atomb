@@ -57,6 +57,7 @@ public class ControllableLight : MonoBehaviour, IInteractable, ISaveable
     // BreakerBox'ın okuyacağı değerler
     public bool IsOn => desiredStateIsOn;
     public bool ContributesToRisk => contributesToRisk;
+    public Light[] Lights => targetLight; // Lees anomalisi parlaklığı geçici oynatır, durumu değiştirmez
 
     private void Start()
     {

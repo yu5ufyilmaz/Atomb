@@ -399,7 +399,7 @@ public class LeesEnemyAI : MonoBehaviour
         if (m_LensDistortion != null) m_LensDistortion.intensity.Override(baseLens);
         if (m_Aberration != null) m_Aberration.intensity.Override(baseAberration);
     }
-    private void OnDisable() { StopShock(); if (resistance != null) resistance.CancelResistance(); }
+    private void OnDisable() { StopShock(); if (resistance != null) resistance.CancelResistance(); LeesSpawnAnomalies.Cancel(this); }
 
     private IEnumerator ShockRoutine()
     {
@@ -765,6 +765,7 @@ public class LeesEnemyAI : MonoBehaviour
             leesAnimator.Update(0f);
         }
         Debug.Log($"Lees Spawn Oldu! Nokta: {bestPoint.name}");
+        LeesSpawnAnomalies.Play(this);
     }
 
     private Transform GetSafeSpawnPoint()
@@ -837,6 +838,7 @@ public class LeesEnemyAI : MonoBehaviour
             GlobalEnemyManager.Instance.RegisterAttackEnd();
 
         StartFadeAudio(null, false);
+        LeesSpawnAnomalies.Cancel(this);
         currentState = LeesState.Hidden;
         ShowModel(false);
         currentCooldownTimer = spawnCooldownAfterDespawn;
@@ -858,6 +860,8 @@ public class LeesEnemyAI : MonoBehaviour
                     c.enabled = show;
         }
     }
+
+    public RoomManager CurrentRoom => currentRoom;
 
     public void EnterRoom(RoomManager room) => currentRoom = room;
 

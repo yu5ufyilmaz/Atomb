@@ -750,4 +750,84 @@ public partial class InteractableTuringMachine : MonoBehaviour, IInteractable, I
     public void OnLoseFocus() { }
 
     public string GetInteractionPrompt() => isInteracting ? "" : "[Sol Tık] Turing Makinesi";
+
+    // --- LEES ANOMALİSİ: kelime tekerleri tek tek bir kelime yazar, bekler, eski yerine döner ---
+    // Mantıksal teker değerlerine (wordWheelIndices) dokunmaz; yalnız görünen dönüşü oynatır ve aynen geri koyar.
+    private Coroutine leesSpell;
+    private Quaternion[] leesSavedWheels, leesSavedLevers;
+    public bool IsSpellingLees => leesSpell != null;
+    public bool CanSpellLees => isActiveAndEnabled && wordWheelInitialRots != null && !isInteracting
+        && !IsReadingMeasurement && leesSpell == null && !PoweredDevice.PowerOut;
+
+    public bool TrySpellLees(string word, float holdSeconds)
+    {
+        if (!CanSpellLees || word.Length != wordWheelModels.Length) return false;
+        foreach (char letter in word) if (wordChars.IndexOf(letter) < 0) return false;
+        int count = wordWheelModels.Length;
+        leesSavedWheels = new Quaternion[count];
+        leesSavedLevers = new Quaternion[count];
+        for (int i = 0; i < count; i++)
+        {
+            if (wordWheelModels[i]) leesSavedWheels[i] = wordWheelModels[i].localRotation;
+            if (i < wordLeverModels.Length && wordLeverModels[i]) leesSavedLevers[i] = wordLeverModels[i].localRotation;
+        }
+        leesSpell = StartCoroutine(SpellLees(word, holdSeconds));
+        return true;
+    }
+
+    public void StopSpellingLees()
+    {
+        if (leesSpell == null) return;
+        StopCoroutine(leesSpell);
+        leesSpell = null;
+        RestoreLeesWheels();
+    }
+
+    private void RestoreLeesWheels()
+    {
+        for (int i = 0; i < wordWheelModels.Length; i++)
+            SetLeesWheel(i, leesSavedWheels[i], leesSavedLevers[i]);
+        if (screenInk != null) RefreshReaderLanguage(); // ekran son gerçek okumasını aynen yeniden çizer
+    }
+
+    private void SetLeesWheel(int i, Quaternion wheel, Quaternion lever)
+    {
+        if (wordWheelModels[i]) wordWheelModels[i].localRotation = wheel;
+        if (i < wordLeverModels.Length && wordLeverModels[i]) wordLeverModels[i].localRotation = lever;
+    }
+
+    private IEnumerator SpellLees(string word, float holdSeconds)
+    {
+        const float letterSeconds = .16f, returnSeconds = .45f;
+        EnsureReaderAudio();
+        float leverSign = invertWordLeverRotation ? -1f : 1f;
+        var wheelTo = new Quaternion[word.Length];
+        var leverTo = new Quaternion[word.Length];
+        for (int i = 0; i < word.Length; i++)
+        {
+            float angle = wordStepAngle * wordChars.IndexOf(word[i]);
+            wheelTo[i] = wordWheelInitialRots[i] * Quaternion.AngleAxis(angle, rotationAxis);
+            leverTo[i] = wordLeverInitialRots[i] * Quaternion.AngleAxis(angle * leverSign, leverRotationAxis);
+            for (float t = 0; t < 1; t += Time.deltaTime / letterSeconds)
+            {
+                if (isInteracting) break; // oyuncu makineye oturdu: gerçek tekerler hemen geri gelir
+                SetLeesWheel(i, Quaternion.Slerp(leesSavedWheels[i], wheelTo[i], t), Quaternion.Slerp(leesSavedLevers[i], leverTo[i], t));
+                yield return null;
+            }
+            if (isInteracting) break;
+            SetLeesWheel(i, wheelTo[i], leverTo[i]);
+            if (wheelClickSound != null) readerTicks.PlayOneShot(wheelClickSound, .45f);
+            if (screenInk != null) screenInk.SetReadout("> " + word.Substring(0, i + 1));
+        }
+        for (float t = 0; t < holdSeconds && !isInteracting; t += Time.deltaTime) yield return null;
+        for (float t = 0; t < 1 && !isInteracting; t += Time.deltaTime / returnSeconds)
+        {
+            for (int i = 0; i < word.Length; i++)
+                SetLeesWheel(i, Quaternion.Slerp(wheelTo[i], leesSavedWheels[i], t), Quaternion.Slerp(leverTo[i], leesSavedLevers[i], t));
+            yield return null;
+        }
+        if (wheelClickSound != null && !isInteracting) readerTicks.PlayOneShot(wheelClickSound, .3f);
+        leesSpell = null;
+        RestoreLeesWheels();
+    }
 }
