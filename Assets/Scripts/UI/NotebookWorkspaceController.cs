@@ -79,6 +79,7 @@ public partial class NotebookWorkspaceController : MonoBehaviour
 
     public void Open(InteractableBook book)
     {
+        SetNotebookZoom(false);
         RestoreWorkstationNotebookPosition();
         ResetNotebookPageTurn();
         openingNotebook = true;
@@ -118,6 +119,7 @@ public partial class NotebookWorkspaceController : MonoBehaviour
 
     public void Close()
     {
+        SetNotebookZoom(false);
         ResetNotebookPageTurn();
         bool restoreCursor = IsStandaloneOpen;
         IsStandaloneOpen = false;

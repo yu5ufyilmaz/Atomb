@@ -4841,6 +4841,21 @@
             "text": "DEVICE LOCATIONS"
         },
         {
+            "key": "notebook.ws.footer_controls_zoom_in",
+            "source": "TAB: KAPAT   /   Q E: BÖLÜM   /   TEKERLEK: SAYFA   /   ENTER: BÜYÜT",
+            "text": "[{input:ToggleNotebook}] CLOSE / [{input:PreviousTab}][{input:NextTab}] SECTION / [{input:Scroll}] PAGE / [{input:Confirm}] ZOOM IN"
+        },
+        {
+            "key": "notebook.ws.footer_controls_zoom_out",
+            "source": "TAB: KAPAT   /   Q E: BÖLÜM   /   TEKERLEK: SAYFA   /   ENTER: KÜÇÜLT",
+            "text": "[{input:ToggleNotebook}] CLOSE / [{input:PreviousTab}][{input:NextTab}] SECTION / [{input:Scroll}] PAGE / [{input:Confirm}] ZOOM OUT"
+        },
+        {
+            "key": "room.valve.sign",
+            "source": "VANA ODASI",
+            "text": "VALVE ROOM"
+        },
+        {
             "key": "subtitle.chemistry_lab_entrance.0",
             "source": "",
             "text": "Did you think you left me behind at the university, Arthur?"

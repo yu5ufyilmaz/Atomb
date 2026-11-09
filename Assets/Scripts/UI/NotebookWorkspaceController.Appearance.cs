@@ -98,7 +98,9 @@ public partial class NotebookWorkspaceController
         statusLabel.rectTransform.anchoredPosition = new Vector2(16, -260);
         statusLabel.rectTransform.sizeDelta = new Vector2(442, 44); statusLabel.fontSize = 15;
         archiveFooter.rectTransform.anchoredPosition = new Vector2(16, -310);
-        archiveFooter.rectTransform.sizeDelta = new Vector2(448, 26); archiveFooter.fontSize = 13;
+        // Dört tuşlu alt satır (BÜYÜT/KÜÇÜLT) tek satıra sığsın: sekmelere kadar genişler, gerekirse küçülür.
+        archiveFooter.rectTransform.sizeDelta = new Vector2(440, 26); archiveFooter.fontSize = 13;
+        archiveFooter.enableAutoSizing = true; archiveFooter.fontSizeMin = 10; archiveFooter.fontSizeMax = 13;
         foreach (var label in new[] { pageLabel, statusLabel, archiveFooter }) label.GetComponent<LocalizedText>()?.RefreshBaseline();
     }
 

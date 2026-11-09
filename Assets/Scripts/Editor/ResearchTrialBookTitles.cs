@@ -138,7 +138,7 @@ public static class ResearchTrialBookTitles
                 Plate(cover, "Araştırma Kitap Adı / Kapak", title, coverBounds,
                     new Vector2(coverBounds.size.y * 0.78f, coverBounds.size.x * 0.55f), 90, material, font);
                 Plate(spine, "Araştırma Kitap Adı / Sırt", title, spineBounds,
-                    new Vector2(spineBounds.size.x * 0.80f, spineBounds.size.y * 0.65f), 0, material, font);
+                    new Vector2(spineBounds.size.x * 0.92f, spineBounds.size.y * 0.85f), 0, material, font); // G11: wider plate, bigger spine letters
                 if (i == 0) Debug.Log($"RESEARCH BOOK TITLES: cover bone bounds {coverBounds}; spine bone bounds {spineBounds}.", book);
             }
             finally { Object.DestroyImmediate(baked); }
@@ -270,7 +270,7 @@ public static class ResearchTrialBookTitles
         Undo.RecordObject(text, "Kitap Başlığını Yaz");
         text.font = font;
         text.fontSharedMaterial = BookTitleLighting.FontMaterial(font);
-        text.fontStyle = FontStyles.Normal;
+        text.fontStyle = FontStyles.Bold; // G11: thin typewriter face was unreadable on the shelf
         text.characterSpacing = 1.5f;
         text.lineSpacing = 4;
         text.extraPadding = true;
@@ -278,7 +278,7 @@ public static class ResearchTrialBookTitles
         text.color = new Color(0.96f, 0.89f, 0.70f, 1);
         text.alignment = TextAlignmentOptions.Center;
         text.enableAutoSizing = true;
-        text.fontSize = text.fontSizeMax = size.y * 7 * textUnits;
+        text.fontSize = text.fontSizeMax = size.y * 12 * textUnits; // G11: x7 capped spines below the plate height
         text.fontSizeMin = size.y * textUnits;
         text.textWrappingMode = name.EndsWith("Kapak") ? TextWrappingModes.Normal : TextWrappingModes.NoWrap;
         text.raycastTarget = false;

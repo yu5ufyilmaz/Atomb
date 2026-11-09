@@ -13,8 +13,50 @@ public partial class NotebookWorkspaceController
     private Vector2 workstationNotebookPosition;
     private bool standalonePositioned;
     private float boardNotebookScale = .6f;
-    private float NotebookScale => notebook == null || !notebook.useScreenSpaceNotebook ? 1f
-        : ChalkboardManager.Instance != null && ChalkboardManager.Instance.isMachineActive ? boardNotebookScale : .7f;
+    private bool notebookZoomed;
+    private Vector2 unzoomedNotebookPosition;
+    private StarterAssets.CharacterController zoomFrozenPlayer;
+    public bool IsNotebookZoomed => notebookZoomed;
+    private float NotebookScale => notebookZoomed ? bounds.rect.height * .95f / notebookWindow.sizeDelta.y
+        : notebook == null || !notebook.useScreenSpaceNotebook ? 1f
+        : ChalkboardManager.Instance != null && ChalkboardManager.Instance.isMachineActive ? boardNotebookScale : .8f;
+    private const string StandaloneFooter = "TAB: KAPAT   /   Q E: BÖLÜM   /   TEKERLEK: SAYFA   /   ENTER: BÜYÜT";
+    private const string ZoomedFooter = "TAB: KAPAT   /   Q E: BÖLÜM   /   TEKERLEK: SAYFA   /   ENTER: KÜÇÜLT";
+
+    // Büyütmede defter ekran yüksekliğini doldurur; oyuncu kitap okurken olduğu gibi durur.
+    public void ToggleNotebookZoom()
+    {
+        if (!IsStandaloneOpen || IsPaused || notebook == null || !notebook.useScreenSpaceNotebook) return;
+        SetNotebookZoom(!notebookZoomed);
+        GameLocalization.Set(archiveFooter, notebookZoomed ? ZoomedFooter : StandaloneFooter);
+    }
+
+    // Open/Close her yoldan (Tab, duraklatma, korkutma, tahta) buradan geçer; büyütme asılı kalmaz.
+    // shortcut: büyütmeyken başlayan bir sinematik dondurmayı, oyuncu büyütmeyi kapatırsa erken bırakır; olursa sinematik sahibini sor.
+    private void SetNotebookZoom(bool zoomed)
+    {
+        if (notebookZoomed == zoomed || notebookWindow == null) return;
+        notebookZoomed = zoomed;
+        if (zoomed)
+        {
+            unzoomedNotebookPosition = notebookOpenPosition;
+            notebookOpenPosition = new Vector2(-bounds.rect.width * .5f, 0);
+            // Başkası (sinematik, makine) zaten dondurduysa çözme işi onda kalır.
+            zoomFrozenPlayer = FindFirstObjectByType<StarterAssets.CharacterController>();
+            if (zoomFrozenPlayer != null && zoomFrozenPlayer.IsFrozen) zoomFrozenPlayer = null;
+            if (zoomFrozenPlayer != null) zoomFrozenPlayer.SetFrozen(true, true, false);
+        }
+        else
+        {
+            notebookOpenPosition = unzoomedNotebookPosition;
+            // Kitap/makine açıldıysa dondurma artık onundur; dolapta kontroller zaten dolapta.
+            if (zoomFrozenPlayer != null && (GameManager.Instance == null || NotebookUI.AllowsNotebook(GameManager.Instance.activeInteraction)))
+                zoomFrozenPlayer.SetFrozen(false, false, false);
+            zoomFrozenPlayer = null;
+        }
+        if (notebookReveal >= 1) notebookWindow.anchoredPosition = notebookOpenPosition;
+        notebookWindow.localScale = Vector3.one * NotebookScale;
+    }
 
     // Tahtada defter ölçüm cihazıyla aynı sütunda, hemen üstünde başlar; dar ekranda cihaza binmek yerine küçülür.
     // shortcut: yalnız tahtaya girişte hesaplanır, tahtadayken çözünürlük değişirse yeniden girişte düzelir.
@@ -67,7 +109,7 @@ public partial class NotebookWorkspaceController
             notebookWindow.anchoredPosition = notebookOpenPosition + Vector2.down * (notebookWindow.sizeDelta.y + 40);
         }
         if (boardControls != null) boardControls.SetActive(false);
-        GameLocalization.Set(archiveFooter, "TAB: KAPAT   /   Q E: BÖLÜM   /   TEKERLEK: SAYFA");
+        GameLocalization.Set(archiveFooter, notebook.useScreenSpaceNotebook ? StandaloneFooter : "TAB: KAPAT   /   Q E: BÖLÜM   /   TEKERLEK: SAYFA");
         Cursor.lockState = standaloneUnlocksCursor ? CursorLockMode.None : CursorLockMode.Locked;
         Cursor.visible = standaloneUnlocksCursor;
     }

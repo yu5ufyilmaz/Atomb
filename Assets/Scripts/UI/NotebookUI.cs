@@ -121,6 +121,8 @@ public class NotebookUI : MonoBehaviour, ISaveable
         {
             if ((GameManager.Instance != null && (GameManager.Instance.isGamePaused || !AllowsNotebook(GameManager.Instance.activeInteraction))) || isOnMachine) return;
             if (GameInput.Pressed("ToggleNotebook") && (workspace.IsStandaloneOpen || !CameraFocusRunning)) ToggleNotebook();
+            // Enter (Onayla) serbest dolaşımda boştur; açık defteri büyütüp küçültür.
+            else if (workspace.IsStandaloneOpen && GameInput.Pressed("Confirm")) workspace.ToggleNotebookZoom();
             else if (workspace.IsStandaloneOpen && !Input.GetKey(KeyCode.LeftAlt) && !Input.GetKey(KeyCode.RightAlt))
             {
                 int section = GameInput.Pressed("PreviousTab") ? -1 : GameInput.Pressed("NextTab") ? 1 : 0;

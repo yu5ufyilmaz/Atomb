@@ -4841,6 +4841,21 @@
             "text": "AYGITLARIN YERİ"
         },
         {
+            "key": "notebook.ws.footer_controls_zoom_in",
+            "source": "TAB: KAPAT   /   Q E: BÖLÜM   /   TEKERLEK: SAYFA   /   ENTER: BÜYÜT",
+            "text": "[{input:ToggleNotebook}] KAPAT / [{input:PreviousTab}][{input:NextTab}] BÖLÜM / [{input:Scroll}] SAYFA / [{input:Confirm}] BÜYÜT"
+        },
+        {
+            "key": "notebook.ws.footer_controls_zoom_out",
+            "source": "TAB: KAPAT   /   Q E: BÖLÜM   /   TEKERLEK: SAYFA   /   ENTER: KÜÇÜLT",
+            "text": "[{input:ToggleNotebook}] KAPAT / [{input:PreviousTab}][{input:NextTab}] BÖLÜM / [{input:Scroll}] SAYFA / [{input:Confirm}] KÜÇÜLT"
+        },
+        {
+            "key": "room.valve.sign",
+            "source": "VANA ODASI",
+            "text": "VANA ODASI"
+        },
+        {
             "key": "subtitle.chemistry_lab_entrance.0",
             "source": "",
             "text": "Beni üniversitede geride bıraktığını mı sandın Arthur?"
