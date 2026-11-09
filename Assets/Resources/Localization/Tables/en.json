@@ -5604,6 +5604,11 @@
             "key": "subtitle.thought_sample_2.0",
             "source": "",
             "text": "If you forgot the shelf, check the notebook's target page; the sample's place is written there."
+        },
+        {
+            "key": "subtitle.thought_pressure_warning.0",
+            "source": "",
+            "text": "Pressure's climbing... I need to get to the valve room."
         }
     ]
 }

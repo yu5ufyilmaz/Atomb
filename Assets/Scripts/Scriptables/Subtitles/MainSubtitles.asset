@@ -1266,3 +1266,11 @@ MonoBehaviour:
         place is written there.
       textDE: Falls du das Regal vergessen hast, sieh auf der Zielseite im Notizbuch
         nach; dort steht, wo die Probe ist.
+  - id: thought_pressure_warning
+    note: Inner thought / pressure warning (PressureSystemManager)
+    voiceClip: {fileID: 0}
+    segments:
+    - duration: 4
+      textTR: "Bas\u0131n\xE7 y\xFCkseliyor... vana odas\u0131na gitmeliyim."
+      textEN: Pressure's climbing... I need to get to the valve room.
+      textDE: Der Druck steigt... Ich muss zum Ventilraum.

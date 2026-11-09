@@ -5604,6 +5604,11 @@
             "key": "subtitle.thought_sample_2.0",
             "source": "",
             "text": "Rafı unuttuysan defterin hedef sayfasına bak; numunenin yeri orada yazıyor."
+        },
+        {
+            "key": "subtitle.thought_pressure_warning.0",
+            "source": "",
+            "text": "Basınç yükseliyor... vana odasına gitmeliyim."
         }
     ]
 }

@@ -14955,9 +14955,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isSystemActive: 0
   currentPressure: 0
-  pressureIncreaseRate: 0.3
+  pressureIncreaseRate: 0.2
   pressureDecreaseRate: 15
-  warningThreshold: 80
+  warningThreshold: 85
   pressureBarImage: {fileID: 1427074880}
   pressureText: {fileID: 2044480041}
   colorChangeThreshold: 70
@@ -100416,13 +100416,13 @@ MonoBehaviour:
   currentState: 0
   agent: {fileID: 1552689769}
   checkInterval: 60
-  baseSpawnChance: 40
+  baseSpawnChance: 30
   chanceIncreaseStep: 5
-  minTimeBetweenAttacks: 180
+  minTimeBetweenAttacks: 240
   currentSpawnChance: 0
   playerCurrentRoom: {fileID: 0}
-  baseSearchDuration: 20
-  timePerLight: 10
+  baseSearchDuration: 10
+  timePerLight: 4
   footstepInterval: 0.8
   closedDoorBreachTime: 2
   lockedDoorBreachTime: 5
@@ -103188,7 +103188,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isSystemActive: 0
-  checkInterval: 100
+  checkInterval: 150
   maxRiskAtFullLoad: 0.256
   cycleRiskMultiplier: 0.01
   handleObject: {fileID: 1306563773591634440}
@@ -180138,7 +180138,7 @@ MonoBehaviour:
   currentRoom: {fileID: 0}
   timeSpentInCurrentRoom: 0
   baseSpawnChance: 5
-  chanceIncreasePerSecond: 0.5
+  chanceIncreasePerSecond: 0.3
   spawnCheckInterval: 20
   maxIgnoranceTime: 90
   maxReactionTime: 2
@@ -180158,7 +180158,7 @@ MonoBehaviour:
     tiltAngle: 1
     shakeIntensity: 0.5
     shakeFrequency: 10
-  spawnCooldownAfterDespawn: 90
+  spawnCooldownAfterDespawn: 150
   showDebugLogs: 1
   debugCooldownTimer: 0
   debugReactionTimer: 0

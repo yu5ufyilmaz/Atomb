@@ -202,13 +202,21 @@ public class PressureSystemManager : MonoBehaviour, ISaveable
             pressureText.color = (currentPressure > warningThreshold) ? dangerColor : safeColor;
         }
 
-        if (warningUI != null)
-        {
-            bool isCritical = currentPressure > warningThreshold;
-            if (warningUI.activeSelf != isCritical)
-                warningUI.SetActive(isCritical);
-        }
+        bool isCritical = currentPressure > warningThreshold;
+        if (warningUI != null && warningUI.activeSelf != isCritical)
+            warningUI.SetActive(isCritical);
+
+        // Eşik her yukarı geçildiğinde kafa içinden uyarı; duraklatma ve ölüm/final sırasında susar, konuşan sesi kesmez.
+        if (isCritical && !wasCritical && !isGameOver
+            && (GameManager.Instance == null || (!GameManager.Instance.isGamePaused && !GameManager.Instance.IsGameplayOver))
+            && GlobalSubtitleManager.Instance != null && !GlobalSubtitleManager.Instance.IsVoicePlaying)
+            GlobalSubtitleManager.Instance.Show(PressureThoughtID, required: true);
+        wasCritical = isCritical;
     }
+
+    // Metin Content/GameContent.xlsx içinde; diğer düşünceler gibi string ID ile çağrılır.
+    private const string PressureThoughtID = "thought_pressure_warning";
+    private bool wasCritical;
 
     private void HandlePostProcessing()
     {
