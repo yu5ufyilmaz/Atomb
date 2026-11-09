@@ -241,7 +241,7 @@ public partial class InteractableBook : MonoBehaviour, IInteractable, IForceExit
 
     public void DisableEmission()
     {
-        emissionIntensity = 0;
+        // Yalnız malzemelerin kalıcı ışığı söner; emissionIntensity'yi sıfırlamak üzerine gelme vurgusunu da kapatıyordu.
         foreach (var renderer in GetComponentsInChildren<Renderer>(true))
             foreach (var material in renderer.materials)
             {

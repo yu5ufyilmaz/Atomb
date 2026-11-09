@@ -47,7 +47,7 @@ public partial class NotebookWorkspaceController
     public void ToggleStandaloneNotebook()
     {
         if (!IsArchiveNotebook || IsPaused || notebook == null || notebook.isOnMachine
-            || (GameManager.Instance != null && GameManager.Instance.activeInteraction != null)) return;
+            || (GameManager.Instance != null && !NotebookUI.AllowsNotebook(GameManager.Instance.activeInteraction))) return;
         if (notebook.useScreenSpaceNotebook && GameManager.Instance != null && !GameManager.Instance.isGameStarted) return;
         if (IsStandaloneOpen) { UISoundPlayer.Play(UISoundKind.NotebookClose); Close(); return; }
         Open(null);
@@ -75,7 +75,7 @@ public partial class NotebookWorkspaceController
     public void BrowseStandaloneNotebook(int sectionDelta, int pageDelta)
     {
         if (!IsStandaloneOpen || notebook.isOnMachine
-            || (GameManager.Instance != null && GameManager.Instance.activeInteraction != null)) return;
+            || (GameManager.Instance != null && !NotebookUI.AllowsNotebook(GameManager.Instance.activeInteraction))) return;
         BrowseNotebook(sectionDelta, pageDelta);
     }
 

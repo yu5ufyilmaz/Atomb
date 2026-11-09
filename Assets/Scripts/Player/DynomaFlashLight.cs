@@ -43,6 +43,10 @@ public class DynomaFlashLight : MonoBehaviour
     [SerializeField]
     private float minIntensity = 0f; // Sönük hali
 
+    [Tooltip("Defter/kitap okunurken şiddet çarpanı: ışık gözden çıkıyor, 0.3 m'deki sayfayı patlatmasın")]
+    [SerializeField]
+    private float readingIntensityScale = 0.03f;
+
     private void Start()
     {
         if (targetLight == null)
@@ -118,6 +122,8 @@ public class DynomaFlashLight : MonoBehaviour
         // Enerji azaldıkça ışık kısılacak
         // Son %2'ye kadar tam parlak kalır, yalnızca orada söner (drainRate 3 ile ~0.67 sn).
         targetLight.intensity = Mathf.Lerp(minIntensity, maxIntensity, percentage / 0.02f);
+        if (NotebookUI.Instance != null && NotebookUI.Instance.IsReading)
+            targetLight.intensity *= readingIntensityScale;
 
         // Hiç enerji yoksa ışığı tamamen kapat (Performans için)
         targetLight.enabled = (currentEnergy > 0);

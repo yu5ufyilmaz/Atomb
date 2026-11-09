@@ -17,6 +17,11 @@ public class NotebookUI : MonoBehaviour, ISaveable
     public bool IsWorkspaceActive => workspace != null && workspace.IsActive;
     private bool IsDocumentInteraction => IsWorkspaceActive || (GameManager.Instance != null
         && (GameManager.Instance.activeInteraction is InteractableBook || GameManager.Instance.activeInteraction is InteractableChalkboard));
+    // Fener, yakındaki sayfayı patlatmasın diye okurken kısılır; ekran defteri (overlay) ışıktan etkilenmez.
+    public bool IsReading => (isNotebookOpen && !useScreenSpaceNotebook)
+        || (GameManager.Instance != null && GameManager.Instance.activeInteraction is InteractableBook);
+    // Dolapta saklanırken defter açılıp sayfa çevrilebilir; hareket/bakış zaten dolap tarafından kapalı.
+    public static bool AllowsNotebook(IForceExitable interaction) => interaction == null || interaction is InteractableHidingSpot;
     private NotebookWorkspaceController workspace;
     [Tooltip("Defteri eldeki model yerine ekran çalışma alanında göster.")]
     public bool useScreenSpaceNotebook;
@@ -114,8 +119,8 @@ public class NotebookUI : MonoBehaviour, ISaveable
     {
         if (workspace != null && workspace.IsArchiveNotebook)
         {
-            if ((GameManager.Instance != null && (GameManager.Instance.isGamePaused || GameManager.Instance.activeInteraction != null)) || isOnMachine) return;
-            if (GameInput.Pressed("ToggleNotebook") && (workspace.IsStandaloneOpen || !CameraFocusRunning)) workspace.ToggleStandaloneNotebook();
+            if ((GameManager.Instance != null && (GameManager.Instance.isGamePaused || !AllowsNotebook(GameManager.Instance.activeInteraction))) || isOnMachine) return;
+            if (GameInput.Pressed("ToggleNotebook") && (workspace.IsStandaloneOpen || !CameraFocusRunning)) ToggleNotebook();
             else if (workspace.IsStandaloneOpen && !Input.GetKey(KeyCode.LeftAlt) && !Input.GetKey(KeyCode.RightAlt))
             {
                 int section = GameInput.Pressed("PreviousTab") ? -1 : GameInput.Pressed("NextTab") ? 1 : 0;

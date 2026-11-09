@@ -616,6 +616,43 @@ internal class BookPageMoveHandle : MonoBehaviour, IDragHandler, ICanvasRaycastF
         if (camera == null) return;
         Vector3 point = camera.WorldToScreenPoint(Book.transform.position);
         if (point.z <= camera.nearClipPlane) return;
-        Book.transform.position += camera.ScreenToWorldPoint(point + new Vector3(data.delta.x, data.delta.y, 0)) - camera.ScreenToWorldPoint(point);
+        Vector2 delta = ClampedDelta(camera, point, data.delta);
+        Book.transform.position += camera.ScreenToWorldPoint(point + (Vector3)delta) - camera.ScreenToWorldPoint(point);
+    }
+
+    private const float ScreenMargin = 40f;
+
+    // Kitap ekranın en az 40 px içinde kalır, merkezi açık defterin altına girmez; yoksa taşıma tutamacına ulaşılamaz.
+    private Vector2 ClampedDelta(Camera camera, Vector2 point, Vector2 delta)
+    {
+        Vector2 min = point, max = point;
+        var mesh = Book.bookSkinnedMeshRenderer;
+        if (mesh != null)
+        {
+            Bounds bounds = mesh.bounds;
+            for (int i = 0; i < 8; i++)
+            {
+                Vector3 corner = camera.WorldToScreenPoint(bounds.center + Vector3.Scale(bounds.extents,
+                    new Vector3((i & 1) == 0 ? -1 : 1, (i & 2) == 0 ? -1 : 1, (i & 4) == 0 ? -1 : 1)));
+                if (corner.z <= 0) continue;
+                min = Vector2.Min(min, corner); max = Vector2.Max(max, corner);
+            }
+        }
+        Vector2 half = (max - min) * .5f, centre = (min + max) * .5f, next = centre + delta;
+        Vector2 screen = new Vector2(Screen.width, Screen.height);
+        for (int axis = 0; axis < 2; axis++)
+        {
+            // Ekrandan büyük kitapta sınırlar yer değiştirir: kitap ekranı kaplar, kenarı en fazla 40 px içeri girer.
+            float lo = half[axis] + ScreenMargin, hi = screen[axis] - half[axis] - ScreenMargin;
+            next[axis] = Mathf.Clamp(next[axis], Mathf.Min(lo, hi), Mathf.Max(lo, hi));
+        }
+        delta = next - centre;
+
+        var workspace = NotebookWorkspaceController.Instance;
+        // Zaten defterin altındaki kitap serbestçe çıkabilsin; yalnız deftere giren eksen durdurulur.
+        if (workspace != null && !workspace.NotebookCovers(centre) && workspace.NotebookCovers(centre + delta))
+            delta = !workspace.NotebookCovers(centre + new Vector2(delta.x, 0)) ? new Vector2(delta.x, 0)
+                : !workspace.NotebookCovers(centre + new Vector2(0, delta.y)) ? new Vector2(0, delta.y) : Vector2.zero;
+        return delta;
     }
 }

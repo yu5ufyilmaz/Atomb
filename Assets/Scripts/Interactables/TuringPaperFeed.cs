@@ -127,7 +127,8 @@ public sealed class TuringPaperFeed : IDisposable
         if (!plane.Raycast(camera.ScreenPointToRay(screen), out float distance)) return false;
         Vector3 point = Root.InverseTransformPoint(camera.ScreenPointToRay(screen).GetPoint(distance));
         // Include the exposed card and the mouth, so small notebook drag offsets are harmless.
-        return Mathf.Abs(point.x) <= .145f && point.y >= -.175f && point.y <= .065f;
+        // Oyun testi 2026-11-09: yuva zor tutturuluyordu; bölge plakayı (±.16) ve gövdenin çoğunu da kapsar.
+        return Mathf.Abs(point.x) <= .25f && point.y >= -.28f && point.y <= .14f;
     }
 
     public void Begin(NotebookBlockData note)

@@ -8,23 +8,32 @@ public sealed class LeesResistanceHud : MonoBehaviour
     public LeesResistanceGraphic graphic;
     static readonly Color Bone = new Color(.86f, .85f, .78f);
     static readonly Color Red = new Color(.94f, .27f, .22f);
+    TMP_Text[] words;
+
+    // G9 playtest: in the game the struggle speaks only through the graphic; words stay in the workshop bench.
+    void ShowWords(bool on)
+    {
+        if (words == null) words = GetComponentsInChildren<TMP_Text>(true);
+        foreach (var word in words) if (word != null && word.gameObject.activeSelf != on) word.gameObject.SetActive(on);
+    }
 
     public void ShowPrompt(string heading, string message, string controls)
     {
-        gameObject.SetActive(true);
-        GameLocalization.Set(title, heading); title.color = Bone; GameLocalization.Set(detail, message); GameLocalization.Set(footer, controls);
+        gameObject.SetActive(true); ShowWords(true);
+        GameLocalization.Set(title, heading); if (title != null) title.color = Bone; GameLocalization.Set(detail, message); GameLocalization.Set(footer, controls);
         GameLocalization.Set(pressureLabel, ""); GameLocalization.Set(progressLabel, "");
         graphic.active = false; graphic.danger = graphic.progress = 0; graphic.Refresh();
     }
     public void Present(LeesResistanceModel model, bool paused, bool workshopControls = true)
     {
-        gameObject.SetActive(true);
+        gameObject.SetActive(true); ShowWords(workshopControls);
         graphic.active = model.State == LeesResistanceModel.Phase.Struggling;
         graphic.danger = model.Danger; graphic.progress = model.Progress;
         graphic.angle = model.HeadAngle / Mathf.Max(10, model.Settings.failureAngle);
         graphic.direction = model.PullDirection;
         graphic.pull = model.PullStrength / Mathf.Max(1, model.Settings.pullDegreesPerSecond);
         graphic.clock = model.Elapsed; graphic.Refresh();
+        if (!workshopControls || title == null) return;
         title.color = Bone;
         GameLocalization.Set(footer, workshopControls ? "FARE  /  TERS YÖNE ÇEK                         ESC  /  DURAKLAT" : "");
         if (graphic.active)

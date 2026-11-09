@@ -743,6 +743,8 @@ public partial class NotebookWorkspaceController : MonoBehaviour
 
     private Vector2 Normalize(Vector2 local) => new Vector2(Mathf.InverseLerp(page.rect.xMin, page.rect.xMax, local.x), Mathf.InverseLerp(page.rect.yMin, page.rect.yMax, local.y));
     private static bool Contains(RectTransform rect, Vector2 point) => rect != null && RectTransformUtility.RectangleContainsScreenPoint(rect, point, null);
+    // Fiziksel kitap taşınırken açık defterin altına itilmesin diye kullanılır.
+    internal bool NotebookCovers(Vector2 screen) => notebookWindow != null && notebookWindow.gameObject.activeInHierarchy && notebookReveal > 0 && Contains(notebookWindow, screen);
 
     private bool IsTopmostPage(Vector2 screenPosition)
     {
